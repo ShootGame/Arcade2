@@ -1,0 +1,11 @@
+name: '${project.name}'
+version: 'Minecraft ${plugin.minecraft}: ${project.version}-${git.commit.id.abbrev}'
+authors:
+- TheMolkaPL
+website: https://github.com/ShootGame/Arcade2
+description: '${project.description}'
+prefix: '${project.name}'
+load: STARTUP
+loadbefore:
+- WorldEdit
+main: '${plugin.mainClass}'
