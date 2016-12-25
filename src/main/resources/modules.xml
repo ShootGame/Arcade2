@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- All Arcade modules **sorted in alphabetical order** -->
+<modules>
+    <module class="pl.themolka.arcade.example.ExampleModule" />
+</modules>
