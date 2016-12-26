@@ -1,4 +1,4 @@
-package pl.themolka.arcade.storages;
+package pl.themolka.arcade.storage;
 
 import pl.themolka.commons.storage.Storages;
 

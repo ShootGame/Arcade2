@@ -8,11 +8,13 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.event.ArcadeEvents;
+import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleManager;
 import pl.themolka.arcade.session.ArcadeSessions;
-import pl.themolka.arcade.storages.ArcadeStorages;
+import pl.themolka.arcade.storage.ArcadeStorages;
+import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.command.Commands;
@@ -31,12 +33,18 @@ import java.util.List;
  * The Arcade main class
  */
 public final class ArcadePlugin extends JavaPlugin {
+    public static final String[] COPYRIGHTS = {"TheMolkaPL"};
+
     private Commons commons;
     private VoidGenerator generator;
+    private ManifestFile manifest;
     private ModuleManager modules;
 
     @Override
     public void onEnable() {
+        this.manifest = new ManifestFile();
+        this.manifest.readManifestFile();
+
         this.commons = new ArcadeCommons(this);
         Event.setAutoEventPoster(this.getEvents());
 
@@ -44,6 +52,8 @@ public final class ArcadePlugin extends JavaPlugin {
 
         this.loadCommands();
         this.loadModules();
+
+        this.getEvents().post(new PluginReadyEvent(this));
     }
 
     @Override
@@ -62,6 +72,10 @@ public final class ArcadePlugin extends JavaPlugin {
 
     public ArcadeEvents getEvents() {
         return (ArcadeEvents) this.getCommons().getEvents();
+    }
+
+    public ManifestFile getManifest() {
+        return this.manifest;
     }
 
     public ModuleManager getModules() {
