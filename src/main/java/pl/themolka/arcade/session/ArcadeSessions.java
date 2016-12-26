@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.commons.session.Sessions;
 
-public class ArcadeSessions extends Sessions implements Listener {
+public class ArcadeSessions extends Sessions<ArcadeSession> implements Listener {
     private final ArcadePlugin plugin;
 
     public ArcadeSessions(ArcadePlugin plugin) {
