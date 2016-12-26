@@ -1,9 +1,15 @@
 package pl.themolka.arcade.map;
 
+import org.bukkit.Difficulty;
+import org.bukkit.World;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import pl.themolka.arcade.xml.parser.XMLDifficulty;
+import pl.themolka.arcade.xml.parser.XMLEnvironment;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +32,18 @@ public class XMLMapParser implements MapParser {
         }
     }
 
+    public File getFile() {
+        return this.file;
+    }
+
+    public Document getDocument() {
+        return this.document;
+    }
+
+    //
+    // Parsing OfflineMap object
+    //
+
     @Override
     public OfflineMap parseOfflineMap() throws MapParserException {
         Element root = this.getDocument().getRootElement();
@@ -40,19 +58,6 @@ public class XMLMapParser implements MapParser {
         map.setSettings(this.getFile());
 
         return map;
-    }
-
-    @Override
-    public ArcadeMap parseArcadeMap(OfflineMap offline) throws MapParserException {
-        return null;
-    }
-
-    public File getFile() {
-        return this.file;
-    }
-
-    public Document getDocument() {
-        return this.document;
     }
 
     private String parseName(String name) throws MapParserException {
@@ -81,13 +86,30 @@ public class XMLMapParser implements MapParser {
         return null;
     }
 
+    private List<Author> parseAuthors(Element parent) {
+        List<Author> authors = new ArrayList<>();
+
+        if (parent != null) {
+            for (Element child : parent.getChildren("author")) {
+                Author author = this.parseAuthor(child);
+                if (author == null) {
+                    continue;
+                }
+
+                authors.add(author);
+            }
+        }
+
+        return authors;
+    }
+
     private Author parseAuthor(Element author) {
         UUID uuid = null;
         String uuidValue = author.getAttributeValue("uuid");
         if (uuidValue != null) {
             try {
                 uuid = UUID.fromString(uuidValue);
-            } catch (IllegalArgumentException ex) {
+            } catch (IllegalArgumentException ignored) {
             }
         }
 
@@ -104,20 +126,61 @@ public class XMLMapParser implements MapParser {
         return new Author(uuid, username, description);
     }
 
-    private List<Author> parseAuthors(Element parent) {
-        List<Author> authors = new ArrayList<>();
+    //
+    // Parsing ArcadeMap object
+    //
 
+    @Override
+    public ArcadeMap parseArcadeMap(OfflineMap offline) throws MapParserException {
+        Element root = this.getDocument().getRootElement();
+        Element world = root.getChild("world");
+
+        ArcadeMap map = new ArcadeMap(offline);
+        map.setConfiguration(root);
+        map.setDifficulty(this.parseDifficulty(world));
+        map.setEnvironment(this.parseEnvironment(world));
+        map.setPvp(this.parsePvp(world));
+
+        WorldNameGenerator generator = new WorldNameGenerator(map);
+        map.setWorldName(generator.nextWorldName());
+
+        return map;
+    }
+
+    private Difficulty parseDifficulty(Element parent) {
         if (parent != null) {
-            for (Element child : parent.getChildren("author")) {
-                Author author = this.parseAuthor(child);
-                if (author == null) {
-                    continue;
-                }
+            return XMLDifficulty.parse(parent);
+        }
 
-                authors.add(author);
+        return null;
+    }
+
+    private World.Environment parseEnvironment(Element parent) {
+        if (parent != null) {
+            return XMLEnvironment.parse(parent);
+        }
+
+        return null;
+    }
+
+    private boolean parsePvp(Element parent) {
+        if (parent != null) {
+            Attribute attribute = parent.getAttribute("pvp");
+            if (attribute != null) {
+                try {
+                    return attribute.getBooleanValue();
+                } catch (DataConversionException ignored) {
+                }
             }
         }
 
-        return authors;
+        return true;
+    }
+
+    public static class XMLParserTechnology implements MapParser.Technology {
+        @Override
+        public MapParser newInstance() {
+            return new XMLMapParser();
+        }
     }
 }

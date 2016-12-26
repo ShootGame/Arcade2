@@ -14,6 +14,7 @@ public class MapManager {
     private final ArcadePlugin plugin;
 
     private final MapContainer container = new MapContainer();
+    private MapParser.Technology parser;
 
     public MapManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -65,9 +66,14 @@ public class MapManager {
         world.setAutoSave(false);
         world.setDifficulty(this.plugin.getServer().getWorlds().get(0).getDifficulty());
         world.setPVP(map.isPvp());
+        world.setSpawnFlags(false, false);
 
         map.setWorld(world);
         return world;
+    }
+
+    public void destroyWorld(World world) {
+        this.plugin.getServer().unloadWorld(world, true);
     }
 
     public MapContainer getContainer() {
@@ -78,7 +84,15 @@ public class MapManager {
         return this.plugin.getGenerator();
     }
 
+    public MapParser.Technology getParser() {
+        return this.parser;
+    }
+
     public File getWorldContainer() {
         return this.plugin.getServer().getWorldContainer();
+    }
+
+    public void setParser(MapParser.Technology parser) {
+        this.parser = parser;
     }
 }

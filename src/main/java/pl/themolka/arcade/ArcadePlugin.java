@@ -9,6 +9,8 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.map.MapManager;
+import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleManager;
 import pl.themolka.arcade.xml.ManifestFile;
@@ -36,6 +38,7 @@ public final class ArcadePlugin extends JavaPlugin {
     private Commons commons;
     private VoidGenerator generator;
     private ManifestFile manifest;
+    private MapManager maps;
     private ModuleManager modules;
     private SettingsFile settings;
 
@@ -53,6 +56,7 @@ public final class ArcadePlugin extends JavaPlugin {
         this.reloadConfig();
 
         this.loadCommands();
+        this.loadMaps();
         this.loadModules();
 
         this.getEvents().post(new PluginReadyEvent(this));
@@ -112,6 +116,10 @@ public final class ArcadePlugin extends JavaPlugin {
         return this.manifest;
     }
 
+    public MapManager getMaps() {
+        return this.maps;
+    }
+
     public ModuleManager getModules() {
         return this.modules;
     }
@@ -151,6 +159,12 @@ public final class ArcadePlugin extends JavaPlugin {
         }) {
             this.registerCommandObject(command);
         }
+    }
+
+    private void loadMaps() {
+        this.maps = new MapManager(this);
+
+        this.maps.setParser(new XMLMapParser.XMLParserTechnology());
     }
 
     private void loadModules() {

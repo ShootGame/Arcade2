@@ -9,4 +9,8 @@ public interface MapParser {
     OfflineMap parseOfflineMap() throws MapParserException;
 
     ArcadeMap parseArcadeMap(OfflineMap offline) throws MapParserException;
+
+    interface Technology {
+        MapParser newInstance();
+    }
 }

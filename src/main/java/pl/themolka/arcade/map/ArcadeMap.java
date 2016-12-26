@@ -2,6 +2,7 @@ package pl.themolka.arcade.map;
 
 import org.bukkit.Difficulty;
 import org.bukkit.World;
+import org.jdom2.Element;
 
 public class ArcadeMap {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.PEACEFUL;
@@ -9,6 +10,7 @@ public class ArcadeMap {
 
     private final OfflineMap mapInfo;
 
+    private Element configuration;
     private Difficulty difficulty;
     private World.Environment environment;
     private boolean pvp;
@@ -21,6 +23,10 @@ public class ArcadeMap {
 
     public OfflineMap getMapInfo() {
         return this.mapInfo;
+    }
+
+    public Element getConfiguration() {
+        return this.configuration;
     }
 
     public Difficulty getDifficulty() {
@@ -57,6 +63,10 @@ public class ArcadeMap {
 
     public boolean isPvp() {
         return this.pvp;
+    }
+
+    public void setConfiguration(Element configuration) {
+        this.configuration = configuration;
     }
 
     public void setDifficulty(Difficulty difficulty) {

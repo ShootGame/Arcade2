@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+    <name>Example Map</name>
+    <version>1.0</version>
+    <description>Kill the enemy</description>
+    <authors>
+        <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
+    </authors>
+
+    <world environment="normal" difficulty="peaceful" />
+    <modules>
+
+    </modules>
+</map>

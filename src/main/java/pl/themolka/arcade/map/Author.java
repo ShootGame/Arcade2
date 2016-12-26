@@ -9,6 +9,10 @@ public class Author {
     private final String username;
     private final String description;
 
+    public Author(String username) {
+        this(null, username);
+    }
+
     public Author(UUID uuid, String username) {
         this(uuid, username, null);
     }
@@ -29,6 +33,10 @@ public class Author {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public boolean hasUuid() {
+        return this.uuid != null;
     }
 
     public boolean hasDescription() {
