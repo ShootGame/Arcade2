@@ -99,11 +99,11 @@ public class ArcadeCommand {
             io.printStackTrace();
 
             sender.sendError(io.getClass().getName() + ": " + io.getLocalizedMessage());
-        } catch (JDOMException xml) {
+        } catch (JDOMException jdom) {
             sender.sendError("Could not reload XML file - see console.");
-            xml.printStackTrace();
+            jdom.printStackTrace();
 
-            sender.sendError(xml.getClass().getName() + ": " + xml.getLocalizedMessage());
+            sender.sendError(jdom.getClass().getName() + ": " + jdom.getLocalizedMessage());
         }
     }
 

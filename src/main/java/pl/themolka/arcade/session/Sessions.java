@@ -9,12 +9,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.PluginReadyEvent;
-import pl.themolka.commons.session.Sessions;
 
-public class ArcadeSessions extends Sessions<ArcadeSession> implements Listener {
+public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession> implements Listener {
     private final ArcadePlugin plugin;
 
-    public ArcadeSessions(ArcadePlugin plugin) {
+    public Sessions(ArcadePlugin plugin) {
         this.plugin = plugin;
 
         plugin.registerListenerObject(this);

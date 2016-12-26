@@ -28,24 +28,28 @@ public abstract class Module<T> {
 
         Annotation annotation = this.getClass().getAnnotation(ModuleInfo.class);
         if (annotation == null) {
-            throw new RuntimeException("Module must be @ModuleInfo decorated");
+            throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
         }
 
         ModuleInfo info = (ModuleInfo) annotation;
-        this.id = info.id();
+        if (info.id() == null) {
+            throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
+        }
+
+        this.id = info.id().toLowerCase();
         this.dependency = info.dependency();
         this.loadBefore = info.loadBefore();
 
         this.registerCommandObject(this);
     }
 
-    public abstract T buildGame(Element xml) throws JDOMException;
+    public abstract T buildGameModule(Element xml) throws JDOMException;
 
     public Class<? extends Module>[] getDependency() {
         return this.dependency;
     }
 
-    public String getId() {
+    public final String getId() {
         return this.id;
     }
 

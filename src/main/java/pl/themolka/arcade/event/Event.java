@@ -2,12 +2,11 @@ package pl.themolka.arcade.event;
 
 import org.bukkit.Server;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Event;
 
-public class ArcadeEvent extends Event {
+public class Event extends pl.themolka.commons.event.Event {
     private final ArcadePlugin plugin;
 
-    public ArcadeEvent(ArcadePlugin plugin) {
+    public Event(ArcadePlugin plugin) {
         this.plugin = plugin;
     }
 

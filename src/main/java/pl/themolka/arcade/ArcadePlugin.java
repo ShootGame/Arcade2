@@ -7,15 +7,10 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
-import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.GeneralCommands;
-import pl.themolka.arcade.event.ArcadeEvents;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.module.Module;
-import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleManager;
-import pl.themolka.arcade.session.ArcadeSessions;
-import pl.themolka.arcade.storage.ArcadeStorages;
 import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
 import pl.themolka.arcade.xml.SettingsFile;
@@ -70,7 +65,7 @@ public final class ArcadePlugin extends JavaPlugin {
 
     @Override
     public FileConfiguration getConfig() {
-        throw new UnsupportedOperationException("YAML is unsupported!");
+        throw new UnsupportedOperationException("YAML is not supported!");
     }
 
     @Override
@@ -89,7 +84,7 @@ public final class ArcadePlugin extends JavaPlugin {
 
     @Override
     public void saveConfig() {
-        throw new UnsupportedOperationException("YAML is unsupported!");
+        throw new UnsupportedOperationException("YAML is not supported!");
     }
 
     @Override
@@ -101,12 +96,12 @@ public final class ArcadePlugin extends JavaPlugin {
         }
     }
 
-    public ArcadeCommands getCommands() {
-        return (ArcadeCommands) this.getCommons().getCommands();
+    public Commands getCommands() {
+        return (Commands) this.getCommons().getCommands();
     }
 
-    public ArcadeEvents getEvents() {
-        return (ArcadeEvents) this.getCommons().getEvents();
+    public Events getEvents() {
+        return (Events) this.getCommons().getEvents();
     }
 
     public ManifestFile getManifest() {
@@ -165,14 +160,13 @@ public final class ArcadePlugin extends JavaPlugin {
             ex.printStackTrace();
         }
 
+        this.getLogger().info("Loaded " + moduleList.size() + " modules.");
+
         for (Module<?> module : moduleList) {
             module.initialize(this);
         }
 
-        ModuleContainer container = new ModuleContainer();
-        container.register(moduleList.toArray(new Module<?>[moduleList.size()]));
-
-        this.getModules().setContainer(container);
+        this.getModules().getContainer().register(moduleList.toArray(new Module<?>[moduleList.size()]));
     }
 
     private class ArcadeCommons implements Commons {
@@ -182,10 +176,10 @@ public final class ArcadePlugin extends JavaPlugin {
         private final Storages storages;
 
         public ArcadeCommons(ArcadePlugin plugin) {
-            this.commands = new ArcadeCommands(plugin);
-            this.events = new ArcadeEvents();
-            this.sessions = new ArcadeSessions(plugin);
-            this.storages = new ArcadeStorages();
+            this.commands = new pl.themolka.arcade.command.Commands(plugin);
+            this.events = new pl.themolka.arcade.event.Events();
+            this.sessions = new pl.themolka.arcade.session.Sessions(plugin);
+            this.storages = new pl.themolka.arcade.storage.Storages();
         }
 
         @Override

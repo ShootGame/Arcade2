@@ -1,0 +1,47 @@
+package pl.themolka.arcade.map;
+
+import org.bukkit.ChatColor;
+
+import java.util.UUID;
+
+public class Author {
+    private final UUID uuid;
+    private final String username;
+    private final String description;
+
+    public Author(UUID uuid, String username) {
+        this(uuid, username, null);
+    }
+
+    public Author(UUID uuid, String username, String description) {
+        this.uuid = uuid;
+        this.username = username;
+        this.description = description;
+    }
+
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public boolean hasDescription() {
+        return this.description != null;
+    }
+
+    @Override
+    public String toString() {
+        String author = ChatColor.GRAY + " - " + ChatColor.GOLD + this.getUsername() + ChatColor.RESET;
+        if (!this.hasDescription()) {
+            return author;
+        }
+
+        return author + ChatColor.GRAY + " - " + ChatColor.ITALIC + this.getDescription() + ChatColor.RESET;
+    }
+}
