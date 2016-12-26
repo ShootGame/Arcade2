@@ -9,6 +9,7 @@ import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class MapManager {
     private final ArcadePlugin plugin;
@@ -74,6 +75,14 @@ public class MapManager {
 
     public void destroyWorld(World world) {
         this.plugin.getServer().unloadWorld(world, true);
+    }
+
+    public List<OfflineMap> findMap(String query) {
+        return this.getContainer().findMap(query);
+    }
+
+    public OfflineMap findMapFirst(String query) {
+        return this.getContainer().findMapFirst(query);
     }
 
     public MapContainer getContainer() {

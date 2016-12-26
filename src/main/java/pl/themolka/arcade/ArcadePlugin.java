@@ -9,6 +9,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
@@ -36,6 +37,7 @@ public final class ArcadePlugin extends JavaPlugin {
     public static final String[] COPYRIGHTS = {"TheMolkaPL"};
 
     private Commons commons;
+    private GameManager games;
     private VoidGenerator generator;
     private ManifestFile manifest;
     private MapManager maps;
@@ -56,6 +58,7 @@ public final class ArcadePlugin extends JavaPlugin {
         this.reloadConfig();
 
         this.loadCommands();
+        this.loadGames();
         this.loadMaps();
         this.loadModules();
 
@@ -106,6 +109,10 @@ public final class ArcadePlugin extends JavaPlugin {
 
     public Events getEvents() {
         return (Events) this.getCommons().getEvents();
+    }
+
+    public GameManager getGames() {
+        return this.games;
     }
 
     public VoidGenerator getGenerator() {
@@ -159,6 +166,10 @@ public final class ArcadePlugin extends JavaPlugin {
         }) {
             this.registerCommandObject(command);
         }
+    }
+
+    private void loadGames() {
+        this.games = new GameManager(this);
     }
 
     private void loadMaps() {
