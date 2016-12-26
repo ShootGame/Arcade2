@@ -1,10 +1,12 @@
 package pl.themolka.arcade;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.event.ArcadeEvents;
@@ -16,6 +18,7 @@ import pl.themolka.arcade.session.ArcadeSessions;
 import pl.themolka.arcade.storage.ArcadeStorages;
 import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
+import pl.themolka.arcade.xml.SettingsFile;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.command.Commands;
 import pl.themolka.commons.event.Event;
@@ -39,6 +42,7 @@ public final class ArcadePlugin extends JavaPlugin {
     private VoidGenerator generator;
     private ManifestFile manifest;
     private ModuleManager modules;
+    private SettingsFile settings;
 
     @Override
     public void onEnable() {
@@ -49,6 +53,9 @@ public final class ArcadePlugin extends JavaPlugin {
         Event.setAutoEventPoster(this.getEvents());
 
         this.generator = new VoidGenerator();
+
+        this.settings = new SettingsFile(this);
+        this.reloadConfig();
 
         this.loadCommands();
         this.loadModules();
@@ -62,8 +69,36 @@ public final class ArcadePlugin extends JavaPlugin {
     }
 
     @Override
+    public FileConfiguration getConfig() {
+        throw new UnsupportedOperationException("YAML is unsupported!");
+    }
+
+    @Override
     public ChunkGenerator getDefaultWorldGenerator(String world, String id) {
         return this.generator;
+    }
+
+    @Override
+    public void reloadConfig() {
+        try {
+            this.getSettings().readSettingsFile();
+        } catch (IOException | JDOMException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveConfig() {
+        throw new UnsupportedOperationException("YAML is unsupported!");
+    }
+
+    @Override
+    public void saveDefaultConfig() {
+        try {
+            this.getSettings().copySettingsFile();
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
 
     public ArcadeCommands getCommands() {
@@ -80,6 +115,10 @@ public final class ArcadePlugin extends JavaPlugin {
 
     public ModuleManager getModules() {
         return this.modules;
+    }
+
+    public SettingsFile getSettings() {
+        return this.settings;
     }
 
     public void registerCommandObject(Object object) {
@@ -108,6 +147,7 @@ public final class ArcadePlugin extends JavaPlugin {
 
     private void loadCommands() {
         for (Object command : new Object[] {
+                new ArcadeCommand(this),
                 new GeneralCommands(this)
         }) {
             this.registerCommandObject(command);
