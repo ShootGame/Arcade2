@@ -1,4 +1,4 @@
-package pl.themolka.arcade.map;
+package pl.themolka.arcade.util;
 
 public class Version {
     public static final Version DEFAULT = new Version(1, 0);

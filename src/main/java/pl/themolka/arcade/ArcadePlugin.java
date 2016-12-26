@@ -104,6 +104,10 @@ public final class ArcadePlugin extends JavaPlugin {
         return (Events) this.getCommons().getEvents();
     }
 
+    public VoidGenerator getGenerator() {
+        return this.generator;
+    }
+
     public ManifestFile getManifest() {
         return this.manifest;
     }

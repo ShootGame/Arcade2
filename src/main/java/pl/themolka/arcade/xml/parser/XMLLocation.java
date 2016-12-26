@@ -1,0 +1,53 @@
+package pl.themolka.arcade.xml.parser;
+
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.jdom2.DataConversionException;
+import org.jdom2.Element;
+
+public class XMLLocation extends XMLParser {
+    public static final String ATTRIBUTE_X = "x";
+    public static final String ATTRIBUTE_Y = "y";
+    public static final String ATTRIBUTE_Z = "z";
+    public static final String ATTRIBUTE_YAW = "yaw";
+    public static final String ATTRIBUTE_PITCH = "pitch";
+
+    public static final double X = 0.5;
+    public static final double Y = 0.0;
+    public static final double Z = 0.5;
+    public static final float YAW = 0F;
+    public static final float PITCH = 0F;
+
+    public static Location parse(Element xml) throws DataConversionException {
+        return parse(xml, X, Z);
+    }
+
+    public static Location parse(Element xml,
+                                            double x,
+                                            double z) throws DataConversionException {
+        return parse(xml, x, Y, z);
+    }
+
+    public static Location parse(Element xml,
+                                            double x,
+                                            double y,
+                                            double z) throws DataConversionException {
+        return parse(xml, x, y, z, YAW, PITCH);
+    }
+
+    public static Location parse(Element xml,
+                                            double x,
+                                            double y,
+                                            double z,
+                                            float yaw,
+                                            float pitch) throws DataConversionException {
+        double paramX = getAttribute(xml, ATTRIBUTE_X, X).getDoubleValue();
+        double paramY = getAttribute(xml, ATTRIBUTE_Y, Y).getDoubleValue();
+        double paramZ = getAttribute(xml, ATTRIBUTE_Z, Z).getDoubleValue();
+        float paramYaw = getAttribute(xml, ATTRIBUTE_YAW, YAW).getFloatValue();
+        float paramPitch = getAttribute(xml, ATTRIBUTE_PITCH, PITCH).getFloatValue();
+
+        World world = null; // TODO null
+        return new Location(world, paramX, paramY, paramZ, paramYaw, paramPitch);
+    }
+}

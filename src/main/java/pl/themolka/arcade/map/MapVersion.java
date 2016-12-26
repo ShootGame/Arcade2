@@ -1,5 +1,7 @@
 package pl.themolka.arcade.map;
 
+import pl.themolka.arcade.util.Version;
+
 public class MapVersion extends Version {
     public static final MapVersion DEFAULT = new MapVersion(1, 0);
 

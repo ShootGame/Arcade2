@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class XMLMapSettings implements MapSettings {
+public class XMLMapParser implements MapParser {
     private File file;
     private Document document;
 
@@ -30,9 +30,9 @@ public class XMLMapSettings implements MapSettings {
     public OfflineMap parseOfflineMap() throws MapParserException {
         Element root = this.getDocument().getRootElement();
 
-        String name = this.parseName(root.getChildText("name"));
-        MapVersion version = this.parseVersion(root.getChildText("version"));
-        String description = this.parseDescription(root.getChildText("description"));
+        String name = this.parseName(root.getChildTextNormalize("name"));
+        MapVersion version = this.parseVersion(root.getChildTextNormalize("version"));
+        String description = this.parseDescription(root.getChildTextNormalize("description"));
         List<Author> authors = this.parseAuthors(root.getChild("authors"));
 
         OfflineMap map = new OfflineMap(name, version, description, authors);
