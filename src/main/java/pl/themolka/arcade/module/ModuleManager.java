@@ -1,17 +1,21 @@
 package pl.themolka.arcade.module;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import pl.themolka.arcade.ArcadePlugin;
 
 public class ModuleManager {
-    private final Map<Class<? extends Module>, Module> modules = new HashMap<>();
+    private final ArcadePlugin plugin;
 
-    public <T extends Module> T getModule(Class<? extends Module> module) {
-        return (T) this.modules.get(module);
+    private ModuleContainer container;
+
+    public ModuleManager(ArcadePlugin plugin) {
+        this.plugin = plugin;
     }
 
-    public Set<Class<? extends Module>> getModules() {
-        return modules.keySet();
+    public ModuleContainer getContainer() {
+        return this.container;
+    }
+
+    public void setContainer(ModuleContainer container) {
+        this.container = container;
     }
 }

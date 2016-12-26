@@ -2,14 +2,17 @@ package pl.themolka.arcade;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
+import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.module.ModuleContainer;
+import pl.themolka.arcade.module.ModuleManager;
+import pl.themolka.arcade.xml.ModulesFile;
 import pl.themolka.commons.BukkitCommonsFactory;
 import pl.themolka.commons.Commons;
+import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,17 +25,14 @@ import java.util.List;
 public final class ArcadePlugin extends JavaPlugin {
     private Commons commons;
 
-    @Override
-    public void onLoad() {
-        this.commons = BukkitCommonsFactory.bukkitFactory(this).build(); // TODO custom
-    }
+    private ModuleManager modules;
 
     @Override
     public void onEnable() {
-        List<Module<?>> modules = this.loadModules();
-        for (Module<?> module : modules) {
-            module.load(this);
-        }
+        this.commons = BukkitCommonsFactory.bukkitFactory(this).build(); // TODO custom
+
+        this.loadCommands();
+        this.loadModules();
     }
 
     @Override
@@ -40,12 +40,21 @@ public final class ArcadePlugin extends JavaPlugin {
         // TODO body
     }
 
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String world, String id) {
+        return new VoidGenerator();
+    }
+
     public Commons getCommons() {
         return this.commons;
     }
 
+    public ModuleManager getModules() {
+        return this.modules;
+    }
+
     public void registerCommandObject(Object object) {
-        this.getCommons().getCommands().registerCommandObject(this);
+        this.getCommons().getCommands().registerCommandObject(object);
     }
 
     public void registerListenerObject(Object object) {
@@ -64,34 +73,32 @@ public final class ArcadePlugin extends JavaPlugin {
         }
     }
 
-    private Module<?> getXmlModule(Element module) throws ReflectiveOperationException {
-        String clazzPath = module.getAttributeValue("class");
-
-        Class<?> clazz = Class.forName(clazzPath);
-        if (clazz.isAssignableFrom(Module.class)) {
-            return (Module<?>) clazz.newInstance();
+    private void loadCommands() {
+        for (Object command : new Object[] {
+                new GeneralCommands(this)
+        }) {
+            this.registerCommandObject(command);
         }
-
-        return null;
     }
 
-    private List<Module<?>> loadModules() {
-        List<Module<?>> modules = new ArrayList<>();
+    private void loadModules() {
+        this.modules = new ModuleManager(this);
 
-        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("modules.xml")){
-            Document document = new SAXBuilder().build(input);
-
-            for (Element xml : document.getRootElement().getChildren("module")) {
-                try {
-                    modules.add(this.getXmlModule(xml));
-                } catch (ReflectiveOperationException ex) {
-                    ex.printStackTrace();
-                }
-            }
+        List<Module<?>> moduleList = new ArrayList<>();
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ModulesFile.DEFAULT_FILENAME)) {
+            ModulesFile file = new ModulesFile(input);
+            moduleList.addAll(file.getModules(file.getRoot()));
         } catch (IOException | JDOMException ex) {
             ex.printStackTrace();
         }
 
-        return modules;
+        for (Module<?> module : moduleList) {
+            module.initialize(this);
+        }
+
+        ModuleContainer container = new ModuleContainer();
+        container.register(moduleList.toArray(new Module<?>[moduleList.size()]));
+
+        this.getModules().setContainer(container);
     }
 }

@@ -18,7 +18,28 @@ public abstract class Module<T> {
     public Module() {
     }
 
-    public abstract T buildModule(Element xml) throws JDOMException;
+    public final void initialize(ArcadePlugin plugin) {
+        if (this.isLoaded()) {
+            return;
+        }
+
+        this.loaded = true;
+        this.plugin = plugin;
+
+        Annotation annotation = this.getClass().getAnnotation(ModuleInfo.class);
+        if (annotation == null) {
+            throw new RuntimeException("Module must be @ModuleInfo decorated");
+        }
+
+        ModuleInfo info = (ModuleInfo) annotation;
+        this.id = info.id();
+        this.dependency = info.dependency();
+        this.loadBefore = info.loadBefore();
+
+        this.registerCommandObject(this);
+    }
+
+    public abstract T buildGame(Element xml) throws JDOMException;
 
     public Class<? extends Module>[] getDependency() {
         return this.dependency;
@@ -38,27 +59,6 @@ public abstract class Module<T> {
 
     public boolean isLoaded() {
         return this.loaded;
-    }
-
-    public final void load(ArcadePlugin plugin) {
-        if (this.isLoaded()) {
-            return;
-        }
-
-        this.loaded = true;
-        this.plugin = plugin;
-
-        Annotation annotation = this.getClass().getAnnotation(ModuleInfo.class);
-        if (annotation == null) {
-            throw new RuntimeException("Module must be @ModuleInfo decorated");
-        }
-
-        ModuleInfo info = (ModuleInfo) annotation;
-        this.id = info.id();
-        this.dependency = info.dependency();
-        this.loadBefore = info.loadBefore();
-
-        this.registerCommandObject(this);
     }
 
     public void registerCommandObject(Object object) {
