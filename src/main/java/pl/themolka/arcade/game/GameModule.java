@@ -4,6 +4,7 @@ import org.bukkit.event.Listener;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,6 +35,14 @@ public class GameModule implements GameEvents, Listener {
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }
+    }
+
+    @Override
+    public void onEnable() {
+    }
+
+    @Override
+    public void onDisable() {
     }
 
     @Override
@@ -70,5 +79,20 @@ public class GameModule implements GameEvents, Listener {
     public void unregisterListenerObject(Object object) {
         this.getPlugin().unregisterListenerObject(object);
         this.listenerObjects.remove(object);
+    }
+
+    public void registerListeners() {
+        if (!this.getListenerObjects().isEmpty()) {
+            return;
+        }
+
+        List<Object> listeners = this.onListenersRegister(new ArrayList<>());
+        if (listeners != null) {
+            for (Object listener : listeners) {
+                this.registerListenerObject(listener);
+            }
+        }
+
+        this.registerListenerObject(this);
     }
 }

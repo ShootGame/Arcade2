@@ -1,21 +1,21 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.World;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.ArcadeMap;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Game {
     private final ArcadePlugin plugin;
 
     private final ArcadeMap map;
     private final GameModuleContainer modules = new GameModuleContainer();
+    private final World world;
 
-    public Game(ArcadePlugin plugin, ArcadeMap map) {
+    public Game(ArcadePlugin plugin, ArcadeMap map, World world) {
         this.plugin = plugin;
 
         this.map = map;
+        this.world = world;
     }
 
     public ArcadeMap getMap() {
@@ -26,9 +26,14 @@ public class Game {
         return this.modules;
     }
 
+    public World getWorld() {
+        return this.world;
+    }
+
     public void start() {
         for (GameModule module : this.getModules().getModules()) {
-            this.registerListeners(module);
+            module.registerListeners();
+            module.onEnable();
         }
 
         this.plugin.getEvents().post(new GameStartEvent(this.plugin, this));
@@ -38,24 +43,8 @@ public class Game {
         this.plugin.getEvents().post(new GameStopEvent(this.plugin, this));
 
         for (GameModule module : this.getModules().getModules()) {
-            this.unregisterListeners(module);
-        }
-    }
-
-    private void registerListeners(GameModule module) {
-        List<Object> listeners = module.onListenersRegister(new ArrayList<>());
-        if (listeners != null) {
-            for (Object listener : listeners) {
-                module.registerListenerObject(listener);
-            }
-        }
-
-        module.registerListenerObject(module);
-    }
-
-    private void unregisterListeners(GameModule module) {
-        for (Object listener : module.getListenerObjects()) {
-            module.unregisterListenerObject(listener);
+            module.onDisable();
+            module.destroy();
         }
     }
 }

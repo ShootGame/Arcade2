@@ -1,6 +1,7 @@
 package pl.themolka.arcade.map;
 
 import org.bukkit.Difficulty;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.jdom2.Element;
 
@@ -14,6 +15,7 @@ public class ArcadeMap {
     private Difficulty difficulty;
     private World.Environment environment;
     private boolean pvp;
+    private Location spawn;
     private World world;
     private String worldName;
 
@@ -43,6 +45,10 @@ public class ArcadeMap {
         }
 
         return DEFAULT_ENVIRONMENT;
+    }
+
+    public Location getSpawn() {
+        return this.spawn;
     }
 
     public World getWorld() {
@@ -79,6 +85,10 @@ public class ArcadeMap {
 
     public void setPvp(boolean pvp) {
         this.pvp = pvp;
+    }
+
+    public void setSpawn(Location spawn) {
+        this.spawn = spawn;
     }
 
     public void setWorld(World world) {

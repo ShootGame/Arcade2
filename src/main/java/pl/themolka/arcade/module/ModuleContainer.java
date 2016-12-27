@@ -21,12 +21,12 @@ public class ModuleContainer {
         return this.getModules().contains(module);
     }
 
-    public <T extends Module> T getModule(Class<? extends Module> module) {
+    public <T extends Module> T getModule(Class<T> module) {
         return (T) this.modulesByClass.get(module);
     }
 
-    public <T extends Module> T getModule(String id) {
-        return (T) this.modulesById.get(id.toLowerCase());
+    public Module getModuleById(String id) {
+        return this.modulesById.get(id.toLowerCase());
     }
 
     public Set<Class<? extends Module>> getModuleClasses() {

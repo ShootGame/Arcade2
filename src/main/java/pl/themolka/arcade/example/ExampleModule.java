@@ -11,4 +11,8 @@ public class ExampleModule extends Module<ExampleGame> {
     public ExampleGame buildGameModule(Element xml) throws JDOMException {
         return new ExampleGame();
     }
+
+    public void test() {
+
+    }
 }

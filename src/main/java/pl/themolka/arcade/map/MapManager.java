@@ -68,13 +68,18 @@ public class MapManager {
         world.setDifficulty(this.plugin.getServer().getWorlds().get(0).getDifficulty());
         world.setPVP(map.isPvp());
         world.setSpawnFlags(false, false);
+        world.setSpawnLocation(map.getSpawn().getBlockX(), map.getSpawn().getBlockY(), map.getSpawn().getBlockZ());
 
         map.setWorld(world);
         return world;
     }
 
     public void destroyWorld(World world) {
-        this.plugin.getServer().unloadWorld(world, true);
+        this.destroyWorld(world, false);
+    }
+
+    public void destroyWorld(World world, boolean save) {
+        this.plugin.getServer().unloadWorld(world, save);
     }
 
     public List<OfflineMap> findMap(String query) {

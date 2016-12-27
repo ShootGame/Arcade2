@@ -1,6 +1,7 @@
 package pl.themolka.arcade;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
@@ -14,6 +15,7 @@ import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleManager;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
 import pl.themolka.arcade.xml.SettingsFile;
@@ -28,7 +30,11 @@ import pl.themolka.commons.storage.Storages;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * The Arcade main class
@@ -42,6 +48,7 @@ public final class ArcadePlugin extends JavaPlugin {
     private ManifestFile manifest;
     private MapManager maps;
     private ModuleManager modules;
+    private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private SettingsFile settings;
 
     @Override
@@ -103,6 +110,17 @@ public final class ArcadePlugin extends JavaPlugin {
         }
     }
 
+    public ArcadePlayer findPlayer(String query) {
+        query = query.toLowerCase();
+        for (ArcadePlayer player : this.getPlayers()) {
+            if (player.getUsername().toLowerCase().contains(query)) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
     public Commands getCommands() {
         return (Commands) this.getCommons().getCommands();
     }
@@ -129,6 +147,34 @@ public final class ArcadePlugin extends JavaPlugin {
 
     public ModuleManager getModules() {
         return this.modules;
+    }
+
+    public ArcadePlayer getPlayer(Player bukkit) {
+        for (ArcadePlayer player : this.getPlayers()) {
+            if (player.getBukkit().equals(bukkit)) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
+    public ArcadePlayer getPlayer(String username) {
+        for (ArcadePlayer player : this.getPlayers()) {
+            if (player.getUsername().equalsIgnoreCase(username)) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
+    public ArcadePlayer getPlayer(UUID uuid) {
+        return this.players.get(uuid);
+    }
+
+    public Collection<ArcadePlayer> getPlayers() {
+        return this.players.values();
     }
 
     public SettingsFile getSettings() {

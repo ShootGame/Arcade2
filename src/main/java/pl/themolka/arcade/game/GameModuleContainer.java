@@ -23,12 +23,12 @@ public class GameModuleContainer {
         return this.getModules().contains(module);
     }
 
-    public <T extends GameModule> T getModule(Class<? extends Module<?>> module) {
+    public <T extends GameModule> T getModule(Class<T> module) {
         return (T) this.modulesByClass.get(module);
     }
 
-    public <T extends GameModule> T getModule(String id) {
-        return (T) this.modulesById.get(id.toLowerCase());
+    public GameModule getModuleById(String id) {
+        return this.modulesById.get(id.toLowerCase());
     }
 
     public Set<Class<? extends Module<?>>> getModuleClasses() {

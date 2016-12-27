@@ -20,8 +20,12 @@ public class ArcadePlayer {
         return this.getBukkit().getName();
     }
 
-    public UUID getUuid() {
+    public UUID getUniqueId() {
         return this.getBukkit().getUniqueId();
+    }
+
+    public void reset() {
+
     }
 
     public void send(String message) {

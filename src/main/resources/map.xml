@@ -7,8 +7,13 @@
         <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
     </authors>
 
-    <world difficulty="peaceful" environment="normal" pvp="true" />
-    <modules>
+    <world difficulty="peaceful" environment="normal" pvp="true">
+        <spawn x="0.5" y="64" z="0.5" />
+    </world>
 
+    <modules>
+        <example>
+
+        </example>
     </modules>
 </map>

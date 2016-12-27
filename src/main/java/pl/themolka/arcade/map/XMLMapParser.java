@@ -1,6 +1,7 @@
 package pl.themolka.arcade.map;
 
 import org.bukkit.Difficulty;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -10,6 +11,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.xml.parser.XMLDifficulty;
 import pl.themolka.arcade.xml.parser.XMLEnvironment;
+import pl.themolka.arcade.xml.parser.XMLLocation;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,9 +64,9 @@ public class XMLMapParser implements MapParser {
 
     private String parseName(String name) throws MapParserException {
         if (name == null) {
-            throw new MapParserException("map name not given");
+            throw new MapParserException("<name> not given");
         } else if (name.length() > OfflineMap.NAME_MAX_LENGTH) {
-            throw new MapParserException("map name too long");
+            throw new MapParserException("<name> too long");
         }
 
         return name.trim();
@@ -139,6 +141,7 @@ public class XMLMapParser implements MapParser {
         map.setConfiguration(root);
         map.setDifficulty(this.parseDifficulty(world));
         map.setEnvironment(this.parseEnvironment(world));
+        map.setSpawn(this.parseSpawn(world));
         map.setPvp(this.parsePvp(world));
 
         WorldNameGenerator generator = new WorldNameGenerator(map);
@@ -161,6 +164,23 @@ public class XMLMapParser implements MapParser {
         }
 
         return null;
+    }
+
+    private Location parseSpawn(Element parent) throws MapParserException {
+        if (parent == null) {
+            throw new MapParserException("<world> not given");
+        }
+
+        Element spawn = parent.getChild("spawn");
+        if (spawn == null) {
+            throw new MapParserException("<spawn> in <world> not given");
+        }
+
+        try {
+            return XMLLocation.parse(spawn);
+        } catch (DataConversionException ex) {
+            throw new MapParserException("<spawn> incorrect", ex);
+        }
     }
 
     private boolean parsePvp(Element parent) {
