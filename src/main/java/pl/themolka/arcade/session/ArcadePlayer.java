@@ -2,6 +2,7 @@ package pl.themolka.arcade.session;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.util.Metadatable;
 
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 public class ArcadePlayer implements Metadatable {
     private final Player bukkit;
+    private GamePlayer gamePlayer;
     private final Map<String, Object> metadata = new HashMap<>();
 
     public ArcadePlayer(Player bukkit) {
@@ -34,6 +36,10 @@ public class ArcadePlayer implements Metadatable {
 
     public Player getBukkit() {
         return this.bukkit;
+    }
+
+    public GamePlayer getGamePlayer() {
+        return this.gamePlayer;
     }
 
     public String getUsername() {
@@ -62,5 +68,9 @@ public class ArcadePlayer implements Metadatable {
 
     public void sendSuccess(String success) {
         this.send(ChatColor.GREEN + success);
+    }
+
+    public void setGamePlayer(GamePlayer gamePlayer) {
+        this.gamePlayer = gamePlayer;
     }
 }

@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.game.GamePlayer;
 
 public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession> implements Listener {
     private final ArcadePlugin plugin;
@@ -26,7 +27,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        this.removeSession(this.getSession(event.getPlayer().getUniqueId()));
+        this.removeSession(this.destroySession(event.getPlayer()));
     }
 
     @Subscribe
@@ -44,6 +45,20 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
     public ArcadeSession createSession(Player bukkit) {
         ArcadePlayer player = new ArcadePlayer(bukkit);
-        return new ArcadeSession(player);
+
+        GamePlayer game = this.plugin.getGames().getCurrentGame().getPlayer(bukkit.getUniqueId());
+        if (game == null) {
+            game = new GamePlayer(this.plugin.getGames().getCurrentGame(), player);
+        }
+
+        player.setGamePlayer(game);
+        return new ArcadeSession(game.getPlayer());
+    }
+
+    public ArcadeSession destroySession(Player bukkit) {
+        ArcadeSession session = (ArcadeSession) this.getSession(bukkit.getUniqueId());
+        session.getRepresenter().getGamePlayer().setPlayer(null); // make offline
+
+        return session;
     }
 }

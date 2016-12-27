@@ -74,7 +74,7 @@ public class GameManager {
             return;
         }
 
-        this.plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - Instant.now().toEpochMilli()) + "' ms.");
+        this.plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - now.toEpochMilli()) + "' ms.");
     }
 
     public void cycleNext() {
@@ -119,6 +119,8 @@ public class GameManager {
     public void resetPlayers(Game newGame) {
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.reset();
+            player.setGamePlayer(new GamePlayer(newGame, player));
+
             player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }

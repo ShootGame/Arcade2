@@ -8,6 +8,10 @@ import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class Game {
@@ -15,6 +19,7 @@ public class Game {
 
     private final ArcadeMap map;
     private final GameModuleContainer modules = new GameModuleContainer();
+    private final Map<UUID, GamePlayer> players = new HashMap<>();
     private final World world;
 
     public Game(ArcadePlugin plugin, ArcadeMap map, World world) {
@@ -26,12 +31,34 @@ public class Game {
         this.readModules(map.getConfiguration().getChild("modules"));
     }
 
+    public void addPlayer(GamePlayer player) {
+        this.players.put(player.getUuid(), player);
+    }
+
     public ArcadeMap getMap() {
         return this.map;
     }
 
     public GameModuleContainer getModules() {
         return this.modules;
+    }
+
+    public GamePlayer getPlayer(String username) {
+        for (GamePlayer player : this.getPlayers()) {
+            if (player.getUsername().equals(username)) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
+    public GamePlayer getPlayer(UUID uuid) {
+        return this.players.get(uuid);
+    }
+
+    public Collection<GamePlayer> getPlayers() {
+        return this.players.values();
     }
 
     public World getWorld() {
