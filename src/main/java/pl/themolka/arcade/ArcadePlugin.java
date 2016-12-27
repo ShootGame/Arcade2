@@ -11,8 +11,11 @@ import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
+import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapManager;
+import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleManager;
@@ -66,16 +69,26 @@ public final class ArcadePlugin extends JavaPlugin {
         this.reloadConfig();
 
         this.loadCommands();
-        this.loadGames();
-        this.loadMaps();
         this.loadModules();
+        this.loadMaps();
+        this.loadGames();
 
         this.getEvents().post(new PluginReadyEvent(this));
+
+        // begin
+        if (this.getGames().getQueue().hasNextMap()) {
+            this.getGames().cycleNext();
+        } else {
+            this.getLogger().severe("Map queue was empty");
+        }
     }
 
     @Override
     public void onDisable() {
-        // TODO body
+        Game game = this.getGames().getCurrentGame();
+        if (game != null) {
+            game.stop();
+        }
     }
 
     @Override
@@ -219,14 +232,16 @@ public final class ArcadePlugin extends JavaPlugin {
     private void loadGames() {
         this.games = new GameManager(this);
 
-        // TODO queue
-        this.games.cycleNext();
+        this.getEvents().post(new MapQueueFillEvent(this, this.games.getQueue()));
     }
 
     private void loadMaps() {
         this.maps = new MapManager(this);
-
         this.maps.setParser(new XMLMapParser.XMLParserTechnology());
+
+        this.getEvents().post(new MapContainerFillEvent(this, this.maps.getContainer()));
+
+        this.getLogger().info("Loaded " + this.maps.getContainer().getMaps().size() + " maps.");
     }
 
     private void loadModules() {

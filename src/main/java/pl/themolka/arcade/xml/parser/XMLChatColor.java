@@ -20,7 +20,7 @@ public class XMLChatColor extends XMLParser {
         return def;
     }
 
-    public static org.bukkit.ChatColor parse(Attribute xml) {
+    public static ChatColor parse(Attribute xml) {
         return ChatColor.valueOf(parseEnumValue(xml.getValue()));
     }
 

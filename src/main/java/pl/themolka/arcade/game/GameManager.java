@@ -78,7 +78,20 @@ public class GameManager {
     }
 
     public void cycleNext() {
-        this.cycle(null);
+        if (this.isNextRestart()) {
+            this.cycleRestart();
+        } else {
+            this.cycle(null);
+        }
+    }
+
+    public void cycleRestart() {
+        CycleRestartEvent event = new CycleRestartEvent(this.plugin);
+        this.plugin.getEvents().post(event);
+
+        if (!event.isCanceled()) {
+            this.plugin.getServer().shutdown();
+        }
     }
 
     public void destroyGame(Game game) {

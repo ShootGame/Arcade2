@@ -29,7 +29,7 @@ public class ArcadeSession implements Session<ArcadePlayer> {
 
     @Override
     public UUID getUuid() {
-        return this.getRepresenter().getUuuid();
+        return this.getRepresenter().getUuid();
     }
 
     @Override

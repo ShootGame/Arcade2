@@ -5,6 +5,6 @@ import pl.themolka.arcade.map.OfflineMap;
 
 public class CycleStartEvent extends CycleEvent {
     public CycleStartEvent(ArcadePlugin plugin, OfflineMap nextMap) {
-        super(plugin, plugin.getGames().getCurrentGame(), nextMap);
+        super(plugin, nextMap);
     }
 }
