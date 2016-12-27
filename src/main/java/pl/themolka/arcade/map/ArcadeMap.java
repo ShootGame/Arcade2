@@ -4,6 +4,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jdom2.Element;
+import pl.themolka.arcade.game.Game;
 
 public class ArcadeMap {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.PEACEFUL;
@@ -14,6 +15,7 @@ public class ArcadeMap {
     private Element configuration;
     private Difficulty difficulty;
     private World.Environment environment;
+    private Game game;
     private boolean pvp;
     private Location spawn;
     private World world;
@@ -45,6 +47,10 @@ public class ArcadeMap {
         }
 
         return DEFAULT_ENVIRONMENT;
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 
     public Location getSpawn() {
@@ -81,6 +87,12 @@ public class ArcadeMap {
 
     public void setEnvironment(World.Environment environment) {
         this.environment = environment;
+    }
+
+    public void setGame(Game game) {
+        if (this.game == null) {
+            this.game = game;
+        }
     }
 
     public void setPvp(boolean pvp) {

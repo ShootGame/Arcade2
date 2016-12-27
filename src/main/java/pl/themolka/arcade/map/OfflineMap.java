@@ -1,5 +1,7 @@
 package pl.themolka.arcade.map;
 
+import org.bukkit.ChatColor;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,5 +65,10 @@ public class OfflineMap {
 
     public void setSettings(File settings) {
         this.settings = settings;
+    }
+
+    @Override
+    public String toString() {
+        return ChatColor.GOLD + this.getName() + " " + ChatColor.GRAY + " v" + this.getVersion();
     }
 }

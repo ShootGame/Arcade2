@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.GeneralCommands;
+import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.MapManager;
@@ -208,7 +209,8 @@ public final class ArcadePlugin extends JavaPlugin {
     private void loadCommands() {
         for (Object command : new Object[] {
                 new ArcadeCommand(this),
-                new GeneralCommands(this)
+                new GeneralCommands(this),
+                new MapCommands(this)
         }) {
             this.registerCommandObject(command);
         }
@@ -216,6 +218,9 @@ public final class ArcadePlugin extends JavaPlugin {
 
     private void loadGames() {
         this.games = new GameManager(this);
+
+        // TODO queue
+        this.games.cycleNext();
     }
 
     private void loadMaps() {

@@ -6,6 +6,7 @@ import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.MapParser;
 import pl.themolka.arcade.map.MapParserException;
+import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 
@@ -17,6 +18,8 @@ public class GameManager {
     private final ArcadePlugin plugin;
 
     private Game currentGame;
+    private boolean nextRestart;
+    private MapQueue queue = new MapQueue();
 
     public GameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -32,6 +35,7 @@ public class GameManager {
         World world = maps.createWorld(map);
 
         Game game = new Game(this.plugin, map, world);
+        map.setGame(game);
         game.start();
 
         this.resetPlayers(game);
@@ -46,10 +50,16 @@ public class GameManager {
     public void cycle(OfflineMap target) {
         Instant now = Instant.now();
         if (target == null) {
-            // TODO queue
+            OfflineMap next = this.getQueue().getNextMap();
+            if (next == null) {
+                this.plugin.getLogger().severe("Map queue was empty");
+                return;
+            }
+
+            target = next;
         }
 
-        plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
+        this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
         try {
             Game game = this.createGame(target);
 
@@ -59,11 +69,12 @@ public class GameManager {
 
             this.setCurrentGame(game);
         } catch (Throwable th) {
-            plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "'", th);
+            this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "'", th);
+            this.cycleNext();
             return;
         }
 
-        plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - Instant.now().toEpochMilli()) + "' ms.");
+        this.plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - Instant.now().toEpochMilli()) + "' ms.");
     }
 
     public void cycleNext() {
@@ -84,6 +95,14 @@ public class GameManager {
         return this.currentGame;
     }
 
+    public MapQueue getQueue() {
+        return this.queue;
+    }
+
+    public boolean isNextRestart() {
+        return this.nextRestart;
+    }
+
     public void resetPlayers(Game newGame) {
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.reset();
@@ -93,5 +112,9 @@ public class GameManager {
 
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+    }
+
+    public void setNextRestart(boolean nextRestart) {
+        this.nextRestart = nextRestart;
     }
 }

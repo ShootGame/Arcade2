@@ -21,7 +21,9 @@ public class ArcadeCommand {
         this.plugin = plugin;
     }
 
-    @CommandInfo(name = "arcade", description = "Arcade version and authors", usage = "[help]")
+    @CommandInfo(name = "arcade",
+            description = "Arcade version and authors",
+            usage = "[help|...]")
     public void arcade(ArcadeSession sender, CommandContext context) {
         if (context.getParamsLength() > 0) {
             this.params(sender, context);
