@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class GameModule implements GameEvents, Listener {
+public class GameModule extends SimpleGameListener implements Listener {
     private ArcadePlugin plugin;
 
     private Game game;
@@ -35,19 +35,6 @@ public class GameModule implements GameEvents, Listener {
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }
-    }
-
-    @Override
-    public void onEnable() {
-    }
-
-    @Override
-    public void onDisable() {
-    }
-
-    @Override
-    public List<Object> onListenersRegister(List<Object> register) {
-        return register;
     }
 
     public Game getGame() {

@@ -2,7 +2,7 @@ package pl.themolka.arcade.game;
 
 import java.util.List;
 
-public interface GameEvents {
+public interface GameListener {
     void onEnable();
 
     void onDisable();

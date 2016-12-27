@@ -10,8 +10,8 @@ public abstract class Module<T> {
     private ArcadePlugin plugin;
 
     private String id;
-    private Class<? extends Module>[] dependency;
-    private Class<? extends Module>[] loadBefore;
+    private Class<? extends Module<?>>[] dependency;
+    private Class<? extends Module<?>>[] loadBefore;
 
     private boolean loaded = false;
 
@@ -45,7 +45,7 @@ public abstract class Module<T> {
 
     public abstract T buildGameModule(Element xml) throws JDOMException;
 
-    public Class<? extends Module>[] getDependency() {
+    public Class<? extends Module<?>>[] getDependency() {
         return this.dependency;
     }
 
@@ -53,7 +53,7 @@ public abstract class Module<T> {
         return this.id;
     }
 
-    public Class<? extends Module>[] getLoadBefore() {
+    public Class<? extends Module<?>>[] getLoadBefore() {
         return this.loadBefore;
     }
 
@@ -69,11 +69,11 @@ public abstract class Module<T> {
         this.plugin.registerCommandObject(object);
     }
 
-    public void setDependency(Class<? extends Module>[] dependency) {
+    public void setDependency(Class<? extends Module<?>>[] dependency) {
         this.dependency = dependency;
     }
 
-    public void setLoadBefore(Class<? extends Module>[] loadBefore) {
+    public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
         this.loadBefore = loadBefore;
     }
 }

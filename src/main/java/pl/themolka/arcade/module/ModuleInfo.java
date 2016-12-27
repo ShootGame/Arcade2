@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface ModuleInfo {
     String id();
 
-    Class<? extends Module>[] dependency() default {};
+    Class<? extends Module<?>>[] dependency() default {};
 
-    Class<? extends Module>[] loadBefore() default {};
+    Class<? extends Module<?>>[] loadBefore() default {};
 }

@@ -20,6 +20,9 @@ import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleManager;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.task.SimpleTaskListener;
+import pl.themolka.arcade.task.TaskManager;
+import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
 import pl.themolka.arcade.xml.SettingsFile;
@@ -39,11 +42,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 /**
  * The Arcade main class
  */
-public final class ArcadePlugin extends JavaPlugin {
+public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final String[] COPYRIGHTS = {"TheMolkaPL"};
 
     private Commons commons;
@@ -54,6 +59,9 @@ public final class ArcadePlugin extends JavaPlugin {
     private ModuleManager modules;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private SettingsFile settings;
+    private TaskManager tasks;
+    private long tick = 0L;
+    private List<Tickable> tickables = new CopyOnWriteArrayList<>();
 
     @Override
     public void onEnable() {
@@ -72,6 +80,9 @@ public final class ArcadePlugin extends JavaPlugin {
         this.loadModules();
         this.loadMaps();
         this.loadGames();
+        this.loadTasks();
+
+        this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 
         this.getEvents().post(new PluginReadyEvent(this));
 
@@ -79,7 +90,7 @@ public final class ArcadePlugin extends JavaPlugin {
         if (this.getGames().getQueue().hasNextMap()) {
             this.getGames().cycleNext();
         } else {
-            this.getLogger().severe("Map queue was empty");
+            this.getLogger().severe("The map queue is empty.");
         }
     }
 
@@ -89,6 +100,8 @@ public final class ArcadePlugin extends JavaPlugin {
         if (game != null) {
             game.stop();
         }
+
+        this.getTasks().cancelAll();
     }
 
     @Override
@@ -111,6 +124,19 @@ public final class ArcadePlugin extends JavaPlugin {
     }
 
     @Override
+    public void run() {
+        for (Tickable tickable : this.getTickables()) {
+            try {
+                tickable.onTick(this.getTick());
+            } catch (Throwable th) {
+                this.getLogger().log(Level.SEVERE, "Could not tick #" + this.getTick() + " in " + tickable.getClass().getName(), th);
+            }
+        }
+
+        this.tick++;
+    }
+
+    @Override
     public void saveConfig() {
         throw new UnsupportedOperationException("YAML is not supported!");
     }
@@ -122,6 +148,14 @@ public final class ArcadePlugin extends JavaPlugin {
         } catch (IOException io) {
             io.printStackTrace();
         }
+    }
+
+    public void addPlayer(ArcadePlayer player) {
+        this.players.put(player.getUuid(), player);
+    }
+
+    public void addTickable(Tickable tickable) {
+        this.tickables.add(tickable);
     }
 
     public ArcadePlayer findPlayer(String query) {
@@ -195,6 +229,18 @@ public final class ArcadePlugin extends JavaPlugin {
         return this.settings;
     }
 
+    public TaskManager getTasks() {
+        return this.tasks;
+    }
+
+    public long getTick() {
+        return this.tick;
+    }
+
+    public List<Tickable> getTickables() {
+        return this.tickables;
+    }
+
     public void registerCommandObject(Object object) {
         this.getCommands().registerCommandObject(object);
     }
@@ -205,6 +251,18 @@ public final class ArcadePlugin extends JavaPlugin {
         if (object instanceof Listener) {
             this.getServer().getPluginManager().registerEvents((Listener) object, this);
         }
+    }
+
+    public void removePlayer(ArcadePlayer player) {
+        this.removePlayer(player.getUuid());
+    }
+
+    public void removePlayer(UUID uuid) {
+        this.players.remove(uuid);
+    }
+
+    public boolean removeTickable(Tickable tickable) {
+        return this.tickables.remove(tickable);
     }
 
     public void unregisterListenerObject(Object object) {
@@ -238,6 +296,7 @@ public final class ArcadePlugin extends JavaPlugin {
     private void loadMaps() {
         this.maps = new MapManager(this);
         this.maps.setParser(new XMLMapParser.XMLParserTechnology());
+//        this.maps.setWorldContainer(...); // TODO
 
         this.getEvents().post(new MapContainerFillEvent(this, this.maps.getContainer()));
 
@@ -262,6 +321,20 @@ public final class ArcadePlugin extends JavaPlugin {
         }
 
         this.getModules().getContainer().register(moduleList.toArray(new Module<?>[moduleList.size()]));
+    }
+
+    private void loadTasks() {
+        this.tasks = new TaskManager(this);
+        this.addTickable(this.getTasks());
+
+        this.getTasks().scheduleAsync(new SimpleTaskListener() {
+            @Override
+            public void onDay(long days) {
+                ArcadePlugin plugin = ArcadePlugin.this;
+                plugin.getLogger().info("Server ran now for 24 hours. Will be restarting soon...");
+                plugin.getGames().setNextRestart(true);
+            }
+        });
     }
 
     private class ArcadeCommons implements Commons {

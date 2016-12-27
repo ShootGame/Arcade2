@@ -36,6 +36,10 @@ public class GameManager {
 
         Game game = new Game(this.plugin, map, world);
         map.setGame(game);
+
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.setGamePlayer(new GamePlayer(game, player));
+        }
         game.start();
 
         this.resetPlayers(game);
@@ -119,8 +123,6 @@ public class GameManager {
     public void resetPlayers(Game newGame) {
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.reset();
-            player.setGamePlayer(new GamePlayer(newGame, player));
-
             player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }

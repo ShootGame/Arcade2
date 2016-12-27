@@ -54,7 +54,12 @@ public class MapCommands {
         if (paramCurrent || context.getArgs().length == 0) {
             results.add(this.plugin.getGames().getCurrentGame().getMap().getMapInfo());
         } else if (paramNext) {
-            results.add(this.plugin.getGames().getCurrentGame().getMap().getMapInfo());
+            OfflineMap next = this.plugin.getGames().getQueue().getNextMap();
+            if (next == null) {
+                throw new CommandException("The map queue is empty.");
+            }
+
+            results.add(next);
         } else {
             results.addAll(this.plugin.getMaps().findMap(paramMap));
         }
@@ -116,6 +121,10 @@ public class MapCommands {
             sender.sendError("Server will be restarted.");
         } else {
             OfflineMap next = this.plugin.getGames().getQueue().getNextMap();
+            if (next == null) {
+                throw new CommandException("The map queue is empty.");
+            }
+
             this.mapInfoDescribe(sender, next);
         }
     }

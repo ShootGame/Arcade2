@@ -45,7 +45,7 @@ public class Game {
 
     public GamePlayer getPlayer(String username) {
         for (GamePlayer player : this.getPlayers()) {
-            if (player.getUsername().equals(username)) {
+            if (player.getUsername().equalsIgnoreCase(username)) {
                 return player;
             }
         }

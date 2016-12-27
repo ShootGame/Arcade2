@@ -1,6 +1,7 @@
 package pl.themolka.arcade.map;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
@@ -9,7 +10,9 @@ import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
 
 public class MapManager {
     private final ArcadePlugin plugin;
@@ -104,6 +107,18 @@ public class MapManager {
 
     public File getWorldContainer() {
         return this.plugin.getServer().getWorldContainer();
+    }
+
+    public void setWorldContainer(File container) {
+        Server server = this.plugin.getServer();
+
+        try {
+            Field field = server.getClass().getDeclaredField("container");
+            field.setAccessible(true);
+            field.set(field, container);
+        } catch (ReflectiveOperationException ex) {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not set world container", ex);
+        }
     }
 
     public void setParser(MapParser.Technology parser) {
