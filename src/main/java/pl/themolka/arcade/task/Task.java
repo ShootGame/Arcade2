@@ -32,12 +32,12 @@ public class Task extends SimpleTaskListener {
     }
 
     public Task scheduleAsyncTask() {
-        this.getTasks().scheduleAsync(this);
+        this.tasks.scheduleAsync(this);
         return this;
     }
 
     public Task scheduleSyncTask() {
-        this.getTasks().scheduleSync(this);
+        this.tasks.scheduleSync(this);
         return this;
     }
 }

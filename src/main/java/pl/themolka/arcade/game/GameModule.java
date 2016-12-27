@@ -3,6 +3,8 @@ package pl.themolka.arcade.game;
 import org.bukkit.event.Listener;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.task.Task;
+import pl.themolka.arcade.task.TaskManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ public class GameModule extends SimpleGameListener implements Listener {
     private boolean loaded = false;
     private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private Module<?> module;
+    private final List<Task> taskList = new CopyOnWriteArrayList<>();
 
     public GameModule() {
     }
@@ -30,8 +33,28 @@ public class GameModule extends SimpleGameListener implements Listener {
         this.plugin = plugin;
     }
 
+    public int cancelAllTasks() {
+        int result = 0;
+        for (Task task : this.getTaskList()) {
+            if (this.cancelTask(task)) {
+                result++;
+            }
+        }
+
+        return result;
+    }
+
+    public boolean cancelTask(int taskId) {
+        return this.plugin.getTasks().cancel(taskId);
+    }
+
+    public boolean cancelTask(Task task) {
+        return this.cancelTask(task.getTaskId());
+    }
+
     public final void destroy() {
         this.unregisterListenerObject(this);
+
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }
@@ -53,6 +76,10 @@ public class GameModule extends SimpleGameListener implements Listener {
         return this.plugin;
     }
 
+    public List<Task> getTaskList() {
+        return this.taskList;
+    }
+
     public boolean isLoaded() {
         return this.loaded;
     }
@@ -61,6 +88,40 @@ public class GameModule extends SimpleGameListener implements Listener {
         if (this.listenerObjects.add(object)) {
             this.getPlugin().registerListenerObject(object);
         }
+    }
+
+    public int scheduleAsyncTask(Runnable task) {
+        return this.scheduleAsyncTask(new Task(this.plugin.getTasks()) {
+            @Override
+            public void onTick(long ticks) {
+                task.run();
+            }
+        });
+    }
+
+    public int scheduleAsyncTask(Task task) {
+        TaskManager tasks = this.plugin.getTasks();
+        int result = tasks.scheduleAsync(task);
+
+        this.taskList.add(task);
+        return result;
+    }
+
+    public int scheduleSyncTask(Runnable task) {
+        return this.scheduleSyncTask(new Task(this.plugin.getTasks()) {
+            @Override
+            public void onTick(long ticks) {
+                task.run();
+            }
+        });
+    }
+
+    public int scheduleSyncTask(Task task) {
+        TaskManager tasks = this.plugin.getTasks();
+        int result = tasks.scheduleSync(task);
+
+        this.taskList.add(task);
+        return result;
     }
 
     public void unregisterListenerObject(Object object) {

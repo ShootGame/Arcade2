@@ -10,6 +10,7 @@ import java.util.logging.Level;
 public class TaskManager implements Tickable {
     private final ArcadePlugin plugin;
 
+    private int lastUniqueId = 0;
     private final List<TaskExecutor> taskList = new CopyOnWriteArrayList<>();
 
     public TaskManager(ArcadePlugin plugin) {
@@ -28,6 +29,10 @@ public class TaskManager implements Tickable {
     }
 
     public boolean cancel(int taskId) {
+        if (taskId == Task.DEFAULT_TASK_ID) {
+            return false;
+        }
+
         return this.cancel(this.getTask(taskId));
     }
 
@@ -96,6 +101,10 @@ public class TaskManager implements Tickable {
     }
 
     private synchronized int getNextUniqueId() {
+        return ++this.lastUniqueId;
+    }
+
+    private synchronized int generateNextUniqueId() {
         int result = 0;
         while (this.getTask(result) != null) {
             result++;
