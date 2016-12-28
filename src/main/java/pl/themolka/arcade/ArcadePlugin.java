@@ -13,6 +13,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
+import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
@@ -328,6 +329,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadCommands() {
         for (Object command : new Object[] {
                 new ArcadeCommand(this),
+                new GameCommands(this),
                 new GeneralCommands(this),
                 new MapCommands(this)
         }) {

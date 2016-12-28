@@ -1,10 +1,13 @@
 package pl.themolka.arcade.task;
 
+import pl.themolka.arcade.game.Game;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 public class Countdown extends Task implements CountdownListener {
     private Duration duration;
+    private Game game;
     private long seconds;
 
     public Countdown(TaskManager tasks) {
@@ -66,12 +69,30 @@ public class Countdown extends Task implements CountdownListener {
     public void onUpdate(long seconds, long secondsLeft) {
     }
 
+    @Override
+    public final Task scheduleAsyncTask() {
+        throw new UnsupportedOperationException("Countdowns must be registered in the Game object.");
+    }
+
+    @Override
+    public final Task scheduleSyncTask() {
+        throw new UnsupportedOperationException("Countdowns must be registered in the Game object.");
+    }
+
     public void countAsync() {
-        this.scheduleAsyncTask();
+        if (this.getGame() == null) {
+            throw new UnsupportedOperationException("Countdown not registered");
+        }
+
+        this.getGame().startAsyncTask(this);
     }
 
     public void countSync() {
-        this.scheduleSyncTask();
+        if (this.getGame() == null) {
+            throw new UnsupportedOperationException("Countdown not registered");
+        }
+
+        this.getGame().startSyncTask(this);
     }
 
     public Duration getDuration() {
@@ -80,6 +101,10 @@ public class Countdown extends Task implements CountdownListener {
 
     public long getDurationSeconds() {
         return this.getDuration().get(ChronoUnit.SECONDS);
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 
     public long getLeftSeconds() {
@@ -96,5 +121,9 @@ public class Countdown extends Task implements CountdownListener {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }

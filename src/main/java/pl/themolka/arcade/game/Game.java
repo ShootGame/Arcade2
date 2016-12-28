@@ -7,9 +7,13 @@ import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
+import pl.themolka.arcade.task.Countdown;
+import pl.themolka.arcade.task.Task;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -20,6 +24,7 @@ public class Game {
     private final ArcadeMap map;
     private final GameModuleContainer modules = new GameModuleContainer();
     private final Map<UUID, GamePlayer> players = new HashMap<>();
+    private final List<Task> taskList = new ArrayList<>();
     private final World world;
 
     public Game(ArcadePlugin plugin, ArcadeMap map, World world) {
@@ -33,6 +38,32 @@ public class Game {
 
     public void addPlayer(GamePlayer player) {
         this.players.put(player.getUuid(), player);
+    }
+
+    public boolean addTask(Task task) {
+        return this.taskList.add(task);
+    }
+
+    public void enableModule(GameModule module) {
+        // TODO load before
+
+        if (!this.hasDependencies(module)) {
+            return;
+        }
+
+        module.registerListeners();
+        module.onEnable();
+    }
+
+    public List<Countdown> getCountdowns() {
+        List<Countdown> results = new ArrayList<>();
+        for (Task task : this.getTasks()) {
+            if (task instanceof Countdown) {
+                results.add((Countdown) task);
+            }
+        }
+
+        return results;
     }
 
     public ArcadeMap getMap() {
@@ -61,20 +92,53 @@ public class Game {
         return this.players.values();
     }
 
+    public List<Countdown> gerRunningCountdowns() {
+        List<Countdown> results = new ArrayList<>();
+        for (Task task : this.getTasks()) {
+            if (task.isTaskRunning() && task instanceof Countdown) {
+                results.add((Countdown) task);
+            }
+        }
+
+        return results;
+    }
+
+    public List<Task> getRunningTasks() {
+        List<Task> results = new ArrayList<>();
+        for (Task task : this.getTasks()) {
+            if (task.isTaskRunning()) {
+                results.add(task);
+            }
+        }
+
+        return results;
+    }
+
+    public List<Task> getTasks() {
+        return this.taskList;
+    }
+
     public World getWorld() {
         return this.world;
     }
 
+    public boolean hasDependencies(GameModule module) {
+        for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
+            if (!this.getModules().contains(dependency)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean removeTask(Task task) {
+        return this.taskList.remove(task);
+    }
+
     public void start() {
         for (GameModule module : this.getModules().getModules()) {
-            for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
-                if (!this.getModules().contains(dependency)) {
-                    return;
-                }
-            }
-
-            module.registerListeners();
-            module.onEnable();
+            this.enableModule(module);
         }
 
         this.plugin.getEvents().post(new GameStartEvent(this.plugin, this));
@@ -86,6 +150,10 @@ public class Game {
         for (GameModule module : this.getModules().getModules()) {
             module.onDisable();
             module.destroy();
+        }
+
+        for (Task task : this.getTasks()) {
+            task.cancelTask();
         }
     }
 
