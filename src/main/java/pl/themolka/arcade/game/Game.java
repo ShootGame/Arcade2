@@ -90,12 +90,12 @@ public class Game {
     }
 
     private GameModule readModule(Element xml) throws MapParserException {
-        ModuleContainer container = this.plugin.getModules().getContainer();
+        ModuleContainer container = this.plugin.getModules();
         if (container.contains(xml.getName())) {
             throw new MapParserException("module not found");
         }
 
-        Module<?> module = this.plugin.getModules().getContainer().getModuleById(xml.getName());
+        Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
         try {
             Object object = module.buildGameModule(xml);
             if (object == null) {

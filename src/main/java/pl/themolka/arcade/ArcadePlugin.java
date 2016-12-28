@@ -25,7 +25,7 @@ import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
-import pl.themolka.arcade.module.ModuleManager;
+import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.task.SimpleTaskListener;
@@ -66,7 +66,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private VoidGenerator generator;
     private ManifestFile manifest;
     private MapManager maps;
-    private ModuleManager modules;
+    private ModuleContainer modules = new ModuleContainer();
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private Settings settings;
     private TaskManager tasks;
@@ -111,7 +111,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getLogger().severe("The map queue is empty.");
         }
     }
-    
+
     @Override
     public void onDisable() {
         Game game = this.getGames().getCurrentGame();
@@ -122,7 +122,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getTasks().cancelAll();
         this.getTickableTask().cancel();
 
-        for (Module<?> module : this.getModules().getContainer().getModules()) {
+        for (Module<?> module : this.getModules().getModules()) {
             try {
                 module.onDisable();
             } catch (Throwable th) {
@@ -230,7 +230,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.maps;
     }
 
-    public ModuleManager getModules() {
+    public ModuleContainer getModules() {
         return this.modules;
     }
 
@@ -365,8 +365,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     private void loadModules() {
-        this.modules = new ModuleManager(this);
-
         List<Module<?>> moduleList = new ArrayList<>();
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ModulesFile.DEFAULT_FILENAME)) {
             ModulesFile file = new ModulesFile(input);
@@ -386,14 +384,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         this.getLogger().info("Successfully loaded " + success + " of " + moduleList.size() + " available modules.");
-        this.getModules().getContainer().register(moduleList.toArray(new Module<?>[moduleList.size()]));
+        this.getModules().register(moduleList.toArray(new Module<?>[moduleList.size()]));
 
         Element globalModules = this.getSettings().getData().getChild("modules");
         if (globalModules == null) {
             globalModules = new Element("modules");
         }
 
-        for (Module<?> module : this.getModules().getContainer().getModules()) {
+        for (Module<?> module : this.getModules().getModules()) {
             try {
                 module.registerListeners();
                 module.onEnable(globalModules.getChild(module.getId()));
