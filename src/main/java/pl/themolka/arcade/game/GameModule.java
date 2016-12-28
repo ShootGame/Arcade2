@@ -27,10 +27,12 @@ public class GameModule extends SimpleGameListener implements Listener {
             return;
         }
 
+        this.loaded = true;
+        this.plugin = plugin;
+
         this.game = game;
         this.loaded = true;
         this.module = module;
-        this.plugin = plugin;
     }
 
     public int cancelAllTasks() {
@@ -90,6 +92,21 @@ public class GameModule extends SimpleGameListener implements Listener {
         }
     }
 
+    public void registerListeners() {
+        if (!this.getListenerObjects().isEmpty()) {
+            return;
+        }
+
+        List<Object> listeners = this.onListenersRegister(new ArrayList<>());
+        if (listeners != null) {
+            for (Object listener : listeners) {
+                this.registerListenerObject(listener);
+            }
+        }
+
+        this.registerListenerObject(this);
+    }
+
     public int scheduleAsyncTask(Runnable task) {
         return this.scheduleAsyncTask(new Task(this.plugin.getTasks()) {
             @Override
@@ -124,23 +141,8 @@ public class GameModule extends SimpleGameListener implements Listener {
         return result;
     }
 
-    public void unregisterListenerObject(Object object) {
+    public boolean unregisterListenerObject(Object object) {
         this.getPlugin().unregisterListenerObject(object);
-        this.listenerObjects.remove(object);
-    }
-
-    public void registerListeners() {
-        if (!this.getListenerObjects().isEmpty()) {
-            return;
-        }
-
-        List<Object> listeners = this.onListenersRegister(new ArrayList<>());
-        if (listeners != null) {
-            for (Object listener : listeners) {
-                this.registerListenerObject(listener);
-            }
-        }
-
-        this.registerListenerObject(this);
+        return this.listenerObjects.remove(object);
     }
 }

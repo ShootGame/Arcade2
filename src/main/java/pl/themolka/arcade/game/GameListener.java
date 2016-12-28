@@ -1,11 +1,6 @@
 package pl.themolka.arcade.game;
 
-import java.util.List;
+import pl.themolka.arcade.module.ModuleListener;
 
-public interface GameListener {
-    void onEnable();
-
-    void onDisable();
-
-    List<Object> onListenersRegister(List<Object> register);
+public interface GameListener extends ModuleListener {
 }

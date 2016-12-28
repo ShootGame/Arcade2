@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
+    <!-- Server environment type -->
+    <!-- Values: `development`, `production` -->
+    <environment type="development" />
+
+    <!-- Default world spawn position -->
+    <spawn x="0.5" y="64" z="0.5" />
+
+    <!-- Directory where played maps will be stored -->
+    <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->
+    <world-container>./worlds</world-container>
+
+    <modules>
+        <example>
+
+        </example>
+    </modules>
 </settings>

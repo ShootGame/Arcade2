@@ -3,7 +3,6 @@ package pl.themolka.arcade.game;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.task.PrintableCountdown;
-import pl.themolka.arcade.task.TaskManager;
 
 import java.time.Duration;
 
@@ -12,8 +11,8 @@ public class CycleCountdown extends PrintableCountdown {
 
     private final ArcadePlugin plugin;
 
-    public CycleCountdown(TaskManager tasks, Duration duration, ArcadePlugin plugin) {
-        super(tasks, duration);
+    public CycleCountdown(ArcadePlugin plugin, Duration duration) {
+        super(plugin.getTasks(), duration);
 
         this.plugin = plugin;
     }

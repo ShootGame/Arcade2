@@ -66,6 +66,14 @@ public class Countdown extends Task implements CountdownListener {
     public void onUpdate(long seconds, long secondsLeft) {
     }
 
+    public void countAsync() {
+        this.scheduleAsyncTask();
+    }
+
+    public void countSync() {
+        this.scheduleSyncTask();
+    }
+
     public Duration getDuration() {
         return this.duration;
     }

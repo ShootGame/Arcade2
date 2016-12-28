@@ -1,7 +1,6 @@
 package pl.themolka.arcade.xml.parser;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
@@ -47,7 +46,6 @@ public class XMLLocation extends XMLParser {
         float paramYaw = getAttribute(xml, ATTRIBUTE_YAW, YAW).getFloatValue();
         float paramPitch = getAttribute(xml, ATTRIBUTE_PITCH, PITCH).getFloatValue();
 
-        World world = null; // TODO null
-        return new Location(world, paramX, paramY, paramZ, paramYaw, paramPitch);
+        return new Location(null, paramX, paramY, paramZ, paramYaw, paramPitch);
     }
 }

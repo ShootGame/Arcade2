@@ -1,15 +1,22 @@
 package pl.themolka.arcade;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.jdom2.DataConversionException;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
+import pl.themolka.arcade.environment.Environment;
+import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
@@ -20,12 +27,13 @@ import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleManager;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.ManifestFile;
 import pl.themolka.arcade.xml.ModulesFile;
-import pl.themolka.arcade.xml.SettingsFile;
+import pl.themolka.arcade.xml.parser.XMLLocation;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.command.Commands;
 import pl.themolka.commons.event.Event;
@@ -34,6 +42,7 @@ import pl.themolka.commons.generator.VoidGenerator;
 import pl.themolka.commons.session.Sessions;
 import pl.themolka.commons.storage.Storages;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -52,16 +61,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final String[] COPYRIGHTS = {"TheMolkaPL"};
 
     private Commons commons;
+    private Environment environment;
     private GameManager games;
     private VoidGenerator generator;
     private ManifestFile manifest;
     private MapManager maps;
     private ModuleManager modules;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
-    private SettingsFile settings;
+    private Settings settings;
     private TaskManager tasks;
     private long tick = 0L;
-    private List<Tickable> tickables = new CopyOnWriteArrayList<>();
+    private List<Tickable> tickableList = new CopyOnWriteArrayList<>();
+    private BukkitTask tickableTask;
 
     @Override
     public void onEnable() {
@@ -73,8 +84,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.generator = new VoidGenerator();
 
-        this.settings = new SettingsFile(this);
+        this.settings = new Settings(this);
         this.reloadConfig();
+
+        try {
+            this.loadEnvironment();
+        } catch (JDOMException jdom) {
+            jdom.printStackTrace();
+            return;
+        }
 
         this.loadCommands();
         this.loadModules();
@@ -82,18 +100,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadGames();
         this.loadTasks();
 
-        this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
+        this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 
         this.getEvents().post(new PluginReadyEvent(this));
 
-        // begin
+        // begin the plugin logic
         if (this.getGames().getQueue().hasNextMap()) {
             this.getGames().cycleNext();
         } else {
             this.getLogger().severe("The map queue is empty.");
         }
     }
-
+    
     @Override
     public void onDisable() {
         Game game = this.getGames().getCurrentGame();
@@ -102,6 +120,21 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         this.getTasks().cancelAll();
+        this.getTickableTask().cancel();
+
+        for (Module<?> module : this.getModules().getContainer().getModules()) {
+            try {
+                module.onDisable();
+            } catch (Throwable th) {
+                this.getLogger().log(Level.SEVERE, "Could not disable module '" + module.getId() + "': " + th.getMessage(), th);
+            }
+        }
+
+        try {
+            this.getEnvironment().onDisable();
+        } catch (Throwable th) {
+            this.getLogger().log(Level.SEVERE, "Could not disable environment " + this.getEnvironment().getType().prettyName(), th);
+        }
     }
 
     @Override
@@ -155,7 +188,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public void addTickable(Tickable tickable) {
-        this.tickables.add(tickable);
+        this.tickableList.add(tickable);
     }
 
     public ArcadePlayer findPlayer(String query) {
@@ -170,11 +203,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public Commands getCommands() {
-        return (Commands) this.getCommons().getCommands();
+        return this.getCommons().getCommands();
+    }
+
+    public Environment getEnvironment() {
+        return this.environment;
     }
 
     public Events getEvents() {
-        return (Events) this.getCommons().getEvents();
+        return this.getCommons().getEvents();
     }
 
     public GameManager getGames() {
@@ -225,7 +262,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.players.values();
     }
 
-    public SettingsFile getSettings() {
+    public Settings getSettings() {
         return this.settings;
     }
 
@@ -238,7 +275,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public List<Tickable> getTickables() {
-        return this.tickables;
+        return this.tickableList;
+    }
+
+    public BukkitTask getTickableTask() {
+        return this.tickableTask;
     }
 
     public void registerCommandObject(Object object) {
@@ -262,7 +303,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public boolean removeTickable(Tickable tickable) {
-        return this.tickables.remove(tickable);
+        return this.tickableList.remove(tickable);
+    }
+
+    public void setEnvironment(Environment environment) {
+        if (this.getEnvironment() == null) {
+            this.environment = environment;
+        }
     }
 
     public void unregisterListenerObject(Object object) {
@@ -287,6 +334,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    private void loadEnvironment() throws JDOMException {
+        Element xml = this.getSettings().getData().getChild("environment");
+        EnvironmentType type = EnvironmentType.forName(xml.getAttributeValue("type"));
+
+        this.environment = type.buildEnvironment(xml);
+    }
+
     private void loadGames() {
         this.games = new GameManager(this);
 
@@ -296,10 +350,17 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadMaps() {
         this.maps = new MapManager(this);
         this.maps.setParser(new XMLMapParser.XMLParserTechnology());
-//        this.maps.setWorldContainer(...); // TODO
+        this.maps.setWorldContainer(new File(this.getSettings().getData().getChild("world-container").getValue()));
+
+        try {
+            Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
+
+            World defaultWorld = this.getServer().getWorlds().get(0);
+            defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
+        } catch (DataConversionException ignored) {
+        }
 
         this.getEvents().post(new MapContainerFillEvent(this, this.maps.getContainer()));
-
         this.getLogger().info("Loaded " + this.maps.getContainer().getMaps().size() + " maps.");
     }
 
@@ -314,13 +375,32 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             ex.printStackTrace();
         }
 
-        this.getLogger().info("Loaded " + moduleList.size() + " modules.");
-
+        int success = 0;
         for (Module<?> module : moduleList) {
-            module.initialize(this);
+            try {
+                module.initialize(this);
+                success++;
+            } catch (Throwable th) {
+                this.getLogger().log(Level.SEVERE, "Could not load module '" + module.getId() + "': " + th.getMessage(), th);
+            }
         }
 
+        this.getLogger().info("Successfully loaded " + success + " of " + moduleList.size() + " available modules.");
         this.getModules().getContainer().register(moduleList.toArray(new Module<?>[moduleList.size()]));
+
+        Element globalModules = this.getSettings().getData().getChild("modules");
+        if (globalModules == null) {
+            globalModules = new Element("modules");
+        }
+
+        for (Module<?> module : this.getModules().getContainer().getModules()) {
+            try {
+                module.registerListeners();
+                module.onEnable(globalModules.getChild(module.getId()));
+            } catch (Throwable th) {
+                this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
+            }
+        }
     }
 
     private void loadTasks() {

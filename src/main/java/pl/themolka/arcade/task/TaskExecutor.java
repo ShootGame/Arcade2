@@ -47,7 +47,6 @@ public class TaskExecutor implements Comparable<TaskExecutor>, Runnable {
                 }
             }
         }
-
     }
 
     public void createTask() {

@@ -5,8 +5,8 @@ import org.bukkit.ChatColor;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.session.ArcadeSession;
+import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.xml.ManifestFile;
-import pl.themolka.arcade.xml.SettingsFile;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.command.CommandPermissionException;
@@ -90,7 +90,7 @@ public class ArcadeCommand {
             throw new CommandPermissionException("arcade.command.reload");
         }
 
-        SettingsFile settings = this.plugin.getSettings();
+        Settings settings = this.plugin.getSettings();
         sender.sendInfo("Reloading settings file...");
 
         try {

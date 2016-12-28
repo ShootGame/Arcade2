@@ -1,18 +1,22 @@
 package pl.themolka.arcade.module;
 
+import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class Module<T> {
+public abstract class Module<T> extends SimpleModuleListener implements Listener {
     private ArcadePlugin plugin;
 
     private String id;
     private Class<? extends Module<?>>[] dependency;
     private Class<? extends Module<?>>[] loadBefore;
-
+    private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
 
     public Module() {
@@ -45,12 +49,24 @@ public abstract class Module<T> {
 
     public abstract T buildGameModule(Element xml) throws JDOMException;
 
+    public final void destroy() {
+        this.unregisterListenerObject(this);
+
+        for (Object listener : this.getListenerObjects()) {
+            this.unregisterListenerObject(listener);
+        }
+    }
+
     public Class<? extends Module<?>>[] getDependency() {
         return this.dependency;
     }
 
     public final String getId() {
         return this.id;
+    }
+
+    public List<Object> getListenerObjects() {
+        return this.listenerObjects;
     }
 
     public Class<? extends Module<?>>[] getLoadBefore() {
@@ -69,11 +85,37 @@ public abstract class Module<T> {
         this.plugin.registerCommandObject(object);
     }
 
+    public void registerListenerObject(Object object) {
+        if (this.listenerObjects.add(object)) {
+            this.getPlugin().registerListenerObject(object);
+        }
+    }
+
+    public void registerListeners() {
+        if (!this.getListenerObjects().isEmpty()) {
+            return;
+        }
+
+        List<Object> listeners = this.onListenersRegister(new ArrayList<>());
+        if (listeners != null) {
+            for (Object listener : listeners) {
+                this.registerListenerObject(listener);
+            }
+        }
+
+        this.registerListenerObject(this);
+    }
+
     public void setDependency(Class<? extends Module<?>>[] dependency) {
         this.dependency = dependency;
     }
 
     public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
         this.loadBefore = loadBefore;
+    }
+
+    public boolean unregisterListenerObject(Object object) {
+        this.getPlugin().unregisterListenerObject(object);
+        return this.listenerObjects.remove(object);
     }
 }

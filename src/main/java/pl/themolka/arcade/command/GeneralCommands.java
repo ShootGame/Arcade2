@@ -1,6 +1,7 @@
 package pl.themolka.arcade.command;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -10,6 +11,7 @@ import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.event.Cancelable;
 
+import java.time.Duration;
 import java.util.List;
 
 public class GeneralCommands {
@@ -38,10 +40,16 @@ public class GeneralCommands {
             return;
         }
 
-        CycleStartEvent startEvent = new CycleStartEvent(this.plugin, nextMap);
+        int seconds = paramSeconds;
+        if (seconds < 5) {
+            seconds = 5;
+        }
+
+        CycleStartEvent startEvent = new CycleStartEvent(this.plugin, nextMap, seconds);
         this.plugin.getEvents().post(startEvent);
 
-        // TODO start countdown
+        CycleCountdown countdown = new CycleCountdown(this.plugin, Duration.ofSeconds(seconds));
+        countdown.countSync();
     }
 
     public static class CycleCommandEvent extends CommandEvent implements Cancelable {
