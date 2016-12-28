@@ -43,6 +43,10 @@ public class Settings {
         }
 
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(file.getName())) {
+            if (!file.exists()) {
+                file.mkdir();
+            }
+
             Files.copy(input, file.toPath());
         }
     }

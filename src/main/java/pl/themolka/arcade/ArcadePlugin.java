@@ -478,6 +478,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.events = new pl.themolka.arcade.event.Events();
             this.sessions = new pl.themolka.arcade.session.Sessions(plugin);
             this.storages = new pl.themolka.arcade.storage.Storages();
+
+            this.events.register(this.sessions);
         }
 
         @Override

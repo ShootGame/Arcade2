@@ -16,8 +16,6 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
     public Sessions(ArcadePlugin plugin) {
         this.plugin = plugin;
-
-        plugin.registerListenerObject(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
