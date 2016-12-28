@@ -2,7 +2,7 @@
 <settings>
     <!-- Server environment type -->
     <!-- Values: `development`, `production` -->
-    <environment type="development" />
+    <environment>development</environment>
 
     <!-- Default world spawn position -->
     <spawn x="0.5" y="64" z="0.5" />
@@ -11,9 +11,19 @@
     <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->
     <world-container>./worlds</world-container>
 
-    <modules>
-        <example />
+    <!-- Default map queue -->
+    <queue>
+        <map>Unknown map</map>
+        <map directory="Second unknown map" />
+    </queue>
 
+    <!-- Disabled modules -->
+    <ignored-modules>
+        <module>example</module>
+    </ignored-modules>
+
+    <!-- Global module settings -->
+    <modules>
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>

@@ -1,18 +1,24 @@
 package pl.themolka.arcade.session;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.util.Metadatable;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class ArcadePlayer implements Metadatable {
+    public static final long SOUND_INTERVAL = 500L; // half second
+
     private final Player bukkit;
     private GamePlayer gamePlayer;
+    private Instant lastPlayedSound;
     private final Map<String, Object> metadata = new HashMap<>();
 
     public ArcadePlayer(Player bukkit) {
@@ -42,6 +48,10 @@ public class ArcadePlayer implements Metadatable {
         return this.gamePlayer;
     }
 
+    public Instant getLastPlayedSound() {
+        return this.lastPlayedSound;
+    }
+
     public String getUsername() {
         return this.getBukkit().getName();
     }
@@ -50,8 +60,42 @@ public class ArcadePlayer implements Metadatable {
         return this.getBukkit().getUniqueId();
     }
 
-    public void reset() {
+    public void play(ArcadeSound sound) {
+        this.play(sound.getSound());
+    }
 
+    public void play(Sound sound) {
+        this.play(sound, this.getBukkit().getLocation());
+    }
+
+    public void play(ArcadeSound sound, Location position) {
+        this.play(sound.getSound(), position);
+    }
+
+    public void play(Sound sound, Location position) {
+        this.play(sound, position, ArcadeSound.DEFAULT_VOLUME);
+    }
+
+    public void play(ArcadeSound sound, Location position, float volume) {
+        this.play(sound, position, volume);
+    }
+
+    public void play(Sound sound, Location position, float volume) {
+        this.play(sound, position, volume, ArcadeSound.DEFAULT_PITCH);
+    }
+
+    public void play(ArcadeSound sound, Location position, float volume, float pitch) {
+        this.play(sound.getSound(), position, volume, pitch);
+    }
+
+    public void play(Sound sound, Location position, float volume, float pitch) {
+        Instant now = Instant.now();
+        if (now.toEpochMilli() - this.getLastPlayedSound().toEpochMilli() < SOUND_INTERVAL) {
+            return;
+        }
+
+        this.getBukkit().playSound(position, sound, volume, pitch);
+        this.lastPlayedSound = now;
     }
 
     public void send(String message) {

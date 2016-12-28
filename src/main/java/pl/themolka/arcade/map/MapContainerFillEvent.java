@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapContainerFillEvent extends Event {
-    private final List<MapContainerLoader> loaderList = new ArrayList<>();
+    private final List<MapContainerLoader> mapLoaderList = new ArrayList<>();
 
     public MapContainerFillEvent(ArcadePlugin plugin) {
         super(plugin);
     }
 
-    public boolean addLoader(MapContainerLoader loader) {
-        return this.loaderList.add(loader);
+    public boolean addMapLoader(MapContainerLoader loader) {
+        return this.mapLoaderList.add(loader);
     }
 
-    public List<MapContainerLoader> getLoaderList() {
-        return this.loaderList;
+    public List<MapContainerLoader> getMapLoaderList() {
+        return this.mapLoaderList;
     }
 }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.map;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -90,6 +91,20 @@ public class MapContainer {
 
     public OfflineMap getMap(String name) {
         return this.maps.get(name);
+    }
+
+    public OfflineMap getMapByDirectory(File directory) {
+        return this.getMapByDirectory(directory.getName());
+    }
+
+    public OfflineMap getMapByDirectory(String directory) {
+        for (OfflineMap map : this.getMaps()) {
+            if (map.getDirectory().getName().equals(directory)) {
+                return map;
+            }
+        }
+
+        return null;
     }
 
     public Set<String> getMapNames() {

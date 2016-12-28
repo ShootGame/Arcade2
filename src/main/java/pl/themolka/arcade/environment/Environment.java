@@ -4,8 +4,6 @@ import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 
-import java.util.logging.Level;
-
 public class Environment extends SimpleEnvironmentListener implements Listener {
     public static final EnvironmentType DEFAULT_TYPE = EnvironmentType.DEVELOPMENT;
 
@@ -32,12 +30,6 @@ public class Environment extends SimpleEnvironmentListener implements Listener {
 
         plugin.registerCommandObject(this);
         plugin.registerListenerObject(this);
-
-        try {
-            this.onEnable();
-        } catch (Throwable th) {
-            plugin.getLogger().log(Level.SEVERE, "Could not enable environment " + this.getType().prettyName(), th);
-        }
     }
 
     public Element getSettings() {

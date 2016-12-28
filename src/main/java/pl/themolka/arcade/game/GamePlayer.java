@@ -87,11 +87,15 @@ public class GamePlayer implements Metadatable {
         return this.username;
     }
 
-    public void setPlayer(ArcadePlayer player) {
-        this.player = player;
-    }
-
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public void reset() {
+
+    }
+
+    public void setPlayer(ArcadePlayer player) {
+        this.player = player;
     }
 }

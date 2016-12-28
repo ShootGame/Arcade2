@@ -3,7 +3,6 @@ package pl.themolka.arcade.environment;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.xml.parser.XMLParser;
 
 public enum EnvironmentType {

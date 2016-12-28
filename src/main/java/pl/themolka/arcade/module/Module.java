@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 public class Module<T> extends SimpleModuleListener implements Listener {
     private ArcadePlugin plugin;
@@ -73,6 +74,10 @@ public class Module<T> extends SimpleModuleListener implements Listener {
 
     public Class<? extends Module<?>>[] getLoadBefore() {
         return this.loadBefore;
+    }
+
+    public Logger getLogger() {
+        return this.getPlugin().getLogger();
     }
 
     public ArcadePlugin getPlugin() {

@@ -9,6 +9,7 @@ import pl.themolka.arcade.task.TaskManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 public class GameModule extends SimpleGameListener implements Listener {
     private ArcadePlugin plugin;
@@ -68,6 +69,10 @@ public class GameModule extends SimpleGameListener implements Listener {
 
     public List<Object> getListenerObjects() {
         return this.listenerObjects;
+    }
+
+    public Logger getLogger() {
+        return this.getPlugin().getLogger();
     }
 
     public Module<?> getModule() {

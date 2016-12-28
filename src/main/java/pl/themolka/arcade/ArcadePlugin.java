@@ -23,7 +23,9 @@ import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
+import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.MapQueueFillEvent;
+import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
@@ -86,8 +88,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         try {
             this.loadEnvironment();
-        } catch (JDOMException jdom) {
-            jdom.printStackTrace();
+            this.getEnvironment().onEnable();
+        } catch (Throwable th) {
+            this.getLogger().log(Level.SEVERE, "Could not enable environment " + this.getEnvironment().getType().prettyName(), th);
+            th.printStackTrace();
             return;
         }
 
@@ -333,15 +337,38 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadEnvironment() throws JDOMException {
         Element xml = this.getSettings().getData().getChild("environment");
-        EnvironmentType type = EnvironmentType.forName(xml.getAttributeValue("type"));
+        EnvironmentType type = EnvironmentType.forName(xml.getTextNormalize());
 
         this.environment = type.buildEnvironment(xml);
+        this.environment.initialize(this);
     }
 
     private void loadGames() {
         this.games = new GameManager(this);
 
-        this.getEvents().post(new MapQueueFillEvent(this, this.games.getQueue()));
+        Element queueElement = this.getSettings().getData().getChild("queue");
+        if (queueElement == null) {
+            queueElement = new Element("queue");
+        }
+
+        MapQueue queue = this.getGames().getQueue();
+        for (Element mapElement : queueElement.getChildren("map")) {
+            String directory = mapElement.getAttributeValue("directory");
+            String mapName = mapElement.getTextNormalize();
+
+            OfflineMap map = null;
+            if (directory != null) {
+                map = this.getMaps().getContainer().getMapByDirectory(directory);
+            } else if (mapName != null) {
+                map = this.getMaps().getContainer().getMap(mapName);
+            }
+
+            if (map != null) {
+                queue.addMap(map);
+            }
+        }
+
+        this.getEvents().post(new MapQueueFillEvent(this, queue));
     }
 
     private void loadMaps() {
@@ -361,7 +388,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getEvents().post(fillEvent);
 
         MapManager maps = this.getMaps();
-        for (MapContainerLoader loader : fillEvent.getLoaderList()) {
+        for (MapContainerLoader loader : fillEvent.getMapLoaderList()) {
             maps.addMapLoader(loader);
         }
 
@@ -370,10 +397,28 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     private void loadModules() {
+        Element ignoredModules = this.getSettings().getData().getChild("ignored-modules");
+        if (ignoredModules == null) {
+            ignoredModules = new Element("ignored-modules");
+        }
+
+        List<String> ignoredModuleList = new ArrayList<>();
+        for (Element ignoredModule : ignoredModules.getChildren("module")) {
+            String id = ignoredModule.getTextNormalize();
+            if (id != null) {
+                ignoredModuleList.add(id);
+            }
+        }
+
         List<Module<?>> moduleList = new ArrayList<>();
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ModulesFile.DEFAULT_FILENAME)) {
             ModulesFile file = new ModulesFile(input);
-            moduleList.addAll(file.getModules(file.getRoot()));
+
+            for (Module<?> module : file.getModules(file.getRoot())) {
+                if (!ignoredModuleList.contains(module.getId())) {
+                    moduleList.add(module);
+                }
+            }
         } catch (IOException | JDOMException ex) {
             ex.printStackTrace();
         }

@@ -55,12 +55,17 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         player.setGamePlayer(game);
 
         this.plugin.getGames().getCurrentGame().addPlayer(game);
+        this.plugin.getEvents().post(new ArcadePlayerJoinEvent(this.plugin, player));
+
         return new ArcadeSession(game.getPlayer());
     }
 
     public ArcadeSession destroySession(Player bukkit) {
         ArcadeSession session = (ArcadeSession) this.getSession(bukkit.getUniqueId());
         session.getRepresenter().getGamePlayer().setPlayer(null); // make offline
+
+        this.plugin.removePlayer(session.getRepresenter());
+        this.plugin.getEvents().post(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
 
         return session;
     }

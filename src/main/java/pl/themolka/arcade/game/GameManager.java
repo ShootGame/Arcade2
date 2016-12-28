@@ -121,9 +121,9 @@ public class GameManager {
     }
 
     public void resetPlayers(Game newGame) {
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
+        for (GamePlayer player : this.getCurrentGame().getPlayers()) {
             player.reset();
-            player.getBukkit().teleport(newGame.getMap().getSpawn());
+            player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }
 
