@@ -21,6 +21,7 @@ import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.MapContainerFillEvent;
+import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.XMLMapParser;
@@ -63,26 +64,22 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private Commons commons;
     private Environment environment;
     private GameManager games;
-    private VoidGenerator generator;
-    private ManifestFile manifest;
+    private final VoidGenerator generator = new VoidGenerator();
+    private final ManifestFile manifest = new ManifestFile();
     private MapManager maps;
-    private ModuleContainer modules = new ModuleContainer();
+    private final ModuleContainer modules = new ModuleContainer();
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private Settings settings;
     private TaskManager tasks;
     private long tick = 0L;
-    private List<Tickable> tickableList = new CopyOnWriteArrayList<>();
+    private final List<Tickable> tickableList = new CopyOnWriteArrayList<>();
     private BukkitTask tickableTask;
 
     @Override
     public void onEnable() {
-        this.manifest = new ManifestFile();
         this.manifest.readManifestFile();
-
         this.commons = new ArcadeCommons(this);
         Event.setAutoEventPoster(this.getEvents());
-
-        this.generator = new VoidGenerator();
 
         this.settings = new Settings(this);
         this.reloadConfig();
@@ -360,8 +357,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         } catch (DataConversionException ignored) {
         }
 
-        this.getEvents().post(new MapContainerFillEvent(this, this.maps.getContainer()));
-        this.getLogger().info("Loaded " + this.maps.getContainer().getMaps().size() + " maps.");
+        MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
+        this.getEvents().post(fillEvent);
+
+        MapManager maps = this.getMaps();
+        for (MapContainerLoader loader : fillEvent.getLoaderList()) {
+            maps.addMapLoader(loader);
+        }
+
+        maps.getContainer().register(maps.getLoaderListContainer());
+        this.getLogger().info("Loaded " + maps.getContainer().getMaps().size() + " maps.");
     }
 
     private void loadModules() {

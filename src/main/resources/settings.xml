@@ -12,8 +12,12 @@
     <world-container>./worlds</world-container>
 
     <modules>
-        <example>
+        <example />
 
-        </example>
+        <map-loader>
+            <directory path="./maps">
+                <exclude>_ignored</exclude>
+            </directory>
+        </map-loader>
     </modules>
 </settings>

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class Module<T> extends SimpleModuleListener implements Listener {
+public class Module<T> extends SimpleModuleListener implements Listener {
     private ArcadePlugin plugin;
 
     private String id;
@@ -47,7 +47,9 @@ public abstract class Module<T> extends SimpleModuleListener implements Listener
         this.registerCommandObject(this);
     }
 
-    public abstract T buildGameModule(Element xml) throws JDOMException;
+    public T buildGameModule(Element xml) throws JDOMException {
+        return null;
+    }
 
     public final void destroy() {
         this.unregisterListenerObject(this);

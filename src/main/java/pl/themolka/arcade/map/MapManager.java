@@ -11,6 +11,7 @@ import pl.themolka.commons.generator.VoidGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -18,10 +19,15 @@ public class MapManager {
     private final ArcadePlugin plugin;
 
     private final MapContainer container = new MapContainer();
+    private List<MapContainerLoader> loaderList = new ArrayList<>();
     private MapParser.Technology parser;
 
     public MapManager(ArcadePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void addMapLoader(MapContainerLoader loader) {
+        this.loaderList.add(loader);
     }
 
     public void copyFiles(OfflineMap map) throws IOException {
@@ -97,8 +103,24 @@ public class MapManager {
         return this.container;
     }
 
+    public MapContainer getLoaderListContainer() {
+        MapContainer container = new MapContainer();
+        for (MapContainerLoader loader : this.getLoaderList()) {
+            try {
+                container.register(loader.loadContainer());
+            } catch (Throwable ignored) {
+            }
+        }
+
+        return container;
+    }
+
     public VoidGenerator getGenerator() {
         return this.plugin.getGenerator();
+    }
+
+    public List<MapContainerLoader> getLoaderList() {
+        return this.loaderList;
     }
 
     public MapParser.Technology getParser() {
@@ -107,6 +129,10 @@ public class MapManager {
 
     public File getWorldContainer() {
         return this.plugin.getServer().getWorldContainer();
+    }
+
+    public void setParser(MapParser.Technology parser) {
+        this.parser = parser;
     }
 
     public void setWorldContainer(File container) {
@@ -119,9 +145,5 @@ public class MapManager {
         } catch (ReflectiveOperationException ex) {
             this.plugin.getLogger().log(Level.SEVERE, "Could not set world container", ex);
         }
-    }
-
-    public void setParser(MapParser.Technology parser) {
-        this.parser = parser;
     }
 }
