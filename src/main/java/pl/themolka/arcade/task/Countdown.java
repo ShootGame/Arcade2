@@ -22,6 +22,16 @@ public class Countdown extends Task implements CountdownListener {
         }
     }
 
+    /**
+     * Should not be used.
+     * Use {@link #cancelCountdown()} instead.
+     */
+    @Deprecated
+    @Override
+    public boolean cancelTask() {
+        return super.cancelTask();
+    }
+
     @Override
     public final void onTick(long ticks) {
         super.onTick(ticks);
@@ -58,6 +68,19 @@ public class Countdown extends Task implements CountdownListener {
     /**
      * Should be @Override
      */
+    public boolean isCancelable() {
+        return true;
+    }
+
+    /**
+     * Should be @Override
+     */
+    public void onCancel() {
+    }
+
+    /**
+     * Should be @Override
+     */
     @Override
     public void onDone() {
     }
@@ -79,20 +102,31 @@ public class Countdown extends Task implements CountdownListener {
         throw new UnsupportedOperationException("Countdowns must be registered in the Game object.");
     }
 
-    public void countAsync() {
-        if (this.getGame() == null) {
-            throw new UnsupportedOperationException("Countdown not registered");
+    public boolean cancelCountdown() {
+        if (this.isCancelable()) {
+            this.onCancel();
+            this.cancelTask();
+            return true;
         }
-
-        this.getGame().startAsyncTask(this);
+        return false;
     }
 
-    public void countSync() {
+    public Countdown countAsync() {
         if (this.getGame() == null) {
             throw new UnsupportedOperationException("Countdown not registered");
         }
 
-        this.getGame().startSyncTask(this);
+        this.getGame().addAsyncTask(this);
+        return this;
+    }
+
+    public Countdown countSync() {
+        if (this.getGame() == null) {
+            throw new UnsupportedOperationException("Countdown not registered");
+        }
+
+        this.getGame().addSyncTask(this);
+        return this;
     }
 
     public Duration getDuration() {
@@ -119,11 +153,13 @@ public class Countdown extends Task implements CountdownListener {
         return this.getLeftSeconds() <= 0L;
     }
 
-    public void setDuration(Duration duration) {
+    public Countdown setDuration(Duration duration) {
         this.duration = duration;
+        return this;
     }
 
-    public void setGame(Game game) {
+    public Countdown setGame(Game game) {
         this.game = game;
+        return this;
     }
 }

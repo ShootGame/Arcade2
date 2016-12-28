@@ -6,7 +6,9 @@ import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadeSession;
+import pl.themolka.arcade.task.Countdown;
 import pl.themolka.commons.command.CommandContext;
+import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.event.Cancelable;
 
@@ -32,7 +34,18 @@ public class GeneralCommands {
         boolean paramForce = context.hasFlag("f") || context.hasFlag("force");
 
         Game game = this.plugin.getGames().getCurrentGame();
+        if (game == null) {
+            throw new CommandException("Could not cancel right now. Please try again later.");
+        }
 
+        int i = 0;
+        for (Countdown countdown : game.gerRunningCountdowns()) {
+            if (countdown.cancelCountdown()) {
+                i++;
+            }
+        }
+
+        sender.sendSuccess("Successfully canceled " + i + " countdowns.");
     }
 
     //
@@ -65,7 +78,7 @@ public class GeneralCommands {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
             CycleCountdown countdown = new CycleCountdown(this.plugin, Duration.ofSeconds(seconds));
-            game.addCountdown(countdown);
+            game.addSyncTask(countdown);
         }
     }
 

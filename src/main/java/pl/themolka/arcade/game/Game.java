@@ -40,8 +40,20 @@ public class Game {
         this.players.put(player.getUuid(), player);
     }
 
-    public boolean addTask(Task task) {
-        return this.taskList.add(task);
+    public int addAsyncTask(Task task) {
+        if (this.taskList.add(task)) {
+            return this.plugin.getTasks().scheduleAsync(task);
+        }
+
+        return -1;
+    }
+
+    public int addSyncTask(Task task) {
+        if (this.taskList.add(task)) {
+            return this.plugin.getTasks().scheduleSync(task);
+        }
+
+        return -1;
     }
 
     public void enableModule(GameModule module) {

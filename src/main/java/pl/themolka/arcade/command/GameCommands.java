@@ -30,7 +30,7 @@ public class GameCommands {
     public void join(ArcadeSession sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
-            throw new CommandException("Could not join right now. Please try again later.");
+            throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
         String param = context.getParam(0);
@@ -47,7 +47,7 @@ public class GameCommands {
 
     public List<String> joinCompleter(ArcadeSession sender, CommandContext context) {
         if (this.plugin.getGames().getCurrentGame() == null) {
-            throw new CommandException("Could not join right now. Please try again later.");
+            throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
         JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, sender, context);
@@ -63,7 +63,7 @@ public class GameCommands {
     public void leave(ArcadeSession sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
-            throw new CommandException("Could not join right now. Please try again later.");
+            throw new CommandException("Could not leave the game right now. Please try again later.");
         }
 
         this.plugin.getEvents().post(new LeaveCommandEvent(this.plugin, sender, context));
