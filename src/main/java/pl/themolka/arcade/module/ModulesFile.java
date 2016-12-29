@@ -1,9 +1,8 @@
-package pl.themolka.arcade.xml;
+package pl.themolka.arcade.module;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import pl.themolka.arcade.module.Module;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,26 +23,21 @@ public class ModulesFile {
         return this.root;
     }
 
-    public Module<?> getModule(Element module) throws ReflectiveOperationException {
-        String clazzPath = module.getAttributeValue("class");
-
-        Class<?> clazz = Class.forName(clazzPath);
-        if (clazz.isAssignableFrom(Module.class)) {
-            return (Module<?>) clazz.newInstance();
-        }
-
-        return null;
+    public List<Module<?>> getModules() {
+        return this.getModules(this.getRoot());
     }
 
     public List<Module<?>> getModules(Element parent) {
         List<Module<?>> modules = new ArrayList<>();
 
-        for (Element xml : parent.getChildren()) {
+        for (Element xml : parent.getChildren("module")) {
             try {
-                Module<?> module = this.getModule(xml);
+                Module<?> module = (Module<?>) Class.forName(xml.getAttributeValue("class")).newInstance();
                 if (module != null) {
                     modules.add(module);
                 }
+            } catch (ClassCastException cast) {
+                throw new RuntimeException("game module does not inherit the " + Module.class.getName());
             } catch (ReflectiveOperationException ex) {
                 ex.printStackTrace();
             }

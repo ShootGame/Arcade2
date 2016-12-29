@@ -1,6 +1,5 @@
 package pl.themolka.arcade.session;
 
-import org.bukkit.ChatColor;
 import pl.themolka.commons.session.Session;
 
 import java.util.UUID;
@@ -60,15 +59,5 @@ public class ArcadeSession implements Session<ArcadePlayer> {
     @Override
     public void sendSuccess(String success) {
         this.getRepresenter().sendSuccess(success);
-    }
-
-    public void sendTitleMessage(String title) {
-        String line = ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + " --------------- ";
-        this.send(line + ChatColor.RESET + ChatColor.GOLD + title + line);
-    }
-
-    public void sendTitleMessage(String title, String extra) {
-        String line = ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + " --------------- ";
-        this.send(line + ChatColor.RESET + ChatColor.GOLD + title + ChatColor.GRAY + " (" + extra + ")" + line);
     }
 }

@@ -68,7 +68,7 @@ public class MapContainer {
         }
 
         for (OfflineMap map : this.getMaps()) {
-            if (map.getDescription().toLowerCase().contains(query)) {
+            if (map.getDescription() != null && map.getDescription().toLowerCase().contains(query)) {
                 results.add(map);
 
                 if (first) {

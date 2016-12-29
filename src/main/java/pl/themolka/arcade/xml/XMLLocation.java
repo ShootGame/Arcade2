@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.Location;
 import org.jdom2.DataConversionException;
@@ -40,12 +40,16 @@ public class XMLLocation extends XMLParser {
                                             double z,
                                             float yaw,
                                             float pitch) throws DataConversionException {
-        double paramX = getAttribute(xml, ATTRIBUTE_X, X).getDoubleValue();
-        double paramY = getAttribute(xml, ATTRIBUTE_Y, Y).getDoubleValue();
-        double paramZ = getAttribute(xml, ATTRIBUTE_Z, Z).getDoubleValue();
-        float paramYaw = getAttribute(xml, ATTRIBUTE_YAW, YAW).getFloatValue();
-        float paramPitch = getAttribute(xml, ATTRIBUTE_PITCH, PITCH).getFloatValue();
+        if (xml != null) {
+            double paramX = getAttribute(xml, ATTRIBUTE_X, X).getDoubleValue();
+            double paramY = getAttribute(xml, ATTRIBUTE_Y, Y).getDoubleValue();
+            double paramZ = getAttribute(xml, ATTRIBUTE_Z, Z).getDoubleValue();
+            float paramYaw = getAttribute(xml, ATTRIBUTE_YAW, YAW).getFloatValue();
+            float paramPitch = getAttribute(xml, ATTRIBUTE_PITCH, PITCH).getFloatValue();
 
-        return new Location(null, paramX, paramY, paramZ, paramYaw, paramPitch);
+            return new Location(null, paramX, paramY, paramZ, paramYaw, paramPitch);
+        }
+
+        return null;
     }
 }

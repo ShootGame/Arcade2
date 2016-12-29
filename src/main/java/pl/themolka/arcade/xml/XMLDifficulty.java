@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.Difficulty;
 import org.jdom2.Attribute;
@@ -22,11 +22,15 @@ public class XMLDifficulty extends XMLParser {
     }
 
     public static Difficulty parse(Attribute xml) {
-        try {
-            return Difficulty.getByValue(xml.getIntValue());
-        } catch (DataConversionException ex) {
-            return Difficulty.valueOf(parseEnumValue(xml.getValue()));
+        if (xml != null) {
+            try {
+                return Difficulty.getByValue(xml.getIntValue());
+            } catch (DataConversionException ex) {
+                return Difficulty.valueOf(parseEnumValue(xml.getValue()));
+            }
         }
+
+        return null;
     }
 
     public static Difficulty parse(Attribute xml, Difficulty def) {

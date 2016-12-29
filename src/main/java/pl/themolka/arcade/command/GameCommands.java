@@ -7,6 +7,7 @@ import pl.themolka.arcade.session.ArcadeSession;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
+import pl.themolka.commons.session.Session;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class GameCommands {
             userOnly = true,
             permission = "arcade.command.join",
             completer = "joinCompleter")
-    public void join(ArcadeSession sender, CommandContext context) {
+    public void joinCommand(Session<ArcadePlayer> sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
             throw new CommandException("Could not join the game right now. Please try again later.");
@@ -37,20 +38,20 @@ public class GameCommands {
         if (param != null) {
             boolean observers = param.equalsIgnoreCase("o") || param.equalsIgnoreCase("obs") || param.equalsIgnoreCase("observers");
             if (observers) {
-                this.leave(sender, context);
+                this.leaveCommand(sender, context);
                 return;
             }
         }
 
-        this.plugin.getEvents().post(new JoinCommandEvent(this.plugin, sender, context, param == null));
+        this.plugin.getEvents().post(new JoinCommandEvent(this.plugin, (ArcadeSession) sender, context, param == null));
     }
 
-    public List<String> joinCompleter(ArcadeSession sender, CommandContext context) {
+    public List<String> joinCompleter(Session<ArcadePlayer> sender, CommandContext context) {
         if (this.plugin.getGames().getCurrentGame() == null) {
             throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
-        JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, sender, context);
+        JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, (ArcadeSession) sender, context);
         this.plugin.getEvents().post(event);
 
         return event.getResults();
@@ -60,13 +61,13 @@ public class GameCommands {
             description = "Leave the game",
             userOnly = true,
             permission = "arcade.command.quit")
-    public void leave(ArcadeSession sender, CommandContext context) {
+    public void leaveCommand(Session<ArcadePlayer> sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
             throw new CommandException("Could not leave the game right now. Please try again later.");
         }
 
-        this.plugin.getEvents().post(new LeaveCommandEvent(this.plugin, sender, context));
+        this.plugin.getEvents().post(new LeaveCommandEvent(this.plugin, (ArcadeSession) sender, context));
     }
 
     public static class JoinCommandEvent extends CommandEvent {
@@ -79,12 +80,7 @@ public class GameCommands {
         }
 
         public ArcadePlayer getJoinPlayer() {
-            ArcadeSession sender = this.getSender();
-            if (sender.isConsole()) {
-                return null;
-            }
-
-            return sender.getRepresenter();
+            return this.getSender().getRepresenter();
         }
 
         public boolean isAuto() {

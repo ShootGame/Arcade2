@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,11 +11,15 @@ public class XMLItemStack extends XMLParser {
     public static final int AMOUNT = 1;
 
     public static ItemStack parse(Element xml) throws DataConversionException {
-        Material paramMaterial = XMLMaterial.parse(xml);
-        int paramAmount = getAttribute(xml, ATTRIBUTE_AMOUNT, AMOUNT).getIntValue();
+        if (xml != null) {
+            Material paramMaterial = XMLMaterial.parse(xml);
+            int paramAmount = getAttribute(xml, ATTRIBUTE_AMOUNT, AMOUNT).getIntValue();
 
-        ItemStack item = new ItemStack(paramMaterial);
-        item.setAmount(paramAmount);
-        return item;
+            ItemStack item = new ItemStack(paramMaterial);
+            item.setAmount(paramAmount);
+            return item;
+        }
+
+        return null;
     }
 }

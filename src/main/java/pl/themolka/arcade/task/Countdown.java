@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 
 public class Countdown extends Task implements CountdownListener {
     private Duration duration;
+    private boolean forcedCancel;
     private Game game;
     private long seconds;
 
@@ -153,8 +154,17 @@ public class Countdown extends Task implements CountdownListener {
         return this.getLeftSeconds() <= 0L;
     }
 
+    public boolean isForcedCancel() {
+        return this.forcedCancel;
+    }
+
     public Countdown setDuration(Duration duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public Countdown setForcedCancel(boolean forcedCancel) {
+        this.forcedCancel = forcedCancel;
         return this;
     }
 

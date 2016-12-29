@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 @ModuleInfo(id = "map-loader")
 public class MapLoaderModule extends Module<Object> implements MapContainerLoader {
-    private final MapManager maps = this.getPlugin().getMaps();
     private final List<File> worldFiles = new ArrayList<>();
 
     @Override
@@ -44,12 +43,14 @@ public class MapLoaderModule extends Module<Object> implements MapContainerLoade
                         }
                         return false;
                     }
-
                     return true;
                 }
             };
 
-            this.worldFiles.addAll(Arrays.asList(new File(path).listFiles(filter)));
+            File file = new File(path);
+            if (file.exists()) {
+                this.worldFiles.addAll(Arrays.asList(file.listFiles(filter)));
+            }
         }
     }
 
@@ -80,8 +81,11 @@ public class MapLoaderModule extends Module<Object> implements MapContainerLoade
     }
 
     private OfflineMap readMapDirectory(File worldDirectory) throws IOException, MapParserException {
-        MapParser.Technology technology = this.maps.getParser();
+        MapParser.Technology technology = this.getPlugin().getMaps().getParser();
         File file = new File(worldDirectory, technology.getDefaultFilename());
+        if (!file.exists()) {
+            return null;
+        }
 
         MapParser parser = technology.newInstance();
         parser.readFile(file);
@@ -89,7 +93,6 @@ public class MapLoaderModule extends Module<Object> implements MapContainerLoade
         OfflineMap map = parser.parseOfflineMap();
         map.setDirectory(worldDirectory);
         map.setSettings(file);
-
         return map;
     }
 

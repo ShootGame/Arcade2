@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.Material;
 import org.jdom2.Attribute;
@@ -21,7 +21,11 @@ public class XMLMaterial extends XMLParser {
     }
 
     public static Material parse(Attribute xml) {
-        return Material.matchMaterial(parseEnumValue(xml.getValue()));
+        if (xml != null) {
+            return Material.matchMaterial(parseEnumValue(xml.getValue()));
+        }
+
+        return null;
     }
 
     public static Material parse(Attribute xml, Material def) {

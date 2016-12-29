@@ -5,14 +5,16 @@ import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.OfflineMap;
-import pl.themolka.arcade.session.ArcadeSession;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.event.Cancelable;
+import pl.themolka.commons.session.Session;
 
 import java.time.Duration;
+import java.util.List;
 
 public class GeneralCommands {
     private final ArcadePlugin plugin;
@@ -30,7 +32,7 @@ public class GeneralCommands {
             flags = "force",
             usage = "[-force]",
             permission = "arcade.command.cancel")
-    public void cancel(ArcadeSession sender, CommandContext context) {
+    public void cancelCommand(Session<ArcadePlayer> sender, CommandContext context) {
         boolean paramForce = context.hasFlag("f") || context.hasFlag("force");
 
         Game game = this.plugin.getGames().getCurrentGame();
@@ -38,14 +40,24 @@ public class GeneralCommands {
             throw new CommandException("Could not cancel right now. Please try again later.");
         }
 
+        List<Countdown> countdowns = game.gerRunningCountdowns();
+        if (countdowns.isEmpty()) {
+            throw new CommandException("No countdowns running right now.");
+        }
+
         int i = 0;
         for (Countdown countdown : game.gerRunningCountdowns()) {
             if (countdown.cancelCountdown()) {
+                countdown.setForcedCancel(paramForce);
                 i++;
             }
         }
 
-        sender.sendSuccess("Successfully canceled " + i + " countdowns.");
+        if (i != 0) {
+            sender.sendSuccess("Successfully canceled " + i + " countdowns.");
+        } else {
+            throw new CommandException("No countdowns could be canceled right now.");
+        }
     }
 
     //
@@ -56,7 +68,7 @@ public class GeneralCommands {
             description = "Cycle to next map",
             usage = "[seconds]",
             permission = "arcade.command.cycle")
-    public void cycle(ArcadeSession sender, CommandContext context) {
+    public void cycleCommand(Session<ArcadePlayer> sender, CommandContext context) {
         int paramSeconds = context.getParamInt(0);
 
         OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();
@@ -86,7 +98,7 @@ public class GeneralCommands {
         private boolean cancel;
         private final OfflineMap nextMap;
 
-        public CycleCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context, OfflineMap nextMap) {
+        public CycleCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context, OfflineMap nextMap) {
             super(plugin, plugin.getGames().getCurrentGame(), sender, context);
 
             this.nextMap = nextMap;

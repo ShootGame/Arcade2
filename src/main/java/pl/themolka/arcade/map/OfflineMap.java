@@ -69,6 +69,6 @@ public class OfflineMap {
 
     @Override
     public String toString() {
-        return ChatColor.GOLD + this.getName() + " " + ChatColor.GRAY + " v" + this.getVersion();
+        return ChatColor.GOLD + this.getName() + ChatColor.GRAY + " v" + this.getVersion();
     }
 }

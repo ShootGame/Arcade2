@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.DyeColor;
 import org.jdom2.Attribute;
@@ -21,7 +21,11 @@ public class XMLDyeColor extends XMLParser {
     }
 
     public static DyeColor parse(Attribute xml) {
-        return DyeColor.valueOf(parseEnumValue(xml.getValue()));
+        if (xml != null) {
+            return DyeColor.valueOf(parseEnumValue(xml.getValue()));
+        }
+
+        return null;
     }
 
     public static DyeColor parse(Attribute xml, DyeColor def) {

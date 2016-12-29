@@ -42,11 +42,14 @@ public class Settings {
             return;
         }
 
-        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(file.getName())) {
-            if (!file.exists()) {
-                file.mkdir();
-            }
+        File parent = file.getParentFile();
+        if (!parent.exists()) {
+            parent.mkdir();
+        } else if (force) {
+            file.delete();
+        }
 
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(file.getName())) {
             Files.copy(input, file.toPath());
         }
     }

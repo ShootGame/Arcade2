@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.ChatColor;
 import org.jdom2.Attribute;
@@ -21,7 +21,11 @@ public class XMLChatColor extends XMLParser {
     }
 
     public static ChatColor parse(Attribute xml) {
-        return ChatColor.valueOf(parseEnumValue(xml.getValue()));
+        if (xml != null) {
+            return ChatColor.valueOf(parseEnumValue(xml.getValue()));
+        }
+
+        return null;
     }
 
     public static ChatColor parse(Attribute xml, ChatColor def) {

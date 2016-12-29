@@ -182,13 +182,11 @@ public class Game {
                 return null;
             }
 
-            if (!object.getClass().isAssignableFrom(GameModule.class)) {
-                throw new MapParserException("game module must extend " + GameModule.class.getName());
-            }
-
             GameModule game = (GameModule) object;
             game.initialize(this.plugin, this, module);
             return game;
+        } catch (ClassCastException cast) {
+            throw new MapParserException("game module does not inherit the " + GameModule.class.getName());
         } catch (Throwable th) {
             throw new MapParserException("could not build game module", th);
         }

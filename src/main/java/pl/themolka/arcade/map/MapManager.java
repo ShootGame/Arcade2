@@ -70,6 +70,7 @@ public class MapManager {
                 .environment(map.getEnvironment())
                 .generateStructures(false)
                 .generator(this.getGenerator())
+                .hardcore(false)
                 .type(WorldType.FLAT);
 
         World world = creator.createWorld();
@@ -141,7 +142,7 @@ public class MapManager {
         try {
             Field field = server.getClass().getDeclaredField("container");
             field.setAccessible(true);
-            field.set(field, container);
+            field.set(server, container);
         } catch (ReflectiveOperationException ex) {
             this.plugin.getLogger().log(Level.SEVERE, "Could not set world container", ex);
         }

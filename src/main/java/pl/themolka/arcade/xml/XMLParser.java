@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;

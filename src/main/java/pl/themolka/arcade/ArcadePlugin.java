@@ -1,7 +1,5 @@
 package pl.themolka.arcade;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -9,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
@@ -30,14 +27,15 @@ import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
+import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
+import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.TaskManager;
+import pl.themolka.arcade.util.ManifestFile;
 import pl.themolka.arcade.util.Tickable;
-import pl.themolka.arcade.xml.ManifestFile;
-import pl.themolka.arcade.xml.ModulesFile;
-import pl.themolka.arcade.xml.parser.XMLLocation;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.command.Commands;
 import pl.themolka.commons.event.Event;
@@ -80,6 +78,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public void onEnable() {
+        try {
+            this.start();
+        } catch (Throwable th) {
+            this.getLogger().log(Level.SEVERE, "Could not enable " + this.getDescription().getFullName() + ": " + th.getMessage(), th);
+        }
+    }
+
+    public final void start() throws Throwable {
         this.manifest.readManifestFile();
         this.commons = new ArcadeCommons(this);
         Event.setAutoEventPoster(this.getEvents());
@@ -91,7 +97,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.loadEnvironment();
             this.getEnvironment().onEnable();
         } catch (Throwable th) {
-            this.getLogger().log(Level.SEVERE, "Could not enable environment " + this.getEnvironment().getType().prettyName(), th);
+            this.getLogger().log(Level.SEVERE, "Could not enable the environment.", th);
             th.printStackTrace();
             return;
         }
@@ -110,12 +116,20 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         if (this.getGames().getQueue().hasNextMap()) {
             this.getGames().cycleNext();
         } else {
-            this.getLogger().severe("The map queue is empty.");
+            this.getLogger().severe("Could not cycle because the map queue is empty.");
         }
     }
 
     @Override
     public void onDisable() {
+        try {
+            this.stop();
+        } catch (Throwable th) {
+            this.getLogger().log(Level.SEVERE, "Could not disable " + this.getDescription().getFullName() + ": " + th.getMessage(), th);
+        }
+    }
+
+    public final void stop() throws Throwable {
         Game game = this.getGames().getCurrentGame();
         if (game != null) {
             game.stop();
@@ -152,7 +166,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     @Override
     public void reloadConfig() {
         try {
-            this.getSettings().readSettingsFile();
+            this.getSettings().setDocument(this.getSettings().readSettingsFile());
+            this.getEvents().post(new SettingsReloadEvent(this, this.getSettings()));
         } catch (IOException | JDOMException ex) {
             ex.printStackTrace();
         }
@@ -378,13 +393,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.maps.setParser(new XMLMapParser.XMLParserTechnology());
         this.maps.setWorldContainer(new File(this.getSettings().getData().getChild("world-container").getValue()));
 
-        try {
-            Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
-
-            World defaultWorld = this.getServer().getWorlds().get(0);
-            defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
-        } catch (DataConversionException ignored) {
-        }
+//        TODO fix this
+//        try {
+//            Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
+//
+//            World defaultWorld = this.getServer().getWorlds().get(0);
+//            defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
+//        } catch (DataConversionException ignored) {
+//        }
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
         this.getEvents().post(fillEvent);
@@ -416,8 +432,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ModulesFile.DEFAULT_FILENAME)) {
             ModulesFile file = new ModulesFile(input);
 
-            for (Module<?> module : file.getModules(file.getRoot())) {
-                if (!ignoredModuleList.contains(module.getId())) {
+            for (Module<?> module : file.getModules()) {
+                ModuleInfo infoAnnotation = module.getClass().getAnnotation(ModuleInfo.class);
+                if (infoAnnotation == null) {
+                    continue;
+                }
+
+                if (!ignoredModuleList.contains(infoAnnotation.id())) {
                     moduleList.add(module);
                 }
             }

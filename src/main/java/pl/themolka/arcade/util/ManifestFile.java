@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml;
+package pl.themolka.arcade.util;
 
 import java.io.IOException;
 import java.io.InputStream;

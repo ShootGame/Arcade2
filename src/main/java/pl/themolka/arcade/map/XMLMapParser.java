@@ -9,9 +9,9 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import pl.themolka.arcade.xml.parser.XMLDifficulty;
-import pl.themolka.arcade.xml.parser.XMLEnvironment;
-import pl.themolka.arcade.xml.parser.XMLLocation;
+import pl.themolka.arcade.xml.XMLDifficulty;
+import pl.themolka.arcade.xml.XMLEnvironment;
+import pl.themolka.arcade.xml.XMLLocation;
 
 import java.io.File;
 import java.io.IOException;
@@ -173,7 +173,7 @@ public class XMLMapParser implements MapParser {
 
     private Difficulty parseDifficulty(Element parent) {
         if (parent != null) {
-            return XMLDifficulty.parse(parent);
+            return XMLDifficulty.parse(parent, Difficulty.PEACEFUL);
         }
 
         return null;
@@ -181,7 +181,7 @@ public class XMLMapParser implements MapParser {
 
     private World.Environment parseEnvironment(Element parent) {
         if (parent != null) {
-            return XMLEnvironment.parse(parent);
+            return XMLEnvironment.parse(parent, World.Environment.NORMAL);
         }
 
         return null;

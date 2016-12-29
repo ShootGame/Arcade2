@@ -1,4 +1,4 @@
-package pl.themolka.arcade.xml.parser;
+package pl.themolka.arcade.xml;
 
 import org.bukkit.World;
 import org.jdom2.Attribute;
@@ -21,7 +21,11 @@ public class XMLEnvironment extends XMLParser {
     }
 
     public static World.Environment parse(Attribute xml) {
-        return World.Environment.valueOf(parseEnumValue(xml.getValue()));
+        if (xml != null) {
+            return World.Environment.valueOf(parseEnumValue(xml.getValue()));
+        }
+
+        return null;
     }
 
     public static World.Environment parse(Attribute xml, World.Environment def) {

@@ -31,7 +31,7 @@ public class GameManager {
         plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
         maps.copyFiles(map.getMapInfo());
 
-        plugin.getLogger().info("Generating new world for map '" + map.getMapInfo().getName() + "'...");
+        plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
         World world = maps.createWorld(map);
 
         Game game = new Game(this.plugin, map, world);
@@ -48,13 +48,15 @@ public class GameManager {
 
     public Game createGame(OfflineMap map) throws IOException, MapParserException {
         MapParser parser = this.plugin.getMaps().getParser().newInstance();
+        parser.readFile(map.getSettings());
+
         return this.createGame(parser.parseArcadeMap(map));
     }
 
     public void cycle(OfflineMap target) {
         Instant now = Instant.now();
         if (target == null) {
-            OfflineMap next = this.getQueue().getNextMap();
+            OfflineMap next = this.getQueue().takeNextMap();
             if (next == null) {
                 this.plugin.getLogger().severe("Map queue was empty");
                 return;
