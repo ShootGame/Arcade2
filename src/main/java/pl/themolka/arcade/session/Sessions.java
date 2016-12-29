@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 
 public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession> implements Listener {
@@ -45,17 +46,20 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         ArcadePlayer player = new ArcadePlayer(bukkit);
         this.plugin.addPlayer(player);
 
-        GamePlayer game = this.plugin.getGames().getCurrentGame().getPlayer(bukkit.getUniqueId());
-        if (game == null) {
-            game = new GamePlayer(this.plugin.getGames().getCurrentGame(), player);
+        Game game = this.plugin.getGames().getCurrentGame();
+
+        if (game != null) {
+            GamePlayer gamePlayer = game.getPlayer(bukkit.getUniqueId());
+            if (gamePlayer == null) {
+                gamePlayer = new GamePlayer(game, player);
+            }
+
+            player.setGamePlayer(gamePlayer);
+            game.addPlayer(gamePlayer);
         }
 
-        player.setGamePlayer(game);
-
-        this.plugin.getGames().getCurrentGame().addPlayer(game);
         this.plugin.getEvents().post(new ArcadePlayerJoinEvent(this.plugin, player));
-
-        return new ArcadeSession(game.getPlayer());
+        return new ArcadeSession(player);
     }
 
     public ArcadeSession destroySession(Player bukkit) {

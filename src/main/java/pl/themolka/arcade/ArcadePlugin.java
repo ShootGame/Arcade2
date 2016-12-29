@@ -113,11 +113,12 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getEvents().post(new PluginReadyEvent(this));
 
         // begin the plugin logic
-        if (this.getGames().getQueue().hasNextMap()) {
-            this.getGames().cycleNext();
-        } else {
-            this.getLogger().severe("Could not cycle because the map queue is empty.");
-        }
+        this.getServer().getScheduler().runTaskLater(this, new Runnable() {
+            @Override
+            public void run() {
+                ArcadePlugin.this.beginLogic();
+            }
+        }, 1L);
     }
 
     @Override
@@ -206,6 +207,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public void addTickable(Tickable tickable) {
         this.tickableList.add(tickable);
+    }
+
+    public final void beginLogic() {
+        if (this.getGames().getQueue().hasNextMap()) {
+            this.getGames().cycleNext();
+        } else {
+            this.getLogger().severe("Could not cycle because the map queue is empty.");
+        }
     }
 
     public ArcadePlayer findPlayer(String query) {

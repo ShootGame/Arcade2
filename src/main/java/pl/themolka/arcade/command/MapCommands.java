@@ -3,6 +3,7 @@ package pl.themolka.arcade.command;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.OfflineMap;
@@ -149,13 +150,17 @@ public class MapCommands {
 
         if (paramRestart) {
             this.plugin.getGames().setNextRestart(true);
-            sender.sendError("Server will be restarted after thus game ends.");
-            return;
+            throw new CommandException("Server will be restarted after this game.");
         }
 
         List<OfflineMap> results = new ArrayList<>();
-        if (paramCurrent || context.getArgs().length == 0) {
-            results.add(this.plugin.getGames().getCurrentGame().getMap().getMapInfo());
+        if (paramCurrent) {
+            Game game = this.plugin.getGames().getCurrentGame();
+            if (game == null) {
+                throw new CommandException("No game running right now.");
+            }
+
+            results.add(game.getMap().getMapInfo());
         } else {
             results.addAll(this.plugin.getMaps().findMap(paramMap));
         }

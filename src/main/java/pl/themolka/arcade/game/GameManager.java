@@ -10,6 +10,7 @@ import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.logging.Level;
@@ -28,10 +29,11 @@ public class GameManager {
     public Game createGame(ArcadeMap map) throws IOException {
         MapManager maps = this.plugin.getMaps();
 
-        plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
-        maps.copyFiles(map.getMapInfo());
+        this.plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
+        File[] copied = maps.copyFiles(map);
+        this.plugin.getLogger().info("Copied " + copied.length + " map files.");
 
-        plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
+        this.plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
         World world = maps.createWorld(map);
 
         Game game = new Game(this.plugin, map, world);
@@ -123,9 +125,11 @@ public class GameManager {
     }
 
     public void resetPlayers(Game newGame) {
-        for (GamePlayer player : this.getCurrentGame().getPlayers()) {
-            player.reset();
-            player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
+        if (this.getCurrentGame() != null) {
+            for (GamePlayer player : this.getCurrentGame().getPlayers()) {
+                player.reset();
+                player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
+            }
         }
     }
 

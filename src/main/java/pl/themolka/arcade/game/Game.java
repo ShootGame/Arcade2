@@ -33,7 +33,12 @@ public class Game {
         this.map = map;
         this.world = world;
 
-        this.readModules(map.getConfiguration().getChild("modules"));
+        Element modules = map.getConfiguration().getChild("modules");
+        if (modules != null) {
+            this.readModules(modules);
+        } else {
+            this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
+        }
     }
 
     public void addPlayer(GamePlayer player) {
@@ -193,6 +198,7 @@ public class Game {
     }
 
     private void readModules(Element parent) {
+
         for (Element xml : parent.getChildren()) {
             try {
                 GameModule module = this.readModule(xml);

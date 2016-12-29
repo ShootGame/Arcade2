@@ -9,13 +9,16 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class MapManager {
+public class MapManager implements FilenameFilter {
+    public static final String[] FILENAMES = {"level.dat", "region", "data"};
+
     private final ArcadePlugin plugin;
 
     private final MapContainer container = new MapContainer();
@@ -26,43 +29,56 @@ public class MapManager {
         this.plugin = plugin;
     }
 
+    @Override
+    public boolean accept(File dir, String name) {
+        if (name.toLowerCase().endsWith(".xml")) {
+            return true;
+        }
+
+        for (String filename : FILENAMES) {
+            if (name.equals(filename)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void addMapLoader(MapContainerLoader loader) {
         this.loaderList.add(loader);
     }
 
-    public void copyFiles(OfflineMap map) throws IOException {
-        this.copyFiles(map.getDirectory());
+    public File[] copyFiles(ArcadeMap map) throws IOException {
+        return this.copyFiles(map, new File(this.getWorldContainer(), map.getWorldName()));
     }
 
-    public void copyFiles(OfflineMap map, File destination) throws IOException {
-        this.copyFiles(map.getDirectory(), destination);
+    public File[] copyFiles(ArcadeMap map, File destination) throws IOException {
+        return this.copyFiles(map.getMapInfo().getDirectory(), destination);
     }
 
-    public void copyFiles(File map) throws IOException {
-        this.copyFiles(map, this.getWorldContainer());
-    }
-
-    public void copyFiles(File map, File destination) throws IOException {
-        String[] filenames = {"level.dat", "region", "data"};
-
+    public File[] copyFiles(File map, File destination) throws IOException {
         if (!map.exists()) {
-            throw new RuntimeException("the map directory doesn't exists");
+            throw new IOException("the map directory doesn't exists");
+        } else if (!map.isDirectory()) {
+            throw new IOException("the map is not a directory");
         } else if (destination.exists()) {
+            this.plugin.getLogger().warning("Deleting old map directory '" + destination.getName() + "'!");
             FileUtils.deleteQuietly(destination);
         }
 
-        for (String filename : filenames) {
-            File from = new File(map, filename);
-            if (!from.exists()) {
-                continue;
+        List<File> copied = new ArrayList<>();
+        for (File from : map.listFiles(this)) {
+            File to = new File(destination, from.getName());
+            if (from.isDirectory()) {
+                FileUtils.copyDirectory(from, to);
+            } else {
+                FileUtils.copyFile(from, to);
             }
 
-            if (from.isDirectory()) {
-                FileUtils.copyDirectory(from, new File(destination, filename));
-            } else {
-                FileUtils.copyFile(from, new File(destination, filename));
-            }
+            copied.add(to);
         }
+
+        return copied.toArray(new File[copied.size()]);
     }
 
     public World createWorld(ArcadeMap map) {
