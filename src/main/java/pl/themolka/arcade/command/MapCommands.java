@@ -54,7 +54,12 @@ public class MapCommands {
 
         List<OfflineMap> results = new ArrayList<>();
         if (paramCurrent || context.getArgs().length == 0) {
-            results.add(this.plugin.getGames().getCurrentGame().getMap().getMapInfo());
+            Game game = this.plugin.getGames().getCurrentGame();
+            if (game == null) {
+                throw new CommandException("No game running right now.");
+            }
+
+            results.add(game.getMap().getMapInfo());
         } else if (paramNext) {
             OfflineMap next = this.plugin.getGames().getQueue().getNextMap();
             if (next == null) {

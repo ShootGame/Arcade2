@@ -25,7 +25,7 @@ public class Game implements Serializable {
     private final transient ArcadePlugin plugin;
 
     private final ArcadeMap map;
-    private final GameModuleContainer modules = new GameModuleContainer();
+    private final transient GameModuleContainer modules = new GameModuleContainer();
     private final transient Map<UUID, GamePlayer> players = new HashMap<>();
     private final transient List<Task> taskList = new ArrayList<>();
     private final transient World world;
