@@ -133,7 +133,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public final void stop() throws Throwable {
         Game game = this.getGames().getCurrentGame();
         if (game != null) {
-            game.stop();
+            this.getGames().destroyGame(game);
         }
 
         this.getTasks().cancelAll();
@@ -420,7 +420,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         maps.getContainer().register(maps.getLoaderListContainer());
-        this.getLogger().info("Loaded " + maps.getContainer().getMaps().size() + " maps.");
+        this.getLogger().info("Loaded " + maps.getContainer().getMaps().size() + " map(s) into the plugin.");
     }
 
     private void loadModules() {
@@ -510,6 +510,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.storages = new pl.themolka.arcade.storage.Storages();
 
             this.events.register(this.sessions);
+            ArcadePlugin.this.getServer().getPluginManager()
+                    .registerEvents((pl.themolka.arcade.session.Sessions) this.sessions, ArcadePlugin.this);
         }
 
         @Override

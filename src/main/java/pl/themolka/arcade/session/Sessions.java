@@ -7,7 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
@@ -42,12 +44,28 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        ArcadePlayer player = this.plugin.getPlayer(event.getPlayer().getUniqueId());
+
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            ArcadePlayerRespawnEvent respawnEvent = new ArcadePlayerRespawnEvent(this.plugin, player);
+            respawnEvent.setRespawnPosition(game.getMap().getSpawn());
+
+            this.post(respawnEvent);
+
+            if (respawnEvent.getRespawnPosition() != null) {
+                event.setRespawnLocation(respawnEvent.getRespawnPosition());
+            }
+        }
+    }
+
     public ArcadeSession createSession(Player bukkit) {
         ArcadePlayer player = new ArcadePlayer(bukkit);
         this.plugin.addPlayer(player);
 
         Game game = this.plugin.getGames().getCurrentGame();
-
         if (game != null) {
             GamePlayer gamePlayer = game.getPlayer(bukkit.getUniqueId());
             if (gamePlayer == null) {
@@ -56,9 +74,11 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
             player.setGamePlayer(gamePlayer);
             game.addPlayer(gamePlayer);
+
+            player.getBukkit().teleport(game.getMap().getSpawn());
         }
 
-        this.plugin.getEvents().post(new ArcadePlayerJoinEvent(this.plugin, player));
+        this.post(new ArcadePlayerJoinEvent(this.plugin, player));
         return new ArcadeSession(player);
     }
 
@@ -67,8 +87,12 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         session.getRepresenter().getGamePlayer().setPlayer(null); // make offline
 
         this.plugin.removePlayer(session.getRepresenter());
-        this.plugin.getEvents().post(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
+        this.post(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
 
         return session;
+    }
+
+    private void post(Event event) {
+        this.plugin.getEvents().post(event);
     }
 }

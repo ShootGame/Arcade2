@@ -6,19 +6,20 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.task.Task;
 import pl.themolka.arcade.task.TaskManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class GameModule extends SimpleGameListener implements Listener {
+public class GameModule extends SimpleGameListener implements Listener, Serializable {
     private ArcadePlugin plugin;
 
-    private Game game;
+    private transient Game game;
     private boolean loaded = false;
-    private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
+    private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private Module<?> module;
-    private final List<Task> taskList = new CopyOnWriteArrayList<>();
+    private final transient List<Task> taskList = new CopyOnWriteArrayList<>();
 
     public GameModule() {
     }

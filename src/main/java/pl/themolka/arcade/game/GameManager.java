@@ -1,5 +1,7 @@
 package pl.themolka.arcade.game;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.bukkit.World;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.ArcadeMap;
@@ -11,6 +13,7 @@ import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.logging.Level;
@@ -21,6 +24,7 @@ public class GameManager {
     private Game currentGame;
     private boolean nextRestart;
     private MapQueue queue = new MapQueue();
+    private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
     public GameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -31,13 +35,32 @@ public class GameManager {
 
         this.plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
         File[] copied = maps.copyFiles(map);
-        this.plugin.getLogger().info("Copied " + copied.length + " map files.");
+
+        StringBuilder copiedFiles = new StringBuilder();
+        for (int i = 0; i < copied.length; i++) {
+            File file = copied[i];
+            copiedFiles.append(file.getName());
+
+            if (file.isDirectory()) {
+                copiedFiles.append(" [d]");
+            } else if (file.isFile()) {
+                copiedFiles.append(" [f]");
+            }
+
+            if (i != copied.length - 1) {
+                copiedFiles.append(", ");
+            }
+        }
+
+        this.plugin.getLogger().info("Copied " + copied.length + " map files - " + copiedFiles.toString() + ".");
 
         this.plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
         World world = maps.createWorld(map);
 
         Game game = new Game(this.plugin, map, world);
         map.setGame(game);
+
+        map.getSpawn().setWorld(world);
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.setGamePlayer(new GamePlayer(game, player));
@@ -103,10 +126,13 @@ public class GameManager {
     }
 
     public void destroyGame(Game game) {
-        game.stop();
-
         GameDestroyEvent worldEvent = new GameDestroyEvent(this.plugin, game);
         this.plugin.getEvents().post(worldEvent);
+
+        game.stop();
+
+        File directory = new File(this.plugin.getMaps().getWorldContainer(), game.getMap().getWorldName());
+        this.serializeGame(game, new File(directory, Game.JSON_FILENAME));
 
         this.plugin.getMaps().destroyWorld(game.getWorld(), worldEvent.isSaveWorld());
         this.plugin.getEvents().post(new GameDestroyedEvent(this.plugin, game));
@@ -139,5 +165,13 @@ public class GameManager {
 
     public void setNextRestart(boolean nextRestart) {
         this.nextRestart = nextRestart;
+    }
+
+    public void serializeGame(Game game, File file) {
+        try (FileWriter writer = new FileWriter(file)) {
+            this.gson.toJson(game, writer);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
 }

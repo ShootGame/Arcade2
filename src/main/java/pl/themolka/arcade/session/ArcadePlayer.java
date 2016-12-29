@@ -16,8 +16,8 @@ import java.util.UUID;
 public class ArcadePlayer implements Metadatable {
     public static final long SOUND_INTERVAL = 500L; // half second
 
-    private final Player bukkit;
-    private GamePlayer gamePlayer;
+    private final transient Player bukkit;
+    private transient GamePlayer gamePlayer;
     private Instant lastPlayedSound;
     private final Map<String, Object> metadata = new HashMap<>();
 

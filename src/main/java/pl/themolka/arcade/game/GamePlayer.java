@@ -12,7 +12,7 @@ import java.util.UUID;
 public class GamePlayer implements Metadatable {
     public static final String METADATA_KEY_SEPARATOR = "#";
 
-    private final Game game;
+    private final transient Game game;
     private final Map<String, Object> metadata = new HashMap<>();
     private ArcadePlayer player;
     private final String username;

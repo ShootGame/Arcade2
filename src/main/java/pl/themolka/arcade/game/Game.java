@@ -10,6 +10,7 @@ import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,14 +19,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Game {
-    private final ArcadePlugin plugin;
+public class Game implements Serializable {
+    public static final String JSON_FILENAME = "game.json";
+
+    private final transient ArcadePlugin plugin;
 
     private final ArcadeMap map;
     private final GameModuleContainer modules = new GameModuleContainer();
-    private final Map<UUID, GamePlayer> players = new HashMap<>();
-    private final List<Task> taskList = new ArrayList<>();
-    private final World world;
+    private final transient Map<UUID, GamePlayer> players = new HashMap<>();
+    private final transient List<Task> taskList = new ArrayList<>();
+    private final transient World world;
 
     public Game(ArcadePlugin plugin, ArcadeMap map, World world) {
         this.plugin = plugin;
@@ -198,7 +201,6 @@ public class Game {
     }
 
     private void readModules(Element parent) {
-
         for (Element xml : parent.getChildren()) {
             try {
                 GameModule module = this.readModule(xml);

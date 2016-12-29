@@ -15,10 +15,10 @@ public class ArcadeMap {
     private Element configuration;
     private Difficulty difficulty;
     private World.Environment environment;
-    private Game game;
+    private transient Game game;
     private boolean pvp;
-    private Location spawn;
-    private World world;
+    private transient Location spawn;
+    private transient World world;
     private String worldName;
 
     public ArcadeMap(OfflineMap mapInfo) {

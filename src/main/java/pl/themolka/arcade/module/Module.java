@@ -5,19 +5,20 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T> extends SimpleModuleListener implements Listener {
-    private ArcadePlugin plugin;
+public class Module<T> extends SimpleModuleListener implements Listener, Serializable {
+    private transient ArcadePlugin plugin;
 
     private String id;
     private Class<? extends Module<?>>[] dependency;
     private Class<? extends Module<?>>[] loadBefore;
-    private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
+    private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
 
     public Module() {
