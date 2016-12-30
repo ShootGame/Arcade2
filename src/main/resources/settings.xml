@@ -27,6 +27,9 @@
 
     <!-- Global module settings -->
     <modules>
+        <archive>
+            <directory>./archive</directory>
+        </archive>
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>
