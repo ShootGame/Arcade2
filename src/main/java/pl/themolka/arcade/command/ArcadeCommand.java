@@ -23,6 +23,10 @@ public class ArcadeCommand {
         this.plugin = plugin;
     }
 
+    //
+    // /arcade command
+    //
+
     @CommandInfo(name = "arcade",
             description = "Arcade version and authors",
             usage = "[help|...]")
@@ -51,6 +55,10 @@ public class ArcadeCommand {
         return ChatColor.GRAY + key + ": " + ChatColor.GOLD + value;
     }
 
+    //
+    // /arcade <?> command
+    //
+
     public void params(Session<ArcadePlayer> sender, CommandContext context) {
         switch (context.getParam(0)) {
             case "help":
@@ -72,6 +80,10 @@ public class ArcadeCommand {
         }
     }
 
+    //
+    // /arcade help command
+    //
+
     private void help(Session<ArcadePlayer> sender) {
         if (!sender.hasPermission("arcade.command.help")) {
             throw new CommandPermissionException("arcade.command.help");
@@ -86,6 +98,10 @@ public class ArcadeCommand {
     private String helpItem(String item, String description) {
         return ChatColor.GOLD + "/arcade " + item + ChatColor.RESET + " " + ChatColor.GRAY + " - " + description;
     }
+
+    //
+    // /arcade reload command
+    //
 
     private void reload(Session<ArcadePlayer> sender) {
         if (!sender.hasPermission("arcade.command.reload")) {
@@ -113,6 +129,10 @@ public class ArcadeCommand {
         }
     }
 
+    //
+    // /arcade reset command
+    //
+
     private void reset(Session<ArcadePlayer> sender) {
         if (!sender.hasPermission("arcade.command.reload")) {
             throw new CommandPermissionException("arcade.command.reload");
@@ -128,6 +148,10 @@ public class ArcadeCommand {
             sender.sendError(io.getClass().getName() + ": " + io.getLocalizedMessage());
         }
     }
+
+    //
+    // /arcade updater command
+    //
 
     private void updater(Session<ArcadePlayer> sender) {
         if (!sender.hasPermission("arcade.command.updater")) {

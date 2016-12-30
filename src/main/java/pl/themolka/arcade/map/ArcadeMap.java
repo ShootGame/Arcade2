@@ -12,7 +12,7 @@ public class ArcadeMap {
 
     private final OfflineMap mapInfo;
 
-    private Element configuration;
+    private transient Element configuration;
     private Difficulty difficulty;
     private World.Environment environment;
     private transient Game game;

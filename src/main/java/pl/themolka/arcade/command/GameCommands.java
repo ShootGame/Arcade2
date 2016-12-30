@@ -7,6 +7,7 @@ import pl.themolka.arcade.session.ArcadeSession;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
+import pl.themolka.commons.event.Cancelable;
 import pl.themolka.commons.session.Session;
 
 import java.util.List;
@@ -16,6 +17,22 @@ public class GameCommands {
 
     public GameCommands(ArcadePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    //
+    // /game command
+    //
+
+    @CommandInfo(name = {"gameinfo", "game"},
+            description = "Describe the game",
+            permission = "arcade.command.game")
+    public void gameCommand(Session<ArcadePlayer> sender, CommandContext context) {
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game == null) {
+            throw new CommandException("Could not join the game right now. Please try again later.");
+        }
+
+        Commands.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
     }
 
     //
@@ -57,6 +74,10 @@ public class GameCommands {
         return event.getResults();
     }
 
+    //
+    // /leave command
+    //
+
     @CommandInfo(name = {"leave", "quit"},
             description = "Leave the game",
             userOnly = true,
@@ -70,13 +91,24 @@ public class GameCommands {
         this.plugin.getEvents().post(new LeaveCommandEvent(this.plugin, (ArcadeSession) sender, context));
     }
 
-    public static class JoinCommandEvent extends CommandEvent {
+    public static class JoinCommandEvent extends CommandEvent implements Cancelable {
         private final boolean auto;
+        private boolean cancel;
 
         public JoinCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context, boolean auto) {
             super(plugin, plugin.getGames().getCurrentGame(), sender, context);
 
             this.auto = auto;
+        }
+
+        @Override
+        public boolean isCanceled() {
+            return this.cancel;
+        }
+
+        @Override
+        public void setCanceled(boolean cancel) {
+            this.cancel = cancel;
         }
 
         public ArcadePlayer getJoinPlayer() {

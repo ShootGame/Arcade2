@@ -32,9 +32,11 @@ public enum EnvironmentType {
     }
 
     public static EnvironmentType forName(String name) {
-        EnvironmentType environment = valueOf(XMLParser.parseEnumValue(name));
-        if (environment != null) {
-            return environment;
+        if (name != null) {
+            EnvironmentType environment = valueOf(XMLParser.parseEnumValue(name));
+            if (environment != null) {
+                return environment;
+            }
         }
 
         return Environment.DEFAULT_TYPE;

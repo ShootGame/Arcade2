@@ -3,7 +3,7 @@ package pl.themolka.arcade.task;
 import java.time.Duration;
 
 public class PrintableCountdown extends Countdown {
-    public static final String FIELD_TIME = "%TIME%";
+    public static final String FIELD_TIME_LEFT = "%TIME_LEFT%";
     public static final int[] SECONDS = {0, 1, 2, 3, 4, 5, 10, 15, 20, 30, 45, 60};
 
     public PrintableCountdown(TaskManager tasks) {
@@ -22,7 +22,7 @@ public class PrintableCountdown extends Countdown {
             result = Long.toString(left) + " second";
         }
 
-        return message.replace(FIELD_TIME, result);
+        return message.replace(FIELD_TIME_LEFT, result);
     }
 
     public boolean isPrintable(long secondsLeft) {

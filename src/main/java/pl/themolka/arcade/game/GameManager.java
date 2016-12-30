@@ -1,33 +1,40 @@
 package pl.themolka.arcade.game;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.bukkit.World;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
+import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.MapParser;
 import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.MapQueue;
+import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.logging.Level;
 
 public class GameManager {
+    public static final int DEFAULT_MAX_GAME_ID = 15;
+
     private final ArcadePlugin plugin;
 
     private Game currentGame;
+    private int gameId;
+    private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
     private MapQueue queue = new MapQueue();
-    private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
     public GameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
+
+        this.setDefaultMaxGameId();
     }
 
     public Game createGame(ArcadeMap map) throws IOException {
@@ -42,9 +49,9 @@ public class GameManager {
             copiedFiles.append(file.getName());
 
             if (file.isDirectory()) {
-                copiedFiles.append(" [d]");
+                copiedFiles.append("[d]");
             } else if (file.isFile()) {
-                copiedFiles.append(" [f]");
+                copiedFiles.append("[f]");
             }
 
             if (i != copied.length - 1) {
@@ -88,6 +95,11 @@ public class GameManager {
             }
 
             target = next;
+
+            // refill queue if it's empty
+            if (this.getQueue().hasNextMap()) {
+                this.fillQueue();
+            }
         }
 
         this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
@@ -96,9 +108,16 @@ public class GameManager {
 
             if (this.currentGame != null) {
                 this.destroyGame(this.getCurrentGame());
+
+                this.gameId++;
+                this.plugin.getServerSession().getContent().setLastGameId(this.getGameId());
             }
 
             this.setCurrentGame(game);
+
+            if (this.getGameId() >= this.getMaxGameId()) {
+                this.setNextRestart(true);
+            }
         } catch (Throwable th) {
             this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "'", th);
             this.cycleNext();
@@ -118,7 +137,7 @@ public class GameManager {
 
     public void cycleRestart() {
         CycleRestartEvent event = new CycleRestartEvent(this.plugin);
-        this.plugin.getEvents().post(event);
+        this.postEvent(event);
 
         if (!event.isCanceled()) {
             this.plugin.getServer().shutdown();
@@ -127,19 +146,52 @@ public class GameManager {
 
     public void destroyGame(Game game) {
         GameDestroyEvent worldEvent = new GameDestroyEvent(this.plugin, game);
-        this.plugin.getEvents().post(worldEvent);
+        this.postEvent(worldEvent);
 
         game.stop();
 
         File directory = new File(this.plugin.getMaps().getWorldContainer(), game.getMap().getWorldName());
-        this.serializeGame(game, new File(directory, Game.JSON_FILENAME));
+        this.serializeGame(new File(directory, Game.JSON_FILENAME), game);
 
         this.plugin.getMaps().destroyWorld(game.getWorld(), worldEvent.isSaveWorld());
-        this.plugin.getEvents().post(new GameDestroyedEvent(this.plugin, game));
+        this.postEvent(new GameDestroyedEvent(this.plugin, game));
+    }
+
+    public void fillQueue() {
+        Element queueElement = this.plugin.getSettings().getData().getChild("queue");
+        if (queueElement == null) {
+            queueElement = new Element("queue");
+        }
+
+        for (Element mapElement : queueElement.getChildren("map")) {
+            String directory = mapElement.getAttributeValue("directory");
+            String mapName = mapElement.getTextNormalize();
+
+            OfflineMap map = null;
+            if (directory != null) {
+                map = this.plugin.getMaps().getContainer().getMapByDirectory(directory);
+            } else if (mapName != null) {
+                map = this.plugin.getMaps().getContainer().getMap(mapName);
+            }
+
+            if (map != null) {
+                queue.addMap(map);
+            }
+        }
+
+        this.postEvent(new MapQueueFillEvent(this.plugin, this.getQueue()));
     }
 
     public Game getCurrentGame() {
         return this.currentGame;
+    }
+
+    public int getGameId() {
+        return this.gameId;
+    }
+
+    public int getMaxGameId() {
+        return this.maxGameId;
     }
 
     public MapQueue getQueue() {
@@ -163,15 +215,44 @@ public class GameManager {
         this.currentGame = currentGame;
     }
 
+    public void setDefaultMaxGameId() {
+        Element queueElement = plugin.getSettings().getData().getChild("queue");
+        if (queueElement == null) {
+            return;
+        }
+
+        Attribute attribute = queueElement.getAttribute("restart-after");
+        if (attribute == null) {
+            return;
+        }
+
+        try {
+            this.maxGameId = attribute.getIntValue();
+        } catch (DataConversionException ignored) {
+        }
+    }
+
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
+    }
+
+    public void setMaxGameId(int maxGameId) {
+        this.maxGameId = maxGameId;
+    }
+
     public void setNextRestart(boolean nextRestart) {
         this.nextRestart = nextRestart;
     }
 
-    public void serializeGame(Game game, File file) {
-        try (FileWriter writer = new FileWriter(file)) {
-            this.gson.toJson(game, writer);
+    public void serializeGame(File file, Game game) {
+        try {
+            this.plugin.serializeJsonFile(file, game);
         } catch (IOException io) {
             io.printStackTrace();
         }
+    }
+
+    private void postEvent(Event event) {
+        this.plugin.getEvents().post(event);
     }
 }

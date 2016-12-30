@@ -19,6 +19,8 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
     public Sessions(ArcadePlugin plugin) {
         this.plugin = plugin;
+
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -53,8 +55,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
             ArcadePlayerRespawnEvent respawnEvent = new ArcadePlayerRespawnEvent(this.plugin, player);
             respawnEvent.setRespawnPosition(game.getMap().getSpawn());
 
-            this.post(respawnEvent);
-
+            this.postEvent(respawnEvent);
             if (respawnEvent.getRespawnPosition() != null) {
                 event.setRespawnLocation(respawnEvent.getRespawnPosition());
             }
@@ -78,7 +79,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
             player.getBukkit().teleport(game.getMap().getSpawn());
         }
 
-        this.post(new ArcadePlayerJoinEvent(this.plugin, player));
+        this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));
         return new ArcadeSession(player);
     }
 
@@ -87,12 +88,11 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         session.getRepresenter().getGamePlayer().setPlayer(null); // make offline
 
         this.plugin.removePlayer(session.getRepresenter());
-        this.post(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
-
+        this.postEvent(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
         return session;
     }
 
-    private void post(Event event) {
+    private void postEvent(Event event) {
         this.plugin.getEvents().post(event);
     }
 }

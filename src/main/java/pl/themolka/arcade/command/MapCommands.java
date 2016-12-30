@@ -11,6 +11,7 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
+import pl.themolka.commons.command.CommandUsageException;
 import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
@@ -142,19 +143,18 @@ public class MapCommands {
 
     @CommandInfo(name = {"setnext", "sn"},
             description = "Set next map in the queue",
-            min = 1,
             flags = {"c", "current", "r", "restart"},
-            usage = "[-add] [-current|-restart|<map...>]",
+            usage = "[-after] [-current|-restart|<map...>]",
             permission = "arcade.command.setnext",
             completer = "setNextCompleter")
     public void setNextCommand(Session<ArcadePlayer> sender, CommandContext context) {
-        boolean paramAdd = context.hasFlag("a") || context.hasFlag("add");
+        boolean paramAfter = context.hasFlag("a") || context.hasFlag("after");
         boolean paramCurrent = context.hasFlag("c") || context.hasFlag("current");
         boolean paramRestart = context.hasFlag("r") || context.hasFlag("restart");
         String paramMap = context.getParams(0);
 
+        this.plugin.getGames().setNextRestart(paramRestart);
         if (paramRestart) {
-            this.plugin.getGames().setNextRestart(true);
             throw new CommandException("Server will be restarted after this game.");
         }
 
@@ -166,8 +166,10 @@ public class MapCommands {
             }
 
             results.add(game.getMap().getMapInfo());
-        } else {
+        } else if (paramMap != null) {
             results.addAll(this.plugin.getMaps().findMap(paramMap));
+        } else {
+            throw new CommandUsageException("You need to type map name, use -current or -restart flag");
         }
 
         if (results.isEmpty()) {
@@ -176,7 +178,7 @@ public class MapCommands {
             sender.sendError("Found " + results.size() + " results. Setting next the best one...");
         }
 
-        this.setNextMap(sender, results.get(0), paramAdd);
+        this.setNextMap(sender, results.get(0), paramAfter);
     }
 
     public List<String> setNextCompleter(Session<ArcadePlayer> sender, CommandContext context) {
@@ -185,15 +187,15 @@ public class MapCommands {
         return results;
     }
 
-    private void setNextMap(Session<ArcadePlayer> sender, OfflineMap map, boolean add) {
+    private void setNextMap(Session<ArcadePlayer> sender, OfflineMap map, boolean setNext) {
         GameManager games = this.plugin.getGames();
 
-        if (add) {
-            games.getQueue().addMap(map);
-            sender.sendSuccess(map.getName() + " has been added to the queue.");
-        } else {
+        if (setNext) {
             games.getQueue().setNextMap(map);
             sender.sendSuccess(map.getName() + " has been set to next in the queue.");
+        } else {
+            games.getQueue().addMap(map);
+            sender.sendSuccess(map.getName() + " has been added to the queue.");
         }
     }
 }

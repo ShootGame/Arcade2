@@ -1,5 +1,9 @@
 package pl.themolka.arcade;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -7,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
@@ -21,9 +27,6 @@ import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
-import pl.themolka.arcade.map.MapQueue;
-import pl.themolka.arcade.map.MapQueueFillEvent;
-import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.map.XMLMapParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
@@ -35,7 +38,9 @@ import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.util.ManifestFile;
+import pl.themolka.arcade.util.ServerSessionFile;
 import pl.themolka.arcade.util.Tickable;
+import pl.themolka.arcade.xml.XMLLocation;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.command.Commands;
 import pl.themolka.commons.event.Event;
@@ -45,8 +50,13 @@ import pl.themolka.commons.session.Sessions;
 import pl.themolka.commons.storage.Storages;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,17 +72,22 @@ import java.util.logging.Level;
 public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final String[] COPYRIGHTS = {"TheMolkaPL"};
 
+    public static final String DEFAULT_SERVER_NAME = "server";
+
     private Commons commons;
     private Environment environment;
     private GameManager games;
     private final VoidGenerator generator = new VoidGenerator();
+    private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     private final ManifestFile manifest = new ManifestFile();
     private MapManager maps;
     private final ModuleContainer modules = new ModuleContainer();
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
+    private String serverName = DEFAULT_SERVER_NAME;
+    private ServerSessionFile serverSession;
     private Settings settings;
     private TaskManager tasks;
-    private long tick = 0L;
+    private long tickId = 0L;
     private final List<Tickable> tickableList = new CopyOnWriteArrayList<>();
     private BukkitTask tickableTask;
 
@@ -92,6 +107,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.settings = new Settings(this);
         this.reloadConfig();
+
+        this.loadServer();
 
         try {
             this.loadEnvironment();
@@ -116,6 +133,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getServer().getScheduler().runTaskLater(this, new Runnable() {
             @Override
             public void run() {
+                try {
+                    Location spawn = XMLLocation.parse(ArcadePlugin.this.getSettings().getData().getChild("spawn"));
+
+                    World defaultWorld = ArcadePlugin.this.getServer().getWorlds().get(0);
+                    defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
+                } catch (DataConversionException ignored) {
+                }
+
                 ArcadePlugin.this.beginLogic();
             }
         }, 1L);
@@ -152,6 +177,12 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         } catch (Throwable th) {
             this.getLogger().log(Level.SEVERE, "Could not disable environment " + this.getEnvironment().getType().prettyName(), th);
         }
+
+        try {
+            this.getServerSession().serialize();
+        } catch (IOException io) {
+            this.getLogger().log(Level.SEVERE, "Could not save server-session file: " + io.getMessage(), io);
+        }
     }
 
     @Override
@@ -178,13 +209,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public void run() {
         for (Tickable tickable : this.getTickables()) {
             try {
-                tickable.onTick(this.getTick());
+                tickable.onTick(this.getTickId());
             } catch (Throwable th) {
-                this.getLogger().log(Level.SEVERE, "Could not tick #" + this.getTick() + " in " + tickable.getClass().getName(), th);
+                this.getLogger().log(Level.SEVERE, "Could not tick #" + this.getTickId() + " in " + tickable.getClass().getName(), th);
             }
         }
 
-        this.tick++;
+        this.tickId++;
     }
 
     @Override
@@ -217,6 +248,12 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    public <T> T deserializeJsonFile(File file, Class<T> object) throws IOException {
+        try (Reader reader = new FileReader(file)) {
+            return this.getGson().fromJson(reader, object);
+        }
+    }
+
     public ArcadePlayer findPlayer(String query) {
         query = query.toLowerCase();
         for (ArcadePlayer player : this.getPlayers()) {
@@ -246,6 +283,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public VoidGenerator getGenerator() {
         return this.generator;
+    }
+
+    public Gson getGson() {
+        return this.gson;
     }
 
     public ManifestFile getManifest() {
@@ -288,6 +329,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.players.values();
     }
 
+    public String getServerName() {
+        return this.serverName;
+    }
+
+    public ServerSessionFile getServerSession() {
+        return this.serverSession;
+    }
+
     public Settings getSettings() {
         return this.settings;
     }
@@ -296,8 +345,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.tasks;
     }
 
-    public long getTick() {
-        return this.tick;
+    public long getTickId() {
+        return this.tickId;
     }
 
     public List<Tickable> getTickables() {
@@ -332,10 +381,20 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.tickableList.remove(tickable);
     }
 
+    public void serializeJsonFile(File file, Serializable object) throws IOException {
+        try (Writer writer = new FileWriter(file)) {
+            this.getGson().toJson(object, writer);
+        }
+    }
+
     public void setEnvironment(Environment environment) {
         if (this.getEnvironment() == null) {
             this.environment = environment;
         }
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
     public void unregisterListenerObject(Object object) {
@@ -363,7 +422,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadEnvironment() throws JDOMException {
         Element xml = this.getSettings().getData().getChild("environment");
-        EnvironmentType type = EnvironmentType.forName(xml.getTextNormalize());
+        EnvironmentType type = EnvironmentType.forName(xml.getAttributeValue("type"));
 
         this.environment = type.buildEnvironment(xml);
         this.environment.initialize(this);
@@ -371,45 +430,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadGames() {
         this.games = new GameManager(this);
+        this.games.setGameId(this.getServerSession().getContent().getLastGameId());
 
-        Element queueElement = this.getSettings().getData().getChild("queue");
-        if (queueElement == null) {
-            queueElement = new Element("queue");
-        }
-
-        MapQueue queue = this.getGames().getQueue();
-        for (Element mapElement : queueElement.getChildren("map")) {
-            String directory = mapElement.getAttributeValue("directory");
-            String mapName = mapElement.getTextNormalize();
-
-            OfflineMap map = null;
-            if (directory != null) {
-                map = this.getMaps().getContainer().getMapByDirectory(directory);
-            } else if (mapName != null) {
-                map = this.getMaps().getContainer().getMap(mapName);
-            }
-
-            if (map != null) {
-                queue.addMap(map);
-            }
-        }
-
-        this.getEvents().post(new MapQueueFillEvent(this, queue));
+        this.games.fillQueue();
     }
 
     private void loadMaps() {
         this.maps = new MapManager(this);
         this.maps.setParser(new XMLMapParser.XMLParserTechnology());
         this.maps.setWorldContainer(new File(this.getSettings().getData().getChild("world-container").getValue()));
-
-//        TODO fix this
-//        try {
-//            Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
-//
-//            World defaultWorld = this.getServer().getWorlds().get(0);
-//            defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
-//        } catch (DataConversionException ignored) {
-//        }
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
         this.getEvents().post(fillEvent);
@@ -475,11 +504,31 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         for (Module<?> module : this.getModules().getModules()) {
             try {
+                module.registerCommandObject(module);
                 module.registerListeners();
                 module.onEnable(globalModules.getChild(module.getId()));
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
             }
+        }
+    }
+
+    private void loadServer() {
+        this.serverSession = new ServerSessionFile(this);
+        try {
+            this.serverSession.deserialize();
+        } catch (IOException io) {
+            this.getLogger().log(Level.SEVERE, "Could not load server-session file: " + io.getMessage(), io);
+        }
+
+        Element serverElement = this.getSettings().getData().getChild("server");
+        if (serverElement == null) {
+            serverElement = new Element("server");
+        }
+
+        Attribute nameAttribute = serverElement.getAttribute("name");
+        if (nameAttribute != null) {
+            this.serverName = nameAttribute.getValue();
         }
     }
 
@@ -509,9 +558,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.sessions = new pl.themolka.arcade.session.Sessions(plugin);
             this.storages = new pl.themolka.arcade.storage.Storages();
 
+            ((pl.themolka.arcade.command.Commands) this.commands).setSessions(this.sessions);
             this.events.register(this.sessions);
-            ArcadePlugin.this.getServer().getPluginManager()
-                    .registerEvents((pl.themolka.arcade.session.Sessions) this.sessions, ArcadePlugin.this);
         }
 
         @Override

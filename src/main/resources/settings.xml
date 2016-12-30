@@ -2,17 +2,20 @@
 <settings>
     <!-- Server environment type -->
     <!-- Values: `development`, `production` -->
-    <environment>development</environment>
+    <environment type="development" />
 
     <!-- Default world spawn position -->
     <spawn x="0.5" y="64" z="0.5" />
+
+    <!-- Server settings -->
+    <server name="server" />
 
     <!-- Directory where played maps will be stored -->
     <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->
     <world-container>./worlds</world-container>
 
     <!-- Default map queue -->
-    <queue>
+    <queue restart-after="15">
         <map>Unknown map</map>
         <map directory="Second unknown map" />
     </queue>

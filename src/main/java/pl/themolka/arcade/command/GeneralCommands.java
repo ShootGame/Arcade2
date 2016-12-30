@@ -72,6 +72,15 @@ public class GeneralCommands {
         int paramSeconds = context.getParamInt(0);
 
         OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();
+        if (nextMap == null) {
+            String reason = "The map queue is empty.";
+            if (sender.hasPermission("arcade.command.setnext")) {
+                reason += " Set next map using /setnext <map>.";
+            }
+
+            throw new CommandException(reason);
+        }
+
         CycleCommandEvent commandEvent = new CycleCommandEvent(this.plugin, sender, context, nextMap);
         this.plugin.getEvents().post(commandEvent);
 
@@ -86,6 +95,8 @@ public class GeneralCommands {
 
         CycleStartEvent startEvent = new CycleStartEvent(this.plugin, nextMap, seconds);
         this.plugin.getEvents().post(startEvent);
+
+        this.plugin.getGames().setNextRestart(false);
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {

@@ -45,8 +45,6 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.id = info.id().toLowerCase();
         this.dependency = info.dependency();
         this.loadBefore = info.loadBefore();
-
-        this.registerCommandObject(this);
     }
 
     public T buildGameModule(Element xml) throws JDOMException {

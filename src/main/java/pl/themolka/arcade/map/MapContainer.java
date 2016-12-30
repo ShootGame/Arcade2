@@ -38,7 +38,7 @@ public class MapContainer {
         query = query.toLowerCase();
 
         for (OfflineMap map : this.getMaps()) {
-            if (map.getName().equalsIgnoreCase(query)) {
+            if (!results.contains(map) && map.getName().equalsIgnoreCase(query)) {
                 results.add(map);
 
                 if (first) {
@@ -48,7 +48,7 @@ public class MapContainer {
         }
 
         for (OfflineMap map : this.getMaps()) {
-            if (map.getDirectory().getName().equalsIgnoreCase(query)) {
+            if (!results.contains(map) && map.getDirectory().getName().equalsIgnoreCase(query)) {
                 results.add(map);
 
                 if (first) {
@@ -58,7 +58,7 @@ public class MapContainer {
         }
 
         for (OfflineMap map : this.getMaps()) {
-            if (map.getName().toLowerCase().contains(query)) {
+            if (!results.contains(map) && map.getName().toLowerCase().contains(query)) {
                 results.add(map);
 
                 if (first) {
@@ -68,7 +68,7 @@ public class MapContainer {
         }
 
         for (OfflineMap map : this.getMaps()) {
-            if (map.getDescription() != null && map.getDescription().toLowerCase().contains(query)) {
+            if (!results.contains(map) && map.getDescription() != null && map.getDescription().toLowerCase().contains(query)) {
                 results.add(map);
 
                 if (first) {
