@@ -29,7 +29,7 @@ public class Countdown extends Task implements CountdownListener {
      */
     @Deprecated
     @Override
-    public boolean cancelTask() {
+    public final boolean cancelTask() {
         return super.cancelTask();
     }
 
@@ -45,7 +45,7 @@ public class Countdown extends Task implements CountdownListener {
         this.seconds = seconds;
         this.onUpdate(seconds, this.getLeftSeconds());
 
-        if (this.getLeftSeconds() == 0L) {
+        if (this.isDone()) {
             this.onDone();
             this.cancelTask();
         }
@@ -112,22 +112,20 @@ public class Countdown extends Task implements CountdownListener {
         return false;
     }
 
-    public Countdown countAsync() {
+    public int countAsync() {
         if (this.getGame() == null) {
             throw new UnsupportedOperationException("Countdown not registered");
         }
 
-        this.getGame().addAsyncTask(this);
-        return this;
+        return this.getGame().addAsyncTask(this);
     }
 
-    public Countdown countSync() {
+    public int countSync() {
         if (this.getGame() == null) {
             throw new UnsupportedOperationException("Countdown not registered");
         }
 
-        this.getGame().addSyncTask(this);
-        return this;
+        return this.getGame().addSyncTask(this);
     }
 
     public Duration getDuration() {

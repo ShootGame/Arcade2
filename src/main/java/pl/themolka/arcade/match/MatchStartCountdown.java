@@ -11,8 +11,8 @@ public class MatchStartCountdown extends PrintableCountdown {
 
     private final Match match;
 
-    public MatchStartCountdown(ArcadePlugin plugin, Duration duration, Match match) {
-        super(plugin.getTasks(), duration);
+    public MatchStartCountdown(ArcadePlugin plugin, Match match) {
+        super(plugin.getTasks(), null);
         this.plugin = plugin;
 
         this.match = match;
@@ -30,25 +30,27 @@ public class MatchStartCountdown extends PrintableCountdown {
 
     @Override
     public void onUpdate(long seconds, long secondsLeft) {
-        if (!this.getMatch().isForceStart() && this.cannotStart()) {
+        if (!this.getMatch().isForceStart() && this.getMatch().cannotStart()) {
             this.cancelCountdown();
-            return;
-        }
-
-        if (this.isPrintable(secondsLeft)) {
+        } else if (this.isPrintable(secondsLeft)) {
             this.plugin.getServer().broadcastMessage(this.getPrintMessage(this.getStartMessage()));
         }
     }
 
-    private boolean cannotStart() {
-        return false; // TODO
+    public int countStart(int seconds) {
+        this.setDuration(Duration.ofSeconds(seconds));
+
+        if (this.isTaskRunning()) {
+            return this.getTaskId();
+        }
+        return this.countSync();
     }
 
     private String getCancelMessage() {
         String message = ChatColor.GREEN + "Start countdown has been canceled";
 
-        if (this.cannotStart()) {
-            return message + " due it cannot start.";
+        if (!this.getMatch().isForceStart() && this.getMatch().cannotStart()) {
+            return message + " due the match cannot start.";
         }
         return message + ".";
     }

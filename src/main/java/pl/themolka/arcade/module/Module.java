@@ -98,8 +98,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
     }
 
     public boolean isGameModuleEnabled() {
-        Game game = this.getGame();
-        return game != null && game.getModules().contains(this.getId());
+        return this.getGame() != null && this.getGame().getModules().contains(this.getId());
     }
 
     public boolean isLoaded() {

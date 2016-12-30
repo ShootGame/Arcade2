@@ -100,6 +100,10 @@ public class GeneralCommands {
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
+            for (Countdown countdown : game.gerRunningCountdowns()) {
+                countdown.cancelCountdown();
+            }
+
             CycleCountdown countdown = new CycleCountdown(this.plugin, Duration.ofSeconds(seconds));
             game.addSyncTask(countdown);
         }

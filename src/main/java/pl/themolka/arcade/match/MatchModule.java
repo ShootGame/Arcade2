@@ -14,14 +14,34 @@ import pl.themolka.commons.session.Session;
 
 @ModuleInfo(id = "match")
 public class MatchModule extends Module<MatchGame> {
+    public static final int DEFAULT_START_COUNTDOWN = 25;
+
+    private int startCountdown = DEFAULT_START_COUNTDOWN;
+
     @Override
     public MatchGame buildGameModule(Element xml) throws JDOMException {
-        return new MatchGame();
+        int defaultStartCountdown = this.startCountdown;
+
+        Element startCountdownElement = xml.getChild("start-countdown");
+        if (startCountdownElement != null) {
+            try {
+                defaultStartCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return new MatchGame(defaultStartCountdown);
     }
 
     @Override
     public void onEnable(Element global) throws JDOMException {
-        super.onEnable(global);
+        Element startCountdownElement = global.getChild("start-countdown");
+        if (startCountdownElement != null) {
+            try {
+                this.startCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
+            } catch (NumberFormatException ignored) {
+            }
+        }
     }
 
     @CommandInfo(name = {"begin", "start"},

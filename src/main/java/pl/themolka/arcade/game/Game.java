@@ -13,6 +13,7 @@ import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class Game implements Metadata, Serializable {
     private final transient MetadataContainer metadata = new MetadataContainer();
     private final transient GameModuleContainer modules = new GameModuleContainer();
     private final transient Map<UUID, GamePlayer> players = new HashMap<>();
+    private Instant startTime;
     private final transient List<Task> taskList = new ArrayList<>();
     private final transient World world;
 
@@ -176,6 +178,8 @@ public class Game implements Metadata, Serializable {
     }
 
     public void start() {
+        this.startTime = Instant.now();
+
         for (GameModule module : this.getModules().getModules()) {
             this.enableModule(module);
         }

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.map.MapPalette;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jdom2.Attribute;
@@ -50,7 +49,6 @@ import pl.themolka.commons.Commons;
 import pl.themolka.commons.event.Event;
 import pl.themolka.commons.generator.VoidGenerator;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -146,8 +144,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 ArcadePlugin.this.beginLogic();
             }
         }, 1L);
-
-        System.out.println("matchColor = " + MapPalette.matchColor(new Color(30, 30, 30, 255)));
     }
 
     @Override
