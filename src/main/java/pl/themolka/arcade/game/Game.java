@@ -5,6 +5,8 @@ import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapParserException;
+import pl.themolka.arcade.metadata.Metadata;
+import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.task.Countdown;
@@ -16,15 +18,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class Game implements Serializable {
+public class Game implements Metadata, Serializable {
     public static final String JSON_FILENAME = "game.json";
 
     private final transient ArcadePlugin plugin;
 
     private final ArcadeMap map;
+    private final transient MetadataContainer metadata = new MetadataContainer();
     private final transient GameModuleContainer modules = new GameModuleContainer();
     private final transient Map<UUID, GamePlayer> players = new HashMap<>();
     private final transient List<Task> taskList = new ArrayList<>();
@@ -42,6 +46,21 @@ public class Game implements Serializable {
         } else {
             this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
         }
+    }
+
+    @Override
+    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
+        return this.metadata.getMetadata(owner, key, def);
+    }
+
+    @Override
+    public Set<String> getMetadataKeys() {
+        return this.metadata.getMetadataKeys();
+    }
+
+    @Override
+    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
+        this.metadata.setMetadata(owner, key, metadata);
     }
 
     public void addPlayer(GamePlayer player) {

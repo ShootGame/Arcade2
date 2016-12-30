@@ -34,6 +34,10 @@ public class Environment extends SimpleEnvironmentListener implements Listener, 
         plugin.registerListenerObject(this);
     }
 
+    public ArcadePlugin getPlugin() {
+        return this.plugin;
+    }
+
     public Element getSettings() {
         return this.settings;
     }

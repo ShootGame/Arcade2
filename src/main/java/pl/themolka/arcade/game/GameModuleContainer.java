@@ -16,7 +16,7 @@ public class GameModuleContainer {
     }
 
     public boolean contains(String id) {
-        return this.getModuleIds().contains(id.toLowerCase());
+        return this.getModuleIds().contains(id);
     }
 
     public boolean containsModule(GameModule module) {
@@ -28,7 +28,7 @@ public class GameModuleContainer {
     }
 
     public GameModule getModuleById(String id) {
-        return this.modulesById.get(id.toLowerCase());
+        return this.modulesById.get(id);
     }
 
     public Set<Class<? extends Module<?>>> getModuleClasses() {

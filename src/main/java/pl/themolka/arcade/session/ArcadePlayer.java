@@ -5,39 +5,39 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.util.Metadatable;
+import pl.themolka.arcade.metadata.Metadata;
+import pl.themolka.arcade.metadata.MetadataContainer;
+import pl.themolka.arcade.module.Module;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class ArcadePlayer implements Metadatable {
+public class ArcadePlayer implements Metadata {
     public static final long SOUND_INTERVAL = 500L; // half second
 
     private final transient Player bukkit;
     private transient GamePlayer gamePlayer;
     private Instant lastPlayedSound;
-    private final Map<String, Object> metadata = new HashMap<>();
+    private final MetadataContainer metadata = new MetadataContainer();
 
     public ArcadePlayer(Player bukkit) {
         this.bukkit = bukkit;
     }
 
     @Override
-    public Object getMetadata(String key, Object def) {
-        return this.metadata.getOrDefault(key, def);
+    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
+        return this.metadata.getMetadata(owner, key, def);
     }
 
     @Override
     public Set<String> getMetadataKeys() {
-        return this.metadata.keySet();
+        return this.metadata.getMetadataKeys();
     }
 
     @Override
-    public void setMetadata(String key, Object metadata) {
-        this.metadata.put(key, metadata);
+    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
+        this.metadata.setMetadata(owner, key, metadata);
     }
 
     public Player getBukkit() {

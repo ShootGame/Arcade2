@@ -44,7 +44,8 @@ public class MapCommands {
 
     @CommandInfo(name = {"mapinfo", "map"},
             description = "Describe a map",
-            flags = {"c", "current", "n", "next"},
+            flags = {"c", "current",
+                    "n", "next"},
             usage = "[-current|-next|<map...>]",
             permission = "arcade.command.mapinfo",
             completer = "mapInfoCompleter")
@@ -143,7 +144,9 @@ public class MapCommands {
 
     @CommandInfo(name = {"setnext", "sn"},
             description = "Set next map in the queue",
-            flags = {"c", "current", "r", "restart"},
+            flags = {"a", "after",
+                    "c", "current",
+                    "r", "restart"},
             usage = "[-after] [-current|-restart|<map...>]",
             permission = "arcade.command.setnext",
             completer = "setNextCompleter")

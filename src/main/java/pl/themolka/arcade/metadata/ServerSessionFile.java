@@ -1,4 +1,4 @@
-package pl.themolka.arcade.util;
+package pl.themolka.arcade.metadata;
 
 import pl.themolka.arcade.ArcadePlugin;
 

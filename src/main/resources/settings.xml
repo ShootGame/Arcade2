@@ -2,7 +2,9 @@
 <settings>
     <!-- Server environment type -->
     <!-- Values: `development`, `production` -->
-    <environment type="development" />
+    <environment type="development">
+        <event-debug>true</event-debug>
+    </environment>
 
     <!-- Default world spawn position -->
     <spawn x="0.5" y="64" z="0.5" />
@@ -30,10 +32,15 @@
         <archive>
             <directory>./archive</directory>
         </archive>
+
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>
             </directory>
         </map-loader>
+
+        <match>
+
+        </match>
     </modules>
 </settings>

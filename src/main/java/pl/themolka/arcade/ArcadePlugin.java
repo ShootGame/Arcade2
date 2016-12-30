@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.map.MapPalette;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jdom2.Attribute;
@@ -16,11 +17,13 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommand;
+import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
+import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
@@ -28,27 +31,26 @@ import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.XMLMapParser;
+import pl.themolka.arcade.metadata.ManifestFile;
+import pl.themolka.arcade.metadata.ServerSessionFile;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
+import pl.themolka.arcade.storage.Storages;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.TaskManager;
-import pl.themolka.arcade.util.ManifestFile;
-import pl.themolka.arcade.util.ServerSessionFile;
 import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.XMLLocation;
 import pl.themolka.commons.Commons;
-import pl.themolka.commons.command.Commands;
 import pl.themolka.commons.event.Event;
-import pl.themolka.commons.event.Events;
 import pl.themolka.commons.generator.VoidGenerator;
-import pl.themolka.commons.session.Sessions;
-import pl.themolka.commons.storage.Storages;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -74,7 +76,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public static final String DEFAULT_SERVER_NAME = "server";
 
-    private Commons commons;
+    private ArcadeCommons commons;
     private Environment environment;
     private GameManager games;
     private final VoidGenerator generator = new VoidGenerator();
@@ -144,6 +146,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 ArcadePlugin.this.beginLogic();
             }
         }, 1L);
+
+        System.out.println("matchColor = " + MapPalette.matchColor(new Color(30, 30, 30, 255)));
     }
 
     @Override
@@ -405,7 +409,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
-    private Commons getCommons() {
+    private ArcadeCommons getCommons() {
         return this.commons;
     }
 
@@ -488,6 +492,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         for (Module<?> module : moduleList) {
             try {
                 module.initialize(this);
+                module.registerCommandObject(module);
+
                 success++;
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not load module '" + module.getId() + "': " + th.getMessage(), th);
@@ -504,7 +510,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         for (Module<?> module : this.getModules().getModules()) {
             try {
-                module.registerCommandObject(module);
                 module.registerListeners();
                 module.onEnable(globalModules.getChild(module.getId()));
             } catch (Throwable th) {
@@ -549,16 +554,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private class ArcadeCommons implements Commons {
         private final Commands commands;
         private final Events events;
-        private final Sessions<?> sessions;
+        private final Sessions sessions;
         private final Storages storages;
 
         public ArcadeCommons(ArcadePlugin plugin) {
-            this.commands = new pl.themolka.arcade.command.Commands(plugin);
-            this.events = new pl.themolka.arcade.event.Events();
-            this.sessions = new pl.themolka.arcade.session.Sessions(plugin);
-            this.storages = new pl.themolka.arcade.storage.Storages();
+            this.commands = new Commands(plugin);
+            this.events = new Events();
+            this.sessions = new Sessions(plugin);
+            this.storages = new Storages();
 
-            ((pl.themolka.arcade.command.Commands) this.commands).setSessions(this.sessions);
+            this.commands.setSessions(this.sessions);
             this.events.register(this.sessions);
         }
 
@@ -573,7 +578,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         @Override
-        public Sessions<?> getSessions() {
+        public Sessions getSessions() {
             return this.sessions;
         }
 

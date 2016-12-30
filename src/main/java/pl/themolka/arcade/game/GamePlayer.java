@@ -1,19 +1,17 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.GameMode;
+import pl.themolka.arcade.metadata.Metadata;
+import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.util.Metadatable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class GamePlayer implements Metadatable {
-    public static final String METADATA_KEY_SEPARATOR = "#";
-
+public class GamePlayer implements Metadata {
     private final transient Game game;
-    private final Map<String, Object> metadata = new HashMap<>();
+    private final MetadataContainer metadata = new MetadataContainer();
     private ArcadePlayer player;
     private final String username;
     private final UUID uuid;
@@ -30,53 +28,27 @@ public class GamePlayer implements Metadatable {
         this.uuid = uuid;
     }
 
-    /**
-     * Should not be used.
-     * Use {@link #getMetadata(Class, String)} or {@link #getMetadata(Class, String, Object)} instead
-     */
-    @Deprecated
     @Override
-    public Object getMetadata(String key, Object def) {
-        return this.metadata.getOrDefault(key, def);
+    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
+        return this.metadata.getMetadata(owner, key, def);
     }
 
     @Override
     public Set<String> getMetadataKeys() {
-        return this.metadata.keySet();
+        return this.metadata.getMetadataKeys();
     }
 
-    /**
-     * Should not be used.
-     * Use {@link #setMetadata(Class, String, Object)} instead
-     */
-    @Deprecated
     @Override
-    public void setMetadata(String key, Object def) {
-        this.metadata.put(key, def);
+    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
+        this.metadata.setMetadata(owner, key, metadata);
     }
 
     public Game getGame() {
         return this.game;
     }
 
-    public Object getMetadata(Class<? extends Module<?>> owner, String key) {
-        return this.getMetadata(owner, key, null);
-    }
-
-    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
-        return this.getMetadata(owner.getName() + METADATA_KEY_SEPARATOR + key, def);
-    }
-
-    public boolean hasMetadata(Class<? extends Module<?>> owner, String key) {
-        return this.getMetadata(owner, key) != null;
-    }
-
     public boolean isOnline() {
         return this.player != null;
-    }
-
-    public void setMetadata(Class<? extends Module<?>> owner, String key, Object def) {
-        this.setMetadata(owner.getName() + METADATA_KEY_SEPARATOR + key, def);
     }
 
     public ArcadePlayer getPlayer() {
@@ -92,7 +64,7 @@ public class GamePlayer implements Metadatable {
     }
 
     public void reset() {
-
+        this.getPlayer().getBukkit().setGameMode(GameMode.CREATIVE);
     }
 
     public void setPlayer(ArcadePlayer player) {

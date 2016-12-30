@@ -4,6 +4,7 @@ import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -63,6 +64,19 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         return this.dependency;
     }
 
+    public Game getGame() {
+        return this.plugin.getGames().getCurrentGame();
+    }
+
+    public T getGameModule() {
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            game.getModules().getModuleById(this.getId());
+        }
+
+        return null;
+    }
+
     public final String getId() {
         return this.id;
     }
@@ -81,6 +95,11 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
 
     public ArcadePlugin getPlugin() {
         return this.plugin;
+    }
+
+    public boolean isGameModuleEnabled() {
+        Game game = this.getGame();
+        return game != null && game.getModules().contains(this.getId());
     }
 
     public boolean isLoaded() {

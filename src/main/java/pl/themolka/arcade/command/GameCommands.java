@@ -25,7 +25,7 @@ public class GameCommands {
 
     @CommandInfo(name = {"gameinfo", "game"},
             description = "Describe the game",
-            permission = "arcade.command.game")
+            permission = "arcade.command.gameinfo")
     public void gameCommand(Session<ArcadePlayer> sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
@@ -33,6 +33,7 @@ public class GameCommands {
         }
 
         Commands.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
+        this.plugin.getEvents().post(new GameCommandEvent(this.plugin, sender, context));
     }
 
     //
@@ -117,6 +118,12 @@ public class GameCommands {
 
         public boolean isAuto() {
             return this.auto;
+        }
+    }
+
+    public static class GameCommandEvent extends CommandEvent {
+        public GameCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context) {
+            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
         }
     }
 

@@ -29,7 +29,7 @@ public class GeneralCommands {
 
     @CommandInfo(name = "cancel",
             description = "Cancel current countdown",
-            flags = "force",
+            flags = {"f", "force"},
             usage = "[-force]",
             permission = "arcade.command.cancel")
     public void cancelCommand(Session<ArcadePlayer> sender, CommandContext context) {
