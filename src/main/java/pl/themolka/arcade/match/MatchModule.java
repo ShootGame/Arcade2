@@ -12,6 +12,8 @@ import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.session.Session;
 
+import java.util.List;
+
 @ModuleInfo(id = "match")
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 25;
@@ -67,8 +69,9 @@ public class MatchModule extends Module<MatchGame> {
 
     @CommandInfo(name = {"end", "finish"},
             description = "End current match",
-            flags = {"d", "draw"},
-            usage = "[-draw] [<winner...>]",
+            flags = {"a", "auto",
+                    "d", "draw"},
+            usage = "[-auto|-draw|<winner...>]",
             permission = "arcade.command.end",
             completer = "endCompleter")
     public void end(Session<ArcadePlayer> sender, CommandContext context) {
@@ -76,10 +79,19 @@ public class MatchModule extends Module<MatchGame> {
             throw new CommandException("Match module is not enabled in this game.");
         }
 
+        boolean paramAuto = context.hasFlag("a") || context.hasFlag("auto");
         boolean paramDraw = context.hasFlag("d") || context.hasFlag("draw");
         String paramWinner = context.getParams(0);
 
-        this.getGameModule().handleEndCommand(sender, paramWinner, paramDraw);
+        this.getGameModule().handleEndCommand(sender, paramAuto, paramWinner, paramDraw);
+    }
+
+    public List<String> endCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+        if (!this.isGameModuleEnabled()) {
+            throw new CommandException("Match module is not enabled in this game.");
+        }
+
+        return this.getGameModule().handleEndCompleter(sender, context);
     }
 
     @CommandInfo(name = {"matchinfo", "match"},

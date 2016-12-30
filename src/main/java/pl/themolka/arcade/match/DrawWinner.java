@@ -1,7 +1,5 @@
 package pl.themolka.arcade.match;
 
-import pl.themolka.arcade.game.GamePlayer;
-
 public class DrawWinner implements MatchWinner {
     @Override
     public String getName() {
@@ -9,7 +7,7 @@ public class DrawWinner implements MatchWinner {
     }
 
     @Override
-    public boolean isWinning(GamePlayer player) {
+    public boolean isWinning() {
         return true;
     }
 }

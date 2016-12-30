@@ -1,4 +1,4 @@
-package pl.themolka.arcade.devlopment;
+package pl.themolka.arcade.development;
 
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.event.EventDebugHandler;

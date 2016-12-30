@@ -5,7 +5,11 @@ import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.session.Session;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MatchGame extends GameModule {
     public static final String METADATA_MATCH = "match";
@@ -13,6 +17,7 @@ public class MatchGame extends GameModule {
     private int defaultStartCountdown;
     private Match match;
     private MatchStartCountdown startCountdown;
+    private final List<MatchWinner> winnerList = new ArrayList<>();
 
     public MatchGame(int defaultStartCountdown) {
         this.defaultStartCountdown = defaultStartCountdown;
@@ -30,6 +35,34 @@ public class MatchGame extends GameModule {
         super.onDisable();
     }
 
+    public MatchWinner findWinner() {
+        return this.findWinner(null);
+    }
+
+    public MatchWinner findWinner(String query) {
+        if (query != null) {
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.getName().equalsIgnoreCase(query)) {
+                    return winner;
+                }
+            }
+
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.getName().toLowerCase().contains(query.toLowerCase())) {
+                    return winner;
+                }
+            }
+        } else {
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.isWinning()) {
+                    return winner;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public int getDefaultStartCountdown() {
         return this.defaultStartCountdown;
     }
@@ -42,6 +75,10 @@ public class MatchGame extends GameModule {
         return this.startCountdown;
     }
 
+    public List<MatchWinner> getWinnerList() {
+        return this.winnerList;
+    }
+
     public void handleBeginCommand(Session<ArcadePlayer> sender, int seconds, boolean force) {
         String message = "Starting";
         if (force) {
@@ -52,16 +89,27 @@ public class MatchGame extends GameModule {
         this.startCountdown(seconds);
     }
 
-    public void handleEndCommand(Session<ArcadePlayer> sender, String winnerQuery, boolean draw) {
+    public void handleEndCommand(Session<ArcadePlayer> sender, boolean auto, String winnerQuery, boolean draw) {
         MatchWinner winner = null;
-        if (draw) {
+        if (auto) {
+            winner = this.findWinner();
+        } else if (draw) {
             winner = new DrawWinner();
-        } else {
-
+        } else if (winnerQuery != null) {
+            winner = this.findWinner(winnerQuery);
         }
 
         sender.sendSuccess("Force ending the match...");
         this.getMatch().end(winner, true);
+    }
+
+    public List<String> handleEndCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+        List<String> results = new ArrayList<>();
+        for (MatchWinner winner : this.getWinnerList()) {
+            results.add(winner.getName());
+        }
+
+        return results;
     }
 
     @Subscribe
@@ -91,6 +139,10 @@ public class MatchGame extends GameModule {
         event.getSender().send(ChatColor.DARK_PURPLE + "Time: " + ChatColor.DARK_AQUA + time);
     }
 
+    public boolean registerWinner(MatchWinner winner) {
+        return this.winnerList.add(winner);
+    }
+
     public int startCountdown(int seconds) {
         if (this.getStartCountdown() == null) {
             this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.match);
@@ -98,5 +150,9 @@ public class MatchGame extends GameModule {
         }
 
         return this.getStartCountdown().countStart(seconds);
+    }
+
+    public boolean unregisterWinner(MatchWinner winner) {
+        return this.winnerList.remove(winner);
     }
 }

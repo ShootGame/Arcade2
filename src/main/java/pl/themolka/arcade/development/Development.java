@@ -1,4 +1,4 @@
-package pl.themolka.arcade.devlopment;
+package pl.themolka.arcade.development;
 
 import org.jdom2.Element;
 import pl.themolka.arcade.environment.Environment;
