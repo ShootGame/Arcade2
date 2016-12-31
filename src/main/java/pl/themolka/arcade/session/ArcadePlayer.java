@@ -114,6 +114,10 @@ public class ArcadePlayer implements Metadata {
         this.send(ChatColor.GREEN + success);
     }
 
+    public void sendTip(String tip) {
+        this.send(ChatColor.GRAY + ChatColor.BOLD.toString() + "[Tip] " + ChatColor.RESET + ChatColor.GRAY + ChatColor.ITALIC + tip);
+    }
+
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
     }

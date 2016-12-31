@@ -18,4 +18,8 @@ public interface Metadata {
     }
 
     void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata);
+
+    default void removeMetadata(Class<? extends Module<?>> owner, String key) {
+        this.setMetadata(owner, key, null);
+    }
 }

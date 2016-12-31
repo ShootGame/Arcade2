@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MatchGame extends GameModule {
-    public static final String METADATA_MATCH = "match";
-
+    private boolean autoStart;
     private int defaultStartCountdown;
     private Match match;
     private MatchStartCountdown startCountdown;
     private final List<MatchWinner> winnerList = new ArrayList<>();
 
-    public MatchGame(int defaultStartCountdown) {
+    public MatchGame(boolean autoStart, int defaultStartCountdown) {
+        this.autoStart = autoStart;
         this.defaultStartCountdown = defaultStartCountdown;
     }
 
@@ -27,7 +27,7 @@ public class MatchGame extends GameModule {
     public void onEnable() {
         this.match = new Match(this.getPlugin(), this.getGame());
 
-        this.getGame().setMetadata(MatchModule.class, METADATA_MATCH, this.getMatch());
+        this.getGame().setMetadata(MatchModule.class, MatchModule.METADATA_MATCH, this.getMatch());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MatchGame extends GameModule {
         if (auto) {
             winner = this.findWinner();
         } else if (draw) {
-            winner = new DrawWinner();
+            winner = new DrawMatchWinner();
         } else if (winnerQuery != null) {
             winner = this.findWinner(winnerQuery);
         }
@@ -112,6 +112,10 @@ public class MatchGame extends GameModule {
         return results;
     }
 
+    public boolean isAutoStart() {
+        return this.autoStart;
+    }
+
     @Subscribe
     public void onJoinWhenMatchEnded(GameCommands.JoinCommandEvent event) {
         if (this.getMatch().getState().equals(MatchState.CYCLING)) {
@@ -122,7 +126,7 @@ public class MatchGame extends GameModule {
 
     @Subscribe
     public void onMatchCountdownAutoStart(GameCommands.JoinCommandEvent event) {
-        if (!this.getMatch().cannotStart() && !this.getStartCountdown().isTaskRunning()) {
+        if (!event.isCanceled() && this.isAutoStart() && !this.getMatch().cannotStart() && !this.getStartCountdown().isTaskRunning()) {
             this.startCountdown(this.getDefaultStartCountdown());
         }
     }

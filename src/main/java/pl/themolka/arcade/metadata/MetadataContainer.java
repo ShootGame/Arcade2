@@ -20,6 +20,12 @@ public class MetadataContainer extends HashMap<String, Object> implements Metada
 
     @Override
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
-        this.put(owner.getName() + Character.toString(KEY_SEPARATOR) + key, metadata);
+        String fullKey = owner.getName() + Character.toString(KEY_SEPARATOR) + key;
+
+        if (metadata != null) {
+            this.put(fullKey, metadata);
+        } else {
+            this.remove(fullKey);
+        }
     }
 }

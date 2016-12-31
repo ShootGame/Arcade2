@@ -17,12 +17,19 @@ import java.util.List;
 @ModuleInfo(id = "match")
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 25;
+    public static final String METADATA_MATCH = "match";
 
     private int startCountdown = DEFAULT_START_COUNTDOWN;
 
     @Override
     public MatchGame buildGameModule(Element xml) throws JDOMException {
+        boolean autoStart = true;
         int defaultStartCountdown = this.startCountdown;
+
+        Element autoStartElement = xml.getChild("auto-start");
+        if (autoStartElement != null) {
+            autoStart = autoStartElement.getTextNormalize().equalsIgnoreCase("true");
+        }
 
         Element startCountdownElement = xml.getChild("start-countdown");
         if (startCountdownElement != null) {
@@ -32,7 +39,7 @@ public class MatchModule extends Module<MatchGame> {
             }
         }
 
-        return new MatchGame(defaultStartCountdown);
+        return new MatchGame(autoStart, defaultStartCountdown);
     }
 
     @Override
@@ -95,7 +102,7 @@ public class MatchModule extends Module<MatchGame> {
     }
 
     @CommandInfo(name = {"matchinfo", "match"},
-            description = "Describes the match",
+            description = "Describe the match",
             permission = "arcade.command.matchinfo")
     public void matchInfo(Session<ArcadePlayer> sender, CommandContext context) {
         if (!this.isGameModuleEnabled()) {

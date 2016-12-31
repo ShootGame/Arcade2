@@ -40,7 +40,10 @@
         </map-loader>
 
         <match>
-
+            <auto-start>true</auto-start>
+            <start-countdown>25</start-countdown>
         </match>
+
+        <teams />
     </modules>
 </settings>

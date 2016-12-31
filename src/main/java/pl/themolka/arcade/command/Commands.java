@@ -25,11 +25,11 @@ public class Commands extends BukkitCommands {
         return line.toString();
     }
 
-    public static void sendTitleMessage(Session<?> session, String title) {
-        sendTitleMessage(session, title, null);
+    public static String createTitle(String title) {
+        return createTitle(title, null);
     }
 
-    public static void sendTitleMessage(Session<?> session, String title, String extra) {
+    public static String createTitle(String title, String extra) {
         String head = ChatColor.GOLD + title;
         if (extra != null) {
             head += ChatColor.GRAY + " (" + extra + ")";
@@ -38,6 +38,14 @@ public class Commands extends BukkitCommands {
         int length = (CHAT_LINE_LENGTH - head.length()) / 2;
         String line = " " + ChatColor.GRAY + ChatColor.STRIKETHROUGH + createLine(length) + ChatColor.RESET + " ";
 
-        session.send(line + head + line);
+        return line + head + line;
+    }
+
+    public static void sendTitleMessage(Session<?> session, String title) {
+        sendTitleMessage(session, title, null);
+    }
+
+    public static void sendTitleMessage(Session<?> session, String title, String extra) {
+        session.send(createTitle(title, extra));
     }
 }

@@ -15,5 +15,19 @@
         <example>
 
         </example>
+
+        <gamerules>
+            <gamerule type="doDaylightCycle">false</gamerule>
+        </gamerules>
+
+        <teams>
+            <observers color="dark aqua" dye-color="cyan" name="Observers" />
+            <team id="blue-team" color="blue" dye-color="blue" name="Blue Team" slots="15">
+
+            </team>
+            <team id="red-team" color="dark red" dye-color="red" name="Red Team" slots="15">
+
+            </team>
+        </teams>
     </modules>
 </map>
