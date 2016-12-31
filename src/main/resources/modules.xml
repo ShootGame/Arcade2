@@ -2,7 +2,7 @@
 <!-- All Arcade modules **sorted in alphabetical order** -->
 <modules>
     <module class="pl.themolka.arcade.example.ExampleModule" />
-    <module class="pl.themolka.arcade.gamerule.GameRuleModule" />
+    <module class="pl.themolka.arcade.gamerule.GameRulesModule" />
     <module class="pl.themolka.arcade.map.ArchiveModule" />
     <module class="pl.themolka.arcade.map.MapLoaderModule" />
     <module class="pl.themolka.arcade.match.MatchModule" />

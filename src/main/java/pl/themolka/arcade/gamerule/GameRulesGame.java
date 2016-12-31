@@ -5,10 +5,10 @@ import pl.themolka.arcade.game.GameModule;
 
 import java.util.List;
 
-public class GameRuleGame extends GameModule {
+public class GameRulesGame extends GameModule {
     private final List<GameRule> rules;
 
-    public GameRuleGame(List<GameRule> rules) {
+    public GameRulesGame(List<GameRule> rules) {
         this.rules = rules;
     }
 
@@ -23,7 +23,7 @@ public class GameRuleGame extends GameModule {
             world.setGameRuleValue(rule.getType().getKey(), rule.getValue());
         }
 
-        this.getGame().setMetadata(GameRuleModule.class, GameRuleModule.METADATA_GAMERULES, this.getRules());
+        this.getGame().setMetadata(GameRulesModule.class, GameRulesModule.METADATA_GAMERULES, this.getRules());
     }
 
     public List<GameRule> getRules() {

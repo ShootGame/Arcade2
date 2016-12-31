@@ -89,6 +89,10 @@ public class Team {
     }
 
     public void join(GamePlayer player) {
+        this.join(player, true);
+    }
+
+    public void join(GamePlayer player, boolean message) {
         if (!player.isOnline()) {
             return;
         }
@@ -100,7 +104,9 @@ public class Team {
             this.members.add(player);
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
 
-            player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
+            if (message) {
+                player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
+            }
         }
     }
 
