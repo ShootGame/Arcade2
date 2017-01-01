@@ -253,6 +253,6 @@ public class GameManager {
     }
 
     private void postEvent(Event event) {
-        this.plugin.getEvents().post(event);
+        this.plugin.getEventBus().publish(event);
     }
 }

@@ -17,14 +17,16 @@ public class Match {
     private boolean forceStart;
     private final Game game;
     private IObserverHandler observerHandler;
+    private final Observers observers;
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
 
-    public Match(ArcadePlugin plugin, Game game) {
+    public Match(ArcadePlugin plugin, Game game, Observers observers) {
         this.plugin = plugin;
 
         this.game = game;
+        this.observers = observers;
     }
 
     public void broadcastEndMessage(MatchWinner winner) {
@@ -79,7 +81,7 @@ public class Match {
         }
 
         MatchEndEvent endEvent = new MatchEndEvent(this.plugin, this, winner, force);
-        this.plugin.getEvents().post(endEvent);
+        this.plugin.getEventBus().publish(endEvent);
 
         if (endEvent.isCanceled()) {
             return;
@@ -104,6 +106,10 @@ public class Match {
         return this.observerHandler;
     }
 
+    public Observers getObservers() {
+        return this.observers;
+    }
+
     public Instant getStartTime() {
         return this.startTime;
     }
@@ -124,9 +130,11 @@ public class Match {
         return this.forceStart;
     }
 
-    public boolean isPlayerObserving(GamePlayer player) {
+    public boolean isObserving(GamePlayer player) {
         IObserverHandler handler = this.getObserverHandler();
-        return handler == null || handler.isPlayerObserving(player);
+        boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
+
+        return !this.getState().equals(MatchState.RUNNING) && observing;
     }
 
     public void setForceEnd(boolean forceEnd) {
@@ -151,7 +159,7 @@ public class Match {
         }
 
         MatchStartEvent startEvent = new MatchStartEvent(this.plugin, this, force);
-        this.plugin.getEvents().post(startEvent);
+        this.plugin.getEventBus().publish(startEvent);
 
         if (startEvent.isCanceled()) {
             return;
@@ -164,7 +172,7 @@ public class Match {
         this.setForceStart(force);
         this.setState(MatchState.RUNNING);
     }
-
+    
     public interface IObserverHandler {
         boolean isPlayerObserving(GamePlayer player);
     }

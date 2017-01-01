@@ -1,8 +1,9 @@
 package pl.themolka.arcade.map;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 
@@ -75,7 +76,7 @@ public class MapLoaderModule extends Module<Object> implements MapContainerLoade
         return container;
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onMapContainerFill(MapContainerFillEvent event) {
         event.addMapLoader(this);
     }

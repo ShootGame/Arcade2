@@ -1,6 +1,6 @@
 package pl.themolka.arcade.match;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -36,17 +36,15 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
-public abstract class ObserverListeners implements Listener {
+public class ObserverListeners implements Listener {
     private final MatchGame game;
 
     public ObserverListeners(MatchGame game) {
         this.game = game;
     }
-
-    public abstract boolean isPlayerObserving(GamePlayer player);
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -171,9 +169,9 @@ public abstract class ObserverListeners implements Listener {
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onPlayerLeftTeam(PlayerLeftTeamEvent event) {
-        if (event.getGamePlayer().isOnline()) {
+        if (event.getGamePlayer().isOnline() && event.getTeam().isObserving()) {
             event.getPlayer().getBukkit().setHealth(0.0D);
         }
     }
@@ -269,11 +267,7 @@ public abstract class ObserverListeners implements Listener {
         return entity instanceof Player && this.isObserving((Player) entity);
     }
 
-    private boolean isObserving(GamePlayer player) {
-        return !this.game.getMatch().getState().equals(MatchState.RUNNING) || this.isPlayerObserving(player);
-    }
-
     private boolean isObserving(Player player) {
-        return this.isObserving(this.game.getGame().getPlayer(player.getUniqueId()));
+        return this.game.getMatch().isObserving(this.game.getGame().getPlayer(player.getUniqueId()));
     }
 }

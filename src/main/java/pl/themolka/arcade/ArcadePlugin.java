@@ -22,6 +22,7 @@ import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
+import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
@@ -77,6 +78,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private ArcadeCommons commons;
     private Environment environment;
+    private EventBus eventBus;
     private GameManager games;
     private final VoidGenerator generator = new VoidGenerator();
     private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
@@ -104,7 +106,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public final void start() throws Throwable {
         this.manifest.readManifestFile();
         this.commons = new ArcadeCommons(this);
-        Event.setAutoEventPoster(this.getEvents());
+
+        Event.setAutoEventPoster(this.getCommons().getEvents());
+        this.eventBus = new EventBus(this);
 
         this.settings = new Settings(this);
         this.reloadConfig();
@@ -128,7 +132,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 
-        this.getEvents().post(new PluginReadyEvent(this));
+        this.getEventBus().publish(new PluginReadyEvent(this));
 
         // begin the plugin logic
         this.getServer().getScheduler().runTaskLater(this, new Runnable() {
@@ -179,6 +183,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getLogger().log(Level.SEVERE, "Could not disable environment " + this.getEnvironment().getType().prettyName(), th);
         }
 
+        this.getEventBus().shutdown();
+
         try {
             this.getServerSession().serialize();
         } catch (IOException io) {
@@ -200,7 +206,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public void reloadConfig() {
         try {
             this.getSettings().setDocument(this.getSettings().readSettingsFile());
-            this.getEvents().post(new SettingsReloadEvent(this, this.getSettings()));
+            this.getEventBus().publish(new SettingsReloadEvent(this, this.getSettings()));
         } catch (IOException | JDOMException ex) {
             ex.printStackTrace();
         }
@@ -274,8 +280,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.environment;
     }
 
-    public Events getEvents() {
-        return this.getCommons().getEvents();
+    public EventBus getEventBus() {
+        return this.eventBus;
     }
 
     public GameManager getGames() {
@@ -363,7 +369,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public void registerListenerObject(Object object) {
-        this.getEvents().register(object);
+        this.getEventBus().subscribe(object);
+        this.getCommons().getEvents().register(object);
 
         if (object instanceof Listener) {
             this.getServer().getPluginManager().registerEvents((Listener) object, this);
@@ -399,7 +406,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public void unregisterListenerObject(Object object) {
-        this.getEvents().unregister(object);
+        this.getEventBus().unsubscribe(object);
+        this.getCommons().getEvents().unregister(object);
 
         if (object instanceof Listener) {
             HandlerList.unregisterAll((Listener) object);
@@ -442,7 +450,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.maps.setWorldContainer(new File(this.getSettings().getData().getChild("world-container").getValue()));
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
-        this.getEvents().post(fillEvent);
+        this.getEventBus().publish(fillEvent);
 
         MapManager maps = this.getMaps();
         for (MapContainerLoader loader : fillEvent.getMapLoaderList()) {

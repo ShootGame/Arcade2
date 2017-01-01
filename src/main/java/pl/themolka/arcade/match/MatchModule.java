@@ -19,12 +19,13 @@ public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 25;
     public static final String METADATA_MATCH = "match";
 
-    private int startCountdown = DEFAULT_START_COUNTDOWN;
+    private Observers defaultObservers;
+    private int defaultStartCountdown = DEFAULT_START_COUNTDOWN;
 
     @Override
     public MatchGame buildGameModule(Element xml) throws JDOMException {
         boolean autoStart = true;
-        int defaultStartCountdown = this.startCountdown;
+        int startCountdown = this.defaultStartCountdown;
 
         Element autoStartElement = xml.getChild("auto-start");
         if (autoStartElement != null) {
@@ -34,20 +35,50 @@ public class MatchModule extends Module<MatchGame> {
         Element startCountdownElement = xml.getChild("start-countdown");
         if (startCountdownElement != null) {
             try {
-                defaultStartCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
+                startCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
             } catch (NumberFormatException ignored) {
             }
         }
 
-        return new MatchGame(autoStart, defaultStartCountdown);
+        Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin(), null);
+        if (observers.getColor() == null) {
+            observers.setColor(this.getDefaultObservers().getColor());
+        }
+        if (observers.getDyeColor() == null) {
+            observers.setDyeColor(this.getDefaultObservers().getDyeColor());
+        }
+        if (observers.getName() == null) {
+            observers.setName(this.getDefaultObservers().getName());
+        }
+
+        return new MatchGame(autoStart, startCountdown, observers);
     }
 
     @Override
     public void onEnable(Element global) throws JDOMException {
-        Element startCountdownElement = global.getChild("start-countdown");
-        if (startCountdownElement != null) {
+        this.onEnableObservers(global.getChild("observers"));
+        this.onEnableStartCountdown(global.getChild("start-countdown"));
+    }
+
+    private void onEnableObservers(Element xml) throws JDOMException {
+        Observers observers = XMLObservers.parse(xml, this.getPlugin(), null);
+        if (observers.getColor() == null) {
+            observers.setColor(Observers.OBSERVERS_COLOR);
+        }
+        if (observers.getDyeColor() == null) {
+            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
+        }
+        if (observers.getName() == null) {
+            observers.setName(Observers.OBSERVERS_NAME);
+        }
+
+        this.defaultObservers = observers;
+    }
+
+    private void onEnableStartCountdown(Element xml) throws JDOMException {
+        if (xml != null) {
             try {
-                this.startCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
+                this.defaultStartCountdown = Integer.parseInt(xml.getTextNormalize());
             } catch (NumberFormatException ignored) {
             }
         }
@@ -63,15 +94,12 @@ public class MatchModule extends Module<MatchGame> {
             throw new CommandException("Match module is not enabled in this game.");
         }
 
-        boolean paramForce = context.hasFlag("f") || context.hasFlag("force");
-        int paramSeconds = context.getParamInt(0);
-
-        int seconds = paramSeconds;
+        int seconds = context.getParamInt(0);
         if (seconds < 5) {
             seconds = 5;
         }
 
-        this.getGameModule().handleBeginCommand(sender, seconds, paramForce);
+        this.getGameModule().handleBeginCommand(sender, seconds, context.hasFlag("f") || context.hasFlag("force"));
     }
 
     @CommandInfo(name = {"end", "finish"},
@@ -88,9 +116,8 @@ public class MatchModule extends Module<MatchGame> {
 
         boolean paramAuto = context.hasFlag("a") || context.hasFlag("auto");
         boolean paramDraw = context.hasFlag("d") || context.hasFlag("draw");
-        String paramWinner = context.getParams(0);
 
-        this.getGameModule().handleEndCommand(sender, paramAuto, paramWinner, paramDraw);
+        this.getGameModule().handleEndCommand(sender, paramAuto, context.getParam(0), paramDraw);
     }
 
     public List<String> endCompleter(Session<ArcadePlayer> sender, CommandContext context) {
@@ -110,6 +137,14 @@ public class MatchModule extends Module<MatchGame> {
         }
 
         Commands.sendTitleMessage(sender, "Match", "#" + this.getPlugin().getGames().getGameId());
-        this.getPlugin().getEvents().post(new GameCommands.GameCommandEvent(this.getPlugin(), sender, context));
+        this.getPlugin().getEventBus().publish(new GameCommands.GameCommandEvent(this.getPlugin(), sender, context));
+    }
+
+    public Observers getDefaultObservers() {
+        return this.defaultObservers;
+    }
+
+    public int getDefaultStartCountdown() {
+        return this.defaultStartCountdown;
     }
 }

@@ -1,13 +1,12 @@
-package pl.themolka.arcade.team;
+package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.match.Match;
-import pl.themolka.arcade.match.Observers;
+import pl.themolka.arcade.team.XMLTeam;
 
-public class XMLObserversTeam extends XMLTeam {
+public class XMLObservers extends XMLTeam {
     public static Observers parse(Element xml, ArcadePlugin plugin, Match match) {
         Observers observers = new Observers(plugin, match);
 

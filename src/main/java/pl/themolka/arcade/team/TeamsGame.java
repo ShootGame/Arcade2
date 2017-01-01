@@ -1,8 +1,9 @@
 package pl.themolka.arcade.team;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.Match;
@@ -148,10 +149,10 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         team.join(player, message);
     }
 
-    @Subscribe
+    @Handler(priority = Priority.LAST)
     public void onNewTeamPut(PlayerJoinTeamEvent event) {
         GamePlayer player = event.getGamePlayer();
-        if (this.teamsByPlayer.containsKey(player)) {
+        if (!event.isCanceled() && this.teamsByPlayer.containsKey(player)) {
             this.getTeam(player).leave(player);
             this.teamsByPlayer.remove(player);
         }
@@ -159,15 +160,15 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.teamsByPlayer.put(player, event.getTeam());
     }
 
-    @Subscribe
+    @Handler(priority = Priority.LAST)
     public void onOldTeamRemove(PlayerLeaveTeamEvent event) {
         Team team = this.getTeam(event.getGamePlayer());
-        if (team != null) {
+        if (team != null && !event.isCanceled()) {
             team.leave(event.getGamePlayer());
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.LOWER)
     public void onPlayerJoinGame(GameCommands.JoinCommandEvent event) {
         if (event.isCanceled()) {
             return;
@@ -180,18 +181,18 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.HIGH)
     public void onPlayerJoinServer(ArcadePlayerJoinEvent event) {
         this.teamsByPlayer.remove(event.getGamePlayer());
         this.joinTeam(event.getGamePlayer(), this.getObservers(), false);
     }
 
-    @Subscribe
+    @Handler(priority = Priority.HIGHEST)
     public void onPlayerLeaveGame(GameCommands.LeaveCommandEvent event) {
-        this.joinTeam(event.getLeavePlayer().getGamePlayer(), this.getObservers());
+        this.joinTeam(event.getLeavePlayer().getGamePlayer(), this.getObservers(), true);
     }
 
-    @Subscribe
+    @Handler(priority = Priority.LAST)
     public void onPlayerLeaveServer(ArcadePlayerQuitEvent event) {
         Team team = this.getTeam(event.getGamePlayer());
         if (team != null) {
@@ -199,7 +200,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onPlayerWantToJoin(GameCommands.JoinCompleterEvent event) {
         for (Team team : this.getTeams()) {
             event.addResult(team.getName().toLowerCase());

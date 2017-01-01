@@ -27,24 +27,9 @@ public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_TEAM = "team";
     public static final String METADATA_TEAMS = "teams";
 
-    private Observers defaultObservers;
-
     @Override
     public TeamsGame buildGameModule(Element xml) throws JDOMException {
         Match match = this.getGame().getModule(MatchGame.class).getMatch();
-        Observers observers = XMLObserversTeam.parse(xml.getChild("observers"), this.getPlugin(), match);
-
-        if (observers.getColor() == null) {
-            observers.setColor(this.getDefaultObservers().getColor());
-        }
-
-        if (observers.getDyeColor() == null) {
-            observers.setDyeColor(this.getDefaultObservers().getDyeColor());
-        }
-
-        if (observers.getName() == null) {
-            observers.setName(this.getDefaultObservers().getName());
-        }
 
         List<Team> teams = new ArrayList<>();
         for (Element teamElement : xml.getChildren("team")) {
@@ -54,29 +39,7 @@ public class TeamsModule extends Module<TeamsGame> {
             }
         }
 
-        return new TeamsGame(match, observers, teams);
-    }
-
-    @Override
-    public void onEnable(Element global) throws JDOMException {
-        this.defaultObservers = XMLObserversTeam.parse(global.getChild("observers"), null, null);
-        Observers observers = this.getDefaultObservers();
-
-        if (observers.getColor() == null) {
-            observers.setColor(Observers.OBSERVERS_COLOR);
-        }
-
-        if (observers.getDyeColor() == null) {
-            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
-        }
-
-        if (observers.getName() == null) {
-            observers.setName(Observers.OBSERVERS_NAME);
-        }
-    }
-
-    public Observers getDefaultObservers() {
-        return this.defaultObservers;
+        return new TeamsGame(match, match.getObservers(), teams);
     }
 
     @CommandInfo(name = {"myteam", "team", "mt"},

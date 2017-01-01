@@ -201,11 +201,11 @@ public class Game implements Metadata, Serializable {
             this.enableModule(module);
         }
 
-        this.plugin.getEvents().post(new GameStartEvent(this.plugin, this));
+        this.plugin.getEventBus().publish(new GameStartEvent(this.plugin, this));
     }
 
     public void stop() {
-        this.plugin.getEvents().post(new GameStopEvent(this.plugin, this));
+        this.plugin.getEventBus().publish(new GameStopEvent(this.plugin, this));
 
         for (GameModule module : this.getModules().getModules()) {
             module.onDisable();

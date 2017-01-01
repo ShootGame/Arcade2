@@ -19,7 +19,7 @@ public class Team {
     private DyeColor dyeColor;
     private boolean friendlyFire;
     private final String id;
-    private final Match match;
+    private Match match;
     private int maxPlayers;
     private final List<GamePlayer> members = new ArrayList<>();
     private int minPlayers;
@@ -92,6 +92,10 @@ public class Team {
         return Objects.hash(this.getId());
     }
 
+    public boolean hasPlayer(GamePlayer player) {
+        return this.getMembers().contains(player);
+    }
+
     public boolean isFull() {
         return this.getOnlineMembers().size() >= this.getMaxPlayers();
     }
@@ -126,7 +130,7 @@ public class Team {
         }
 
         PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(this.plugin, player, this);
-        this.plugin.getEvents().post(event);
+        this.plugin.getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             this.members.add(player);
@@ -139,7 +143,7 @@ public class Team {
                 player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
             }
 
-            this.plugin.getEvents().post(new PlayerJoinedTeamEvent(this.plugin, player, this));
+            this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
         }
     }
 
@@ -149,7 +153,7 @@ public class Team {
         }
 
         PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(this.plugin, player, this);
-        this.plugin.getEvents().post(event);
+        this.plugin.getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             this.members.remove(player);
@@ -157,7 +161,7 @@ public class Team {
 
             player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
 
-            this.plugin.getEvents().post(new PlayerLeftTeamEvent(this.plugin, player, this));
+            this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
         }
     }
 
@@ -181,6 +185,10 @@ public class Team {
 
     public void setFriendlyFire(boolean friendlyFire) {
         this.friendlyFire = friendlyFire;
+    }
+
+    public void setMatch(Match match) {
+        this.match = match;
     }
 
     public void setMaxPlayers(int maxPlayers) {

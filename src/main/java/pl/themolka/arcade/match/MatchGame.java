@@ -1,10 +1,10 @@
 package pl.themolka.arcade.match;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.session.Session;
@@ -17,17 +17,20 @@ public class MatchGame extends GameModule {
     private boolean autoStart;
     private int defaultStartCountdown;
     private Match match;
+    private Observers observers;
     private MatchStartCountdown startCountdown;
     private final List<MatchWinner> winnerList = new ArrayList<>();
 
-    public MatchGame(boolean autoStart, int defaultStartCountdown) {
+    public MatchGame(boolean autoStart, int defaultStartCountdown, Observers observers) {
         this.autoStart = autoStart;
         this.defaultStartCountdown = defaultStartCountdown;
+        this.observers = observers;
     }
 
     @Override
     public void onEnable() {
-        this.match = new Match(this.getPlugin(), this.getGame());
+        this.match = new Match(this.getPlugin(), this.getGame(), this.getObservers());
+        this.getObservers().setMatch(this.getMatch());
 
         this.getGame().setMetadata(MatchModule.class, MatchModule.METADATA_MATCH, this.getMatch());
     }
@@ -39,14 +42,7 @@ public class MatchGame extends GameModule {
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
-        return Arrays.asList(
-                new MatchListeners(this),
-                new ObserverListeners(this) {
-                    @Override
-                    public boolean isPlayerObserving(GamePlayer player) {
-                        return MatchGame.this.getMatch().isPlayerObserving(player);
-                    }
-                });
+        return Arrays.asList(new MatchListeners(this), new ObserverListeners(this));
     }
 
     public MatchWinner findWinner() {
@@ -83,6 +79,10 @@ public class MatchGame extends GameModule {
 
     public Match getMatch() {
         return this.match;
+    }
+
+    public Observers getObservers() {
+        return this.observers;
     }
 
     public MatchStartCountdown getStartCountdown() {
@@ -130,7 +130,7 @@ public class MatchGame extends GameModule {
         return this.autoStart;
     }
 
-    @Subscribe
+    @Handler(priority = Priority.HIGHEST)
     public void onJoinWhenMatchEnded(GameCommands.JoinCommandEvent event) {
         if (this.getMatch().getState().equals(MatchState.CYCLING)) {
             event.getSender().sendError("The match has ended. " + ChatColor.GOLD + "Please wait until the server cycle.");
@@ -138,14 +138,14 @@ public class MatchGame extends GameModule {
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.LOWEST)
     public void onMatchCountdownAutoStart(GameCommands.JoinCommandEvent event) {
         if (!event.isCanceled() && this.isAutoStart() && !this.getMatch().cannotStart() && !this.getStartCountdown().isTaskRunning()) {
             this.startCountdown(this.getDefaultStartCountdown());
         }
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onMatchTimeDescribe(GameCommands.GameCommandEvent event) {
         String time;
         if (this.getMatch().getStartTime() != null) {

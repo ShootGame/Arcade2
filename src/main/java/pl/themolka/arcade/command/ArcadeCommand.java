@@ -113,7 +113,7 @@ public class ArcadeCommand {
 
         try {
             settings.setDocument(settings.readSettingsFile());
-            this.plugin.getEvents().post(new SettingsReloadEvent(this.plugin, settings));
+            this.plugin.getEventBus().publish(new SettingsReloadEvent(this.plugin, settings));
 
             sender.sendSuccess("Successfully reloaded settings file. Well done!");
         } catch (IOException io) {

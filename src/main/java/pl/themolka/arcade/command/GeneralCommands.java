@@ -82,7 +82,7 @@ public class GeneralCommands {
         }
 
         CycleCommandEvent commandEvent = new CycleCommandEvent(this.plugin, sender, context, nextMap);
-        this.plugin.getEvents().post(commandEvent);
+        this.plugin.getEventBus().publish(commandEvent);
 
         if (commandEvent.isCanceled()) {
             return;
@@ -94,7 +94,7 @@ public class GeneralCommands {
         }
 
         CycleStartEvent startEvent = new CycleStartEvent(this.plugin, nextMap, seconds);
-        this.plugin.getEvents().post(startEvent);
+        this.plugin.getEventBus().publish(startEvent);
 
         this.plugin.getGames().setNextRestart(false);
 

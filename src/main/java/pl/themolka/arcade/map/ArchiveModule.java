@@ -1,9 +1,10 @@
 package pl.themolka.arcade.map;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.apache.commons.io.FileUtils;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameDestroyEvent;
 import pl.themolka.arcade.game.GameDestroyedEvent;
 import pl.themolka.arcade.module.Module;
@@ -35,12 +36,12 @@ public class ArchiveModule extends Module<Object> {
         this.directory = file;
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onGameDestroy(GameDestroyEvent event) {
         event.setSaveWorld(this.directory != null);
     }
 
-    @Subscribe
+    @Handler(priority = Priority.NORMAL)
     public void onGameDestroyed(GameDestroyedEvent event) {
         if (this.directory == null) {
             return;

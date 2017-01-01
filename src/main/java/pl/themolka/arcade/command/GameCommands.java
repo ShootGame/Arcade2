@@ -33,7 +33,7 @@ public class GameCommands {
         }
 
         Commands.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
-        this.plugin.getEvents().post(new GameCommandEvent(this.plugin, sender, context));
+        this.plugin.getEventBus().publish(new GameCommandEvent(this.plugin, sender, context));
     }
 
     //
@@ -61,7 +61,7 @@ public class GameCommands {
             }
         }
 
-        this.plugin.getEvents().post(new JoinCommandEvent(this.plugin, (ArcadeSession) sender, context, param == null));
+        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, (ArcadeSession) sender, context, param == null));
     }
 
     public List<String> joinCompleter(Session<ArcadePlayer> sender, CommandContext context) {
@@ -70,7 +70,7 @@ public class GameCommands {
         }
 
         JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, (ArcadeSession) sender, context);
-        this.plugin.getEvents().post(event);
+        this.plugin.getEventBus().publish(event);
 
         return event.getResults();
     }
@@ -89,7 +89,7 @@ public class GameCommands {
             throw new CommandException("Could not leave the game right now. Please try again later.");
         }
 
-        this.plugin.getEvents().post(new LeaveCommandEvent(this.plugin, (ArcadeSession) sender, context));
+        this.plugin.getEventBus().publish(new LeaveCommandEvent(this.plugin, (ArcadeSession) sender, context));
     }
 
     public static class JoinCommandEvent extends CommandEvent implements Cancelable {

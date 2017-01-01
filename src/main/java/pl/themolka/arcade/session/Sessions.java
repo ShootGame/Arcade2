@@ -1,6 +1,6 @@
 package pl.themolka.arcade.session;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 
@@ -33,7 +34,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         this.removeSession(this.destroySession(event.getPlayer()));
     }
 
-    @Subscribe
+    @Handler(priority = Priority.FIRST)
     public void onPluginReady(PluginReadyEvent event) {
         int i = 0;
         for (Player online : event.getServer().getOnlinePlayers()) {
@@ -93,6 +94,6 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
     }
 
     private void postEvent(Event event) {
-        this.plugin.getEvents().post(event);
+        this.plugin.getEventBus().publish(event);
     }
 }
