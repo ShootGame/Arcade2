@@ -3,7 +3,10 @@ package pl.themolka.arcade.match;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.team.Team;
+
+import java.util.List;
 
 public class Observers extends Team {
     public static final ChatColor OBSERVERS_COLOR = ChatColor.DARK_AQUA;
@@ -17,13 +20,38 @@ public class Observers extends Team {
     }
 
     @Override
+    public boolean addGoal(Goal goal) {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public boolean areGoalsScored() {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public List<Goal> getGoals() {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
     public int getMaxPlayers() {
         return this.getSlots();
     }
 
     @Override
+    public String getMessage() {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
     public int getMinPlayers() {
         return 0;
+    }
+
+    @Override
+    public int getSlots() {
+        return OBSERVERS_SLOTS;
     }
 
     @Override
@@ -52,8 +80,13 @@ public class Observers extends Team {
     }
 
     @Override
-    public int getSlots() {
-        return OBSERVERS_SLOTS;
+    public boolean isWinning() {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public boolean removeGoal(Goal goal) {
+        throw new UnsupportedOperationException("Not supported here.");
     }
 
     @Override

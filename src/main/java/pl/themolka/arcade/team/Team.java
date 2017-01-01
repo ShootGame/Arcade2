@@ -43,6 +43,11 @@ public class Team implements MatchWinner {
     }
 
     @Override
+    public String getTitle() {
+        return this.getPrettyName();
+    }
+
+    @Override
     public boolean isWinning() {
         return this.areGoalsScored();
     }

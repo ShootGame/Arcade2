@@ -1,4 +1,6 @@
 package pl.themolka.arcade.team;
 
-public interface TeamGoal extends TeamHolder {
+import pl.themolka.arcade.goal.Goal;
+
+public interface TeamGoal extends Goal, TeamHolder {
 }
