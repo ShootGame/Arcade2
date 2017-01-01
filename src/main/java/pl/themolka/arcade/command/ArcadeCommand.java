@@ -30,7 +30,7 @@ public class ArcadeCommand {
     @CommandInfo(name = "arcade",
             description = "Arcade version and authors",
             usage = "[help|...]")
-    public void arcadeCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void arcade(Session<ArcadePlayer> sender, CommandContext context) {
         if (context.getParamsLength() > 0) {
             this.params(sender, context);
             return;

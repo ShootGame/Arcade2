@@ -17,10 +17,14 @@ public class Team {
 
     private ChatColor color;
     private DyeColor dyeColor;
+    private boolean friendlyFire;
     private final String id;
     private final Match match;
+    private int maxPlayers;
     private final List<GamePlayer> members = new ArrayList<>();
+    private int minPlayers;
     private String name;
+    private final List<GamePlayer> onlineMembers = new ArrayList<>();
     private int slots;
 
     public Team(ArcadePlugin plugin, Match match, String id) {
@@ -43,6 +47,10 @@ public class Team {
         return this.dyeColor;
     }
 
+    public boolean isFriendlyFire() {
+        return this.friendlyFire;
+    }
+
     public Game getGame() {
         return this.getMatch().getGame();
     }
@@ -55,12 +63,24 @@ public class Team {
         return this.match;
     }
 
+    public int getMaxPlayers() {
+        return this.maxPlayers;
+    }
+
     public List<GamePlayer> getMembers() {
         return this.members;
     }
 
+    public int getMinPlayers() {
+        return this.minPlayers;
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    public List<GamePlayer> getOnlineMembers() {
+        return this.onlineMembers;
     }
 
     public String getPrettyName() {
@@ -72,12 +92,20 @@ public class Team {
         return Objects.hash(this.getId());
     }
 
+    public boolean isFull() {
+        return this.getOnlineMembers().size() >= this.getMaxPlayers();
+    }
+
     public boolean isObservers() {
         return false;
     }
 
     public boolean isObserving() {
         return !this.isPlaying();
+    }
+
+    public boolean isOverfill() {
+        return this.getOnlineMembers().size() >= this.getSlots();
     }
 
     public boolean isPlaying() {
@@ -93,7 +121,7 @@ public class Team {
     }
 
     public void join(GamePlayer player, boolean message) {
-        if (!player.isOnline()) {
+        if (!player.isOnline() || this.isFull()) {
             return;
         }
 
@@ -102,11 +130,16 @@ public class Team {
 
         if (!event.isCanceled()) {
             this.members.add(player);
+            this.onlineMembers.add(player);
+
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
+            player.getPlayer().getBukkit().setDisplayName(this.getColor() + player.getUsername());
 
             if (message) {
                 player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
             }
+
+            this.plugin.getEvents().post(new PlayerJoinedTeamEvent(this.plugin, player, this));
         }
     }
 
@@ -120,15 +153,21 @@ public class Team {
 
         if (!event.isCanceled()) {
             this.members.remove(player);
+            this.onlineMembers.remove(player);
+
             player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
+
+            this.plugin.getEvents().post(new PlayerLeftTeamEvent(this.plugin, player, this));
         }
     }
 
+    public void leaveServer(GamePlayer player) {
+        this.onlineMembers.remove(player);
+    }
+
     public void send(String message) {
-        for (GamePlayer player : this.getMembers()) {
-            if (player.isOnline()) {
-                player.getPlayer().send(message);
-            }
+        for (GamePlayer player : this.getOnlineMembers()) {
+            player.getPlayer().send(message);
         }
     }
 
@@ -138,6 +177,18 @@ public class Team {
 
     public void setDyeColor(DyeColor dyeColor) {
         this.dyeColor = dyeColor;
+    }
+
+    public void setFriendlyFire(boolean friendlyFire) {
+        this.friendlyFire = friendlyFire;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
     }
 
     public void setName(String name) {

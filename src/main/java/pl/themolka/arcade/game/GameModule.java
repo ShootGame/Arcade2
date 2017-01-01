@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
@@ -82,6 +83,10 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
 
     public ArcadePlugin getPlugin() {
         return this.plugin;
+    }
+
+    public Server getServer() {
+        return this.getPlugin().getServer();
     }
 
     public List<Task> getTaskList() {

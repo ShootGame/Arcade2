@@ -14,6 +14,9 @@ public class TeamBuilder implements Builder<Team> {
 
     private ChatColor color;
     private DyeColor dyeColor;
+    private boolean friendlyFire;
+    private int maxPlayers;
+    private int minPlayers;
     private String name;
     private int slots;
 
@@ -28,6 +31,9 @@ public class TeamBuilder implements Builder<Team> {
         Team team = new Team(this.plugin, this.match, this.id());
         team.setColor(this.color());
         team.setDyeColor(this.dyeColor());
+        team.setFriendlyFire(this.friendlyFire());
+        team.setMaxPlayers(this.maxPlayers());
+        team.setMinPlayers(this.minPlayers());
         team.setName(this.name());
         team.setSlots(this.slots());
 
@@ -52,8 +58,35 @@ public class TeamBuilder implements Builder<Team> {
         return this;
     }
 
+    public boolean friendlyFire() {
+        return this.friendlyFire;
+    }
+
+    public TeamBuilder friendlyFire(boolean friendlyFire) {
+        this.friendlyFire = friendlyFire;
+        return this;
+    }
+
     public String id() {
         return this.id;
+    }
+
+    public int maxPlayers() {
+        return this.maxPlayers;
+    }
+
+    public TeamBuilder maxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+        return this;
+    }
+
+    public int minPlayers() {
+        return this.minPlayers;
+    }
+
+    public TeamBuilder minPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
+        return this;
     }
 
     public String name() {

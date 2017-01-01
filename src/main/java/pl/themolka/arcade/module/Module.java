@@ -1,5 +1,6 @@
 package pl.themolka.arcade.module;
 
+import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -95,6 +96,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
 
     public ArcadePlugin getPlugin() {
         return this.plugin;
+    }
+
+    public Server getServer() {
+        return this.getPlugin().getServer();
     }
 
     public boolean isGameModuleEnabled() {

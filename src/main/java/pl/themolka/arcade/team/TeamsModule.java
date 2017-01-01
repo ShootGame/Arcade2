@@ -5,6 +5,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
@@ -23,26 +24,58 @@ import java.util.List;
 public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_OBSERVERS = "observers";
     public static final String METADATA_TEAM = "team";
+    public static final String METADATA_TEAMS = "teams";
+
+    private ObserversTeam defaultObservers;
 
     @Override
     public TeamsGame buildGameModule(Element xml) throws JDOMException {
-        Match match = (Match) this.getGame().getMetadata(MatchModule.class, MatchModule.METADATA_MATCH);
-        ObserversTeam observers = new ObserversTeam(this.getPlugin(), match);
-        List<Team> teams = new ArrayList<>();
+        Match match = this.getGame().getModule(MatchGame.class).getMatch();
+        ObserversTeam observers = XMLObserversTeam.parse(xml.getChild("observers"), this.getPlugin(), match);
 
-        Element observersElement = xml.getChild("observers");
-        if (observersElement != null) {
-            observers = XMLObserversTeam.parse(observersElement);
+        if (observers.getColor() == null) {
+            observers.setColor(this.getDefaultObservers().getColor());
         }
 
+        if (observers.getDyeColor() == null) {
+            observers.setDyeColor(this.getDefaultObservers().getDyeColor());
+        }
+
+        if (observers.getName() == null) {
+            observers.setName(this.getDefaultObservers().getName());
+        }
+
+        List<Team> teams = new ArrayList<>();
         for (Element teamElement : xml.getChildren("team")) {
-            Team team = XMLTeam.parse(teamElement);
+            Team team = XMLTeam.parse(teamElement, this.getPlugin(), match);
             if (team != null) {
                 teams.add(team);
             }
         }
 
         return new TeamsGame(observers, teams);
+    }
+
+    @Override
+    public void onEnable(Element global) throws JDOMException {
+        this.defaultObservers = XMLObserversTeam.parse(global.getChild("observers"), null, null);
+        ObserversTeam observers = this.getDefaultObservers();
+
+        if (observers.getColor() == null) {
+            observers.setColor(ObserversTeam.OBSERVERS_COLOR);
+        }
+
+        if (observers.getDyeColor() == null) {
+            observers.setDyeColor(ObserversTeam.OBSERVERS_DYE_COLOR);
+        }
+
+        if (observers.getName() == null) {
+            observers.setName(ObserversTeam.OBSERVERS_NAME);
+        }
+    }
+
+    public ObserversTeam getDefaultObservers() {
+        return this.defaultObservers;
     }
 
     @CommandInfo(name = {"myteam", "team", "mt"},
@@ -77,13 +110,17 @@ public class TeamsModule extends Module<TeamsGame> {
         Commands.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
 
         for (Team team : teams) {
-            String message = ChatColor.GRAY + " - " + team.getPrettyName() + ChatColor.GRAY + " - " + ChatColor.GOLD +
-                    ChatColor.BOLD + team.getMembers().size() + ChatColor.RESET + ChatColor.GRAY + "/" + team.getSlots();
+            String message = ChatColor.GRAY + " - " + team.getPrettyName() + ChatColor.GRAY + " - " +
+                    ChatColor.GOLD + ChatColor.BOLD + team.getOnlineMembers().size() + ChatColor.RESET +
+                    ChatColor.GRAY + "/" + team.getSlots();
 
             if (context.hasFlag("xml")) {
                 message += " " + this.teamsKeyValue("id", team.getId()) + ", " +
                         this.teamsKeyValue("color", team.getColor()) + ", " +
-                        this.teamsKeyValue("dye-color", team.getDyeColor());
+                        this.teamsKeyValue("dye-color", team.getDyeColor()) + ", " +
+                        this.teamsKeyValue("friendly-fire", team.isFriendlyFire()) + ", " +
+                        this.teamsKeyValue("max-players", team.getMaxPlayers()) + ", " +
+                        this.teamsKeyValue("min-players", team.getMinPlayers());
             }
 
             sender.send(message);

@@ -9,6 +9,7 @@ import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MatchGame extends GameModule {
@@ -33,6 +34,11 @@ public class MatchGame extends GameModule {
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    @Override
+    public List<Object> onListenersRegister(List<Object> register) {
+        return Collections.singletonList(new MatchListeners(this));
     }
 
     public MatchWinner findWinner() {

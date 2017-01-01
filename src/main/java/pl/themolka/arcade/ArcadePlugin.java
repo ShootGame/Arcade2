@@ -26,6 +26,7 @@ import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
+import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
@@ -531,6 +532,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         if (nameAttribute != null) {
             this.serverName = nameAttribute.getValue();
         }
+
+        this.registerListenerObject(new GeneralListeners(this));
     }
 
     private void loadTasks() {

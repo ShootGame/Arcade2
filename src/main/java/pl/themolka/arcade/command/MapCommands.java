@@ -49,7 +49,7 @@ public class MapCommands {
             usage = "[-current|-next|<map...>]",
             permission = "arcade.command.mapinfo",
             completer = "mapInfoCompleter")
-    public void mapInfoCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void mapInfo(Session<ArcadePlayer> sender, CommandContext context) {
         boolean paramCurrent = context.hasFlag("c") || context.hasFlag("current");
         boolean paramNext = context.hasFlag("n") || context.hasFlag("next");
         String paramMap = context.getParams(0);
@@ -110,7 +110,7 @@ public class MapCommands {
     @CommandInfo(name = {"maplist", "maps", "ml"},
             description = "Show all loaded maps",
             permission = "arcade.command.maplist")
-    public void mapListCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void mapList(Session<ArcadePlayer> sender, CommandContext context) {
         if (this.mapListResult == null) {
             this.mapListResult = StringUtils.join(this.plugin.getMaps().getContainer().getMaps(), ChatColor.GRAY + ", ");
         }
@@ -125,7 +125,7 @@ public class MapCommands {
     @CommandInfo(name = {"nextmap", "mapnext", "nm", "mn", "next"},
             description = "Describe next map",
             permission = "arcade.command.nextmap")
-    public void nextMapCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void nextMap(Session<ArcadePlayer> sender, CommandContext context) {
         if (this.plugin.getGames().isNextRestart()) {
             sender.sendError("Server will be restarted.");
         } else {
@@ -150,7 +150,7 @@ public class MapCommands {
             usage = "[-after] [-current|-restart|<map...>]",
             permission = "arcade.command.setnext",
             completer = "setNextCompleter")
-    public void setNextCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void setNext(Session<ArcadePlayer> sender, CommandContext context) {
         boolean paramAfter = context.hasFlag("a") || context.hasFlag("after");
         boolean paramCurrent = context.hasFlag("c") || context.hasFlag("current");
         boolean paramRestart = context.hasFlag("r") || context.hasFlag("restart");

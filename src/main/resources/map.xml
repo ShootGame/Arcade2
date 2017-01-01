@@ -12,22 +12,13 @@
     </world>
 
     <modules>
-        <example>
-
-        </example>
-
         <gamerules>
             <gamerule type="doDaylightCycle">false</gamerule>
         </gamerules>
 
         <teams>
-            <observers color="dark aqua" dye-color="cyan" name="Observers" />
-            <team id="blue-team" color="blue" dye-color="blue" name="Blue Team" slots="15">
-
-            </team>
-            <team id="red-team" color="dark red" dye-color="red" name="Red Team" slots="15">
-
-            </team>
+            <team id="blue-team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">Blue Team</team>
+            <team id="red-team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">Red Team</team>
         </teams>
     </modules>
 </map>

@@ -14,15 +14,36 @@ public class ObserversTeam extends Team {
 
     public ObserversTeam(ArcadePlugin plugin, Match match) {
         super(plugin, match, OBSERVERS_TEAM_ID);
+    }
 
-        this.setColor(OBSERVERS_COLOR);
-        this.setDyeColor(OBSERVERS_DYE_COLOR);
-        this.setName(OBSERVERS_NAME);
+    @Override
+    public int getMaxPlayers() {
+        return this.getSlots();
+    }
+
+    @Override
+    public int getMinPlayers() {
+        return 0;
+    }
+
+    @Override
+    public boolean isFriendlyFire() {
+        return true;
+    }
+
+    @Override
+    public boolean isFull() {
+        return false;
     }
 
     @Override
     public boolean isObservers() {
         return true;
+    }
+
+    @Override
+    public boolean isOverfill() {
+        return false;
     }
 
     @Override
@@ -33,6 +54,21 @@ public class ObserversTeam extends Team {
     @Override
     public int getSlots() {
         return OBSERVERS_SLOTS;
+    }
+
+    @Override
+    public void setFriendlyFire(boolean friendlyFire) {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public void setMaxPlayers(int maxPlayers) {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public void setMinPlayers(int minPlayers) {
+        throw new UnsupportedOperationException("Not supported here.");
     }
 
     @Override

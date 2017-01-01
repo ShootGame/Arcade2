@@ -32,7 +32,7 @@ public class GeneralCommands {
             flags = {"f", "force"},
             usage = "[-force]",
             permission = "arcade.command.cancel")
-    public void cancelCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void cancel(Session<ArcadePlayer> sender, CommandContext context) {
         boolean paramForce = context.hasFlag("f") || context.hasFlag("force");
 
         Game game = this.plugin.getGames().getCurrentGame();
@@ -68,7 +68,7 @@ public class GeneralCommands {
             description = "Cycle to next map",
             usage = "[seconds]",
             permission = "arcade.command.cycle")
-    public void cycleCommand(Session<ArcadePlayer> sender, CommandContext context) {
+    public void cycle(Session<ArcadePlayer> sender, CommandContext context) {
         int paramSeconds = context.getParamInt(0);
 
         OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();

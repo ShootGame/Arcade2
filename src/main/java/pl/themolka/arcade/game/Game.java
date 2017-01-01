@@ -111,6 +111,14 @@ public class Game implements Metadata, Serializable {
         return this.map;
     }
 
+    public <T extends GameModule> T getModule(Class<T> module) {
+        return this.getModules().getModule(module);
+    }
+
+    public GameModule getModuleById(String id) {
+        return this.getModules().getModuleById(id);
+    }
+
     public GameModuleContainer getModules() {
         return this.modules;
     }
