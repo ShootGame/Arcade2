@@ -5,19 +5,22 @@ import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchState;
+import pl.themolka.arcade.match.MatchWinner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Team {
+public class Team implements MatchWinner {
     private final ArcadePlugin plugin;
 
     private ChatColor color;
     private DyeColor dyeColor;
     private boolean friendlyFire;
+    private final List<Goal> goals = new ArrayList<>();
     private final String id;
     private Match match;
     private int maxPlayers;
@@ -35,8 +38,32 @@ public class Team {
     }
 
     @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isWinning() {
+        return this.areGoalsScored();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
+    }
+
+    public boolean addGoal(Goal goal) {
+        return this.goals.add(goal);
+    }
+
+    public boolean areGoalsScored() {
+        for (Goal goal : this.getGoals()) {
+            if (!goal.isScored()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public ChatColor getColor() {
@@ -53,6 +80,10 @@ public class Team {
 
     public Game getGame() {
         return this.getMatch().getGame();
+    }
+
+    public List<Goal> getGoals() {
+        return this.goals;
     }
 
     public String getId() {
@@ -73,10 +104,6 @@ public class Team {
 
     public int getMinPlayers() {
         return this.minPlayers;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     public List<GamePlayer> getOnlineMembers() {
@@ -167,6 +194,10 @@ public class Team {
 
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
+    }
+
+    public boolean removeGoal(Goal goal) {
+        return this.goals.remove(goal);
     }
 
     public void send(String message) {

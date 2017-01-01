@@ -9,6 +9,8 @@ import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Match {
     private final ArcadePlugin plugin;
@@ -21,6 +23,7 @@ public class Match {
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
+    private final List<MatchWinner> winnerList = new ArrayList<>();
 
     public Match(ArcadePlugin plugin, Game game, Observers observers) {
         this.plugin = plugin;
@@ -97,6 +100,34 @@ public class Match {
             player.reset();
         }
     }
+
+    public MatchWinner findWinner() {
+        return this.findWinner(null);
+    }
+
+    public MatchWinner findWinner(String query) {
+        if (query != null) {
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.getName().equalsIgnoreCase(query)) {
+                    return winner;
+                }
+            }
+
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.getName().toLowerCase().contains(query.toLowerCase())) {
+                    return winner;
+                }
+            }
+        } else {
+            for (MatchWinner winner : this.getWinnerList()) {
+                if (winner.isWinning()) {
+                    return winner;
+                }
+            }
+        }
+
+        return null;
+    }
     
     public Game getGame() {
         return this.game;
@@ -122,6 +153,10 @@ public class Match {
         return this.time;
     }
 
+    public List<MatchWinner> getWinnerList() {
+        return this.winnerList;
+    }
+
     public boolean isForceEnd() {
         return this.forceEnd;
     }
@@ -135,6 +170,10 @@ public class Match {
         boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
 
         return !this.getState().equals(MatchState.RUNNING) && observing;
+    }
+
+    public boolean registerWinner(MatchWinner winner) {
+        return this.winnerList.add(winner);
     }
 
     public void setForceEnd(boolean forceEnd) {
@@ -171,6 +210,10 @@ public class Match {
 
         this.setForceStart(force);
         this.setState(MatchState.RUNNING);
+    }
+
+    public boolean unregisterWinner(MatchWinner winner) {
+        return this.winnerList.remove(winner);
     }
     
     public interface IObserverHandler {

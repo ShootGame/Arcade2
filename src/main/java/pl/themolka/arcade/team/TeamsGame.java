@@ -6,6 +6,8 @@ import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.goal.GoalCreateEvent;
+import pl.themolka.arcade.goal.GoalScoreEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
@@ -204,6 +206,24 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void onPlayerWantToJoin(GameCommands.JoinCompleterEvent event) {
         for (Team team : this.getTeams()) {
             event.addResult(team.getName().toLowerCase());
+        }
+    }
+
+    @Handler(priority = Priority.HIGHEST)
+    public void onGoalCreate(GoalCreateEvent event) {
+        if (event.getGoal() instanceof TeamHolder) {
+            Team team = ((TeamHolder) event.getGoal()).getTeam();
+            team.addGoal(event.getGoal());
+        }
+    }
+
+    @Handler(priority = Priority.LAST)
+    public void onGoalScore(GoalScoreEvent event) {
+        if (!event.isCanceled() && event.getGoal() instanceof TeamHolder) {
+            Team team = ((TeamHolder) event.getGoal()).getTeam();
+            if (team.areGoalsScored()) {
+                this.getMatch().end(team);
+            }
         }
     }
 }
