@@ -4,12 +4,13 @@ import com.google.common.eventbus.Subscribe;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class MatchGame extends GameModule {
@@ -38,7 +39,14 @@ public class MatchGame extends GameModule {
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
-        return Collections.singletonList(new MatchListeners(this));
+        return Arrays.asList(
+                new MatchListeners(this),
+                new ObserverListeners(this) {
+                    @Override
+                    public boolean isPlayerObserving(GamePlayer player) {
+                        return MatchGame.this.getMatch().isPlayerObserving(player);
+                    }
+                });
     }
 
     public MatchWinner findWinner() {

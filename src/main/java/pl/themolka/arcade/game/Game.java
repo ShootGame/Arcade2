@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
@@ -141,6 +142,10 @@ public class Game implements Metadata, Serializable {
         return this.players.values();
     }
 
+    public ArcadePlugin getPlugin() {
+        return this.plugin;
+    }
+
     public List<Countdown> gerRunningCountdowns() {
         List<Countdown> results = new ArrayList<>();
         for (Task task : this.getTasks()) {
@@ -161,6 +166,10 @@ public class Game implements Metadata, Serializable {
         }
 
         return results;
+    }
+
+    public Server getServer() {
+        return this.getPlugin().getServer();
     }
 
     public List<Task> getTasks() {

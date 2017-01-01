@@ -5,23 +5,26 @@ import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
 import pl.themolka.arcade.session.ArcadePlayerQuitEvent;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandPermissionException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TeamsGame extends GameModule {
-    private final ObserversTeam observers;
+public class TeamsGame extends GameModule implements Match.IObserverHandler {
+    private final Match match;
+    private final Observers observers;
     private final Map<String, Team> teamsById = new HashMap<>();
     private final Map<GamePlayer, Team> teamsByPlayer = new HashMap<>();
 
-    public TeamsGame(ObserversTeam observers, List<Team> teams) {
+    public TeamsGame(Match match, Observers observers, List<Team> teams) {
+        this.match = match;
         this.observers = observers;
 
         this.teamsById.put(observers.getId(), observers);
@@ -32,16 +35,19 @@ public class TeamsGame extends GameModule {
 
     @Override
     public void onEnable() {
+        this.getMatch().setObserverHandler(this);
+
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_OBSERVERS, this.getObservers());
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
     }
 
     @Override
-    public List<Object> getListenerObjects() {
-        return Collections.singletonList(new ObserverListeners(this));
+    public boolean isPlayerObserving(GamePlayer player) {
+        Team team = this.getTeam(player);
+        return team != null && team.isObserving();
     }
 
-    public void autoJoinTeam(GamePlayer player) throws CommandException{
+    public void autoJoinTeam(GamePlayer player) throws CommandException {
         Team smallestTeam = null;
         for (Team team : this.getTeams()) {
             if (smallestTeam != null) {
@@ -71,7 +77,11 @@ public class TeamsGame extends GameModule {
         this.joinTeam(player, join);
     }
 
-    public ObserversTeam getObservers() {
+    public Match getMatch() {
+        return this.match;
+    }
+
+    public Observers getObservers() {
         return this.observers;
     }
 

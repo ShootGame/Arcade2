@@ -1,4 +1,4 @@
-package pl.themolka.arcade.team;
+package pl.themolka.arcade.match;
 
 import com.google.common.eventbus.Subscribe;
 import org.bukkit.ChatColor;
@@ -37,13 +37,16 @@ import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
-public class ObserverListeners implements Listener {
-    private final TeamsGame game;
+public abstract class ObserverListeners implements Listener {
+    private final MatchGame game;
 
-    public ObserverListeners(TeamsGame game) {
+    public ObserverListeners(MatchGame game) {
         this.game = game;
     }
+
+    public abstract boolean isPlayerObserving(GamePlayer player);
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -257,7 +260,7 @@ public class ObserverListeners implements Listener {
         int size = player.getInventory().getSize();
         String title = player.getDisplayName() + ChatColor.GRAY + "'s inventory";
 
-        Inventory spy = this.game.getServer().createInventory(null, size,  title);
+        Inventory spy = this.game.getServer().createInventory(null, size, title);
         spy.setContents(player.getInventory().getContents());
         observer.openInventory(spy);
     }
@@ -267,8 +270,7 @@ public class ObserverListeners implements Listener {
     }
 
     private boolean isObserving(GamePlayer player) {
-        Team team = this.game.getTeam(player);
-        return team != null && team.isObserving();
+        return !this.game.getMatch().getState().equals(MatchState.RUNNING) || this.isPlayerObserving(player);
     }
 
     private boolean isObserving(Player player) {

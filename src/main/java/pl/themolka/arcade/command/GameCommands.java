@@ -82,7 +82,7 @@ public class GameCommands {
     @CommandInfo(name = {"leave", "quit"},
             description = "Leave the game",
             userOnly = true,
-            permission = "arcade.command.quit")
+            permission = "arcade.command.leave")
     public void leave(Session<ArcadePlayer> sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {

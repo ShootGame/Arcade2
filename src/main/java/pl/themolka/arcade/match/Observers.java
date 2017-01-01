@@ -1,18 +1,18 @@
-package pl.themolka.arcade.team;
+package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.team.Team;
 
-public class ObserversTeam extends Team {
+public class Observers extends Team {
     public static final ChatColor OBSERVERS_COLOR = ChatColor.DARK_AQUA;
     public static final DyeColor OBSERVERS_DYE_COLOR = DyeColor.CYAN;
     public static final String OBSERVERS_NAME = "Observers";
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;
     public static final String OBSERVERS_TEAM_ID = "_observers-team";
 
-    public ObserversTeam(ArcadePlugin plugin, Match match) {
+    public Observers(ArcadePlugin plugin, Match match) {
         super(plugin, match, OBSERVERS_TEAM_ID);
     }
 

@@ -16,6 +16,7 @@ public class Match {
     private boolean forceEnd;
     private boolean forceStart;
     private final Game game;
+    private IObserverHandler observerHandler;
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
@@ -99,6 +100,10 @@ public class Match {
         return this.game;
     }
 
+    public IObserverHandler getObserverHandler() {
+        return this.observerHandler;
+    }
+
     public Instant getStartTime() {
         return this.startTime;
     }
@@ -119,12 +124,21 @@ public class Match {
         return this.forceStart;
     }
 
+    public boolean isPlayerObserving(GamePlayer player) {
+        IObserverHandler handler = this.getObserverHandler();
+        return handler == null || handler.isPlayerObserving(player);
+    }
+
     public void setForceEnd(boolean forceEnd) {
         this.forceEnd = forceEnd;
     }
 
     public void setForceStart(boolean forceStart) {
         this.forceStart = forceStart;
+    }
+
+    public void setObserverHandler(IObserverHandler observerHandler) {
+        this.observerHandler = observerHandler;
     }
 
     public void setState(MatchState state) {
@@ -149,5 +163,9 @@ public class Match {
 
         this.setForceStart(force);
         this.setState(MatchState.RUNNING);
+    }
+
+    public interface IObserverHandler {
+        boolean isPlayerObserving(GamePlayer player);
     }
 }

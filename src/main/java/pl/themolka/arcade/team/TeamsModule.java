@@ -7,6 +7,7 @@ import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
+import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -26,12 +27,12 @@ public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_TEAM = "team";
     public static final String METADATA_TEAMS = "teams";
 
-    private ObserversTeam defaultObservers;
+    private Observers defaultObservers;
 
     @Override
     public TeamsGame buildGameModule(Element xml) throws JDOMException {
         Match match = this.getGame().getModule(MatchGame.class).getMatch();
-        ObserversTeam observers = XMLObserversTeam.parse(xml.getChild("observers"), this.getPlugin(), match);
+        Observers observers = XMLObserversTeam.parse(xml.getChild("observers"), this.getPlugin(), match);
 
         if (observers.getColor() == null) {
             observers.setColor(this.getDefaultObservers().getColor());
@@ -53,28 +54,28 @@ public class TeamsModule extends Module<TeamsGame> {
             }
         }
 
-        return new TeamsGame(observers, teams);
+        return new TeamsGame(match, observers, teams);
     }
 
     @Override
     public void onEnable(Element global) throws JDOMException {
         this.defaultObservers = XMLObserversTeam.parse(global.getChild("observers"), null, null);
-        ObserversTeam observers = this.getDefaultObservers();
+        Observers observers = this.getDefaultObservers();
 
         if (observers.getColor() == null) {
-            observers.setColor(ObserversTeam.OBSERVERS_COLOR);
+            observers.setColor(Observers.OBSERVERS_COLOR);
         }
 
         if (observers.getDyeColor() == null) {
-            observers.setDyeColor(ObserversTeam.OBSERVERS_DYE_COLOR);
+            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
         }
 
         if (observers.getName() == null) {
-            observers.setName(ObserversTeam.OBSERVERS_NAME);
+            observers.setName(Observers.OBSERVERS_NAME);
         }
     }
 
-    public ObserversTeam getDefaultObservers() {
+    public Observers getDefaultObservers() {
         return this.defaultObservers;
     }
 
@@ -90,7 +91,7 @@ public class TeamsModule extends Module<TeamsGame> {
         Team team = this.getGameModule().getTeam(sender.getRepresenter().getGamePlayer());
         sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.YELLOW + ".");
 
-        if (team instanceof ObserversTeam) {
+        if (team instanceof Observers) {
             sender.getRepresenter().sendTip("Join the game by typing /join.");
         }
     }

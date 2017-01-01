@@ -5,10 +5,11 @@ import org.bukkit.DyeColor;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.Observers;
 
 public class XMLObserversTeam extends XMLTeam {
-    public static ObserversTeam parse(Element xml, ArcadePlugin plugin, Match match) {
-        ObserversTeam observers = new ObserversTeam(plugin, match);
+    public static Observers parse(Element xml, ArcadePlugin plugin, Match match) {
+        Observers observers = new Observers(plugin, match);
 
         if (xml != null) {
             ChatColor color = parseColor(xml);
