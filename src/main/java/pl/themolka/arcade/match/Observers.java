@@ -15,8 +15,8 @@ public class Observers extends Team {
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;
     public static final String OBSERVERS_TEAM_ID = "_observers-team";
 
-    public Observers(ArcadePlugin plugin, Match match) {
-        super(plugin, match, OBSERVERS_TEAM_ID);
+    public Observers(ArcadePlugin plugin) {
+        super(plugin, OBSERVERS_TEAM_ID);
     }
 
     @Override

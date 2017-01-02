@@ -45,7 +45,9 @@ public class ServerSessionFile {
     //
 
     public void deserialize() throws IOException {
-        this.setContent(this.plugin.deserializeJsonFile(this.getFile(), SerializedServerSession.class));
+        if (this.getFile().exists()) {
+            this.setContent(this.plugin.deserializeJsonFile(this.getFile(), SerializedServerSession.class));
+        }
     }
 
     public void serialize() throws IOException {

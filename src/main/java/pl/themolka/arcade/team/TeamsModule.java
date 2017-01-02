@@ -4,10 +4,10 @@ import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.Commands;
-import pl.themolka.arcade.match.Match;
-import pl.themolka.arcade.match.MatchGame;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
+import pl.themolka.arcade.match.XMLObservers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -28,18 +28,16 @@ public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_TEAMS = "teams";
 
     @Override
-    public TeamsGame buildGameModule(Element xml) throws JDOMException {
-        Match match = this.getGame().getModule(MatchGame.class).getMatch();
-
+    public TeamsGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<Team> teams = new ArrayList<>();
         for (Element teamElement : xml.getChildren("team")) {
-            Team team = XMLTeam.parse(teamElement, this.getPlugin(), match);
+            Team team = XMLTeam.parse(teamElement, this.getPlugin());
             if (team != null) {
                 teams.add(team);
             }
         }
 
-        return new TeamsGame(match, match.getObservers(), teams);
+        return new TeamsGame(XMLObservers.parse(xml.getChild("observers"), this.getPlugin()), teams);
     }
 
     @CommandInfo(name = {"myteam", "team", "mt"},
@@ -51,7 +49,8 @@ public class TeamsModule extends Module<TeamsGame> {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        Team team = this.getGameModule().getTeam(sender.getRepresenter().getGamePlayer());
+        TeamsGame game = (TeamsGame) this.getGameModule();
+        Team team = game.getTeam(sender.getRepresenter().getGamePlayer());
         sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.YELLOW + ".");
 
         if (team instanceof Observers) {
@@ -70,7 +69,8 @@ public class TeamsModule extends Module<TeamsGame> {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        Collection<Team> teams = this.getGameModule().getTeams();
+        TeamsGame game = (TeamsGame) this.getGameModule();
+        Collection<Team> teams = game.getTeams();
         Commands.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
 
         for (Team team : teams) {

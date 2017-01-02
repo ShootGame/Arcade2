@@ -23,8 +23,8 @@ public class GameModuleContainer {
         return this.getModules().contains(module);
     }
 
-    public <T extends GameModule> T getModule(Class<T> module) {
-        return (T) this.modulesByClass.get(module);
+    public GameModule getModule(Class<? extends Module<?>> module) {
+        return this.modulesByClass.get(module);
     }
 
     public GameModule getModuleById(String id) {

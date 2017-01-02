@@ -11,8 +11,10 @@ public class Task extends SimpleTaskListener {
     }
 
     public boolean cancelTask() {
+        boolean result = this.tasks.cancel(this);
         this.setTaskId(DEFAULT_TASK_ID);
-        return this.tasks.cancel(this);
+
+        return result;
     }
 
     public int getTaskId() {
@@ -32,12 +34,12 @@ public class Task extends SimpleTaskListener {
     }
 
     public Task scheduleAsyncTask() {
-        this.tasks.scheduleAsync(this);
+        this.taskId = this.tasks.scheduleAsync(this);
         return this;
     }
 
     public Task scheduleSyncTask() {
-        this.tasks.scheduleSync(this);
+        this.taskId = this.tasks.scheduleSync(this);
         return this;
     }
 }

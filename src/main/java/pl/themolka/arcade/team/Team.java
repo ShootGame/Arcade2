@@ -30,11 +30,10 @@ public class Team implements MatchWinner {
     private final List<GamePlayer> onlineMembers = new ArrayList<>();
     private int slots;
 
-    public Team(ArcadePlugin plugin, Match match, String id) {
+    public Team(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
 
         this.id = id;
-        this.match = match;
     }
 
     @Override
@@ -142,6 +141,10 @@ public class Team implements MatchWinner {
 
     public boolean isOverfill() {
         return this.getOnlineMembers().size() >= this.getSlots();
+    }
+
+    public boolean isParticipating() {
+        return !this.isObservers();
     }
 
     public boolean isPlaying() {

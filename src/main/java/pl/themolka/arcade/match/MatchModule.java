@@ -4,6 +4,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -23,7 +24,7 @@ public class MatchModule extends Module<MatchGame> {
     private int defaultStartCountdown = DEFAULT_START_COUNTDOWN;
 
     @Override
-    public MatchGame buildGameModule(Element xml) throws JDOMException {
+    public MatchGame buildGameModule(Element xml, Game game) throws JDOMException {
         boolean autoStart = true;
         int startCountdown = this.defaultStartCountdown;
 
@@ -40,7 +41,7 @@ public class MatchModule extends Module<MatchGame> {
             }
         }
 
-        Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin(), null);
+        Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());
         if (observers.getColor() == null) {
             observers.setColor(this.getDefaultObservers().getColor());
         }
@@ -61,7 +62,7 @@ public class MatchModule extends Module<MatchGame> {
     }
 
     private void onEnableObservers(Element xml) throws JDOMException {
-        Observers observers = XMLObservers.parse(xml, this.getPlugin(), null);
+        Observers observers = XMLObservers.parse(xml, this.getPlugin());
         if (observers.getColor() == null) {
             observers.setColor(Observers.OBSERVERS_COLOR);
         }
@@ -99,7 +100,8 @@ public class MatchModule extends Module<MatchGame> {
             seconds = 5;
         }
 
-        this.getGameModule().handleBeginCommand(sender, seconds, context.hasFlag("f") || context.hasFlag("force"));
+        MatchGame game = (MatchGame) this.getGameModule();
+        game.handleBeginCommand(sender, seconds, context.hasFlag("f") || context.hasFlag("force"));
     }
 
     @CommandInfo(name = {"end", "finish"},
@@ -117,7 +119,8 @@ public class MatchModule extends Module<MatchGame> {
         boolean paramAuto = context.hasFlag("a") || context.hasFlag("auto");
         boolean paramDraw = context.hasFlag("d") || context.hasFlag("draw");
 
-        this.getGameModule().handleEndCommand(sender, paramAuto, context.getParam(0), paramDraw);
+        MatchGame game = (MatchGame) this.getGameModule();
+        game.handleEndCommand(sender, paramAuto, context.getParam(0), paramDraw);
     }
 
     public List<String> endCompleter(Session<ArcadePlayer> sender, CommandContext context) {
@@ -125,7 +128,8 @@ public class MatchModule extends Module<MatchGame> {
             throw new CommandException("Match module is not enabled in this game.");
         }
 
-        return this.getGameModule().handleEndCompleter(sender, context);
+        MatchGame game = (MatchGame) this.getGameModule();
+        return game.handleEndCompleter(sender, context);
     }
 
     @CommandInfo(name = {"matchinfo", "match"},

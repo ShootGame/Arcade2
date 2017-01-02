@@ -517,6 +517,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             try {
                 module.registerListeners();
                 module.onEnable(globalModules.getChild(module.getId()));
+
+                module.setGlobal(true);
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
             }

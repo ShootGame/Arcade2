@@ -35,7 +35,7 @@ public class CycleCountdown extends PrintableCountdown {
 
     @Override
     public void onUpdate(long seconds, long secondsLeft) {
-        if (this.plugin.getGames().getQueue().hasNextMap()) {
+        if (!this.plugin.getGames().getQueue().hasNextMap()) {
             this.cancelCountdown();
         } else if (this.isPrintable(secondsLeft)) {
             OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();

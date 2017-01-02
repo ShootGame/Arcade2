@@ -47,7 +47,6 @@ public class Countdown extends Task implements CountdownListener {
 
         if (this.isDone()) {
             this.onDone();
-            this.cancelTask();
         }
     }
 

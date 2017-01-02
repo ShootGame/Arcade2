@@ -9,6 +9,8 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.goal.GoalScoreEvent;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.MatchGame;
+import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
 import pl.themolka.arcade.session.ArcadePlayerQuitEvent;
@@ -21,13 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
-    private final Match match;
-    private final Observers observers;
+    private Match match;
+    private Observers observers;
     private final Map<String, Team> teamsById = new HashMap<>();
     private final Map<GamePlayer, Team> teamsByPlayer = new HashMap<>();
 
-    public TeamsGame(Match match, Observers observers, List<Team> teams) {
-        this.match = match;
+    public TeamsGame(Observers observers, List<Team> teams) {
         this.observers = observers;
 
         this.teamsById.put(observers.getId(), observers);
@@ -38,6 +39,13 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     @Override
     public void onEnable() {
+        MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
+        this.match = matchGame.getMatch();
+
+        for (Team team : this.getTeams()) {
+            team.setMatch(this.getMatch());
+        }
+
         this.getMatch().setObserverHandler(this);
 
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_OBSERVERS, this.getObservers());

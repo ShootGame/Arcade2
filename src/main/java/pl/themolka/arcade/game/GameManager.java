@@ -72,7 +72,6 @@ public class GameManager {
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.setGamePlayer(new GamePlayer(game, player));
         }
-        game.start();
 
         this.resetPlayers(game);
         return game;
@@ -114,6 +113,7 @@ public class GameManager {
             }
 
             this.setCurrentGame(game);
+            game.start();
 
             if (this.getGameId() >= this.getMaxGameId()) {
                 this.setNextRestart(true);
@@ -140,6 +140,7 @@ public class GameManager {
         this.postEvent(event);
 
         if (!event.isCanceled()) {
+            this.plugin.getLogger().info("Restarting the server...");
             this.plugin.getServer().shutdown();
         }
     }
@@ -205,6 +206,10 @@ public class GameManager {
     public void resetPlayers(Game newGame) {
         if (this.getCurrentGame() != null) {
             for (GamePlayer player : this.getCurrentGame().getPlayers()) {
+                if (!player.isOnline()) {
+                    continue;
+                }
+
                 player.reset();
                 player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
             }

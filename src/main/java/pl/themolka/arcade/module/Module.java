@@ -6,6 +6,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameModule;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -20,6 +21,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
     private String id;
     private Class<? extends Module<?>>[] dependency;
     private Class<? extends Module<?>>[] loadBefore;
+    private boolean global;
     private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
 
@@ -49,7 +51,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.loadBefore = info.loadBefore();
     }
 
-    public T buildGameModule(Element xml) throws JDOMException {
+    public T buildGameModule(Element xml, Game game) throws JDOMException {
         return null;
     }
 
@@ -69,10 +71,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         return this.plugin.getGames().getCurrentGame();
     }
 
-    public T getGameModule() {
+    public GameModule getGameModule() {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            game.getModules().getModuleById(this.getId());
+            return game.getModules().getModuleById(this.getId());
         }
 
         return null;
@@ -103,7 +105,11 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
     }
 
     public boolean isGameModuleEnabled() {
-        return this.getGame() != null && this.getGame().getModules().contains(this.getId());
+        return this.getGame() != null && this.getGameModule() != null;
+    }
+
+    public boolean isGlobal() {
+        return this.global;
     }
 
     public boolean isLoaded() {
@@ -137,6 +143,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
 
     public void setDependency(Class<? extends Module<?>>[] dependency) {
         this.dependency = dependency;
+    }
+
+    public void setGlobal(boolean global) {
+        this.global = global;
     }
 
     public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {

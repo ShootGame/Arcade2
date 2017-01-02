@@ -10,6 +10,7 @@ import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
+import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
@@ -71,23 +72,52 @@ public class Game implements Metadata, Serializable {
     }
 
     public int addAsyncTask(Task task) {
+        int id = -1;
         if (this.taskList.add(task)) {
-            return this.plugin.getTasks().scheduleAsync(task);
+            id = this.plugin.getTasks().scheduleAsync(task);
+            task.setTaskId(id);
         }
 
-        return -1;
+        return id;
     }
 
     public int addSyncTask(Task task) {
+        int id = -1;
         if (this.taskList.add(task)) {
-            return this.plugin.getTasks().scheduleSync(task);
+            id = this.plugin.getTasks().scheduleSync(task);
+            task.setTaskId(id);
         }
 
-        return -1;
+        return id;
     }
 
     public void enableModule(GameModule module) {
-        // TODO load before
+        for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
+            ModuleInfo info = dependency.getAnnotation(ModuleInfo.class);
+            if (info == null || !this.getModules().contains(dependency)) {
+                break;
+            } else if (!this.getModules().contains(dependency)) {
+                try {
+                    GameModule game = this.readModule(new Element(info.id()));
+                    this.getModules().register(game);
+                } catch (MapParserException ex) {
+                    break;
+                }
+            }
+
+            GameModule dependencyModule = this.getModules().getModule(dependency);
+            this.enableModule(dependencyModule);
+        }
+
+        for (Class<? extends Module<?>> loadBefore : module.getModule().getLoadBefore()) {
+            ModuleInfo info = loadBefore.getAnnotation(ModuleInfo.class);
+            if (info == null || !this.getModules().contains(loadBefore)) {
+                continue;
+            }
+
+            GameModule loadBeforeModule = this.getModules().getModule(loadBefore);
+            this.enableModule(loadBeforeModule);
+        }
 
         if (!this.hasDependencies(module)) {
             return;
@@ -112,7 +142,7 @@ public class Game implements Metadata, Serializable {
         return this.map;
     }
 
-    public <T extends GameModule> T getModule(Class<T> module) {
+    public GameModule getModule(Class<? extends Module<?>> module) {
         return this.getModules().getModule(module);
     }
 
@@ -190,6 +220,57 @@ public class Game implements Metadata, Serializable {
         return true;
     }
 
+    public GameModule readModule(Element xml) throws MapParserException {
+        ModuleContainer container = this.plugin.getModules();
+        if (!container.contains(xml.getName())) {
+            throw new MapParserException("module not found");
+        }
+
+        Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
+        try {
+            Object object = module.buildGameModule(xml, this);
+            if (object == null) {
+                return null;
+            }
+
+            GameModule game = (GameModule) object;
+            game.initialize(this.plugin, this, module);
+            return game;
+        } catch (ClassCastException cast) {
+            throw new MapParserException("game module does not inherit the " + GameModule.class.getName());
+        } catch (Throwable th) {
+            throw new MapParserException("could not build game module", th);
+        }
+    }
+
+    public void readModules(Element parent) {
+        for (Element xml : parent.getChildren()) {
+            try {
+                GameModule module = this.readModule(xml);
+                if (module != null) {
+                    this.getModules().register(module);
+                }
+            } catch (MapParserException ex) {
+                this.plugin.getLogger().log(Level.SEVERE, "Could not load module '" + xml.getName() + "': " + ex.getMessage(), ex);
+            }
+        }
+
+        for (Module<?> global : this.plugin.getModules().getModules()) {
+            if (!global.isGlobal() || this.getModules().contains(global.getId())) {
+                continue;
+            }
+
+            try {
+                GameModule module = this.readModule(new Element(global.getId()));
+                if (module != null) {
+                    this.getModules().register(module);
+                }
+            } catch (MapParserException ex) {
+                this.plugin.getLogger().log(Level.SEVERE, "Could not load module '" + global.getId() + "': " + ex.getMessage(), ex);
+            }
+        }
+    }
+
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
     }
@@ -214,42 +295,6 @@ public class Game implements Metadata, Serializable {
 
         for (Task task : this.getTasks()) {
             task.cancelTask();
-        }
-    }
-
-    private GameModule readModule(Element xml) throws MapParserException {
-        ModuleContainer container = this.plugin.getModules();
-        if (container.contains(xml.getName())) {
-            throw new MapParserException("module not found");
-        }
-
-        Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
-        try {
-            Object object = module.buildGameModule(xml);
-            if (object == null) {
-                return null;
-            }
-
-            GameModule game = (GameModule) object;
-            game.initialize(this.plugin, this, module);
-            return game;
-        } catch (ClassCastException cast) {
-            throw new MapParserException("game module does not inherit the " + GameModule.class.getName());
-        } catch (Throwable th) {
-            throw new MapParserException("could not build game module", th);
-        }
-    }
-
-    private void readModules(Element parent) {
-        for (Element xml : parent.getChildren()) {
-            try {
-                GameModule module = this.readModule(xml);
-                if (module != null) {
-                    this.getModules().register(module);
-                }
-            } catch (MapParserException ex) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not load module '" + xml.getName() + "': " + ex.getMessage(), ex);
-            }
         }
     }
 }

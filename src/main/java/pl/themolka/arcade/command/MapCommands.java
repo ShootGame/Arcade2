@@ -127,7 +127,7 @@ public class MapCommands {
             permission = "arcade.command.nextmap")
     public void nextMap(Session<ArcadePlayer> sender, CommandContext context) {
         if (this.plugin.getGames().isNextRestart()) {
-            sender.sendError("Server will be restarted.");
+            throw new CommandException("Server will be restarted.");
         } else {
             OfflineMap next = this.plugin.getGames().getQueue().getNextMap();
             if (next == null) {
@@ -181,7 +181,7 @@ public class MapCommands {
             sender.sendError("Found " + results.size() + " results. Setting next the best one...");
         }
 
-        this.setNextMap(sender, results.get(0), paramAfter);
+        this.setNextMap(sender, results.get(0), !paramAfter);
     }
 
     public List<String> setNextCompleter(Session<ArcadePlayer> sender, CommandContext context) {

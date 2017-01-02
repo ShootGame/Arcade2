@@ -13,8 +13,8 @@ import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class XMLTeam extends XMLParser {
-    public static Team parse(Element xml, ArcadePlugin plugin, Match match) {
-        return new TeamBuilder(plugin, match, parseId(xml))
+    public static Team parse(Element xml, ArcadePlugin plugin) {
+        return new TeamBuilder(plugin, parseId(xml))
                 .color(parseColor(xml))
                 .dyeColor(parseDyeColor(xml))
                 .friendlyFire(parseFriendlyFire(xml))

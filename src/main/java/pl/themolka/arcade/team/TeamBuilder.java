@@ -4,14 +4,11 @@ import org.apache.commons.lang3.builder.Builder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.match.Match;
 
 public class TeamBuilder implements Builder<Team> {
     private final ArcadePlugin plugin;
 
-    private final Match match;
     private final String id;
-
     private ChatColor color;
     private DyeColor dyeColor;
     private boolean friendlyFire;
@@ -20,15 +17,14 @@ public class TeamBuilder implements Builder<Team> {
     private String name;
     private int slots;
 
-    public TeamBuilder(ArcadePlugin plugin, Match match, String id) {
+    public TeamBuilder(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
-        this.match = match;
         this.id = id;
     }
 
     @Override
     public Team build() {
-        Team team = new Team(this.plugin, this.match, this.id());
+        Team team = new Team(this.plugin, this.id());
         team.setColor(this.color());
         team.setDyeColor(this.dyeColor());
         team.setFriendlyFire(this.friendlyFire());

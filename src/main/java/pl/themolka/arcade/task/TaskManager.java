@@ -29,11 +29,7 @@ public class TaskManager implements Tickable {
     }
 
     public boolean cancel(int taskId) {
-        if (taskId == Task.DEFAULT_TASK_ID) {
-            return false;
-        }
-
-        return this.cancel(this.getTask(taskId));
+        return taskId != Task.DEFAULT_TASK_ID && this.cancel(this.getTask(taskId));
     }
 
     public boolean cancel(Task task) {

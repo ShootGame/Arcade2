@@ -7,8 +7,8 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.team.XMLTeam;
 
 public class XMLObservers extends XMLTeam {
-    public static Observers parse(Element xml, ArcadePlugin plugin, Match match) {
-        Observers observers = new Observers(plugin, match);
+    public static Observers parse(Element xml, ArcadePlugin plugin) {
+        Observers observers = new Observers(plugin);
 
         if (xml != null) {
             ChatColor color = parseColor(xml);
