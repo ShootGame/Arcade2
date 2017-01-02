@@ -7,7 +7,6 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;

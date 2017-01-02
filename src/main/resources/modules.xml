@@ -3,6 +3,7 @@
 <modules>
     <module class="pl.themolka.arcade.example.ExampleModule" />
     <module class="pl.themolka.arcade.gamerule.GameRulesModule" />
+    <module class="pl.themolka.arcade.kit.KitsModule" />
     <module class="pl.themolka.arcade.map.ArchiveModule" />
     <module class="pl.themolka.arcade.map.MapLoaderModule" />
     <module class="pl.themolka.arcade.match.MatchModule" />

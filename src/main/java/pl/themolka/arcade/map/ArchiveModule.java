@@ -7,14 +7,14 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameDestroyEvent;
 import pl.themolka.arcade.game.GameDestroyedEvent;
-import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.module.SimpleGlobalModule;
 
 import java.io.File;
 import java.io.IOException;
 
 @ModuleInfo(id = "archive")
-public class ArchiveModule extends Module<Object> {
+public class ArchiveModule extends SimpleGlobalModule {
     public static final String DEFAULT_DIRECTORY_NAME = "./archive";
 
     private File directory;

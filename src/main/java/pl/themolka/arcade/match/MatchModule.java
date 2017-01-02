@@ -8,6 +8,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
@@ -30,7 +31,7 @@ public class MatchModule extends Module<MatchGame> {
 
         Element autoStartElement = xml.getChild("auto-start");
         if (autoStartElement != null) {
-            autoStart = autoStartElement.getTextNormalize().equalsIgnoreCase("true");
+            autoStart = XMLParser.parseBoolean(autoStartElement.getTextNormalize(), true);
         }
 
         Element startCountdownElement = xml.getChild("start-countdown");
@@ -38,6 +39,7 @@ public class MatchModule extends Module<MatchGame> {
             try {
                 startCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
             } catch (NumberFormatException ignored) {
+                startCountdown = this.getDefaultStartCountdown();
             }
         }
 
@@ -81,6 +83,7 @@ public class MatchModule extends Module<MatchGame> {
             try {
                 this.defaultStartCountdown = Integer.parseInt(xml.getTextNormalize());
             } catch (NumberFormatException ignored) {
+                this.defaultStartCountdown = DEFAULT_START_COUNTDOWN;
             }
         }
     }

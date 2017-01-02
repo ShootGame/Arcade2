@@ -16,6 +16,18 @@ public class XMLParser {
         return new Attribute(name, def.toString());
     }
 
+    public static boolean parseBoolean(String bool) {
+        return parseBoolean(bool, false);
+    }
+
+    public static boolean parseBoolean(String bool, boolean def) {
+        if (bool != null) {
+            return Boolean.parseBoolean(bool);
+        }
+
+        return def;
+    }
+
     public static String parseEnumValue(String key) {
         return key.toUpperCase().replace(" ", "_");
     }

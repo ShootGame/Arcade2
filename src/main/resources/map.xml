@@ -16,6 +16,25 @@
             <gamerule type="doDaylightCycle">false</gamerule>
         </gamerules>
 
+        <kits>
+            <kit id="essential-kit">
+                <item material="diamond sword" amount="1" />
+                <item material="diamond pickaxe" amount="1">
+                    <name>Your unbreakable Diamond pickaxe</name>
+                    <description>
+                        <line>Line 1</line>
+                        <line>Line 2</line>
+                    </description>
+                    <enchantments>
+                        <enchantment level="3">silk touch</enchantment>
+                    </enchantments>
+                    <unbreakable>true</unbreakable>
+                </item>
+                <item material="stone" amount="64" />
+                <item material="stone" amount="64" />
+            </kit>
+        </kits>
+
         <teams>
             <team id="blue-team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">Blue Team</team>
             <team id="red-team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">Red Team</team>

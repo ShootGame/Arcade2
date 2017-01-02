@@ -4,8 +4,8 @@ import net.engio.mbassy.listener.Handler;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.module.SimpleGlobalModule;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 @ModuleInfo(id = "map-loader")
-public class MapLoaderModule extends Module<Object> implements MapContainerLoader {
+public class MapLoaderModule extends SimpleGlobalModule implements MapContainerLoader {
     private final List<File> worldFiles = new ArrayList<>();
 
     @Override
