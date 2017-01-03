@@ -73,11 +73,6 @@ public class XMLPotionEffect extends XMLParser {
     }
 
     private static PotionEffectType parseType(Element xml) {
-        Attribute attribute = xml.getAttribute("type");
-        if (attribute != null) {
-            return PotionEffectType.getByName(parseEnumValue(attribute.getValue()));
-        }
-
-        return null;
+        return PotionEffectType.getByName(parseEnumValue(xml.getTextNormalize()));
     }
 }

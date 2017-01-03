@@ -26,7 +26,7 @@ public class GameModeContent implements KitContent<GameMode>  {
     public static class Parser implements KitContentParser<GameModeContent> {
         @Override
         public GameModeContent parse(Element xml) throws DataConversionException {
-            return new GameModeContent(XMLGameMode.parse(xml));
+            return new GameModeContent(XMLGameMode.parse(xml.getValue()));
         }
     }
 }

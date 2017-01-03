@@ -22,6 +22,25 @@ public class KitsModule extends Module<KitsGame> {
             }
         }
 
+        for (Kit kit : kits) {
+            for (String inherit : kit.getInherit()) {
+                Kit inheritKit = this.findKit(inherit, kits);
+                if (inheritKit != null) {
+                    kit.addContent(inheritKit);
+                }
+            }
+        }
+
         return new KitsGame(kits);
+    }
+
+    private Kit findKit(String id, List<Kit> source) {
+        for (Kit kit : source) {
+            if (kit.getId().equals(id)) {
+                return kit;
+            }
+        }
+
+        return null;
     }
 }

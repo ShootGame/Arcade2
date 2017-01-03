@@ -22,7 +22,7 @@ public class XMLChatColor extends XMLParser {
 
     public static ChatColor parse(Attribute xml) {
         if (xml != null) {
-            return ChatColor.valueOf(parseEnumValue(xml.getValue()));
+            return parse(xml.getValue());
         }
 
         return null;
@@ -32,6 +32,21 @@ public class XMLChatColor extends XMLParser {
         ChatColor color = parse(xml);
         if (color != null) {
             return color;
+        }
+
+        return def;
+    }
+
+    public static ChatColor parse(String value) {
+        return parse(value, null);
+    }
+
+    public static ChatColor parse(String value, ChatColor def) {
+        if (value != null) {
+            ChatColor result = ChatColor.valueOf(parseEnumValue(value));
+            if (result != null) {
+                return result;
+            }
         }
 
         return def;

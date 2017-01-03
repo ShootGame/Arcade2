@@ -21,9 +21,17 @@ public class XMLTime extends XMLParser {
 
     public static Time parse(Attribute xml, Time def) {
         if (xml != null) {
-            return Time.parseTime(xml.getValue(), def);
+            return parse(xml.getValue(), def);
         }
 
         return def;
+    }
+
+    public static Time parse(String value) {
+        return parse(value, null);
+    }
+
+    public static Time parse(String value, Time def) {
+        return Time.parseTime(value, def);
     }
 }

@@ -18,6 +18,13 @@ public enum KitContentType implements KitContentParser<Object> {
         }
     },
 
+    MESSAGE("message", "msg") {
+        @Override
+        public Object parse(Element xml) throws DataConversionException {
+            return MESSAGE_PARSER.parse(xml);
+        }
+    },
+
     POTION_EFFECT("potion", "potioneffect", "potion-effect") {
         @Override
         public KitContent<?> parse(Element xml) throws DataConversionException {
@@ -28,6 +35,7 @@ public enum KitContentType implements KitContentParser<Object> {
 
     public static final GameModeContent.Parser GAME_MODE_PARSER = new GameModeContent.Parser();
     public static final ItemStackContent.Parser ITEM_STACK_PARSER = new ItemStackContent.Parser();
+    public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();
     public static final PotionEffectContent.Parser POTION_EFFECT_PARSER = new PotionEffectContent.Parser();
 
     private final String[] name;

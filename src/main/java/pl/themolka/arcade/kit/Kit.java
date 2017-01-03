@@ -12,6 +12,7 @@ public class Kit implements Applicable<GamePlayer> {
 
     private final List<KitContent<?>> content = new ArrayList<>();
     private final String id;
+    private final List<String> inherit = new ArrayList<>();
 
     public Kit(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
@@ -31,8 +32,22 @@ public class Kit implements Applicable<GamePlayer> {
         }
     }
 
+    public void addContent(Kit kit) {
+        this.addContent(kit.getContent().toArray(new KitContent[kit.getContent().size()]));
+    }
+
     public boolean addContent(KitContent<?> content) {
         return this.content.add(content);
+    }
+
+    public void addContent(KitContent<?>... array) {
+        for (KitContent<?> content : array) {
+            this.addContent(content);
+        }
+    }
+
+    public boolean addInherit(String inherit) {
+        return this.inherit.add(inherit);
     }
 
     public List<KitContent<?>> getContent() {
@@ -41,6 +56,10 @@ public class Kit implements Applicable<GamePlayer> {
 
     public String getId() {
         return this.id;
+    }
+
+    public List<String> getInherit() {
+        return this.inherit;
     }
 
     public boolean removeContent(KitContent<?> content) {
