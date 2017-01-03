@@ -52,7 +52,16 @@ public class XMLPotionEffect extends XMLParser {
     private static int parseDuration(Element xml) {
         Attribute attribute = xml.getAttribute("duration");
         if (attribute != null) {
-            return Math.toIntExact(XMLTime.parse(attribute, Time.ofSeconds(1)).toTicks());
+            Time time = XMLTime.parse(attribute, Time.ofSeconds(1));
+
+            if (!time.isForever()) {
+                try {
+                    return Math.toIntExact(time.toTicks());
+                } catch (ArithmeticException ignored) {
+                }
+            }
+
+            return Integer.MAX_VALUE;
         }
 
         return 20;

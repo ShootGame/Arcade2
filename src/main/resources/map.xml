@@ -32,7 +32,7 @@
                 </item>
                 <item slot="2" material="stone" amount="64" />
                 <item slot="3" material="stone" amount="64" />
-                <potion type="fire resistance" ambient="true" amplifier="1" color="TODO" duration="5s" particles="true" />
+                <potion type="fire resistance" ambient="true" amplifier="1" color="TODO" duration="oo" particles="true" />
             </kit>
         </kits>
 

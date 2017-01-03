@@ -9,12 +9,13 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.commons.command.CommandContext;
+import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
 import pl.themolka.commons.command.CommandPermissionException;
-import pl.themolka.commons.command.CommandUsageException;
 import pl.themolka.commons.session.Session;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class ArcadeCommand {
     private final ArcadePlugin plugin;
@@ -48,7 +49,7 @@ public class ArcadeCommand {
         sender.send(this.arcadeKeyValue("Author(s)", StringUtils.join(ArcadePlugin.COPYRIGHTS, ", ")));
         sender.send(this.arcadeKeyValue("Apache Maven ID", manifest.getFieldGroupId() + ":" + manifest.getFieldArtifactId()));
         sender.send(this.arcadeKeyValue("Website", website));
-        sender.send(this.arcadeKeyValue("Issues, Bugs, Questions", issues));
+        sender.send(this.arcadeKeyValue("Issues? Bugs?", issues));
     }
 
     private String arcadeKeyValue(String key, String value) {
@@ -56,15 +57,11 @@ public class ArcadeCommand {
     }
 
     //
-    // /arcade <?> command
+    // '/arcade <?>' command
     //
 
     public void params(Session<ArcadePlayer> sender, CommandContext context) {
-        switch (context.getParam(0)) {
-            case "help":
-            case "?":
-                this.help(sender);
-                break;
+        switch (context.getParam(0).toLowerCase()) {
             case "reload":
             case "rl":
                 this.reload(sender);
@@ -72,16 +69,19 @@ public class ArcadeCommand {
             case "reset":
                 this.reset(sender);
                 break;
+            case "session":
+                this.session(sender);
+                break;
             case "updater":
                 this.updater(sender);
                 break;
             default:
-                throw new CommandUsageException();
+                this.help(sender);
         }
     }
 
     //
-    // /arcade help command
+    // '/arcade help' command
     //
 
     private void help(Session<ArcadePlayer> sender) {
@@ -92,6 +92,7 @@ public class ArcadeCommand {
         Commands.sendTitleMessage(sender, "Help");
         sender.send(this.helpItem("reload", "Reload settings file"));
         sender.send(this.helpItem("reset", "Reset settings file to the default state"));
+        sender.send(this.helpItem("session", "Reload server session"));
         sender.send(this.helpItem("updater", "Check for updates"));
     }
 
@@ -100,7 +101,7 @@ public class ArcadeCommand {
     }
 
     //
-    // /arcade reload command
+    // '/arcade reload' command
     //
 
     private void reload(Session<ArcadePlayer> sender) {
@@ -117,20 +118,16 @@ public class ArcadeCommand {
 
             sender.sendSuccess("Successfully reloaded settings file. Well done!");
         } catch (IOException io) {
-            sender.sendError("Could not reload settings file - see console.");
             io.printStackTrace();
-
-            sender.sendError(io.getClass().getName() + ": " + io.getLocalizedMessage());
+            throw new CommandException("Could not reload settings file: " + io.getMessage());
         } catch (JDOMException jdom) {
-            sender.sendError("Could not reload XML file - see console.");
             jdom.printStackTrace();
-
-            sender.sendError(jdom.getClass().getName() + ": " + jdom.getLocalizedMessage());
+            throw new CommandException("Could not reload XML file: " + jdom.getMessage());
         }
     }
 
     //
-    // /arcade reset command
+    // '/arcade reset' command
     //
 
     private void reset(Session<ArcadePlayer> sender) {
@@ -142,22 +139,33 @@ public class ArcadeCommand {
             this.plugin.getSettings().copySettingsFile(true);
             this.reload(sender);
         } catch (IOException io) {
-            sender.sendError("Could not reset settings file - see console.");
             io.printStackTrace();
-
-            sender.sendError(io.getClass().getName() + ": " + io.getLocalizedMessage());
+            throw new CommandException("Could not reset settings file: " + io.getMessage());
         }
     }
 
     //
-    // /arcade updater command
+    // '/arcade session' command
+    //
+
+    private void session(Session<ArcadePlayer> sender) {
+        if (!sender.hasPermission("arcade.command.reload")) {
+            throw new CommandPermissionException("arcade.command.reload");
+        }
+
+        try {
+            this.plugin.getServerSession().deserialize();
+        } catch (IOException io) {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not reload server-session file: " + io.getMessage(), io);
+            throw new CommandException("Could not reload server-session file: " + io.getMessage());
+        }
+    }
+
+    //
+    // '/arcade updater' command
     //
 
     private void updater(Session<ArcadePlayer> sender) {
-        if (!sender.hasPermission("arcade.command.updater")) {
-            throw new CommandPermissionException("arcade.command.updater");
-        }
-
         sender.sendInfo("Work in Progress!");
     }
 }

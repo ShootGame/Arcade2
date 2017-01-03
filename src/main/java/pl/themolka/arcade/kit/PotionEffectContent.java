@@ -23,7 +23,7 @@ public class PotionEffectContent implements KitContent<PotionEffect> {
         return this.result;
     }
 
-    public static class Parser implements IKitContentParser<PotionEffectContent> {
+    public static class Parser implements KitContentParser<PotionEffectContent> {
         @Override
         public PotionEffectContent parse(Element xml) throws DataConversionException {
             return new PotionEffectContent(XMLPotionEffect.parse(xml));

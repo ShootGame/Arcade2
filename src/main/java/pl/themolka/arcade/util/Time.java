@@ -1,8 +1,12 @@
 package pl.themolka.arcade.util;
 
 import java.time.Instant;
+import java.util.Objects;
 
 public class Time {
+    public static final Time FOREVER = new Time(Long.MAX_VALUE);
+    public static final String FOREVER_KEY = "oo";
+
     public static final char UNIT_MILLIS = 'x';
     public static final char UNIT_TICKS = 't';
     public static final char UNIT_SECONDS = 's';
@@ -16,8 +20,22 @@ public class Time {
         this.time = time;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Time && this.getTime() == ((Time) obj).getTime();
+    }
+
     public long getTime() {
         return this.time;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.time);
+    }
+
+    public boolean isForever() {
+        return this.equals(FOREVER);
     }
 
     //
@@ -169,6 +187,18 @@ public class Time {
     }
 
     public static Time parseTime(String time, Time def) {
+        return parseTime(time, def, null);
+    }
+
+    public static Time parseTime(String time, Time def, String foreverKey) {
+        if (foreverKey == null) {
+            foreverKey = FOREVER_KEY;
+        }
+
+        if (time.equalsIgnoreCase(foreverKey)) {
+            return FOREVER;
+        }
+
         char unit = time.toLowerCase().charAt(time.length() - 1);
 
         try {

@@ -3,7 +3,6 @@ package pl.themolka.arcade.map;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.jdom2.Element;
 import pl.themolka.arcade.game.Game;
 
 public class ArcadeMap {
@@ -12,7 +11,7 @@ public class ArcadeMap {
 
     private final OfflineMap mapInfo;
 
-    private transient Element configuration;
+    private ArcadeMapConfiguration configuration;
     private Difficulty difficulty;
     private World.Environment environment;
     private transient Game game;
@@ -29,7 +28,7 @@ public class ArcadeMap {
         return this.mapInfo;
     }
 
-    public Element getConfiguration() {
+    public ArcadeMapConfiguration getConfiguration() {
         return this.configuration;
     }
 
@@ -77,7 +76,7 @@ public class ArcadeMap {
         return this.pvp;
     }
 
-    public void setConfiguration(Element configuration) {
+    public void setConfiguration(ArcadeMapConfiguration configuration) {
         this.configuration = configuration;
     }
 

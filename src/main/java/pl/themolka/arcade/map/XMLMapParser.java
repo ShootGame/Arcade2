@@ -159,7 +159,7 @@ public class XMLMapParser implements MapParser {
         Element world = root.getChild("world");
 
         ArcadeMap map = new ArcadeMap(offline);
-        map.setConfiguration(root);
+        map.setConfiguration(new ArcadeMapConfiguration(root));
         map.setDifficulty(this.parseDifficulty(world));
         map.setEnvironment(this.parseEnvironment(world));
         map.setSpawn(this.parseSpawn(world));

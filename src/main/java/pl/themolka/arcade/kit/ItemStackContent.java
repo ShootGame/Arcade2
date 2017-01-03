@@ -50,7 +50,7 @@ public class ItemStackContent implements KitContent<ItemStack> {
         this.slot = slot;
     }
 
-    public static class Parser implements IKitContentParser<ItemStackContent> {
+    public static class Parser implements KitContentParser<ItemStackContent> {
         @Override
         public ItemStackContent parse(Element xml) throws DataConversionException {
             ItemStackContent content = new ItemStackContent(XMLItemStack.parse(xml));

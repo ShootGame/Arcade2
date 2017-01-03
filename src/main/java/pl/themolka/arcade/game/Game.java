@@ -44,7 +44,7 @@ public class Game implements Metadata, Serializable {
         this.map = map;
         this.world = world;
 
-        Element modules = map.getConfiguration().getChild("modules");
+        Element modules = map.getConfiguration().getRoot().getChild("modules");
         if (modules != null) {
             this.readModules(modules);
         } else {
@@ -200,6 +200,10 @@ public class Game implements Metadata, Serializable {
 
     public Server getServer() {
         return this.getPlugin().getServer();
+    }
+
+    public Instant getStartTime() {
+        return this.startTime;
     }
 
     public List<Task> getTasks() {
