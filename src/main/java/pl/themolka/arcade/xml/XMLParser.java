@@ -1,5 +1,6 @@
 package pl.themolka.arcade.xml;
 
+import org.bukkit.ChatColor;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -33,6 +34,6 @@ public class XMLParser {
     }
 
     public static String parseMessage(String message) {
-        return org.bukkit.ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);
+        return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);
     }
 }

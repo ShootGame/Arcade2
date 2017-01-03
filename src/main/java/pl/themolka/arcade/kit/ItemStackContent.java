@@ -1,21 +1,12 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.item.ItemStackBuilder;
-import pl.themolka.arcade.xml.XMLMaterial;
-import pl.themolka.arcade.xml.XMLParser;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import pl.themolka.arcade.item.XMLItemStack;
 
 public class ItemStackContent implements KitContent<ItemStack> {
     public static final int SLOT_NULL = -1;
@@ -61,21 +52,19 @@ public class ItemStackContent implements KitContent<ItemStack> {
 
     public static class Parser implements IKitContentParser<ItemStackContent> {
         @Override
-        public KitContent<ItemStackContent> parse(Element xml) {
-            ItemStackBuilder builder = new ItemStackBuilder();
-            builder.amount(this.parseAmount(xml));
-            builder.description(this.parseDescription(xml));
-            builder.displayName(this.parseDisplayName(xml));
-            builder.durability(this.parseDurability(xml));
-            builder.enchantments(this.parseEnchantments(xml));
-            builder.type(this.parseType(xml));
-            builder.unbreakable(this.parseUnbreakable(xml));
+        public ItemStackContent parse(Element xml) throws DataConversionException {
+            ItemStackContent content = new ItemStackContent(XMLItemStack.parse(xml));
 
-            return null;
+            int slot = this.parseSlot(xml);
+            if (slot != SLOT_NULL) {
+                content.setSlot(slot);
+            }
+
+            return content;
         }
 
-        private int parseAmount(Element xml) {
-            Attribute attribute = xml.getAttribute("amount");
+        private int parseSlot(Element xml) {
+            Attribute attribute = xml.getAttribute("slot");
             if (attribute != null) {
                 try {
                     return attribute.getIntValue();
@@ -83,74 +72,7 @@ public class ItemStackContent implements KitContent<ItemStack> {
                 }
             }
 
-            return 1;
-        }
-
-        private List<String> parseDescription(Element xml) {
-            List<String> description = new ArrayList<>();
-
-            Element element = xml.getChild("description");
-            if (element != null) {
-                for (Element line : element.getChildren("line")) {
-                    description.add(XMLParser.parseMessage(line.getTextNormalize()));
-                }
-            }
-
-            return description;
-        }
-
-        private String parseDisplayName(Element xml) {
-            Element element = xml.getChild("name");
-            if (element != null) {
-                return XMLParser.parseMessage(element.getTextNormalize());
-            }
-
-            return null;
-        }
-
-        private short parseDurability(Element xml) {
-            Element element = xml.getChild("durability");
-            if (element != null) {
-                try {
-                    return Short.parseShort(element.getTextNormalize());
-                } catch (NumberFormatException ignored) {
-                }
-            }
-
-            return 0;
-        }
-
-        private Map<Enchantment, Integer> parseEnchantments(Element xml) {
-            Map<Enchantment, Integer> enchantments = new HashMap<>();
-
-            Element element = xml.getChild("enchantments");
-            if (element != null) {
-                for (Element enchantment : element.getChildren("enchantment")) {
-                    Enchantment type = Enchantment.getByName(XMLParser.parseEnumValue(enchantment.getTextNormalize()));
-                    int level = 1;
-
-                    try {
-                        Attribute levelAttribute = enchantment.getAttribute("level");
-                        if (levelAttribute != null) {
-                            level = levelAttribute.getIntValue();
-                        }
-                    } catch (DataConversionException ignored) {
-                    }
-
-                    enchantments.put(type, level);
-                }
-            }
-
-            return enchantments;
-        }
-
-        private Material parseType(Element xml) {
-            return XMLMaterial.parse(xml);
-        }
-
-        private boolean parseUnbreakable(Element xml) {
-            Element element = xml.getChild("unbreakable");
-            return element != null && XMLParser.parseBoolean(element.getTextNormalize());
+            return SLOT_NULL;
         }
     }
 }

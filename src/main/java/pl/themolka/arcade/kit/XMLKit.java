@@ -13,9 +13,9 @@ public class XMLKit extends XMLParser {
 
         Kit kit = new Kit(plugin, id);
         for (Element contentElement : xml.getChildren()) {
-            KitContent<?> content = KitContentParser.parseForName(contentElement.getName(), contentElement);
-            if (content != null) {
-                kit.addContent(content);
+            Object content = KitContentParser.parseForName(contentElement.getName(), contentElement);
+            if (content != null && content instanceof KitContent<?>) {
+                kit.addContent((KitContent<?>) content);
             }
         }
 

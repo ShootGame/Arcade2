@@ -1,17 +1,26 @@
 package pl.themolka.arcade.kit;
 
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 public enum KitContentParser implements IKitContentParser<Object> {
-    ITEMSTACK("item", "itemstack", "stack") {
-        private final ItemStackContent.Parser parser = new ItemStackContent.Parser();
-
+    ITEMSTACK("item", "itemstack", "item-stack", "stack") {
         @Override
-        public KitContent<Object> parse(Element xml) {
-            return (KitContent) this.parser.parse(xml);
+        public KitContent<?> parse(Element xml) throws DataConversionException {
+            return ITEMSTACK_PARSER.parse(xml);
         }
     },
+
+    POTION_EFFECT("potion", "potioneffect", "potion-effect") {
+        @Override
+        public KitContent<?> parse(Element xml) throws DataConversionException {
+            return POTION_EFFECT_PARSER.parse(xml);
+        }
+    }
     ;
+
+    public static final ItemStackContent.Parser ITEMSTACK_PARSER = new ItemStackContent.Parser();
+    public static final PotionEffectContent.Parser POTION_EFFECT_PARSER = new PotionEffectContent.Parser();
 
     private final String[] name;
 
@@ -37,7 +46,7 @@ public enum KitContentParser implements IKitContentParser<Object> {
         return null;
     }
 
-    public static KitContent<?> parseForName(String name, Element xml) {
+    public static Object parseForName(String name, Element xml) throws DataConversionException {
         KitContentParser parser = forName(name);
         if (parser != null) {
             return parser.parse(xml);

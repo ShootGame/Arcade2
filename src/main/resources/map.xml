@@ -18,8 +18,8 @@
 
         <kits>
             <kit id="essential-kit">
-                <item material="diamond sword" amount="1" />
-                <item material="diamond pickaxe" amount="1">
+                <item slot="0" material="diamond sword" amount="1" />
+                <item slot="1" material="diamond pickaxe" amount="1">
                     <name>Your unbreakable Diamond pickaxe</name>
                     <description>
                         <line>Line 1</line>
@@ -30,14 +30,19 @@
                     </enchantments>
                     <unbreakable>true</unbreakable>
                 </item>
-                <item material="stone" amount="64" />
-                <item material="stone" amount="64" />
+                <item slot="2" material="stone" amount="64" />
+                <item slot="3" material="stone" amount="64" />
+                <potion type="fire resistance" ambient="true" amplifier="1" color="TODO" duration="5s" particles="true" />
             </kit>
         </kits>
 
         <teams>
-            <team id="blue-team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">Blue Team</team>
-            <team id="red-team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">Red Team</team>
+            <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
+
+            </team>
+            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
+
+            </team>
         </teams>
     </modules>
 </map>

@@ -1,7 +1,8 @@
 package pl.themolka.arcade.kit;
 
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 public interface IKitContentParser<T> {
-    KitContent<T> parse(Element xml);
+    T parse(Element xml) throws DataConversionException;
 }

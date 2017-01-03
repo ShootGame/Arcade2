@@ -145,12 +145,12 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.dependency = dependency;
     }
 
-    public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
-        this.loadBefore = loadBefore;
-    }
-
     public void setGlobal(boolean global) {
         this.global = global;
+    }
+
+    public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
+        this.loadBefore = loadBefore;
     }
 
     public boolean unregisterListenerObject(Object object) {
