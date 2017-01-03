@@ -7,7 +7,7 @@
         <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
     </authors>
 
-    <world difficulty="peaceful" environment="normal" pvp="true">
+    <world difficulty="easy" environment="normal" pvp="true">
         <spawn x="0.5" y="64" z="0.5" />
     </world>
 
@@ -32,7 +32,7 @@
                 </item>
                 <item slot="2" material="stone" amount="64" />
                 <item slot="3" material="stone" amount="64" />
-                <potion ambient="true" amplifier="1" color="TODO" duration="oo" particles="true">fire resistance</potion>
+                <potion-effect ambient="true" amplifier="1" color="TODO" duration="oo" particles="true">fire resistance</potion-effect>
             </kit>
 
             <kit id="creative-kit">
@@ -43,6 +43,44 @@
 
             <kit id="custom-kit">
                 <item material="ladder" amount="32" />
+            </kit>
+
+            <kit id="blue-leather-armor-kit" inherit="essential-kit">
+                <item slot="103" material="wool:11" />
+                <item slot="102" material="leather chestplate">
+                    <leather-color>blue</leather-color>
+                </item>
+                <item slot="101" material="chainmail leggings" />
+                <item slot="100" material="leather-boots">
+                    <leather-color>blue</leather-color>
+                </item>
+            </kit>
+
+            <kit id="red-leather-armor-kit" inherit="essential-kit">
+                <item slot="103" material="wool:14" />
+                <item slot="102" material="leather chestplate">
+                    <leather-color>red</leather-color>
+                </item>
+                <item slot="101" material="chainmail leggings" />
+                <item slot="100" material="leather-boots">
+                    <leather-color>red</leather-color>
+                </item>
+            </kit>
+
+            <kit id="meta-kit">
+                <item slot="8" material="written book">
+                    <book author="TheMolkaPL" title="Custom book">
+                        <page>Page 1/3</page>
+                        <page>Page 2/3</page>
+                        <page>Page 3/3</page>
+                    </book>
+                </item>
+                <item slot="7" material="skull item">
+                    <skull owner="TheMolkaPL" />
+                </item>
+                <item slot="6" material="potion">
+                    <potion-effect ambient="true" amplifier="1" color="TODO" duration="oo" particles="true">fire resistance</potion-effect>
+                </item>
             </kit>
         </kits>
 

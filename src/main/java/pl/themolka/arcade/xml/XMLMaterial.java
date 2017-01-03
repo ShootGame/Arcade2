@@ -22,7 +22,7 @@ public class XMLMaterial extends XMLParser {
 
     public static Material parse(Attribute xml) {
         if (xml != null) {
-            return Material.matchMaterial(parseEnumValue(xml.getValue()));
+            return Material.matchMaterial(parseEnumValue(xml.getValue().split(":")[0]));
         }
 
         return null;

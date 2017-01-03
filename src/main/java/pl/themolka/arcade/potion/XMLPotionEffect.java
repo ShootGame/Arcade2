@@ -7,6 +7,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.util.Time;
+import pl.themolka.arcade.xml.XMLColor;
 import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.arcade.xml.XMLTime;
 
@@ -41,12 +42,7 @@ public class XMLPotionEffect extends XMLParser {
     }
 
     private static Color parseColor(Element xml) {
-        Attribute attribute = xml.getAttribute("color");
-        if (attribute != null) {
-            // TODO parse colors
-        }
-
-        return null;
+        return XMLColor.parse(xml);
     }
 
     private static int parseDuration(Element xml) {

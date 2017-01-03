@@ -8,11 +8,15 @@ public class XMLTime extends XMLParser {
     public static final String ATTRIBUTE_TIME = "time";
 
     public static Time parse(Element xml) {
-        return parse(xml.getAttribute(ATTRIBUTE_TIME));
+        return parse(xml, null);
     }
 
     public static Time parse(Element xml, Time def) {
-        return parse(xml.getAttribute(ATTRIBUTE_TIME), def);
+        if (xml != null) {
+            return parse(xml.getAttribute(ATTRIBUTE_TIME), def);
+        }
+
+        return def;
     }
 
     public static Time parse(Attribute xml) {

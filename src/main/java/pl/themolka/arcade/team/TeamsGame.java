@@ -8,6 +8,8 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.goal.GoalScoreEvent;
+import pl.themolka.arcade.kit.KitsGame;
+import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -50,6 +52,11 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_OBSERVERS, this.getObservers());
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
+
+        GameModule kitsGame = this.getGame().getModule(KitsModule.class);
+        if (kitsGame != null) {
+            this.registerListenerObject(new TeamsKitListeners(this, (KitsGame) kitsGame, this.getMatch()));
+        }
     }
 
     @Override

@@ -30,7 +30,7 @@ public class XMLParser {
     }
 
     public static String parseEnumValue(String key) {
-        return key.toUpperCase().replace(" ", "_");
+        return key.toUpperCase().replace(" ", "_").replace("-", "_");
     }
 
     public static String parseMessage(String message) {

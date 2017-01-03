@@ -22,7 +22,7 @@ public class XMLDyeColor extends XMLParser {
 
     public static DyeColor parse(Attribute xml) {
         if (xml != null) {
-            return DyeColor.valueOf(parseEnumValue(xml.getValue()));
+            return parse(xml.getValue());
         }
 
         return null;
@@ -35,5 +35,13 @@ public class XMLDyeColor extends XMLParser {
         }
 
         return def;
+    }
+
+    public static DyeColor parse(String name) {
+        return parse(name, null);
+    }
+
+    public static DyeColor parse(String name, DyeColor def) {
+        return DyeColor.valueOf(parseEnumValue(name));
     }
 }

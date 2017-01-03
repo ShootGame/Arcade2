@@ -3,6 +3,7 @@ package pl.themolka.arcade.item;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -29,7 +30,11 @@ public class XMLItemStack extends XMLParser {
                 .type(parseType(xml))
                 .unbreakable(parseUnbreakable(xml));
 
-        return builder.build();
+        ItemStack item = builder.build();
+        item.setItemMeta(parseItemMeta(xml, item.getItemMeta()));
+        item.setDurability(parseData(xml));
+
+        return item;
     }
 
     private static int parseAmount(Element xml) {
@@ -42,6 +47,18 @@ public class XMLItemStack extends XMLParser {
         }
 
         return 1;
+    }
+
+    private static byte parseData(Element xml) {
+        Attribute attribute = xml.getAttribute(XMLMaterial.ATTRIBUTE_MATERIAL);
+        if (attribute != null) {
+            String[] split = attribute.getValue().split(":");
+            if (split.length > 1) {
+                return Byte.parseByte(split[1]);
+            }
+        }
+
+        return 0;
     }
 
     private static List<String> parseDescription(Element xml) {
@@ -100,6 +117,10 @@ public class XMLItemStack extends XMLParser {
         }
 
         return enchantments;
+    }
+
+    private static ItemMeta parseItemMeta(Element xml, ItemMeta meta) {
+        return XMLItemMeta.parse(xml, meta);
     }
 
     private static Material parseType(Element xml) {
