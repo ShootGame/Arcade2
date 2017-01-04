@@ -172,6 +172,7 @@ public class Team implements MatchWinner {
             this.onlineMembers.add(player);
 
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
+            player.setParticipating(this.isParticipating());
             player.getPlayer().getBukkit().setDisplayName(this.getColor() + player.getUsername());
 
             if (message) {

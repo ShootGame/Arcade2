@@ -4,9 +4,11 @@ import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.commons.command.CommandContext;
+import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.List;
 public class MatchGame extends GameModule {
     private boolean autoStart;
     private int defaultStartCountdown;
+    private final DrawMatchWinner drawWinner = new DrawMatchWinner();
     private Match match;
     private Observers observers;
     private MatchStartCountdown startCountdown;
@@ -48,6 +51,10 @@ public class MatchGame extends GameModule {
         return this.defaultStartCountdown;
     }
 
+    public DrawMatchWinner getDrawWinner() {
+        return this.drawWinner;
+    }
+
     public Match getMatch() {
         return this.match;
     }
@@ -66,22 +73,38 @@ public class MatchGame extends GameModule {
             message = "Force starting";
         }
 
-        sender.sendSuccess(message + " the match in " + seconds + " seconds...");
-        this.startCountdown(seconds);
+        if (this.getMatch().getState().equals(MatchState.STARTING)) {
+            sender.sendSuccess(message + " the match in " + seconds + " seconds...");
+            this.startCountdown(seconds);
+        } else {
+            throw new CommandException("The match is not in the starting state.");
+        }
     }
 
     public void handleEndCommand(Session<ArcadePlayer> sender, boolean auto, String winnerQuery, boolean draw) {
-        MatchWinner winner = null;
-        if (auto) {
-            winner = this.getMatch().findWinner();
-        } else if (draw) {
-            winner = new DrawMatchWinner();
-        } else if (winnerQuery != null) {
-            winner = this.getMatch().findWinner(winnerQuery);
-        }
+        if (this.getMatch().getState().equals(MatchState.RUNNING)) {
+            MatchWinner winner = null;
+            if (auto) {
+                winner = this.getMatch().findWinner();
 
-        sender.sendSuccess("Force ending the match...");
-        this.getMatch().end(winner, true);
+                if (winner == null) {
+                    throw new CommandException("No winners are currently winning.");
+                }
+            } else if (draw) {
+                winner = this.getDrawWinner();
+            } else if (winnerQuery != null) {
+                winner = this.getMatch().findWinner(winnerQuery);
+
+                if (winner == null) {
+                    throw new CommandException("No winners found from the given query.");
+                }
+            }
+
+            sender.sendSuccess("Force ending the match...");
+            this.getMatch().end(winner, true);
+        } else {
+            throw new CommandException("The match is not currently running.");
+        }
     }
 
     public List<String> handleEndCompleter(Session<ArcadePlayer> sender, CommandContext context) {
@@ -107,18 +130,33 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.LOWEST)
     public void onMatchCountdownAutoStart(GameCommands.JoinCommandEvent event) {
-        if (!event.isCanceled() && this.isAutoStart() && !this.getMatch().cannotStart() && !this.getStartCountdown().isTaskRunning()) {
-            this.startCountdown(this.getDefaultStartCountdown());
+        if (!event.isCanceled() && this.isAutoStart()) {
+            MatchStartCountdownEvent countdownEvent = new MatchStartCountdownEvent(this.getPlugin(), this.getMatch(), this.startCountdown);
+            if (countdownEvent != null) {
+                this.startCountdown(this.getDefaultStartCountdown());
+            }
+        }
+    }
+
+    @Handler(priority = Priority.LOWEST)
+    public void onCycleCountdownAutoStart(MatchEndedEvent event) {
+        CycleCountdown countdown = event.getPlugin().getGames().getCycleCountdown();
+
+        if (!countdown.isTaskRunning()) {
+            countdown.setDefaultDuration();
+            countdown.countSync();
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onMatchTimeDescribe(GameCommands.GameCommandEvent event) {
         String time;
-        if (this.getMatch().getStartTime() != null) {
-            time = this.getMatch().getStartTime().toString();
-        } else {
+        if (this.getMatch().getStartTime() == null) {
+            return;
+        } else if (this.getMatch().getTime() != null) {
             time = this.getMatch().getTime().toString();
+        } else {
+            time = this.getMatch().getStartTime().toString();
         }
 
         event.getSender().send(ChatColor.DARK_PURPLE + "Time: " + ChatColor.DARK_AQUA + time);
@@ -130,6 +168,10 @@ public class MatchGame extends GameModule {
             this.getStartCountdown().setGame(this.getGame());
         }
 
-        return this.getStartCountdown().countStart(seconds);
+        if (!this.getStartCountdown().isTaskRunning()) {
+            return this.getStartCountdown().countStart(seconds);
+        }
+
+        return this.getStartCountdown().getTaskId();
     }
 }

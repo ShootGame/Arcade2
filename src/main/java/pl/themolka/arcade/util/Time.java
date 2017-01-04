@@ -1,5 +1,6 @@
 package pl.themolka.arcade.util;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -98,6 +99,10 @@ public class Time {
     // Converting
     //
 
+    public Duration toDuration() {
+        return Duration.ofMillis(this.toMillis());
+    }
+
     public Instant toInstant() {
         return Instant.ofEpochMilli(this.toMillis());
     }
@@ -132,6 +137,10 @@ public class Time {
 
     public static Time now() {
         return ofMillis(System.currentTimeMillis());
+    }
+
+    public static Time of(Duration duration) {
+        return ofMillis(duration.toMillis());
     }
 
     public static Time of(Instant instant) {

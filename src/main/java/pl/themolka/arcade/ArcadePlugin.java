@@ -127,8 +127,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadCommands();
         this.loadModules();
         this.loadMaps();
-        this.loadGames();
         this.loadTasks();
+        this.loadGames();
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 

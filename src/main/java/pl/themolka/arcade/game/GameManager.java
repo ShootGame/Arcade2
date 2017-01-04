@@ -14,9 +14,13 @@ import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.settings.Settings;
+import pl.themolka.arcade.util.Time;
+import pl.themolka.arcade.xml.XMLTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.logging.Level;
 
@@ -26,6 +30,7 @@ public class GameManager {
     private final ArcadePlugin plugin;
 
     private Game currentGame;
+    private final CycleCountdown cycleCountdown;
     private int gameId;
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
@@ -34,6 +39,7 @@ public class GameManager {
     public GameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
 
+        this.cycleCountdown = new CycleCountdown(plugin, this.readCycleCountdown(plugin.getSettings()));
         this.setDefaultMaxGameId();
     }
 
@@ -187,6 +193,10 @@ public class GameManager {
         return this.currentGame;
     }
 
+    public CycleCountdown getCycleCountdown() {
+        return this.cycleCountdown;
+    }
+
     public int getGameId() {
         return this.gameId;
     }
@@ -218,6 +228,7 @@ public class GameManager {
 
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+        this.getCycleCountdown().setGame(currentGame);
     }
 
     public void setDefaultMaxGameId() {
@@ -259,5 +270,21 @@ public class GameManager {
 
     private void postEvent(Event event) {
         this.plugin.getEventBus().publish(event);
+    }
+
+    private Duration readCycleCountdown(Settings settings) {
+        Element cycle = settings.getData().getChild("cycle");
+
+        if (cycle != null) {
+            Attribute countdown = cycle.getAttribute("countdown");
+            if (countdown != null) {
+                Time time = XMLTime.parse(countdown);
+                if (time != null) {
+                    return time.toDuration();
+                }
+            }
+        }
+
+        return CycleCountdown.DEFAULT_DURATION;
     }
 }

@@ -74,6 +74,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
                 gamePlayer = new GamePlayer(game, player);
             }
 
+            gamePlayer.setPlayer(player);
             player.setGamePlayer(gamePlayer);
             game.addPlayer(gamePlayer);
 

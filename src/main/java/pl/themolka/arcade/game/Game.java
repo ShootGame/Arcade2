@@ -73,7 +73,7 @@ public class Game implements Metadata, Serializable {
 
     public int addAsyncTask(Task task) {
         int id = -1;
-        if (this.taskList.add(task)) {
+        if (!task.isTaskRunning() && this.taskList.add(task)) {
             id = this.plugin.getTasks().scheduleAsync(task);
             task.setTaskId(id);
         }
@@ -83,7 +83,7 @@ public class Game implements Metadata, Serializable {
 
     public int addSyncTask(Task task) {
         int id = -1;
-        if (this.taskList.add(task)) {
+        if (!task.isTaskRunning() && this.taskList.add(task)) {
             id = this.plugin.getTasks().scheduleSync(task);
             task.setTaskId(id);
         }

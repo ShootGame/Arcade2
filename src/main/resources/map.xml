@@ -32,7 +32,7 @@
                 </item>
                 <item slot="2" material="stone" amount="64" />
                 <item slot="3" material="stone" amount="64" />
-                <potion-effect ambient="true" amplifier="1" color="TODO" duration="oo" particles="true">fire resistance</potion-effect>
+                <potion-effect ambient="true" amplifier="1" dye-color="red" duration="oo" particles="true">fire resistance</potion-effect>
             </kit>
 
             <kit id="creative-kit">
@@ -79,7 +79,7 @@
                     <skull owner="TheMolkaPL" />
                 </item>
                 <item slot="6" material="potion">
-                    <potion-effect ambient="true" amplifier="1" color="TODO" duration="oo" particles="true">fire resistance</potion-effect>
+                    <potion-effect ambient="true" amplifier="1" dye-color="red" duration="oo" particles="true">fire resistance</potion-effect>
                 </item>
             </kit>
         </kits>

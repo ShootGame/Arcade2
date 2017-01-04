@@ -92,11 +92,13 @@ public class Countdown extends Task implements CountdownListener {
     public void onUpdate(long seconds, long secondsLeft) {
     }
 
+    @Deprecated
     @Override
     public final Task scheduleAsyncTask() {
         throw new UnsupportedOperationException("Countdowns must be registered in the Game object.");
     }
 
+    @Deprecated
     @Override
     public final Task scheduleSyncTask() {
         throw new UnsupportedOperationException("Countdowns must be registered in the Game object.");

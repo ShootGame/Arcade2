@@ -8,6 +8,7 @@ import pl.themolka.arcade.task.PrintableCountdown;
 import java.time.Duration;
 
 public class CycleCountdown extends PrintableCountdown {
+    public static final Duration DEFAULT_DURATION = Duration.ofSeconds(25);
     public static final String FIELD_MAP_NAME = "%MAP_NAME%";
 
     private final ArcadePlugin plugin;
@@ -64,5 +65,9 @@ public class CycleCountdown extends PrintableCountdown {
             return result + "..";
         }
         return result;
+    }
+
+    public void setDefaultDuration() {
+        this.setDuration(DEFAULT_DURATION);
     }
 }

@@ -31,19 +31,37 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerPickupExperienceEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import pl.themolka.arcade.event.ArcadePlayerMoveEvent;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
 import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
 public class ObserverListeners implements Listener {
+    public static final int BORDER_Y = 32;
+    public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE = PlayerTeleportEvent.TeleportCause.SPECTATE;
+
     private final MatchGame game;
 
     public ObserverListeners(MatchGame game) {
         this.game = game;
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onArcadePlayerMove(ArcadePlayerMoveEvent event) {
+        ArcadeMap map = this.game.getGame().getMap();
+        int y = event.getTo().getBlockY();
+
+        if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
+            event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
+        }
     }
 
     @EventHandler
@@ -170,9 +188,31 @@ public class ObserverListeners implements Listener {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onPlayerLeftTeam(PlayerLeftTeamEvent event) {
-        if (event.getGamePlayer().isOnline() && event.getTeam().isObserving()) {
-            event.getPlayer().getBukkit().setHealth(0.0D);
+    public void onPlayerJoinedObservers(PlayerJoinedTeamEvent event) {
+        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
+            Player bukkit = event.getPlayer().getBukkit();
+            if (this.game.getMatch().getState().equals(MatchState.RUNNING)) {
+                bukkit.setHealth(0.0D);
+            }
+            bukkit.showInvisibles(true);
+            bukkit.setCollidesWithEntities(false);
+
+            for (GamePlayer player : this.game.getGame().getPlayers()) {
+                player.getPlayer().getBukkit().hidePlayer(bukkit);
+            }
+        }
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
+        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
+            Player bukkit = event.getPlayer().getBukkit();
+            bukkit.showInvisibles(false);
+            bukkit.setCollidesWithEntities(true);
+
+            for (GamePlayer player : this.game.getGame().getPlayers()) {
+                player.getPlayer().getBukkit().showPlayer(bukkit);
+            }
         }
     }
 

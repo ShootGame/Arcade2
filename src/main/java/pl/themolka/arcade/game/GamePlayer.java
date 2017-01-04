@@ -1,6 +1,8 @@
 package pl.themolka.arcade.game;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -12,6 +14,7 @@ import java.util.UUID;
 public class GamePlayer implements Metadata {
     private final transient Game game;
     private final MetadataContainer metadata = new MetadataContainer();
+    private boolean participating;
     private ArcadePlayer player;
     private final String username;
     private final UUID uuid;
@@ -63,8 +66,17 @@ public class GamePlayer implements Metadata {
         return this.uuid;
     }
 
+    public boolean isParticipating() {
+        return this.participating;
+    }
+
     public void reset() {
         this.getPlayer().getBukkit().setGameMode(GameMode.CREATIVE);
+        this.getPlayer().getBukkit().getInventory().addItem(new ItemStack(Material.COMPASS));
+    }
+
+    public void setParticipating(boolean participating) {
+        this.participating = participating;
     }
 
     public void setPlayer(ArcadePlayer player) {

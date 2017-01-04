@@ -13,6 +13,7 @@ import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
+import pl.themolka.arcade.match.MatchStartCountdownEvent;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
 import pl.themolka.arcade.session.ArcadePlayerQuitEvent;
@@ -46,6 +47,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         for (Team team : this.getTeams()) {
             team.setMatch(this.getMatch());
+            this.getMatch().registerWinner(team);
         }
 
         this.getMatch().setObserverHandler(this);
@@ -68,15 +70,17 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void autoJoinTeam(GamePlayer player) throws CommandException {
         Team smallestTeam = null;
         for (Team team : this.getTeams()) {
-            if (smallestTeam != null) {
-                double first = smallestTeam.getOnlineMembers().size() / smallestTeam.getMaxPlayers();
-                double second = team.getOnlineMembers().size() / team.getMaxPlayers();
+            if (team.isParticipating()) {
+                if (smallestTeam != null) {
+                    double first = smallestTeam.getOnlineMembers().size() / smallestTeam.getMaxPlayers();
+                    double second = team.getOnlineMembers().size() / team.getMaxPlayers();
 
-                if (first > second) {
+                    if (first > second) {
+                        smallestTeam = team;
+                    }
+                } else {
                     smallestTeam = team;
                 }
-            } else {
-                smallestTeam = team;
             }
         }
 
@@ -126,15 +130,15 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         Team result = null;
         for (Team team : this.getTeams()) {
-            if (team.getName().equalsIgnoreCase(query)) {
+            if (team.getName() != null && team.getName().equalsIgnoreCase(query)) {
                 result = team;
                 break;
             }
         }
 
-        if (result != null) {
+        if (result == null) {
             for (Team team : this.getTeams()) {
-                if (team.getName().toLowerCase().contains(query.toLowerCase())) {
+                if (team.getName() != null && team.getName().toLowerCase().contains(query.toLowerCase())) {
                     result = team;
                     break;
                 }
@@ -177,11 +181,26 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.teamsByPlayer.put(player, event.getTeam());
     }
 
+    @Handler(priority = Priority.HIGHER)
+    public void onMatchStartCountdown(MatchStartCountdownEvent event) {
+        boolean idle = false;
+        for (Team team : this.getTeams()) {
+            if (team.isParticipating() && team.getOnlineMembers().size() < team.getMinPlayers()) {
+                idle = true;
+                break;
+            }
+        }
+
+        if (idle) {
+            event.setCanceled(true);
+        }
+    }
+
     @Handler(priority = Priority.LAST)
     public void onOldTeamRemove(PlayerLeaveTeamEvent event) {
         Team team = this.getTeam(event.getGamePlayer());
         if (team != null && !event.isCanceled()) {
-            team.leave(event.getGamePlayer());
+            this.teamsByPlayer.remove(event.getGamePlayer());
         }
     }
 
@@ -191,22 +210,41 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             return;
         }
 
-        if (event.isAuto()) {
-            this.autoJoinTeam(event.getJoinPlayer().getGamePlayer());
-        } else {
-            this.joinTeam(event.getJoinPlayer().getGamePlayer(), event.getContext().getParams(0));
+        try {
+            if (event.isAuto()) {
+                this.autoJoinTeam(event.getJoinPlayer().getGamePlayer());
+            } else {
+                this.joinTeam(event.getJoinPlayer().getGamePlayer(), event.getContext().getParams(0));
+            }
+        } catch (CommandException ex) {
+            if (ex.getMessage() != null) {
+                event.getSender().sendError(ex.getMessage());
+            }
         }
     }
 
     @Handler(priority = Priority.HIGH)
     public void onPlayerJoinServer(ArcadePlayerJoinEvent event) {
         this.teamsByPlayer.remove(event.getGamePlayer());
-        this.joinTeam(event.getGamePlayer(), this.getObservers(), false);
+
+        try {
+            this.joinTeam(event.getGamePlayer(), this.getObservers(), false);
+        } catch (CommandException ex) {
+            if (ex.getMessage() != null) {
+                event.getPlayer().sendError(ex.getMessage());
+            }
+        }
     }
 
     @Handler(priority = Priority.HIGHEST)
     public void onPlayerLeaveGame(GameCommands.LeaveCommandEvent event) {
-        this.joinTeam(event.getLeavePlayer().getGamePlayer(), this.getObservers(), true);
+        try {
+            this.joinTeam(event.getLeavePlayer().getGamePlayer(), this.getObservers(), true);
+        } catch (CommandException ex) {
+            if (ex.getMessage() != null) {
+                event.getSender().sendError(ex.getMessage());
+            }
+        }
     }
 
     @Handler(priority = Priority.LAST)
@@ -220,7 +258,9 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerWantToJoin(GameCommands.JoinCompleterEvent event) {
         for (Team team : this.getTeams()) {
-            event.addResult(team.getName().toLowerCase());
+            if (team.getName() != null) {
+                event.addResult(team.getName().toLowerCase());
+            }
         }
     }
 

@@ -44,12 +44,12 @@ public class Match {
             }
 
             ArcadePlayer player = gamePlayer.getPlayer();
-            player.send(Commands.createLine(Commands.CHAT_LINE_LENGTH));
+            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
             player.send(Commands.createTitle(ChatColor.GOLD + "The match has ended!"));
             if (winnerMessage != null) {
                 player.send(winnerMessage);
             }
-            player.send(Commands.createLine(Commands.CHAT_LINE_LENGTH));
+            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
     }
 
@@ -60,14 +60,13 @@ public class Match {
             }
 
             ArcadePlayer player = gamePlayer.getPlayer();
-            player.send(Commands.createLine(Commands.CHAT_LINE_LENGTH));
+            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
             player.send(Commands.createTitle(ChatColor.GREEN + "The match has started!"));
-            player.send(Commands.createLine(Commands.CHAT_LINE_LENGTH));
+            if (gamePlayer.isParticipating()) {
+                player.send(Commands.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!"));
+            }
+            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
-    }
-
-    public boolean cannotStart() {
-        return false;
     }
 
     public void end(boolean force) {
@@ -93,11 +92,16 @@ public class Match {
         this.time = Duration.between(this.startTime, Instant.now());
 
         this.broadcastEndMessage(winner);
-
         this.setForceEnd(force);
         this.setState(MatchState.CYCLING);
+
+        MatchEndedEvent endedEvent = new MatchEndedEvent(this.plugin, this, winner, force);
+        this.plugin.getEventBus().publish(endedEvent);
+
         for (GamePlayer player : this.getGame().getPlayers()) {
-            player.reset();
+            if (player.isOnline()) {
+                player.reset();
+            }
         }
     }
 
@@ -210,6 +214,9 @@ public class Match {
 
         this.setForceStart(force);
         this.setState(MatchState.RUNNING);
+
+        MatchStartedEvent startedEvent = new MatchStartedEvent(this.plugin, this, force);
+        this.plugin.getEventBus().publish(startedEvent);
     }
 
     public boolean unregisterWinner(MatchWinner winner) {

@@ -2,6 +2,8 @@ package pl.themolka.arcade.item;
 
 import org.bukkit.Color;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
@@ -11,17 +13,21 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.potion.PotionEffect;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.potion.XMLPotionEffect;
 import pl.themolka.arcade.xml.XMLColor;
+import pl.themolka.arcade.xml.XMLEntity;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class XMLItemMeta extends XMLParser {
     public static ItemMeta parse(Element xml, ItemMeta source) {
-        if (source instanceof BookMeta) {
+        if (source instanceof BannerMeta) {
+            return parseBanner(xml, (BannerMeta) source);
+        } else if (source instanceof BookMeta) {
             return parseBook(xml, (BookMeta) source);
         } else if (source instanceof EnchantmentStorageMeta) {
             return parseEnchantmentStorage(xml, (EnchantmentStorageMeta) source);
@@ -37,8 +43,14 @@ public class XMLItemMeta extends XMLParser {
             return parsePotion(xml, (PotionMeta) source);
         } else if (source instanceof SkullMeta) {
             return parseSkull(xml, (SkullMeta) source);
+        } else if (source instanceof SpawnEggMeta) {
+            return parseSpawnEgg(xml, (SpawnEggMeta) source);
         }
 
+        return source;
+    }
+
+    public static BannerMeta parseBanner(Element xml, BannerMeta source) {
         return source;
     }
 
@@ -126,6 +138,18 @@ public class XMLItemMeta extends XMLParser {
             Attribute owner = skull.getAttribute("owner");
             if (owner != null) {
                 source.setOwner(owner.getValue());
+            }
+        }
+
+        return source;
+    }
+
+    public static SpawnEggMeta parseSpawnEgg(Element xml, SpawnEggMeta source) {
+        Element spawnerEgg = xml.getChild("spawner-egg");
+        if (spawnerEgg != null) {
+            EntityType entity = XMLEntity.parse(spawnerEgg.getTextNormalize());
+            if (entity != null) {
+                source.setSpawnedType(entity);
             }
         }
 

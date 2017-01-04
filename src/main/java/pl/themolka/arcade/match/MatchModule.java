@@ -123,7 +123,7 @@ public class MatchModule extends Module<MatchGame> {
         boolean paramDraw = context.hasFlag("d") || context.hasFlag("draw");
 
         MatchGame game = (MatchGame) this.getGameModule();
-        game.handleEndCommand(sender, paramAuto, context.getParam(0), paramDraw);
+        game.handleEndCommand(sender, paramAuto, context.getParams(0), paramDraw);
     }
 
     public List<String> endCompleter(Session<ArcadePlayer> sender, CommandContext context) {

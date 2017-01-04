@@ -9,6 +9,7 @@ import java.time.Duration;
 public class MatchStartCountdown extends PrintableCountdown {
     private final ArcadePlugin plugin;
 
+    private boolean cannotStart;
     private final Match match;
 
     public MatchStartCountdown(ArcadePlugin plugin, Match match) {
@@ -30,8 +31,16 @@ public class MatchStartCountdown extends PrintableCountdown {
 
     @Override
     public void onUpdate(long seconds, long secondsLeft) {
-        if (!this.getMatch().isForceStart() && this.getMatch().cannotStart()) {
+        MatchStartCountdownEvent event = new MatchStartCountdownEvent(this.plugin, this.match, this);
+        this.plugin.getEventBus().publish(event);
+
+        if (event.isCanceled()) {
+            this.cannotStart = true;
+        }
+
+        if (!this.getMatch().isForceStart() && this.cannotStart) {
             this.cancelCountdown();
+            this.cannotStart = false;
         } else if (this.isPrintable(secondsLeft)) {
             this.plugin.getServer().broadcastMessage(this.getPrintMessage(this.getStartMessage()));
         }
@@ -49,7 +58,7 @@ public class MatchStartCountdown extends PrintableCountdown {
     private String getCancelMessage() {
         String message = ChatColor.GREEN + "Start countdown has been canceled";
 
-        if (!this.getMatch().isForceStart() && this.getMatch().cannotStart()) {
+        if (!this.getMatch().isForceStart() && this.cannotStart) {
             return message + " due the match cannot start.";
         }
         return message + ".";
@@ -60,7 +69,8 @@ public class MatchStartCountdown extends PrintableCountdown {
     }
 
     private String getStartMessage() {
-        String message = ChatColor.GREEN + "Match starting in " + ChatColor.DARK_RED + FIELD_TIME_LEFT + ChatColor.GREEN + ".";
+        String message = ChatColor.GREEN + "Match starting in " + ChatColor.GOLD + ChatColor.BOLD +
+                FIELD_TIME_LEFT + ChatColor.RESET + ChatColor.GREEN + ".";
 
         if (this.isDone()) {
             return message + "..";

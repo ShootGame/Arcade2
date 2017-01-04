@@ -6,10 +6,10 @@ import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.potion.XMLPotionEffect;
 
-public class PotionEffectContent implements KitContent<PotionEffect> {
+public class EffectContent implements KitContent<PotionEffect> {
     private final PotionEffect result;
 
-    public PotionEffectContent(PotionEffect result) {
+    public EffectContent(PotionEffect result) {
         this.result = result;
     }
 
@@ -23,10 +23,10 @@ public class PotionEffectContent implements KitContent<PotionEffect> {
         return this.result;
     }
 
-    public static class Parser implements KitContentParser<PotionEffectContent> {
+    public static class Parser implements KitContentParser<EffectContent> {
         @Override
-        public PotionEffectContent parse(Element xml) throws DataConversionException {
-            return new PotionEffectContent(XMLPotionEffect.parse(xml));
+        public EffectContent parse(Element xml) throws DataConversionException {
+            return new EffectContent(XMLPotionEffect.parse(xml));
         }
     }
 }

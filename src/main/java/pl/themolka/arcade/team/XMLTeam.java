@@ -88,7 +88,12 @@ public class XMLTeam extends XMLParser {
     }
 
     public static String parseName(Element xml) {
-        return xml.getTextNormalize();
+        Attribute attribute = xml.getAttribute("name");
+        if (attribute != null) {
+            return attribute.getValue();
+        }
+
+        return RandomStringUtils.randomAlphanumeric(5);
     }
 
     public static int parseSlots(Element xml) {

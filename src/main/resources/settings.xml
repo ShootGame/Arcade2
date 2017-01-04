@@ -41,11 +41,8 @@
 
         <match>
             <auto-start>true</auto-start>
+            <observers color="aqua" dye-color="light blue">Observers</observers>
             <start-countdown>25</start-countdown>
         </match>
-
-        <teams>
-            <observers color="aqua" dye-color="light blue">Observers</observers>
-        </teams>
     </modules>
 </settings>

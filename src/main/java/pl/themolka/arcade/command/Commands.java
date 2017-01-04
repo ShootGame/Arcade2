@@ -13,7 +13,7 @@ public class Commands extends BukkitCommands {
     }
 
     public static String createLine(int length) {
-        return createLine(length, "-");
+        return createLine(length, ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "-");
     }
 
     public static String createLine(int length, String type) {
@@ -36,7 +36,7 @@ public class Commands extends BukkitCommands {
         }
 
         int length = (CHAT_LINE_LENGTH - head.length()) / 2;
-        String line = " " + ChatColor.GRAY + ChatColor.STRIKETHROUGH + createLine(length) + ChatColor.RESET + " ";
+        String line = " " + createLine(length) + ChatColor.RESET + " ";
 
         return line + head + line;
     }

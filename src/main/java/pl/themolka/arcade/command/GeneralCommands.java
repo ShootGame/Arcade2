@@ -104,8 +104,10 @@ public class GeneralCommands {
                 countdown.cancelCountdown();
             }
 
-            CycleCountdown countdown = new CycleCountdown(this.plugin, Duration.ofSeconds(seconds));
-            game.addSyncTask(countdown);
+            CycleCountdown countdown = this.plugin.getGames().getCycleCountdown();
+            countdown.setDuration(Duration.ofSeconds(seconds));
+
+            countdown.countSync();
         }
     }
 
