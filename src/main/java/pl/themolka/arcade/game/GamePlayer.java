@@ -1,8 +1,5 @@
 package pl.themolka.arcade.game;
 
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -71,8 +68,7 @@ public class GamePlayer implements Metadata {
     }
 
     public void reset() {
-        this.getPlayer().getBukkit().setGameMode(GameMode.CREATIVE);
-        this.getPlayer().getBukkit().getInventory().addItem(new ItemStack(Material.COMPASS));
+
     }
 
     public void setParticipating(boolean participating) {

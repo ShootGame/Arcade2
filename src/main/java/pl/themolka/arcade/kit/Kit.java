@@ -50,6 +50,10 @@ public class Kit implements Applicable<GamePlayer> {
         return this.inherit.add(inherit);
     }
 
+    public void clear() {
+        this.content.clear();
+    }
+
     public List<KitContent<?>> getContent() {
         return this.content;
     }

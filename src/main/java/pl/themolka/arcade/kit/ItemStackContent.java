@@ -11,6 +11,12 @@ import pl.themolka.arcade.item.XMLItemStack;
 public class ItemStackContent implements KitContent<ItemStack> {
     public static final int SLOT_NULL = -1;
 
+    // armor
+    public static final int SLOT_HELMET = 103;
+    public static final int SLOT_CHESTPLATE = 102;
+    public static final int SLOT_LEGGNINGS = 101;
+    public static final int SLOT_BOOTS = 100;
+
     private final ItemStack result;
     private int slot;
 

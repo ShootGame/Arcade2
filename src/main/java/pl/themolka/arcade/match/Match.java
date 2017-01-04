@@ -20,6 +20,7 @@ public class Match {
     private final Game game;
     private IObserverHandler observerHandler;
     private final Observers observers;
+    private final ObserversKit observersKit;
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
@@ -30,6 +31,7 @@ public class Match {
 
         this.game = game;
         this.observers = observers;
+        this.observersKit = new ObserversKit(plugin);
     }
 
     public void broadcastEndMessage(MatchWinner winner) {
@@ -143,6 +145,10 @@ public class Match {
 
     public Observers getObservers() {
         return this.observers;
+    }
+
+    public ObserversKit getObserversKit() {
+        return this.observersKit;
     }
 
     public Instant getStartTime() {

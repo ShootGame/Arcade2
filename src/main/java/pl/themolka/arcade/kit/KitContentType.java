@@ -4,6 +4,20 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 public enum KitContentType implements KitContentParser<Object> {
+    ARMOR("armor") {
+        @Override
+        public ArmorContent parse(Element xml) throws DataConversionException {
+            return ARMOR_PARSER.parse(xml);
+        }
+    },
+
+    CLEAR_INVENTORY("clear-inventory", "clearinventory", "clear") {
+        @Override
+        public ClearInventoryContent parse(Element xml) throws DataConversionException {
+            return CLEAR_INVENTORY_PARSER.parse(xml);
+        }
+    },
+
     EFFECT("effect", "potioneffect", "potion-effect") {
         @Override
         public EffectContent parse(Element xml) throws DataConversionException {
@@ -89,6 +103,8 @@ public enum KitContentType implements KitContentParser<Object> {
     },
     ;
 
+    public static final ArmorContent.Parser ARMOR_PARSER = new ArmorContent.Parser();
+    public static final ClearInventoryContent.Parser CLEAR_INVENTORY_PARSER = new ClearInventoryContent.Parser();
     public static final EffectContent.Parser EFFECT_PARSER = new EffectContent.Parser();
     public static final FlyContent.Parser FLY_PARSER = new FlyContent.Parser();
     public static final FoodLevelContent.Parser FOOD_LEVEL_PARSER = new FoodLevelContent.Parser();

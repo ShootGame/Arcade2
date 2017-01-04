@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
@@ -38,6 +39,22 @@ public class ArcadePlayer implements Metadata {
     @Override
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
+    }
+
+    public void clearInventory() {
+        this.clearInventory(true);
+    }
+
+    public void clearInventory(boolean armor) {
+        PlayerInventory inventory = this.getBukkit().getInventory();
+        inventory.clear();
+
+        if (armor) {
+            inventory.setHelmet(null);
+            inventory.setChestplate(null);
+            inventory.setLeggings(null);
+            inventory.setBoots(null);
+        }
     }
 
     public Player getBukkit() {

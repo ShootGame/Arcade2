@@ -1,5 +1,5 @@
-*.java 			eol=crlf
-*.md 			eol=crlf
-*.properties 	eol=crlf
-*.xml 			eol=crlf
-*.yml 			eol=crlf
+*.java          eol=lf
+*.md            eol=lf
+*.properties    eol=lf
+*.xml           eol=lf
+*.yml           eol=lf
