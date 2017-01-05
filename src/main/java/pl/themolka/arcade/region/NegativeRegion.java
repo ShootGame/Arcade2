@@ -1,7 +1,8 @@
 package pl.themolka.arcade.region;
 
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
+
+import java.util.Random;
 
 public class NegativeRegion extends AbstractRegion {
     private final Region region;
@@ -28,8 +29,13 @@ public class NegativeRegion extends AbstractRegion {
     }
 
     @Override
-    public Location getCenter() {
+    public Vector getCenter() {
         return this.getRegion().getCenter();
+    }
+
+    @Override
+    public Vector getRandom(Random random, int limit) {
+        return this.getRegion().getRandomVector(random, limit);
     }
 
     public Region getRegion() {

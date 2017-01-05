@@ -1,15 +1,14 @@
 package pl.themolka.arcade.region;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public class RegionBounds extends RectangleRegion {
+public class RegionBounds extends CuboidRegion {
     private final Region region;
 
-    public RegionBounds(Region region, Location min, Location max) {
+    public RegionBounds(Region region, Vector min, Vector max) {
         super(region.getId() + "-bounds", region.getMap(), min, max);
 
         this.region = region;

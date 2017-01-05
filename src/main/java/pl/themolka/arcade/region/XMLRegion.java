@@ -1,7 +1,7 @@
 package pl.themolka.arcade.region;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.bukkit.Location;
+import org.bukkit.util.Vector;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -15,9 +15,11 @@ public class XMLRegion extends XMLParser {
     public static Region parse(ArcadeMap map, Element xml) {
         try {
             switch (xml.getName().toLowerCase()) {
+                case "cuboid": return parseCuboid(map, xml);
                 case "cylinder": return parseCylinder(map, xml);
-                case "rectangle": return parseRectangle(map, xml);
+                case "global": return parseGlobal(map);
                 case "negative": return parseNegative(map, xml);
+                case "point": return parsePoint(map, xml);
                 case "sphere": return parseSphere(map, xml);
                 case "union": return parseUnion(map, xml);
             }
@@ -27,17 +29,27 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
+    public static CuboidRegion parseCuboid(ArcadeMap map, Element xml) throws NumberFormatException {
+        Vector min = parseVector(map, "min", Region.MIN_HEIGHT, xml);
+        Vector max = parseVector(map, "max", Region.MAX_HEIGHT, xml);
+        return new CuboidRegion(parseId(xml), map, min, max);
+    }
+
     public static CylinderRegion parseCylinder(ArcadeMap map, Element xml) throws NumberFormatException {
-        Location center = parseLocation(map, "center", AbstractRegion.MIN_HEIGHT, xml);
-        double height = Long.parseLong(xml.getAttributeValue("height"));
-        double radius = Long.parseLong(xml.getAttributeValue("radius"));
+        Vector center = parseVector(map, "center", Region.MIN_HEIGHT, xml);
+        double radius = Double.parseDouble(xml.getAttributeValue("radius"));
+        double height = Region.MAX_HEIGHT;
+
+        String heightAttribute = xml.getAttributeValue("height");
+        if (heightAttribute != null) {
+            height = Double.parseDouble(heightAttribute);
+        }
+
         return new CylinderRegion(parseId(xml), map, center, height, radius);
     }
 
-    public static RectangleRegion parseRectangle(ArcadeMap map, Element xml) throws NumberFormatException {
-        Location min = parseLocation(map, "min", AbstractRegion.MIN_HEIGHT, xml);
-        Location max = parseLocation(map, "max", AbstractRegion.MAX_HEIGHT, xml);
-        return new RectangleRegion(parseId(xml), map, min, max);
+    public static GlobalRegion parseGlobal(ArcadeMap map) {
+        return new GlobalRegion(map);
     }
 
     public static NegativeRegion parseNegative(ArcadeMap map, Element xml) throws NumberFormatException {
@@ -54,9 +66,14 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
+    public static PointRegion parsePoint(ArcadeMap map, Element xml) throws NumberFormatException {
+        Vector point = parseVector(map, "point", Region.MIN_HEIGHT, xml);
+        return new PointRegion(parseId(xml), map, point);
+    }
+
     public static SphereRegion parseSphere(ArcadeMap map, Element xml) throws NumberFormatException {
-        Location center = parseLocation(map, "center", AbstractRegion.MIN_HEIGHT, xml);
-        double radius = Long.parseLong(xml.getAttributeValue("radius"));
+        Vector center = parseVector(map, "center", Region.MIN_HEIGHT, xml);
+        double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         return new SphereRegion(parseId(xml), map, center, radius);
     }
 
@@ -86,7 +103,7 @@ public class XMLRegion extends XMLParser {
         return RandomStringUtils.randomAlphanumeric(5);
     }
 
-    private static Location parseLocation(ArcadeMap map, String prefix, double defY, Element xml) {
+    private static Vector parseVector(ArcadeMap map, String prefix, double defY, Element xml) {
         double x = 0D;
         double y = defY;
         double z = 0D;
@@ -115,6 +132,6 @@ public class XMLRegion extends XMLParser {
             }
         }
 
-        return new Location(map.getWorld(), x, y, z);
+        return new Vector(x, y, z);
     }
 }

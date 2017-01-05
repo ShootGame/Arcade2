@@ -1,15 +1,16 @@
 package pl.themolka.arcade.region;
 
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
+import java.util.Random;
+
 public class SphereRegion extends AbstractRegion {
     private final RegionBounds bounds;
-    private final Location center;
+    private final Vector center;
     private final double radius;
 
-    public SphereRegion(String id, ArcadeMap map, Location center, double radius) {
+    public SphereRegion(String id, ArcadeMap map, Vector center, double radius) {
         super(id, map);
 
         this.center = center;
@@ -29,7 +30,7 @@ public class SphereRegion extends AbstractRegion {
 
     @Override
     public boolean contains(Vector vector) {
-        return vector.isInSphere(this.getCenter().toVector(), this.getRadius());
+        return vector.isInSphere(this.getCenter(), this.getRadius());
     }
 
     @Override
@@ -38,8 +39,20 @@ public class SphereRegion extends AbstractRegion {
     }
 
     @Override
-    public Location getCenter() {
+    public Vector getCenter() {
         return center;
+    }
+
+    @Override
+    public Vector getRandom(Random random, int limit) {
+        for (int i = 0; i < limit; i++) {
+            Vector vector = this.getBounds().getRandomVector(random, limit);
+            if (vector != null && this.contains(vector)) {
+                return vector;
+            }
+        }
+
+        return null;
     }
 
     public double getRadius() {

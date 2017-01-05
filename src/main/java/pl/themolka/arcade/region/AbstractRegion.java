@@ -10,10 +10,12 @@ import pl.themolka.arcade.map.ArcadeMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public abstract class AbstractRegion implements Region {
-    public static final double MIN_HEIGHT = 0.0;
-    public static final double MAX_HEIGHT = Double.MAX_VALUE;
+    public static final int RANDOM_LIMIT = 10;
+
+    private static final Random random = new Random();
 
     private final String id;
     private final ArcadeMap map;
@@ -102,9 +104,35 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
+    public Vector getRandomVector() {
+        return this.getRandomVector(null);
+    }
+
+    @Override
+    public Vector getRandomVector(int limit) {
+        return this.getRandomVector(null, RANDOM_LIMIT);
+    }
+
+    @Override
+    public Vector getRandomVector(Random random) {
+        return this.getRandomVector(random, RANDOM_LIMIT);
+    }
+
+    @Override
+    public Vector getRandomVector(Random random, int limit) {
+        if (random == null) {
+            random = AbstractRegion.random;
+        }
+
+        return getRandom(random, limit);
+    }
+
+    @Override
     public World getWorld() {
         return this.getMap().getWorld();
     }
+
+    public abstract Vector getRandom(Random random, int limit);
 
     protected boolean isYPresent(Vector vector) {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;

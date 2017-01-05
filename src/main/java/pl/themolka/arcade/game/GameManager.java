@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.World;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -161,7 +162,13 @@ public class GameManager {
         this.serializeGame(new File(directory, Game.JSON_FILENAME), game);
 
         this.plugin.getMaps().destroyWorld(game.getWorld(), worldEvent.isSaveWorld());
-        this.postEvent(new GameDestroyedEvent(this.plugin, game));
+
+        GameDestroyedEvent destroyedEvent = new GameDestroyedEvent(this.plugin, game);
+        this.postEvent(destroyedEvent);
+
+        if (!destroyedEvent.isSaveDirectory()) {
+            FileUtils.deleteQuietly(directory);
+        }
     }
 
     public void fillQueue() {

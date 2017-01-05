@@ -9,15 +9,19 @@ import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
 import java.util.List;
+import java.util.Random;
 
 public interface Region {
+    double MIN_HEIGHT = 0.0;
+    double MAX_HEIGHT = Double.MAX_VALUE;
+
     boolean contains(Block block);
 
     boolean contains(BlockVector vector);
 
     boolean contains(Entity entity);
 
-    boolean contains(Location position);
+    boolean contains(Location location);
 
     boolean contains(Region region);
 
@@ -35,11 +39,19 @@ public interface Region {
 
     RegionBounds getBounds();
 
-    Location getCenter();
+    Vector getCenter();
 
     String getId();
 
     ArcadeMap getMap();
+
+    Vector getRandomVector();
+
+    Vector getRandomVector(int limit);
+
+    Vector getRandomVector(Random random);
+
+    Vector getRandomVector(Random random, int limit);
 
     World getWorld();
 }

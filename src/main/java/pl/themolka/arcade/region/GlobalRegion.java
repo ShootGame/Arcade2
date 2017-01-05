@@ -1,16 +1,18 @@
 package pl.themolka.arcade.region;
 
-import org.bukkit.Location;
+import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
-public class GlobalRegion extends RectangleRegion {
+import java.util.Random;
+
+public class GlobalRegion extends CuboidRegion {
     public static final String REGION_ID = "_global";
 
     public GlobalRegion(ArcadeMap map) {
         super(REGION_ID, map,
-                new Location(map.getWorld(), Double.MIN_VALUE, MIN_HEIGHT, Double.MIN_VALUE),
-                new Location(map.getWorld(), Double.MAX_VALUE, MAX_HEIGHT, Double.MAX_VALUE));
+                new Vector(Double.MIN_VALUE, MIN_HEIGHT, Double.MIN_VALUE),
+                new Vector(Double.MAX_VALUE, MAX_HEIGHT, Double.MAX_VALUE));
     }
 
     @Override
@@ -26,5 +28,10 @@ public class GlobalRegion extends RectangleRegion {
     @Override
     public RegionBounds getBounds() {
         return null;
+    }
+
+    @Override
+    public Vector getRandom(Random random, int limit) {
+        return new Vector(random.nextDouble(), RandomUtils.nextDouble(MIN_HEIGHT, MAX_HEIGHT), random.nextDouble());
     }
 }

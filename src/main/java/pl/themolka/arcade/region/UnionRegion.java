@@ -1,11 +1,11 @@
 package pl.themolka.arcade.region;
 
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class UnionRegion extends AbstractRegion {
     private final RegionBounds bounds;
@@ -55,8 +55,20 @@ public class UnionRegion extends AbstractRegion {
     }
 
     @Override
-    public Location getCenter() {
+    public Vector getCenter() {
         return this.getBounds().getCenter();
+    }
+
+    @Override
+    public Vector getRandom(Random random, int limit) {
+        for (int i = 0; i < limit; i++) {
+            Vector vector = this.getRegions()[random.nextInt(this.getRegions().length)].getRandomVector(random, limit);
+            if (vector != null) {
+                return vector;
+            }
+        }
+
+        return null;
     }
 
     public Region[] getRegions() {
@@ -78,12 +90,12 @@ public class UnionRegion extends AbstractRegion {
     }
 
     private RegionBounds createBounds() {
-        Location min = null;
-        Location max = null;
+        Vector min = null;
+        Vector max = null;
 
         for (Region member : this.getRegions()) {
-            Location memberMin = member.getBounds().getMin();
-            Location memberMax = member.getBounds().getMax();
+            Vector memberMin = member.getBounds().getMin();
+            Vector memberMax = member.getBounds().getMax();
 
             if (min == null) {
                 min = memberMin;

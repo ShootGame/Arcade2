@@ -95,6 +95,13 @@ public enum KitContentType implements KitContentParser<Object> {
         }
     },
 
+    SOUND("sound", "play-sound", "playsound") {
+        @Override
+        public SoundContent parse(Element xml) throws DataConversionException {
+            return SOUND_PARSER.parse(xml);
+        }
+    },
+
     WALK_SPEED("walk-speed", "walkspeed", "walk") {
         @Override
         public WalkSpeedContent parse(Element xml) throws DataConversionException {
@@ -116,6 +123,7 @@ public enum KitContentType implements KitContentParser<Object> {
     public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();
     public static final PermissionContent.Parser PERMISSION_PARSER = new PermissionContent.Parser();
     public static final SaturationContent.Parser SATURATION_PARSER = new SaturationContent.Parser();
+    public static final SoundContent.Parser SOUND_PARSER = new SoundContent.Parser();
     public static final WalkSpeedContent.Parser WALK_SPEED_PARSER = new WalkSpeedContent.Parser();
 
     private final String[] name;
