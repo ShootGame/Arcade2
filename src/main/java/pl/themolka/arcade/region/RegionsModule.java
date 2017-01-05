@@ -1,0 +1,27 @@
+package pl.themolka.arcade.region;
+
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.module.ModuleInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@ModuleInfo(id = "regions")
+public class RegionsModule extends Module<RegionsGame> {
+    @Override
+    public RegionsGame buildGameModule(Element xml, Game game) throws JDOMException {
+        List<Region> regions = new ArrayList<>();
+        for (Element child : xml.getChildren()) {
+            Region region = XMLRegion.parse(this.getGame().getMap(), child);
+
+            if (region != null) {
+                regions.add(region);
+            }
+        }
+
+        return new RegionsGame(regions);
+    }
+}
