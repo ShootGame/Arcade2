@@ -238,7 +238,7 @@ public class Game implements Metadata, Serializable {
             }
 
             GameModule game = (GameModule) object;
-            game.initialize(this.plugin, this, module);
+            game.initialize(this.plugin, this, module, xml);
             return game;
         } catch (ClassCastException cast) {
             throw new MapParserException("game module does not inherit the " + GameModule.class.getName());

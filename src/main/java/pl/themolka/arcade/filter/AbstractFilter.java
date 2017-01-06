@@ -5,11 +5,9 @@ public abstract class AbstractFilter implements Filter {
     public FilterResult filter(Object... objects) {
         for (Object object : objects) {
             FilterResult result = filter(object);
-            if (result.equals(FilterResult.ABSTAIN)) {
-                continue;
+            if (!result.equals(FilterResult.ABSTAIN)) {
+                return result;
             }
-
-            return result;
         }
 
         return FilterResult.ABSTAIN;

@@ -28,6 +28,7 @@ import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.listener.GeneralListeners;
+import pl.themolka.arcade.listener.ProtectionListeners;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
@@ -106,8 +107,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public final void start() throws Throwable {
         this.manifest.readManifestFile();
         this.commons = new ArcadeCommons(this);
-
-        Event.setAutoEventPoster(this.getCommons().getEvents());
         this.eventBus = new EventBus(this);
 
         this.settings = new Settings(this);
@@ -370,7 +369,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public void registerListenerObject(Object object) {
         this.getEventBus().subscribe(object);
-        this.getCommons().getEvents().register(object);
 
         if (object instanceof Listener) {
             this.getServer().getPluginManager().registerEvents((Listener) object, this);
@@ -407,7 +405,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public void unregisterListenerObject(Object object) {
         this.getEventBus().unsubscribe(object);
-        this.getCommons().getEvents().unregister(object);
 
         if (object instanceof Listener) {
             HandlerList.unregisterAll((Listener) object);
@@ -544,6 +541,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         this.registerListenerObject(new GeneralListeners(this));
+        this.registerListenerObject(new ProtectionListeners(this));
     }
 
     private void loadTasks() {
@@ -573,7 +571,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.storages = new Storages();
 
             this.commands.setSessions(this.sessions);
-            this.events.register(this.sessions);
+            Event.setAutoEventPoster(this.getEvents());
         }
 
         @Override

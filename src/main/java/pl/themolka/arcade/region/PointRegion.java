@@ -1,17 +1,26 @@
 package pl.themolka.arcade.region;
 
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class PointRegion extends AbstractRegion {
     private final Vector point;
+    private final List<Block> blocks;
+    private final RegionBounds bounds;
 
     public PointRegion(String id, ArcadeMap map, Vector point) {
         super(id, map);
 
         this.point = point;
+
+        this.blocks = this.createBlocks();
+        this.bounds = this.createBounds();
     }
 
     public PointRegion(PointRegion original) {
@@ -29,8 +38,13 @@ public class PointRegion extends AbstractRegion {
     }
 
     @Override
+    public List<Block> getBlocks() {
+        return this.blocks;
+    }
+
+    @Override
     public RegionBounds getBounds() {
-        return null;
+        return this.bounds;
     }
 
     @Override
@@ -45,5 +59,24 @@ public class PointRegion extends AbstractRegion {
 
     public Vector getPoint() {
         return this.point;
+    }
+
+    private List<Block> createBlocks() {
+        return Collections.singletonList(new Location(
+                this.getWorld(),
+                this.getPoint().getX(),
+                this.getPoint().getY(),
+                this.getPoint().getZ()
+        ).getBlock());
+    }
+
+    private RegionBounds createBounds() {
+        return new PointRegionBounds(this);
+    }
+
+    private class PointRegionBounds extends RegionBounds {
+        public PointRegionBounds(PointRegion region) {
+            super(region, region.getPoint(), region.getPoint());
+        }
     }
 }

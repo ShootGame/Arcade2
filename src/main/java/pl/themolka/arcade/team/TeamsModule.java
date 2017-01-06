@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.Commands;
+import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.MatchModule;
@@ -22,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@ModuleInfo(id = "teams", dependency = {MatchModule.class}, loadBefore = {KitsModule.class})
+@ModuleInfo(id = "teams", dependency = MatchModule.class, loadBefore = {FiltersModule.class, KitsModule.class})
 public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_OBSERVERS = "observers";
     public static final String METADATA_TEAM = "team";

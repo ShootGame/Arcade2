@@ -12,6 +12,12 @@
     </world>
 
     <modules>
+        <filters>
+            <filter id="custom-filter">
+
+            </filter>
+        </filters>
+
         <gamerules>
             <gamerule type="doDaylightCycle">false</gamerule>
         </gamerules>

@@ -1,8 +1,8 @@
 package pl.themolka.arcade.filter;
 
 public enum FilterResult {
-    TRUE(true),
-    FALSE(false),
+    ALLOW(true),
+    DENY(false),
     ABSTAIN(true);
 
     private final boolean value;
@@ -11,15 +11,27 @@ public enum FilterResult {
         this.value = value;
     }
 
+    public FilterResult getOpposite() {
+        switch (this) {
+            case ALLOW: return DENY;
+            case DENY: return ALLOW;
+            default: return ABSTAIN;
+        }
+    }
+
     public boolean toBoolean() {
         return this.value;
     }
 
     public static FilterResult fromBoolean(boolean value) {
         if (value) {
-            return TRUE;
+            return ALLOW;
         } else {
-            return FALSE;
+            return DENY;
         }
+    }
+
+    public static FilterResult of(boolean matches) {
+        return fromBoolean(matches);
     }
 }

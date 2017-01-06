@@ -2,6 +2,7 @@ package pl.themolka.arcade.game;
 
 import org.bukkit.Server;
 import org.bukkit.event.Listener;
+import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.task.Task;
@@ -20,18 +21,20 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
     private boolean loaded = false;
     private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private Module<?> module;
+    private Element settings;
     private final transient List<Task> taskList = new CopyOnWriteArrayList<>();
 
     public GameModule() {
     }
 
-    public final void initialize(ArcadePlugin plugin, Game game, Module<?> module) {
+    public final void initialize(ArcadePlugin plugin, Game game, Module<?> module, Element settings) {
         if (this.isLoaded()) {
             return;
         }
 
         this.loaded = true;
         this.plugin = plugin;
+        this.settings = settings;
 
         this.game = game;
         this.loaded = true;
@@ -87,6 +90,10 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
 
     public Server getServer() {
         return this.getPlugin().getServer();
+    }
+
+    public Element getSettings() {
+        return this.settings;
     }
 
     public List<Task> getTaskList() {
