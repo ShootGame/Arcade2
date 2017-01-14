@@ -19,7 +19,7 @@ import java.util.List;
 @ModuleInfo(id = "match")
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 25;
-    public static final String METADATA_MATCH = "match";
+    public static final String METADATA_MATCH = "Match";
 
     private Observers defaultObservers;
     private int defaultStartCountdown = DEFAULT_START_COUNTDOWN;

@@ -27,6 +27,8 @@ import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
+import pl.themolka.arcade.game.SimpleGameManager;
+import pl.themolka.arcade.generator.GeneratorType;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
 import pl.themolka.arcade.map.MapContainerFillEvent;
@@ -45,12 +47,12 @@ import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.storage.Storages;
 import pl.themolka.arcade.task.SimpleTaskListener;
+import pl.themolka.arcade.task.SimpleTaskManager;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.XMLLocation;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.event.Event;
-import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.File;
 import java.io.FileReader;
@@ -81,7 +83,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
-    private final VoidGenerator generator = new VoidGenerator();
     private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     private final ManifestFile manifest = new ManifestFile();
     private MapManager maps;
@@ -198,7 +199,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String world, String id) {
-        return this.generator;
+        return GeneratorType.getDefaultGenerator().getChunkGenerator();
     }
 
     @Override
@@ -285,10 +286,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public GameManager getGames() {
         return this.games;
-    }
-
-    public VoidGenerator getGenerator() {
-        return this.generator;
     }
 
     public Gson getGson() {
@@ -435,10 +432,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     private void loadGames() {
-        this.games = new GameManager(this);
+        this.games = new SimpleGameManager(this);
         this.games.setGameId(this.getServerSession().getContent().getLastGameId());
 
-        this.games.fillQueue();
+        this.games.fillDefaultQueue();
     }
 
     private void loadMaps() {
@@ -512,10 +509,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         for (Module<?> module : this.getModules().getModules()) {
             try {
-                module.registerListeners();
-                module.onEnable(globalModules.getChild(module.getId()));
+                Element xml = globalModules.getChild(module.getId());
+                module.setGlobal(xml != null);
 
-                module.setGlobal(true);
+                module.registerListeners();
+                module.onEnable(xml);
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
             }
@@ -545,8 +543,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     private void loadTasks() {
-        this.tasks = new TaskManager(this);
-        this.addTickable(this.getTasks());
+        this.tasks = new SimpleTaskManager(this);
+        this.addTickable((Tickable) this.getTasks());
 
         this.getTasks().scheduleAsync(new SimpleTaskListener() {
             @Override

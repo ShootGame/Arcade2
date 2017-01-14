@@ -75,7 +75,7 @@ public class CuboidRegion extends AbstractRegion {
         return this.min;
     }
 
-    private RegionBounds createBounds() {
+    protected RegionBounds createBounds() {
         return new RegionBounds(this, this.getMin(), this.getMax());
     }
 

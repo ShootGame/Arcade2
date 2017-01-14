@@ -26,6 +26,10 @@ public class MapContainer {
     public List<OfflineMap> findMap(String query, boolean first) {
         List<OfflineMap> results = new ArrayList<>();
 
+        if (query.equals("*")) {
+            return new ArrayList<>(this.getMaps());
+        }
+
         OfflineMap exact = this.getMap(query);
         if (exact != null) {
             results.add(exact);

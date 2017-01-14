@@ -34,6 +34,11 @@ public class RegionBounds extends CuboidRegion {
         throw new UnsupportedOperationException("Cannot get bounds of bounds.");
     }
 
+    @Override
+    protected RegionBounds createBounds() {
+        return null;
+    }
+
     public Region getRegion() {
         return this.region;
     }

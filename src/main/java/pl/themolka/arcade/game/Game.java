@@ -5,6 +5,8 @@ import org.bukkit.World;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.map.MapError;
+import pl.themolka.arcade.map.MapParserError;
 import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
@@ -23,13 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class Game implements Metadata, Serializable {
     public static final String JSON_FILENAME = "game.json";
 
     private final transient ArcadePlugin plugin;
 
+    private final List<MapError> errors = new ArrayList<>();
     private final ArcadeMap map;
     private final transient MetadataContainer metadata = new MetadataContainer();
     private final transient GameModuleContainer modules = new GameModuleContainer();
@@ -45,11 +47,12 @@ public class Game implements Metadata, Serializable {
         this.world = world;
 
         Element modules = map.getConfiguration().getRoot().getChild("modules");
-        if (modules != null) {
-            this.readModules(modules);
-        } else {
+        if (modules == null) {
             this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
+            modules = new Element("modules");
         }
+
+        this.readModules(modules);
     }
 
     @Override
@@ -81,6 +84,14 @@ public class Game implements Metadata, Serializable {
         return id;
     }
 
+    public boolean addError(MapError error) {
+        return this.errors.add(error);
+    }
+
+    public boolean addError(MapParserException exception) {
+        return this.addError(new MapParserError(this.getMap(), exception));
+    }
+
     public int addSyncTask(Task task) {
         int id = -1;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
@@ -91,6 +102,15 @@ public class Game implements Metadata, Serializable {
         return id;
     }
 
+    public boolean clearErrors() {
+        if (this.hasErrors()) {
+            this.errors.clear();
+            return true;
+        }
+
+        return false;
+    }
+
     public void enableModule(GameModule module) {
         for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
             ModuleInfo info = dependency.getAnnotation(ModuleInfo.class);
@@ -99,9 +119,11 @@ public class Game implements Metadata, Serializable {
             } else if (!this.getModules().contains(dependency)) {
                 try {
                     GameModule game = this.readModule(new Element(info.id()));
-                    this.getModules().register(game);
+                    if (game != null) {
+                        this.getModules().register(game);
+                    }
                 } catch (MapParserException ex) {
-                    break;
+                    this.addError(ex);
                 }
             }
 
@@ -136,6 +158,10 @@ public class Game implements Metadata, Serializable {
         }
 
         return results;
+    }
+
+    public List<MapError> getErrors() {
+        return this.errors;
     }
 
     public ArcadeMap getMap() {
@@ -176,7 +202,7 @@ public class Game implements Metadata, Serializable {
         return this.plugin;
     }
 
-    public List<Countdown> gerRunningCountdowns() {
+    public List<Countdown> getRunningCountdowns() {
         List<Countdown> results = new ArrayList<>();
         for (Task task : this.getTasks()) {
             if (task.isTaskRunning() && task instanceof Countdown) {
@@ -224,10 +250,14 @@ public class Game implements Metadata, Serializable {
         return true;
     }
 
+    public boolean hasErrors() {
+        return !this.errors.isEmpty();
+    }
+
     public GameModule readModule(Element xml) throws MapParserException {
         ModuleContainer container = this.plugin.getModules();
         if (!container.contains(xml.getName())) {
-            throw new MapParserException("module not found");
+            throw new MapParserException(xml.getName() + ": module not found");
         }
 
         Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
@@ -241,38 +271,15 @@ public class Game implements Metadata, Serializable {
             game.initialize(this.plugin, this, module, xml);
             return game;
         } catch (ClassCastException cast) {
-            throw new MapParserException("game module does not inherit the " + GameModule.class.getName());
+            throw new MapParserException(module, "game module does not inherit the " + GameModule.class.getName());
         } catch (Throwable th) {
-            throw new MapParserException("could not build game module", th);
+            throw new MapParserException(module, "could not build game module", th);
         }
     }
 
     public void readModules(Element parent) {
-        for (Element xml : parent.getChildren()) {
-            try {
-                GameModule module = this.readModule(xml);
-                if (module != null) {
-                    this.getModules().register(module);
-                }
-            } catch (MapParserException ex) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not load module '" + xml.getName() + "': " + ex.getMessage(), ex);
-            }
-        }
-
-        for (Module<?> global : this.plugin.getModules().getModules()) {
-            if (!global.isGlobal() || this.getModules().contains(global.getId())) {
-                continue;
-            }
-
-            try {
-                GameModule module = this.readModule(new Element(global.getId()));
-                if (module != null) {
-                    this.getModules().register(module);
-                }
-            } catch (MapParserException ex) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not load module '" + global.getId() + "': " + ex.getMessage(), ex);
-            }
-        }
+        this.readMapModule(parent);
+        this.readGlobalModule();
     }
 
     public boolean removeTask(Task task) {
@@ -299,6 +306,36 @@ public class Game implements Metadata, Serializable {
 
         for (Task task : this.getTasks()) {
             task.cancelTask();
+        }
+    }
+
+    private void readGlobalModule() {
+        for (Module<?> global : this.plugin.getModules().getModules()) {
+            if (!global.isGlobal() || this.getModules().contains(global.getId())) {
+                continue;
+            }
+
+            try {
+                GameModule module = this.readModule(new Element(global.getId()));
+                if (module != null) {
+                    this.getModules().register(module);
+                }
+            } catch (MapParserException ex) {
+                this.addError(ex);
+            }
+        }
+    }
+
+    private void readMapModule(Element parent) {
+        for (Element xml : parent.getChildren()) {
+            try {
+                GameModule module = this.readModule(xml);
+                if (module != null) {
+                    this.getModules().register(module);
+                }
+            } catch (MapParserException ex) {
+                this.addError(ex);
+            }
         }
     }
 }

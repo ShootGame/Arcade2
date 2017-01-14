@@ -4,10 +4,14 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.generator.Generator;
+import pl.themolka.arcade.generator.GeneratorType;
 
 public class ArcadeMap {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.PEACEFUL;
     public static final World.Environment DEFAULT_ENVIRONMENT = World.Environment.NORMAL;
+    public static final Generator DEFAULT_GENERATOR = GeneratorType.getDefaultGenerator();
+    public static final long DEFAULT_SEED = 0L;
 
     private final OfflineMap mapInfo;
 
@@ -15,7 +19,9 @@ public class ArcadeMap {
     private Difficulty difficulty;
     private World.Environment environment;
     private transient Game game;
+    private transient Generator generator;
     private boolean pvp;
+    private long seed;
     private transient Location spawn;
     private transient World world;
     private String worldName;
@@ -33,7 +39,7 @@ public class ArcadeMap {
     }
 
     public Difficulty getDifficulty() {
-        if (this.hasEnvironment()) {
+        if (this.hasDifficulty()) {
             return this.difficulty;
         }
 
@@ -50,6 +56,22 @@ public class ArcadeMap {
 
     public Game getGame() {
         return this.game;
+    }
+
+    public Generator getGenerator() {
+        if (this.hasGenerator()) {
+            return this.generator;
+        }
+
+        return DEFAULT_GENERATOR;
+    }
+
+    public long getSeed() {
+        if (this.hasSeed()) {
+            return this.seed;
+        }
+
+        return DEFAULT_SEED;
     }
 
     public Location getSpawn() {
@@ -70,6 +92,14 @@ public class ArcadeMap {
 
     public boolean hasEnvironment() {
         return this.environment != null;
+    }
+
+    public boolean hasGenerator() {
+        return this.generator != null;
+    }
+
+    public boolean hasSeed() {
+        return this.seed != DEFAULT_SEED;
     }
 
     public boolean isPvp() {
@@ -94,8 +124,16 @@ public class ArcadeMap {
         }
     }
 
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
+
     public void setPvp(boolean pvp) {
         this.pvp = pvp;
+    }
+
+    public void setSeed(long seed) {
+        this.seed = seed;
     }
 
     public void setSpawn(Location spawn) {

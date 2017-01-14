@@ -18,6 +18,7 @@ public class XMLFilter extends XMLParser {
                 case "deny": return parseDeny();
                 case "material": return parseMaterial(plugin, xml);
                 case "not": return parseNot(plugin, xml);
+                case "void": return parseVoid();
                 default: return parseUnknown(plugin, xml);
             }
         } catch (NumberFormatException ignored) {
@@ -83,5 +84,9 @@ public class XMLFilter extends XMLParser {
         plugin.getEventBus().publish(event);
 
         return event.getResult();
+    }
+
+    private static Filter parseVoid() throws NumberFormatException {
+        return StaticFilter.VOID;
     }
 }

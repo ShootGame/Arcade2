@@ -6,6 +6,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
+import pl.themolka.arcade.repository.RepositoriesModule;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
-@ModuleInfo(id = "map-loader")
+@ModuleInfo(id = "map-loader", loadBefore = {RepositoriesModule.class})
 public class MapLoaderModule extends SimpleGlobalModule implements MapContainerLoader {
     private final List<File> worldFiles = new ArrayList<>();
 
@@ -91,7 +92,7 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
         MapParser parser = technology.newInstance();
         parser.readFile(file);
 
-        OfflineMap map = parser.parseOfflineMap();
+        OfflineMap map = parser.parseOfflineMap(this.getPlugin());
         map.setDirectory(worldDirectory);
         map.setSettings(file);
         return map;

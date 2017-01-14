@@ -1,5 +1,7 @@
 package pl.themolka.arcade.map;
 
+import pl.themolka.arcade.ArcadePlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,9 +17,9 @@ public interface MapParser {
 
     void readUrl(URL url) throws IOException, MapParserException;
 
-    OfflineMap parseOfflineMap() throws MapParserException;
+    OfflineMap parseOfflineMap(ArcadePlugin plugin) throws MapParserException;
 
-    ArcadeMap parseArcadeMap(OfflineMap offline) throws MapParserException;
+    ArcadeMap parseArcadeMap(ArcadePlugin plugin, OfflineMap offline) throws MapParserException;
 
     interface Technology {
         String getDefaultFilename();

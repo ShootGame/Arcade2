@@ -4,9 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.generator.VoidGenerator;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,6 +20,7 @@ public class MapManager implements FilenameFilter {
     private final ArcadePlugin plugin;
 
     private final MapContainer container = new MapContainer();
+    private Field containerField;
     private List<MapContainerLoader> loaderList = new ArrayList<>();
     private MapParser.Technology parser;
 
@@ -85,13 +84,14 @@ public class MapManager implements FilenameFilter {
         WorldCreator creator = new WorldCreator(map.getWorldName())
                 .environment(map.getEnvironment())
                 .generateStructures(false)
-                .generator(this.getGenerator())
+                .generator(map.getGenerator().getChunkGenerator())
                 .hardcore(false)
-                .type(WorldType.FLAT);
+                .seed(map.getSeed())
+                .type(map.getGenerator().getWorldType());
 
         World world = creator.createWorld();
         world.setAutoSave(false);
-        world.setDifficulty(this.plugin.getServer().getWorlds().get(0).getDifficulty());
+        world.setDifficulty(map.getDifficulty());
         world.setPVP(map.isPvp());
         world.setSpawnFlags(false, false);
         world.setSpawnLocation(map.getSpawn().getBlockX(), map.getSpawn().getBlockY(), map.getSpawn().getBlockZ());
@@ -132,10 +132,6 @@ public class MapManager implements FilenameFilter {
         return container;
     }
 
-    public VoidGenerator getGenerator() {
-        return this.plugin.getGenerator();
-    }
-
     public List<MapContainerLoader> getLoaderList() {
         return this.loaderList;
     }
@@ -156,9 +152,12 @@ public class MapManager implements FilenameFilter {
         Server server = this.plugin.getServer();
 
         try {
-            Field field = server.getClass().getDeclaredField("container");
-            field.setAccessible(true);
-            field.set(server, container);
+            if (this.containerField == null) {
+                this.containerField = server.getClass().getDeclaredField("container");
+                this.containerField.setAccessible(true);
+            }
+
+            this.containerField.set(server, container);
         } catch (ReflectiveOperationException ex) {
             this.plugin.getLogger().log(Level.SEVERE, "Could not set world container", ex);
         }

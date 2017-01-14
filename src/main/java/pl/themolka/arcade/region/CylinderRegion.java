@@ -33,7 +33,7 @@ public class CylinderRegion extends AbstractRegion {
     @Override
     public boolean contains(Vector vector) {
         Vector center = this.getCenter();
-        double power = Math.pow(vector.getX() - vector.getX(), 2) + Math.pow(vector.getZ() - center.getZ(), 2);
+        double power = Math.pow(vector.getX() - center.getX(), 2) + Math.pow(vector.getZ() - center.getZ(), 2);
 
         if (!this.isYPresent(vector)) {
             return power <= Math.pow(this.getRadius(), 2);

@@ -6,13 +6,15 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.filter.FilterSet;
 import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.List;
 import java.util.Random;
 
-public interface Region {
-    double MIN_HEIGHT = 0.0;
+public interface Region extends StringId {
+    double MIN_HEIGHT = -0.1;
     double MAX_HEIGHT = Double.MAX_VALUE;
 
     boolean contains(Block block);
@@ -41,7 +43,9 @@ public interface Region {
 
     Vector getCenter();
 
-    String getId();
+    FilterSet getFilter(RegionEventType event);
+
+    FilterSet getFilter(RegionEventType event, FilterSet def);
 
     ArcadeMap getMap();
 
@@ -54,4 +58,10 @@ public interface Region {
     Vector getRandomVector(Random random, int limit);
 
     World getWorld();
+
+    boolean hasFilter(RegionEventType event);
+
+    void removeFilter(RegionEventType event);
+
+    void setFilter(RegionEventType event, FilterSet filter);
 }

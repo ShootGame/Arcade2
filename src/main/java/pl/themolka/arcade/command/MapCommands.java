@@ -6,6 +6,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.Author;
+import pl.themolka.arcade.map.MapContainer;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.commons.command.CommandContext;
@@ -16,6 +17,7 @@ import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MapCommands {
@@ -85,18 +87,35 @@ public class MapCommands {
     public List<String> mapInfoCompleter(Session<ArcadePlayer> sender, CommandContext context) {
         List<String> results = this.mapCompleter();
         results.addAll(Arrays.asList("-current", "-next"));
+
+        Collections.sort(results);
         return results;
     }
 
     private void mapInfoDescribe(Session<ArcadePlayer> sender, OfflineMap map) {
         Commands.sendTitleMessage(sender, map.getName(), map.getVersion().toString());
-        sender.send(ChatColor.GOLD + map.getDescription());
-        sender.send(ChatColor.GRAY + "Version: " + ChatColor.GOLD + map.getVersion());
+        if (map.hasDescription() && !map.getDescription().isEmpty()) {
+            sender.send(ChatColor.GOLD + map.getDescription());
+        }
+        sender.send(ChatColor.GRAY + ChatColor.BOLD.toString() + "Version: " + ChatColor.RESET + ChatColor.GOLD + map.getVersion());
 
-        if (!map.getAuthors().isEmpty()) {
-            sender.send(ChatColor.GRAY + "By:");
+        if (map.hasAuthors()) {
+            sender.send(ChatColor.GRAY + ChatColor.BOLD.toString() + "Authors:");
+
             for (Author author : map.getAuthors()) {
-                sender.send(author.toString());
+                if (!author.hasUsername()) {
+                    continue;
+                }
+
+                StringBuilder builder = new StringBuilder();
+                builder.append(ChatColor.GRAY).append(" - ");
+
+                builder.append(ChatColor.GOLD).append(author.getUsername());
+                if (author.hasDescription()) {
+                    builder.append(ChatColor.GRAY).append(ChatColor.ITALIC).append(" (").append(author.getDescription()).append(")");
+                }
+
+                sender.send(builder.toString());
             }
         }
     }
@@ -111,10 +130,12 @@ public class MapCommands {
             description = "Show all loaded maps",
             permission = "arcade.command.maplist")
     public void mapList(Session<ArcadePlayer> sender, CommandContext context) {
+        MapContainer container = this.plugin.getMaps().getContainer();
         if (this.mapListResult == null) {
-            this.mapListResult = StringUtils.join(this.plugin.getMaps().getContainer().getMaps(), ChatColor.GRAY + ", ");
+            this.mapListResult = StringUtils.join(container.getMaps(), ChatColor.GRAY + ", ");
         }
 
+        Commands.sendTitleMessage(sender, "Map List", Integer.toString(container.getMaps().size()));
         sender.send(this.mapListResult);
     }
 
@@ -187,6 +208,8 @@ public class MapCommands {
     public List<String> setNextCompleter(Session<ArcadePlayer> sender, CommandContext context) {
         List<String> results = this.mapCompleter();
         results.addAll(Arrays.asList("-add", "-current", "-restart"));
+
+        Collections.sort(results);
         return results;
     }
 

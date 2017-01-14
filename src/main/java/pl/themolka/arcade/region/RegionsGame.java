@@ -5,6 +5,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import pl.themolka.arcade.filter.FilterSet;
+import pl.themolka.arcade.filter.FiltersGame;
+import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
 
 import java.util.ArrayList;
@@ -14,13 +19,27 @@ import java.util.Map;
 import java.util.Set;
 
 public class RegionsGame extends GameModule {
+    private FiltersGame filters;
     private final List<Region> regions = new ArrayList<>();
     private final Map<String, Region> regionsById = new HashMap<>();
 
-    public RegionsGame(List<Region> regions) {
-        for (Region region : regions) {
-            this.addRegion(region);
+    @Override
+    public void onEnable() {
+        this.filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
+
+        for (Element child : this.getSettings().getChildren()) {
+            Region region = XMLRegion.parse(this.getGame().getMap(), child);
+
+            if (region != null) {
+                this.addRegion(this.parseFilters(child, region));
+            }
         }
+    }
+
+    @Override
+    public List<Object> onListenersRegister(List<Object> register) {
+        register.add(new RegionListeners(this));
+        return register;
     }
 
     public void addRegion(Region region) {
@@ -104,5 +123,27 @@ public class RegionsGame extends GameModule {
 
     public Region fetch(int x, int y, int z) {
         return this.fetch(new BlockVector(x, y, z));
+    }
+
+    private Region parseFilters(Element xml, Region region) {
+        if (this.filters == null) {
+            return region;
+        }
+
+        for (RegionEventType event : RegionEventType.values()) {
+            Attribute attribute = xml.getAttribute(event.getAttribute());
+            if (attribute == null) {
+                continue;
+            }
+
+            FilterSet filter = this.filters.getFilter(attribute.getValue());
+            if (filter == null) {
+                continue;
+            }
+
+            region.setFilter(event, filter);
+        }
+
+        return region;
     }
 }

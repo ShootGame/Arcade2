@@ -9,6 +9,9 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.generator.Generator;
+import pl.themolka.arcade.generator.XMLGenerator;
 import pl.themolka.arcade.xml.XMLDifficulty;
 import pl.themolka.arcade.xml.XMLEnvironment;
 import pl.themolka.arcade.xml.XMLLocation;
@@ -72,7 +75,7 @@ public class XMLMapParser implements MapParser {
     //
 
     @Override
-    public OfflineMap parseOfflineMap() throws MapParserException {
+    public OfflineMap parseOfflineMap(ArcadePlugin plugin) throws MapParserException {
         Element root = this.getDocument().getRootElement();
 
         String name = this.parseName(root.getChildTextNormalize("name"));
@@ -154,7 +157,7 @@ public class XMLMapParser implements MapParser {
     //
 
     @Override
-    public ArcadeMap parseArcadeMap(OfflineMap offline) throws MapParserException {
+    public ArcadeMap parseArcadeMap(ArcadePlugin plugin, OfflineMap offline) throws MapParserException {
         Element root = this.getDocument().getRootElement();
         Element world = root.getChild("world");
 
@@ -162,6 +165,8 @@ public class XMLMapParser implements MapParser {
         map.setConfiguration(new ArcadeMapConfiguration(root));
         map.setDifficulty(this.parseDifficulty(world));
         map.setEnvironment(this.parseEnvironment(world));
+        map.setGenerator(this.parseGenerator(world, plugin, map));
+        map.setSeed(this.parseSeed(world));
         map.setSpawn(this.parseSpawn(world));
         map.setPvp(this.parsePvp(world));
 
@@ -185,6 +190,34 @@ public class XMLMapParser implements MapParser {
         }
 
         return null;
+    }
+
+    private Generator parseGenerator(Element parent, ArcadePlugin plugin, ArcadeMap map) throws MapParserException {
+        if (parent != null) {
+            Element xml = parent.getChild("generator");
+            if (xml != null) {
+                return XMLGenerator.parse(xml, plugin, map);
+            }
+        }
+
+        return null;
+    }
+
+    private long parseSeed(Element parent) throws MapParserException {
+        if (parent != null) {
+            try {
+                Element xml = parent.getChild("generator");
+                if (xml != null) {
+                    Attribute seed = xml.getAttribute("seed");
+                    if (seed != null) {
+                        return seed.getLongValue();
+                    }
+                }
+            } catch (DataConversionException ignored) {
+            }
+        }
+
+        return ArcadeMap.DEFAULT_SEED;
     }
 
     private Location parseSpawn(Element parent) throws MapParserException {

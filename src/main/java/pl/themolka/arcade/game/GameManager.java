@@ -1,140 +1,21 @@
 package pl.themolka.arcade.game;
 
-import org.apache.commons.io.FileUtils;
-import org.bukkit.World;
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
-import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.map.ArcadeMap;
-import pl.themolka.arcade.map.MapManager;
-import pl.themolka.arcade.map.MapParser;
 import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.MapQueue;
-import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
-import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.settings.Settings;
-import pl.themolka.arcade.util.Time;
-import pl.themolka.arcade.xml.XMLTime;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.logging.Level;
 
-public class GameManager {
-    public static final int DEFAULT_MAX_GAME_ID = 15;
+public interface GameManager {
+    Game createGame(ArcadeMap map) throws IOException;
 
-    private final ArcadePlugin plugin;
+    Game createGame(OfflineMap map) throws IOException, MapParserException;
 
-    private Game currentGame;
-    private final CycleCountdown cycleCountdown;
-    private int gameId;
-    private int maxGameId = DEFAULT_MAX_GAME_ID;
-    private boolean nextRestart;
-    private MapQueue queue = new MapQueue();
+    void cycle(OfflineMap target);
 
-    public GameManager(ArcadePlugin plugin) {
-        this.plugin = plugin;
-
-        this.cycleCountdown = new CycleCountdown(plugin, this.readCycleCountdown(plugin.getSettings()));
-        this.setDefaultMaxGameId();
-    }
-
-    public Game createGame(ArcadeMap map) throws IOException {
-        MapManager maps = this.plugin.getMaps();
-
-        this.plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
-        File[] copied = maps.copyFiles(map);
-
-        StringBuilder copiedFiles = new StringBuilder();
-        for (int i = 0; i < copied.length; i++) {
-            File file = copied[i];
-            copiedFiles.append(file.getName());
-
-            if (file.isDirectory()) {
-                copiedFiles.append("[d]");
-            } else if (file.isFile()) {
-                copiedFiles.append("[f]");
-            }
-
-            if (i != copied.length - 1) {
-                copiedFiles.append(", ");
-            }
-        }
-
-        this.plugin.getLogger().info("Copied " + copied.length + " map files - " + copiedFiles.toString() + ".");
-
-        this.plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
-        World world = maps.createWorld(map);
-
-        Game game = new Game(this.plugin, map, world);
-        map.setGame(game);
-
-        map.getSpawn().setWorld(world);
-
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.setGamePlayer(new GamePlayer(game, player));
-        }
-
-        this.resetPlayers(game);
-        return game;
-    }
-
-    public Game createGame(OfflineMap map) throws IOException, MapParserException {
-        MapParser parser = this.plugin.getMaps().getParser().newInstance();
-        parser.readFile(map.getSettings());
-
-        return this.createGame(parser.parseArcadeMap(map));
-    }
-
-    public void cycle(OfflineMap target) {
-        Instant now = Instant.now();
-        if (target == null) {
-            OfflineMap next = this.getQueue().takeNextMap();
-            if (next == null) {
-                this.plugin.getLogger().severe("Map queue was empty");
-                return;
-            }
-
-            target = next;
-
-            // refill queue if it's empty
-            if (this.getQueue().hasNextMap()) {
-                this.fillQueue();
-            }
-        }
-
-        this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
-        try {
-            Game game = this.createGame(target);
-
-            if (this.currentGame != null) {
-                this.destroyGame(this.getCurrentGame());
-
-                this.gameId++;
-                this.plugin.getServerSession().getContent().setLastGameId(this.getGameId());
-            }
-
-            this.setCurrentGame(game);
-            game.start();
-
-            if (this.getGameId() >= this.getMaxGameId()) {
-                this.setNextRestart(true);
-            }
-        } catch (Throwable th) {
-            this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "'", th);
-            this.cycleNext();
-            return;
-        }
-
-        this.plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - now.toEpochMilli()) + "' ms.");
-    }
-
-    public void cycleNext() {
+    default void cycleNext() {
         if (this.isNextRestart()) {
             this.cycleRestart();
         } else {
@@ -142,156 +23,37 @@ public class GameManager {
         }
     }
 
-    public void cycleRestart() {
-        CycleRestartEvent event = new CycleRestartEvent(this.plugin);
-        this.postEvent(event);
+    void cycleRestart();
 
-        if (!event.isCanceled()) {
-            this.plugin.getLogger().info("Restarting the server...");
-            this.plugin.getServer().shutdown();
-        }
-    }
+    void destroyGame(Game game);
 
-    public void destroyGame(Game game) {
-        GameDestroyEvent worldEvent = new GameDestroyEvent(this.plugin, game);
-        this.postEvent(worldEvent);
+    void fillDefaultQueue();
 
-        game.stop();
+    Game getCurrentGame();
 
-        File directory = new File(this.plugin.getMaps().getWorldContainer(), game.getMap().getWorldName());
-        this.serializeGame(new File(directory, Game.JSON_FILENAME), game);
+    CycleCountdown getCycleCountdown();
 
-        this.plugin.getMaps().destroyWorld(game.getWorld(), worldEvent.isSaveWorld());
+    int getGameId();
 
-        GameDestroyedEvent destroyedEvent = new GameDestroyedEvent(this.plugin, game);
-        this.postEvent(destroyedEvent);
+    int getMaxGameId();
 
-        if (!destroyedEvent.isSaveDirectory()) {
-            FileUtils.deleteQuietly(directory);
-        }
-    }
+    MapQueue getQueue();
 
-    public void fillQueue() {
-        Element queueElement = this.plugin.getSettings().getData().getChild("queue");
-        if (queueElement == null) {
-            queueElement = new Element("queue");
-        }
+    boolean isNextRestart();
 
-        for (Element mapElement : queueElement.getChildren("map")) {
-            String directory = mapElement.getAttributeValue("directory");
-            String mapName = mapElement.getTextNormalize();
+    void resetPlayers(Game newGame);
 
-            OfflineMap map = null;
-            if (directory != null) {
-                map = this.plugin.getMaps().getContainer().getMapByDirectory(directory);
-            } else if (mapName != null) {
-                map = this.plugin.getMaps().getContainer().getMap(mapName);
-            }
+    void setCurrentGame(Game currentGame);
 
-            if (map != null) {
-                queue.addMap(map);
-            }
-        }
+    void setDefaultMaxGameId();
 
-        this.postEvent(new MapQueueFillEvent(this.plugin, this.getQueue()));
-    }
+    void setGameId(int gameId);
 
-    public Game getCurrentGame() {
-        return this.currentGame;
-    }
+    void setMaxGameId(int maxGameId);
 
-    public CycleCountdown getCycleCountdown() {
-        return this.cycleCountdown;
-    }
+    void setNextRestart(boolean nextRestart);
 
-    public int getGameId() {
-        return this.gameId;
-    }
+    void serializeGame(File file, Game game);
 
-    public int getMaxGameId() {
-        return this.maxGameId;
-    }
 
-    public MapQueue getQueue() {
-        return this.queue;
-    }
-
-    public boolean isNextRestart() {
-        return this.nextRestart;
-    }
-
-    public void resetPlayers(Game newGame) {
-        if (this.getCurrentGame() != null) {
-            for (GamePlayer player : this.getCurrentGame().getPlayers()) {
-                if (!player.isOnline()) {
-                    continue;
-                }
-
-                player.reset();
-                player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
-            }
-        }
-    }
-
-    public void setCurrentGame(Game currentGame) {
-        this.currentGame = currentGame;
-        this.getCycleCountdown().setGame(currentGame);
-    }
-
-    public void setDefaultMaxGameId() {
-        Element queueElement = plugin.getSettings().getData().getChild("queue");
-        if (queueElement == null) {
-            return;
-        }
-
-        Attribute attribute = queueElement.getAttribute("restart-after");
-        if (attribute == null) {
-            return;
-        }
-
-        try {
-            this.maxGameId = attribute.getIntValue();
-        } catch (DataConversionException ignored) {
-        }
-    }
-
-    public void setGameId(int gameId) {
-        this.gameId = gameId;
-    }
-
-    public void setMaxGameId(int maxGameId) {
-        this.maxGameId = maxGameId;
-    }
-
-    public void setNextRestart(boolean nextRestart) {
-        this.nextRestart = nextRestart;
-    }
-
-    public void serializeGame(File file, Game game) {
-        try {
-            this.plugin.serializeJsonFile(file, game);
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-
-    private void postEvent(Event event) {
-        this.plugin.getEventBus().publish(event);
-    }
-
-    private Duration readCycleCountdown(Settings settings) {
-        Element cycle = settings.getData().getChild("cycle");
-
-        if (cycle != null) {
-            Attribute countdown = cycle.getAttribute("countdown");
-            if (countdown != null) {
-                Time time = XMLTime.parse(countdown);
-                if (time != null) {
-                    return time.toDuration();
-                }
-            }
-        }
-
-        return CycleCountdown.DEFAULT_DURATION;
-    }
 }

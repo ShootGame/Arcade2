@@ -25,9 +25,9 @@ import java.util.List;
 
 @ModuleInfo(id = "teams", dependency = MatchModule.class, loadBefore = {FiltersModule.class, KitsModule.class})
 public class TeamsModule extends Module<TeamsGame> {
-    public static final String METADATA_OBSERVERS = "observers";
-    public static final String METADATA_TEAM = "team";
-    public static final String METADATA_TEAMS = "teams";
+    public static final String METADATA_OBSERVERS = "Observers";
+    public static final String METADATA_TEAM = "Team";
+    public static final String METADATA_TEAMS = "Teams";
 
     @Override
     public TeamsGame buildGameModule(Element xml, Game game) throws JDOMException {
@@ -98,6 +98,6 @@ public class TeamsModule extends Module<TeamsGame> {
     }
 
     private String teamsKeyValue(String key, Object value) {
-        return ChatColor.YELLOW + key + ChatColor.GRAY + "=" + ChatColor.RED + value.toString() + ChatColor.GRAY;
+        return ChatColor.YELLOW + key + ChatColor.GRAY + "=" + ChatColor.RED + value + ChatColor.GRAY;
     }
 }

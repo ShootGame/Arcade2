@@ -11,13 +11,13 @@ import java.util.List;
 
 @ModuleInfo(id = "gamerules")
 public class GameRulesModule extends Module<GameRulesGame> {
-    public static final String METADATA_GAMERULES = "gamerules";
+    public static final String METADATA_GAMERULES = "GameRules";
 
     @Override
     public GameRulesGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<GameRule> rules = new ArrayList<>();
-        for (Element element : xml.getChildren("gamerule")) {
-            GameRuleType type = GameRuleType.forName(element.getAttributeValue("type"));
+        for (Element element : xml.getChildren()) {
+            GameRuleType type = GameRuleType.forName(element.getName());
 
             if (type != null) {
                 rules.add(new GameRule(type, element.getTextNormalize()));

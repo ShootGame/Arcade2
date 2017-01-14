@@ -5,6 +5,9 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class XMLParser {
     public static final char COLOR_CHAR = '&';
 
@@ -15,6 +18,15 @@ public class XMLParser {
         }
 
         return new Attribute(name, def.toString());
+    }
+
+    public static Map<String, Attribute> parseAttributeMap(Element xml) {
+        Map<String, Attribute> data = new HashMap<>();
+        for (Attribute attribute : xml.getAttributes()) {
+            data.put(attribute.getName(), attribute);
+        }
+
+        return data;
     }
 
     public static boolean parseBoolean(String bool) {

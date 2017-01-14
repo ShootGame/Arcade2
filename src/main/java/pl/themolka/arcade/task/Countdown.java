@@ -115,7 +115,7 @@ public class Countdown extends Task implements CountdownListener {
 
     public int countAsync() {
         if (this.getGame() == null) {
-            throw new UnsupportedOperationException("Countdown not registered");
+            throw new UnsupportedOperationException("Game not registered");
         }
 
         return this.getGame().addAsyncTask(this);
@@ -123,7 +123,7 @@ public class Countdown extends Task implements CountdownListener {
 
     public int countSync() {
         if (this.getGame() == null) {
-            throw new UnsupportedOperationException("Countdown not registered");
+            throw new UnsupportedOperationException("Game not registered");
         }
 
         return this.getGame().addSyncTask(this);

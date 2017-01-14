@@ -43,6 +43,28 @@ public class OfflineMap {
         return this.authors;
     }
 
+    public String getAuthorsPretty() {
+        if (this.hasAuthors()) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < this.getAuthors().size(); i++) {
+                if (i != 0) {
+                    builder.append(ChatColor.GRAY);
+                    if (this.getAuthors().size() == (i + 1)) {
+                        builder.append(" and ");
+                    } else {
+                        builder.append(", ");
+                    }
+                }
+
+                builder.append(ChatColor.DARK_PURPLE).append(this.getAuthors().get(i));
+            }
+
+            return builder.toString();
+        }
+
+        return ChatColor.DARK_PURPLE + ChatColor.ITALIC.toString() + "(unknown)";
+    }
+
     public File getDirectory() {
         return this.directory;
     }

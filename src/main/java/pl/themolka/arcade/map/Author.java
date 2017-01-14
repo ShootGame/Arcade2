@@ -13,8 +13,8 @@ public class Author {
         this(null, username);
     }
 
-    public Author(UUID uuid, String username) {
-        this(uuid, username, null);
+    public Author(String username, String description) {
+        this(null, username, description);
     }
 
     public Author(UUID uuid, String username, String description) {
@@ -41,6 +41,10 @@ public class Author {
 
     public boolean hasDescription() {
         return this.description != null;
+    }
+
+    public boolean hasUsername() {
+        return this.username != null;
     }
 
     @Override

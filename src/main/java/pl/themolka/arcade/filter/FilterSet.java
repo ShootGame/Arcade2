@@ -1,14 +1,16 @@
 package pl.themolka.arcade.filter;
 
+import pl.themolka.arcade.util.StringId;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterSet implements Filter {
+public class FilterSet implements Filter, StringId {
     private final List<Filter> filters = new ArrayList<>();
     private final String id;
 
     public FilterSet(String id) {
-        this(id, null);
+        this(id, (Filter[]) null);
     }
 
     public FilterSet(String id, Filter... filters) {
@@ -33,16 +35,17 @@ public class FilterSet implements Filter {
         return FilterResult.ABSTAIN;
     }
 
+    @Override
+    public String getId() {
+        return this.id;
+    }
+
     public void addFilter(Filter filter) {
         this.filters.add(filter);
     }
 
     public List<Filter> getFilters() {
         return this.filters;
-    }
-
-    public String getId() {
-        return this.id;
     }
 
     public boolean isEmpty() {

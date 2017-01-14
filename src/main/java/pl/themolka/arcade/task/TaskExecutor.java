@@ -1,9 +1,10 @@
 package pl.themolka.arcade.task;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.util.IncrementalId;
 
-public class TaskExecutor implements Comparable<TaskExecutor>, Runnable {
-    public static final long TICK_SLEEP = 50L;
+public class TaskExecutor implements Comparable<TaskExecutor>, IncrementalId,  Runnable {
+    public static final long TICK_SLEEP = 20L;
 
     private final ArcadePlugin plugin;
 
@@ -21,6 +22,11 @@ public class TaskExecutor implements Comparable<TaskExecutor>, Runnable {
     @Override
     public int compareTo(TaskExecutor object) {
         return Integer.compare(this.getId(), object.getId());
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
     }
 
     @Override
@@ -55,10 +61,6 @@ public class TaskExecutor implements Comparable<TaskExecutor>, Runnable {
 
     public void destroyTask() {
         this.getListener().onDestroy();
-    }
-    
-    public int getId() {
-        return this.id;
     }
 
     public TaskListener getListener() {

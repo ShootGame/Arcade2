@@ -7,6 +7,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.util.StringId;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T> extends SimpleModuleListener implements Listener, Serializable {
+public class Module<T> extends SimpleModuleListener implements Listener, Serializable, StringId {
     private transient ArcadePlugin plugin;
 
     private String id;
@@ -51,6 +52,11 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.loadBefore = info.loadBefore();
     }
 
+    @Override
+    public final String getId() {
+        return this.id;
+    }
+
     public T buildGameModule(Element xml, Game game) throws JDOMException {
         return null;
     }
@@ -78,10 +84,6 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         }
 
         return null;
-    }
-
-    public final String getId() {
-        return this.id;
     }
 
     public List<Object> getListenerObjects() {

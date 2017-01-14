@@ -9,12 +9,13 @@ import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.match.MatchWinner;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Team implements MatchWinner {
+public class Team implements MatchWinner, StringId {
     private final ArcadePlugin plugin;
 
     private ChatColor color;
@@ -34,6 +35,10 @@ public class Team implements MatchWinner {
         this.plugin = plugin;
 
         this.id = id;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     @Override
@@ -88,10 +93,6 @@ public class Team implements MatchWinner {
 
     public List<Goal> getGoals() {
         return this.goals;
-    }
-
-    public String getId() {
-        return this.id;
     }
 
     public Match getMatch() {

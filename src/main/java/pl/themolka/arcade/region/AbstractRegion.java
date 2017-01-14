@@ -6,10 +6,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.filter.FilterSet;
 import pl.themolka.arcade.map.ArcadeMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class AbstractRegion implements Region {
@@ -17,6 +21,7 @@ public abstract class AbstractRegion implements Region {
 
     private static final Random random = new Random();
 
+    private final Map<RegionEventType, FilterSet> filters = new HashMap<>();
     private final String id;
     private final ArcadeMap map;
 
@@ -94,6 +99,16 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
+    public FilterSet getFilter(RegionEventType event) {
+        return this.getFilter(event, null);
+    }
+
+    @Override
+    public FilterSet getFilter(RegionEventType event, FilterSet def) {
+        return this.filters.getOrDefault(event, def);
+    }
+
+    @Override
     public String getId() {
         return this.id;
     }
@@ -132,7 +147,32 @@ public abstract class AbstractRegion implements Region {
         return this.getMap().getWorld();
     }
 
+    @Override
+    public boolean hasFilter(RegionEventType event) {
+        return this.filters.containsKey(event);
+    }
+
+    @Override
+    public void removeFilter(RegionEventType event) {
+        this.filters.remove(event);
+    }
+
+    @Override
+    public void setFilter(RegionEventType event, FilterSet filter) {
+        this.filters.put(event, filter);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof AbstractRegion && ((AbstractRegion) obj).getId().equals(this.getId());
+    }
+
     public abstract Vector getRandom(Random random, int limit);
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
+    }
 
     protected boolean isYPresent(Vector vector) {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;

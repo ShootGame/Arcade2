@@ -3,11 +3,12 @@ package pl.themolka.arcade.kit;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.util.Applicable;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Kit implements Applicable<GamePlayer> {
+public class Kit implements Applicable<GamePlayer>, StringId {
     private final ArcadePlugin plugin;
 
     private final List<KitContent<?>> content = new ArrayList<>();
@@ -30,6 +31,11 @@ public class Kit implements Applicable<GamePlayer> {
                 content.apply(player);
             }
         }
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     public void addContent(Kit kit) {
@@ -56,10 +62,6 @@ public class Kit implements Applicable<GamePlayer> {
 
     public List<KitContent<?>> getContent() {
         return this.content;
-    }
-
-    public String getId() {
-        return this.id;
     }
 
     public List<String> getInherit() {

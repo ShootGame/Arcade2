@@ -40,13 +40,13 @@ public class GeneralCommands {
             throw new CommandException("Could not cancel right now. Please try again later.");
         }
 
-        List<Countdown> countdowns = game.gerRunningCountdowns();
+        List<Countdown> countdowns = game.getRunningCountdowns();
         if (countdowns.isEmpty()) {
             throw new CommandException("No countdowns running right now.");
         }
 
         int i = 0;
-        for (Countdown countdown : game.gerRunningCountdowns()) {
+        for (Countdown countdown : game.getRunningCountdowns()) {
             if (countdown.cancelCountdown()) {
                 countdown.setForcedCancel(paramForce);
                 i++;
@@ -54,7 +54,7 @@ public class GeneralCommands {
         }
 
         if (i != 0) {
-            sender.sendSuccess("Successfully canceled " + i + " countdowns.");
+            sender.sendSuccess("Successfully canceled " + i + " countdown(s).");
         } else {
             throw new CommandException("No countdowns could be canceled right now.");
         }
@@ -100,7 +100,7 @@ public class GeneralCommands {
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            for (Countdown countdown : game.gerRunningCountdowns()) {
+            for (Countdown countdown : game.getRunningCountdowns()) {
                 countdown.cancelCountdown();
             }
 
