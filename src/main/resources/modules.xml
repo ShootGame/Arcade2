@@ -11,5 +11,7 @@
     <module class="pl.themolka.arcade.match.MatchModule" />
     <module class="pl.themolka.arcade.region.RegionsModule" />
     <module class="pl.themolka.arcade.repository.RepositoriesModule" />
+    <module class="pl.themolka.arcade.score.ScoreModule" />
+    <module class="pl.themolka.arcade.team.TeamLockModule" />
     <module class="pl.themolka.arcade.team.TeamsModule" />
 </modules>

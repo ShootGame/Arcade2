@@ -21,7 +21,7 @@ public class FoodLevelContent implements KitContent<Integer> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setFoodLevel(this.getResult());
+        player.getBukkit().setFoodLevel(this.getResult());
     }
 
     @Override

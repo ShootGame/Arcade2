@@ -4,6 +4,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.RestartCountdown;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
@@ -75,7 +76,7 @@ public class GeneralCommands {
         if (nextMap == null) {
             String reason = "The map queue is empty.";
             if (sender.hasPermission("arcade.command.setnext")) {
-                reason += " Set next map using /setnext <map>.";
+                reason += " Set next map using /setnext <map...>.";
             }
 
             throw new CommandException(reason);
@@ -111,12 +112,46 @@ public class GeneralCommands {
         }
     }
 
+    //
+    // /restart command
+    //
+
+    @CommandInfo(name = "restart",
+            description = "Cycle to next map",
+            usage = "[seconds]",
+            permission = "arcade.command.restart")
+    public void restart(Session<ArcadePlayer> sender, CommandContext context) {
+        int seconds = context.getParamInt(0);
+        if (seconds < 5) {
+            seconds = 5;
+        }
+
+        CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, null);
+        this.plugin.getEventBus().publish(event);
+
+        if (event.isCanceled()) {
+            return;
+        }
+
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            for (Countdown countdown : game.getRunningCountdowns()) {
+                countdown.cancelCountdown();
+            }
+
+            RestartCountdown countdown = this.plugin.getGames().getRestartCountdown();
+            countdown.setDuration(Duration.ofSeconds(seconds));
+
+            countdown.countSync();
+        }
+    }
+
     public static class CycleCommandEvent extends CommandEvent implements Cancelable {
         private boolean cancel;
         private final OfflineMap nextMap;
 
         public CycleCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context, OfflineMap nextMap) {
-            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
+            super(plugin, sender, context);
 
             this.nextMap = nextMap;
         }
@@ -133,6 +168,10 @@ public class GeneralCommands {
 
         public OfflineMap getNextMap() {
             return this.nextMap;
+        }
+
+        boolean isNextRestart() {
+            return this.nextMap == null;
         }
     }
 }

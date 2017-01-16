@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 import java.util.UUID;
 
-public class Author {
+public class Author implements Comparable<Author> {
     private final UUID uuid;
     private final String username;
     private final String description;
@@ -21,6 +21,11 @@ public class Author {
         this.uuid = uuid;
         this.username = username;
         this.description = description;
+    }
+
+    @Override
+    public int compareTo(Author o) {
+        return this.getUsername().compareToIgnoreCase(o.getUsername());
     }
 
     public UUID getUuid() {

@@ -21,7 +21,7 @@ public class MaxHealthContent implements KitContent<Integer> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setMaxHealth(this.getResult());
+        player.getBukkit().setMaxHealth(this.getResult());
     }
 
     @Override

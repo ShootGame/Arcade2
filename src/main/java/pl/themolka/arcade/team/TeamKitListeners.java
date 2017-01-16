@@ -7,12 +7,12 @@ import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchState;
 
-public class TeamsKitListeners {
+public class TeamKitListeners {
     private final TeamsGame game;
     private final KitsGame kits;
     private final Match match;
 
-    public TeamsKitListeners(TeamsGame game, KitsGame kits, Match match) {
+    public TeamKitListeners(TeamsGame game, KitsGame kits, Match match) {
         this.game = game;
         this.kits = kits;
         this.match = match;

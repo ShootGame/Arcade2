@@ -17,7 +17,7 @@ public class WalkSpeedContent implements KitContent<Float> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setWalkSpeed(this.getResult());
+        player.getBukkit().setWalkSpeed(this.getResult());
     }
 
     @Override

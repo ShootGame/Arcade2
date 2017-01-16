@@ -85,10 +85,6 @@ public class ArcadeCommand {
     //
 
     private void help(Session<ArcadePlayer> sender) {
-        if (!sender.hasPermission("arcade.command.help")) {
-            throw new CommandPermissionException("arcade.command.help");
-        }
-
         Commands.sendTitleMessage(sender, "Help");
         sender.send(this.helpItem("reload", "Reload settings file"));
         sender.send(this.helpItem("reset", "Reset settings file to the default state"));

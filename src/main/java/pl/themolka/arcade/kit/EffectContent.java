@@ -15,7 +15,7 @@ public class EffectContent implements KitContent<PotionEffect> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().addPotionEffect(this.getResult(), true);
+        player.getBukkit().addPotionEffect(this.getResult(), true);
     }
 
     @Override

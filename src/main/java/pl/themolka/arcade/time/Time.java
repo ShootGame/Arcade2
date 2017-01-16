@@ -1,4 +1,4 @@
-package pl.themolka.arcade.util;
+package pl.themolka.arcade.time;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -7,6 +7,7 @@ import java.util.Objects;
 public class Time {
     public static final Time FOREVER = new Time(Long.MAX_VALUE);
     public static final String FOREVER_KEY = "oo";
+    public static final Time ZERO = new Time(0L);
 
     public static final char UNIT_MILLIS = 'x';
     public static final char UNIT_TICKS = 't';
@@ -43,6 +44,10 @@ public class Time {
     // Subtraction
     //
 
+    public Time minus(Time time) {
+        return minusMillis(time.toMillis());
+    }
+
     public Time minusMillis(long millis) {
         return Time.ofMillis(this.toMillis() - millis);
     }
@@ -70,6 +75,10 @@ public class Time {
     //
     // Addition
     //
+
+    public Time plus(Time time) {
+        return plusMillis(time.toMillis());
+    }
 
     public Time plusMillis(long millis) {
         return Time.ofMillis(this.toMillis() + millis);
@@ -134,6 +143,10 @@ public class Time {
     //
     // Instancing
     //
+
+    public static Time clone(Time time) {
+        return ofMillis(time.toMillis());
+    }
 
     public static Time now() {
         return ofMillis(System.currentTimeMillis());

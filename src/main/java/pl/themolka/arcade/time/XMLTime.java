@@ -1,8 +1,8 @@
-package pl.themolka.arcade.xml;
+package pl.themolka.arcade.time;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import pl.themolka.arcade.util.Time;
+import pl.themolka.arcade.xml.XMLParser;
 
 public class XMLTime extends XMLParser {
     public static final String ATTRIBUTE_TIME = "time";

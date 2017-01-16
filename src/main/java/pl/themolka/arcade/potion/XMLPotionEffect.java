@@ -6,10 +6,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import pl.themolka.arcade.util.Time;
+import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.xml.XMLColor;
 import pl.themolka.arcade.xml.XMLParser;
-import pl.themolka.arcade.xml.XMLTime;
 
 public class XMLPotionEffect extends XMLParser {
     public static PotionEffect parse(Element xml) {

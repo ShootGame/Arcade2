@@ -1,12 +1,14 @@
 package pl.themolka.arcade.map;
 
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.util.pagination.Paginationable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class OfflineMap {
+public class OfflineMap implements Paginationable {
     public static final int NAME_MAX_LENGTH = 32;
 
     private final String name;
@@ -24,7 +26,28 @@ public class OfflineMap {
 
         if (authors != null) {
             this.authors.addAll(authors);
+            Collections.sort(this.authors);
         }
+    }
+
+    @Override
+    public int compareTo(Paginationable object) {
+        if (object instanceof OfflineMap) {
+            return this.getName().compareToIgnoreCase(((OfflineMap) object).getName());
+        }
+
+        return this.getClass().getName().compareToIgnoreCase(object.getClass().getName());
+    }
+
+    @Override
+    public String paginate(int index) {
+        String authorsString = "";
+        if (this.hasAuthors()) {
+            authorsString = ChatColor.GRAY + " by " + this.getAuthorsPretty();
+        }
+
+        return ChatColor.GRAY + "#" + index + " " + ChatColor.AQUA + ChatColor.BOLD + this.getName() + ChatColor.RESET +
+                ChatColor.GRAY + " v" + ChatColor.AQUA + this.getVersion() + authorsString;
     }
 
     public String getName() {
@@ -56,13 +79,13 @@ public class OfflineMap {
                     }
                 }
 
-                builder.append(ChatColor.DARK_PURPLE).append(this.getAuthors().get(i));
+                builder.append(ChatColor.AQUA).append(this.getAuthors().get(i).getUsername());
             }
 
             return builder.toString();
         }
 
-        return ChatColor.DARK_PURPLE + ChatColor.ITALIC.toString() + "(unknown)";
+        return ChatColor.AQUA + ChatColor.ITALIC.toString() + "(unknown)";
     }
 
     public File getDirectory() {

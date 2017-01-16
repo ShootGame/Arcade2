@@ -92,10 +92,14 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
         MapParser parser = technology.newInstance();
         parser.readFile(file);
 
-        OfflineMap map = parser.parseOfflineMap(this.getPlugin());
-        map.setDirectory(worldDirectory);
-        map.setSettings(file);
-        return map;
+        try {
+            OfflineMap map = parser.parseOfflineMap(this.getPlugin());
+            map.setDirectory(worldDirectory);
+            map.setSettings(file);
+            return map;
+        } catch (MapParserException ex) {
+            return null;
+        }
     }
 
 }

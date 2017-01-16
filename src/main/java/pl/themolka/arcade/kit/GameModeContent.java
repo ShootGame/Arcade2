@@ -15,7 +15,7 @@ public class GameModeContent implements KitContent<GameMode>  {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setGameMode(this.getResult());
+        player.getBukkit().setGameMode(this.getResult());
     }
 
     @Override

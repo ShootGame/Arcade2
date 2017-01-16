@@ -93,6 +93,8 @@ public class Game implements Metadata, Serializable {
     }
 
     public int addSyncTask(Task task) {
+        this.removeTask(task);
+
         int id = -1;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
             id = this.plugin.getTasks().scheduleSync(task);
@@ -233,6 +235,12 @@ public class Game implements Metadata, Serializable {
     }
 
     public List<Task> getTasks() {
+        for (Task task : new ArrayList<>(this.taskList)) {
+            if (!task.isTaskRunning()) {
+                this.removeTask(task);
+            }
+        }
+
         return this.taskList;
     }
 

@@ -21,7 +21,7 @@ public class HealthContent implements KitContent<Integer> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setHealth(this.getResult());
+        player.getBukkit().setHealth(this.getResult());
     }
 
     @Override

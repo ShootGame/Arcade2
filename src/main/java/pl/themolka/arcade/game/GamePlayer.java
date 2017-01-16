@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.entity.Player;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class GamePlayer implements Metadata {
+    private String displayName;
     private final transient Game game;
     private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
@@ -43,12 +45,20 @@ public class GamePlayer implements Metadata {
         this.metadata.setMetadata(owner, key, metadata);
     }
 
-    public Game getGame() {
-        return this.game;
+    public Player getBukkit() {
+        if (this.isOnline()) {
+            return this.getPlayer().getBukkit();
+        }
+
+        return null;
     }
 
-    public boolean isOnline() {
-        return this.player != null;
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public Game getGame() {
+        return this.game;
     }
 
     public ArcadePlayer getPlayer() {
@@ -63,12 +73,26 @@ public class GamePlayer implements Metadata {
         return this.uuid;
     }
 
+    public boolean hasDisplayName() {
+        return this.displayName != null || (this.isOnline() && this.getPlayer().getDisplayName() != null);
+    }
+
+    public boolean isOnline() {
+        return this.player != null;
+    }
+
     public boolean isParticipating() {
         return this.participating;
     }
 
-    public void reset() {
+    public void resetDisplayName() {
+        this.setDisplayName(null);
+    }
 
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+
+        this.getPlayer().setDisplayName(displayName);
     }
 
     public void setParticipating(boolean participating) {

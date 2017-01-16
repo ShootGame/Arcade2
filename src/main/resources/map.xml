@@ -16,11 +16,21 @@
             <filter id="custom-filter">
 
             </filter>
+
+            <filter id="team-lock-filter">
+                <not>
+                    <match-running />
+                </not>
+            </filter>
         </filters>
 
         <gamerules>
             <gamerule type="doDaylightCycle">false</gamerule>
         </gamerules>
+
+        <join-lock>
+            <rule filter="team-lock-filter">`6The match has started. `cYou can't join this game right now.</rule>
+        </join-lock>
 
         <kits>
             <kit id="essential-kit" inherit="creative-kit, custom-kit">

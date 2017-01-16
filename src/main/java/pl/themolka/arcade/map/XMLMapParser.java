@@ -83,6 +83,10 @@ public class XMLMapParser implements MapParser {
         String description = this.parseDescription(root.getChildTextNormalize("description"));
         List<Author> authors = this.parseAuthors(root.getChild("authors"));
 
+        if (description == null) {
+            description = this.parseDescription(root.getChildTextNormalize("objective"));
+        }
+
         return new OfflineMap(name, version, description, authors);
     }
 
@@ -140,13 +144,16 @@ public class XMLMapParser implements MapParser {
         }
 
         String username = author.getTextTrim();
-        if (username == null) {
+        if (username.isEmpty()) {
             return null;
         }
 
         String description = author.getAttributeValue("description");
+        String contribution = author.getAttributeValue("contribution");
         if (description != null) {
             description = description.trim();
+        } else if (contribution != null) {
+            description = contribution.trim();
         }
 
         return new Author(uuid, username, description);
@@ -159,7 +166,11 @@ public class XMLMapParser implements MapParser {
     @Override
     public ArcadeMap parseArcadeMap(ArcadePlugin plugin, OfflineMap offline) throws MapParserException {
         Element root = this.getDocument().getRootElement();
+
         Element world = root.getChild("world");
+        if (world == null) {
+            world = new Element("world");
+        }
 
         ArcadeMap map = new ArcadeMap(offline);
         map.setConfiguration(new ArcadeMapConfiguration(root));
@@ -221,13 +232,9 @@ public class XMLMapParser implements MapParser {
     }
 
     private Location parseSpawn(Element parent) throws MapParserException {
-        if (parent == null) {
-            throw new MapParserException("<world> not given");
-        }
-
         Element spawn = parent.getChild("spawn");
         if (spawn == null) {
-            throw new MapParserException("<spawn> in <world> not given");
+            return new Location((World) null, XMLLocation.X, XMLLocation.Y, XMLLocation.Z);
         }
 
         try {

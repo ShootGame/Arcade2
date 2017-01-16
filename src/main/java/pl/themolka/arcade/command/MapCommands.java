@@ -1,6 +1,5 @@
 package pl.themolka.arcade.command;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
@@ -9,6 +8,7 @@ import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainer;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.pagination.DynamicPagination;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
@@ -124,19 +124,25 @@ public class MapCommands {
     // /maplist command
     //
 
-    private String mapListResult;
-
     @CommandInfo(name = {"maplist", "maps", "ml"},
             description = "Show all loaded maps",
+            usage = "[# page]",
             permission = "arcade.command.maplist")
     public void mapList(Session<ArcadePlayer> sender, CommandContext context) {
+        int paramPage = context.getParamInt(0, 1);
+
         MapContainer container = this.plugin.getMaps().getContainer();
-        if (this.mapListResult == null) {
-            this.mapListResult = StringUtils.join(container.getMaps(), ChatColor.GRAY + ", ");
+        DynamicPagination pagination = new DynamicPagination.Builder()
+                .description(ChatColor.GOLD + "Next page: /" + context.getLabel() + " " + (paramPage + 1))
+                .items(new ArrayList<>(container.getMaps()))
+                .title("Map List")
+                .build();
+
+        if (paramPage < 1 || paramPage > pagination.getPages()) {
+            throw new CommandException("Page #" + paramPage + " not found.");
         }
 
-        Commands.sendTitleMessage(sender, "Map List", Integer.toString(container.getMaps().size()));
-        sender.send(this.mapListResult);
+        pagination.display(sender, paramPage);
     }
 
     //

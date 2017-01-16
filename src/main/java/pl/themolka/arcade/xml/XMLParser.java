@@ -46,6 +46,10 @@ public class XMLParser {
     }
 
     public static String parseMessage(String message) {
-        return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);
+        if (message != null) {
+            return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);
+        }
+
+        return null;
     }
 }

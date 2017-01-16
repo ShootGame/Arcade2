@@ -1,10 +1,13 @@
 package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.time.Duration;
@@ -100,9 +103,10 @@ public class Match {
         MatchEndedEvent endedEvent = new MatchEndedEvent(this.plugin, this, winner, force);
         this.plugin.getEventBus().publish(endedEvent);
 
+        ItemStack compass = new ItemStackBuilder().type(Material.COMPASS).build();
         for (GamePlayer player : this.getGame().getPlayers()) {
             if (player.isOnline()) {
-                player.reset();
+                player.getBukkit().getInventory().addItem(compass);
             }
         }
     }

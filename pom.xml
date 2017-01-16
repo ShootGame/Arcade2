@@ -59,6 +59,7 @@
                                     <include>commons-io:commons-io</include>
                                     <include>org.jdom:jdom2</include>
                                     <include>net.engio:mbassador</include>
+                                    <include>org.mongodb:mongodb-async-driver</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -104,6 +105,12 @@
             <groupId>net.engio</groupId>
             <artifactId>mbassador</artifactId>
             <version>1.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-async</artifactId>
+            <version>3.4.1</version>
         </dependency>
     </dependencies>
 </project>

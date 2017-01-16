@@ -6,7 +6,10 @@ import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.time.TimeUtils;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.session.Session;
@@ -132,7 +135,7 @@ public class MatchGame extends GameModule {
     public void onMatchCountdownAutoStart(GameCommands.JoinCommandEvent event) {
         if (!event.isCanceled() && this.isAutoStart()) {
             MatchStartCountdownEvent countdownEvent = new MatchStartCountdownEvent(this.getPlugin(), this.getMatch(), this.startCountdown);
-            if (countdownEvent != null) {
+            if (!countdownEvent.isCanceled()) {
                 this.startCountdown(this.getDefaultStartCountdown());
             }
         }
@@ -150,16 +153,67 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.NORMAL)
     public void onMatchTimeDescribe(GameCommands.GameCommandEvent event) {
-        String time;
-        if (this.getMatch().getStartTime() == null) {
-            return;
-        } else if (this.getMatch().getTime() != null) {
-            time = this.getMatch().getTime().toString();
-        } else {
-            time = this.getMatch().getStartTime().toString();
+        Time time = Time.ZERO;
+        switch (this.getMatch().getState()) {
+            case RUNNING:
+                time = Time.now().minus(Time.of(this.getMatch().getStartTime()));
+                break;
+            case CYCLING:
+                time = Time.of(this.getMatch().getTime());
+                break;
+            default:
+                break;
         }
 
-        event.getSender().send(ChatColor.DARK_PURPLE + "Time: " + ChatColor.DARK_AQUA + time);
+        event.getSender().send(ChatColor.DARK_PURPLE + "Time: " + ChatColor.DARK_AQUA + TimeUtils.prettyTime(time));
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onServerDescription(ServerDescriptionEvent event) {
+        String map = ChatColor.GREEN + ChatColor.BOLD.toString() + this.getGame().getMap().getMapInfo().getName() + ChatColor.RESET;
+        String cycle = ChatColor.GREEN + ChatColor.BOLD.toString() + this.getPlugin().getGames().getQueue().getNextMap() + ChatColor.RESET;
+
+        String result = null;
+        switch (this.getMatch().getState()) {
+            case STARTING:
+                if (this.getStartCountdown() == null) {
+                    result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " very soon...";
+                    break;
+                }
+
+                long startLeft = this.getStartCountdown().getLeftSeconds();
+                result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " in " + startLeft + " second(s)...";
+                break;
+            case RUNNING:
+                if (this.getMatch().getStartTime() == null) {
+                    break;
+                }
+
+
+                result = ChatColor.LIGHT_PURPLE + "Playing " + map + ChatColor.LIGHT_PURPLE + " for " +
+                        TimeUtils.prettyTime(Time.now().minus(Time.of(this.getMatch().getStartTime()))) + ChatColor.LIGHT_PURPLE + "...";
+            case CYCLING:
+                if (this.getPlugin().getGames().isNextRestart()) {
+                    if (this.getPlugin().getGames().getRestartCountdown() == null) {
+                        result = ChatColor.RED + "Restarting very soon...";
+                        break;
+                    }
+
+                    long restartLeft = this.getPlugin().getGames().getRestartCountdown().getLeftSeconds();
+                    result = ChatColor.RED + "Restarting in " + ChatColor.BOLD + restartLeft + ChatColor.RESET + " second(s)...";
+                    break;
+                } else if (this.getPlugin().getGames().getCycleCountdown() == null) {
+                    break;
+                }
+
+                long cycleLeft = this.getPlugin().getGames().getCycleCountdown().getLeftSeconds();
+                result = ChatColor.AQUA + "Cycling to " + cycle + ChatColor.AQUA + " in " + cycleLeft + " second(s)...";
+                break;
+        }
+
+        if (result != null) {
+            event.setDescription(result);
+        }
     }
 
     public int startCountdown(int seconds) {

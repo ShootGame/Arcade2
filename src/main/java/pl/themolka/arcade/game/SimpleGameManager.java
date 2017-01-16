@@ -16,8 +16,8 @@ import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
-import pl.themolka.arcade.util.Time;
-import pl.themolka.arcade.xml.XMLTime;
+import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.time.XMLTime;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +35,14 @@ public class SimpleGameManager implements GameManager {
     private int gameId;
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
+    private final RestartCountdown restartCountdown;
     private MapQueue queue = new MapQueue();
 
     public SimpleGameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
 
         this.cycleCountdown = new CycleCountdown(plugin, this.readCycleCountdown(plugin.getSettings()));
+        this.restartCountdown = new RestartCountdown(plugin, this.readCycleCountdown(plugin.getSettings()));
         this.setDefaultMaxGameId();
     }
 
@@ -141,8 +143,19 @@ public class SimpleGameManager implements GameManager {
             if (this.getGameId() >= this.getMaxGameId()) {
                 this.setNextRestart(true);
             }
+        } catch (MapParserException ex) {
+            Game game = this.getCurrentGame();
+            this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "': " + ex.getMessage());
+
+            if (game != null) {
+                game.addError(ex);
+            }
+
+            this.cycleNext();
+            return;
         } catch (Throwable th) {
             this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "'", th);
+
             this.cycleNext();
             return;
         }
@@ -233,6 +246,11 @@ public class SimpleGameManager implements GameManager {
     }
 
     @Override
+    public RestartCountdown getRestartCountdown() {
+        return this.restartCountdown;
+    }
+
+    @Override
     public boolean isNextRestart() {
         return this.nextRestart;
     }
@@ -244,15 +262,17 @@ public class SimpleGameManager implements GameManager {
                 continue;
             }
 
-            player.reset();
-            player.getPlayer().getBukkit().teleport(newGame.getMap().getSpawn());
+            player.getPlayer().reset();
+            player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }
 
     @Override
     public void setCurrentGame(Game currentGame) {
         this.currentGame = currentGame;
+
         this.getCycleCountdown().setGame(currentGame);
+        this.getRestartCountdown().setGame(currentGame);
     }
 
     @Override

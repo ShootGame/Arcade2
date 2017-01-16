@@ -65,7 +65,6 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
 
     public ArcadeSession createSession(Player bukkit) {
         ArcadePlayer player = new ArcadePlayer(bukkit);
-        this.plugin.addPlayer(player);
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
@@ -82,7 +81,12 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         }
 
         this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));
-        return new ArcadeSession(player);
+
+        ArcadeSession session = new ArcadeSession(player);
+        player.setSession(session);
+
+        this.plugin.addPlayer(player);
+        return session;
     }
 
     public ArcadeSession destroySession(Player bukkit) {

@@ -190,7 +190,7 @@ public class ObserverListeners implements Listener {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinedObservers(PlayerJoinedTeamEvent event) {
         if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
-            event.getGamePlayer().reset();
+            event.getPlayer().reset();
 
             Player bukkit = event.getPlayer().getBukkit();
             if (this.game.getMatch().getState().equals(MatchState.RUNNING)) {
@@ -198,6 +198,7 @@ public class ObserverListeners implements Listener {
             }
             bukkit.showInvisibles(true);
             bukkit.setCollidesWithEntities(false);
+            bukkit.setCollidable(false);
 
             for (GamePlayer player : this.game.getGame().getPlayers()) {
                 player.getPlayer().getBukkit().hidePlayer(bukkit);
@@ -208,11 +209,12 @@ public class ObserverListeners implements Listener {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
         if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
-            event.getGamePlayer().reset();
+            event.getPlayer().reset();
 
             Player bukkit = event.getPlayer().getBukkit();
             bukkit.showInvisibles(false);
             bukkit.setCollidesWithEntities(true);
+            bukkit.setCollidable(true);
 
             for (GamePlayer player : this.game.getGame().getPlayers()) {
                 player.getPlayer().getBukkit().showPlayer(bukkit);

@@ -17,7 +17,7 @@ public class KnockbackContent implements KitContent<Float> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setKnockbackReduction(this.getResult());
+        player.getBukkit().setKnockbackReduction(this.getResult());
     }
 
     @Override

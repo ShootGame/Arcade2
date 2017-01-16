@@ -7,7 +7,7 @@ public class CycleEvent extends GameEvent {
     private final OfflineMap nextMap;
 
     public CycleEvent(ArcadePlugin plugin, OfflineMap nextMap) {
-        super(plugin, plugin.getGames().getCurrentGame());
+        super(plugin);
 
         this.nextMap = nextMap;
     }

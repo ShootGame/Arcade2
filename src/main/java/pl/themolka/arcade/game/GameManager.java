@@ -39,6 +39,8 @@ public interface GameManager {
 
     MapQueue getQueue();
 
+    RestartCountdown getRestartCountdown();
+
     boolean isNextRestart();
 
     void resetPlayers(Game newGame);

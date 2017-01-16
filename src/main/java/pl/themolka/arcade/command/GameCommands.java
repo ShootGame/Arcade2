@@ -97,7 +97,7 @@ public class GameCommands {
         private boolean cancel;
 
         public JoinCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context, boolean auto) {
-            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
+            super(plugin, sender, context);
 
             this.auto = auto;
         }
@@ -123,13 +123,13 @@ public class GameCommands {
 
     public static class GameCommandEvent extends CommandEvent {
         public GameCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context) {
-            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
+            super(plugin, sender, context);
         }
     }
 
     public static class JoinCompleterEvent extends CommandCompleterEvent {
         public JoinCompleterEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context) {
-            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
+            super(plugin, sender, context);
         }
 
         public ArcadePlayer getJoinPlayer() {
@@ -139,7 +139,7 @@ public class GameCommands {
 
     public static class LeaveCommandEvent extends CommandEvent {
         public LeaveCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context) {
-            super(plugin, plugin.getGames().getCurrentGame(), sender, context);
+            super(plugin, sender, context);
         }
 
         public ArcadePlayer getLeavePlayer() {

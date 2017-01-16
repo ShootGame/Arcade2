@@ -34,7 +34,7 @@ public class Countdown extends Task implements CountdownListener {
     }
 
     @Override
-    public final void onTick(long ticks) {
+    public void onTick(long ticks) {
         super.onTick(ticks);
     }
 
@@ -42,8 +42,8 @@ public class Countdown extends Task implements CountdownListener {
     public final void onSecond(long seconds) {
         super.onSecond(seconds);
 
-        this.seconds = seconds;
-        this.onUpdate(seconds, this.getLeftSeconds());
+        this.seconds++;
+        this.onUpdate(this.seconds, this.getLeftSeconds());
 
         if (this.isDone()) {
             this.onDone();
@@ -108,6 +108,7 @@ public class Countdown extends Task implements CountdownListener {
         if (this.isCancelable()) {
             this.onCancel();
             this.cancelTask();
+            this.seconds = 0;
             return true;
         }
         return false;

@@ -22,7 +22,7 @@ public class ArmorContent implements KitContent<ItemStack[]> {
 
     @Override
     public void apply(GamePlayer player) {
-        PlayerInventory inventory = player.getPlayer().getBukkit().getInventory();
+        PlayerInventory inventory = player.getBukkit().getInventory();
         inventory.setHelmet(this.getHelmet());
         inventory.setChestplate(this.getChestplate());
         inventory.setLeggings(this.getLeggings());

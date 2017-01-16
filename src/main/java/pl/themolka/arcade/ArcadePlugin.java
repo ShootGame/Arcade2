@@ -19,18 +19,22 @@ import pl.themolka.arcade.command.ArcadeCommand;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
+import pl.themolka.arcade.command.InfoCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.game.DescriptionTickable;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.SimpleGameManager;
 import pl.themolka.arcade.generator.GeneratorType;
+import pl.themolka.arcade.listener.BlockTransformListener;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
+import pl.themolka.arcade.listener.ServerPingListener;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
@@ -88,6 +92,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private MapManager maps;
     private final ModuleContainer modules = new ModuleContainer();
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
+    private String serverDescription;
     private String serverName = DEFAULT_SERVER_NAME;
     private ServerSessionFile serverSession;
     private Settings settings;
@@ -332,6 +337,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.players.values();
     }
 
+    public String getServerDescription() {
+        if (this.serverDescription != null) {
+            return this.serverDescription;
+        }
+
+        return "[Initializing]...";
+    }
+
     public String getServerName() {
         return this.serverName;
     }
@@ -396,6 +409,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    public void setServerDescription(String serverDescription) {
+        this.serverDescription = serverDescription;
+    }
+
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
@@ -417,6 +434,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 new ArcadeCommand(this),
                 new GameCommands(this),
                 new GeneralCommands(this),
+                new InfoCommands(this),
                 new MapCommands(this)
         }) {
             this.registerCommandObject(command);
@@ -436,6 +454,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.games.setGameId(this.getServerSession().getContent().getLastGameId());
 
         this.games.fillDefaultQueue();
+
+        this.addTickable(new DescriptionTickable(this));
     }
 
     private void loadMaps() {
@@ -538,8 +558,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.serverName = nameAttribute.getValue();
         }
 
+        this.registerListenerObject(new BlockTransformListener(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
+        this.registerListenerObject(new ServerPingListener(this));
     }
 
     private void loadTasks() {

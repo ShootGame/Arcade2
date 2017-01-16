@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
@@ -21,6 +22,7 @@ public class ArcadePlayer implements Metadata {
     private transient GamePlayer gamePlayer;
     private Instant lastPlayedSound;
     private final MetadataContainer metadata = new MetadataContainer();
+    private ArcadeSession session;
 
     public ArcadePlayer(Player bukkit) {
         this.bukkit = bukkit;
@@ -61,12 +63,20 @@ public class ArcadePlayer implements Metadata {
         return this.bukkit;
     }
 
+    public String getDisplayName() {
+        return this.bukkit.getDisplayName();
+    }
+
     public GamePlayer getGamePlayer() {
         return this.gamePlayer;
     }
 
     public Instant getLastPlayedSound() {
         return this.lastPlayedSound;
+    }
+
+    public ArcadeSession getSession() {
+        return this.session;
     }
 
     public String getUsername() {
@@ -115,6 +125,19 @@ public class ArcadePlayer implements Metadata {
         this.lastPlayedSound = now;
     }
 
+    public void reset() {
+        this.clearInventory(true);
+        this.resetDisplayName();
+
+        for (PotionEffectType potion : PotionEffectType.values()) {
+            this.getBukkit().removePotionEffect(potion);
+        }
+    }
+
+    public void resetDisplayName() {
+        this.setDisplayName(null);
+    }
+
     public void send(String message) {
         this.getBukkit().sendMessage(message);
     }
@@ -135,7 +158,15 @@ public class ArcadePlayer implements Metadata {
         this.send(ChatColor.AQUA + ChatColor.BOLD.toString() + "[Tip] " + ChatColor.RESET + ChatColor.GRAY + ChatColor.ITALIC + tip);
     }
 
+    public void setDisplayName(String displayName) {
+        this.bukkit.setDisplayName(displayName);
+    }
+
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
+    }
+
+    public void setSession(ArcadeSession session) {
+        this.session = session;
     }
 }

@@ -21,7 +21,7 @@ public class SaturationContent implements KitContent<Integer> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().getBukkit().setSaturation(this.getResult());
+        player.getBukkit().setSaturation(this.getResult());
     }
 
     @Override

@@ -6,6 +6,10 @@ import pl.themolka.arcade.event.Event;
 public class GameEvent extends Event {
     private final Game game;
 
+    public GameEvent(ArcadePlugin plugin) {
+        this(plugin, plugin.getGames().getCurrentGame());
+    }
+
     public GameEvent(ArcadePlugin plugin, Game game) {
         super(plugin);
 

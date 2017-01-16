@@ -67,7 +67,7 @@ public class Team implements MatchWinner, StringId {
 
     public boolean areGoalsScored() {
         for (Goal goal : this.getGoals()) {
-            if (!goal.isScored()) {
+            if (!goal.isScored(this)) {
                 return false;
             }
         }
@@ -81,10 +81,6 @@ public class Team implements MatchWinner, StringId {
 
     public DyeColor getDyeColor() {
         return this.dyeColor;
-    }
-
-    public boolean isFriendlyFire() {
-        return this.friendlyFire;
     }
 
     public Game getGame() {
@@ -126,6 +122,10 @@ public class Team implements MatchWinner, StringId {
 
     public boolean hasPlayer(GamePlayer player) {
         return this.getMembers().contains(player);
+    }
+
+    public boolean isFriendlyFire() {
+        return this.friendlyFire;
     }
 
     public boolean isFull() {
@@ -174,7 +174,7 @@ public class Team implements MatchWinner, StringId {
 
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
             player.setParticipating(this.isParticipating());
-            player.getPlayer().getBukkit().setDisplayName(this.getColor() + player.getUsername());
+            player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
             if (message) {
                 player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");

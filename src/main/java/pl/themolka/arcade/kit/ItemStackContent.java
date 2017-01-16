@@ -26,7 +26,7 @@ public class ItemStackContent implements KitContent<ItemStack> {
 
     @Override
     public void apply(GamePlayer player) {
-        PlayerInventory inventory = player.getPlayer().getBukkit().getInventory();
+        PlayerInventory inventory = player.getBukkit().getInventory();
 
         if (this.hasSlot()) {
             inventory.setItem(this.getSlot(), this.getResult());

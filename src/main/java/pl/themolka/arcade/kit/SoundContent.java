@@ -24,7 +24,7 @@ public class SoundContent implements KitContent<Sound> {
     public void apply(GamePlayer player) {
         Location location = this.getLocation();
         if (location == null) {
-            location = player.getPlayer().getBukkit().getLocation();
+            location = player.getBukkit().getLocation();
         }
 
         player.getPlayer().play(this.getResult(), location, this.getVolume(), this.getPitch());

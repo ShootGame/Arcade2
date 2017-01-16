@@ -23,7 +23,7 @@ public class FlyContent implements KitContent<Boolean> {
 
     @Override
     public void apply(GamePlayer player) {
-        Player bukkit = player.getPlayer().getBukkit();
+        Player bukkit = player.getBukkit();
         bukkit.setAllowFlight(this.getResult());
         bukkit.setFlying(this.isFlying());
         bukkit.setFlySpeed(this.getSpeed());

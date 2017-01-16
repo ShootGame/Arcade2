@@ -57,8 +57,14 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         GameModule kitsGame = this.getGame().getModule(KitsModule.class);
         if (kitsGame != null) {
-            this.registerListenerObject(new TeamsKitListeners(this, (KitsGame) kitsGame, this.getMatch()));
+            this.registerListenerObject(new TeamKitListeners(this, (KitsGame) kitsGame, this.getMatch()));
         }
+    }
+
+    @Override
+    public List<Object> onListenersRegister(List<Object> register) {
+        register.add(new TeamFilters(this));
+        return register;
     }
 
     @Override
@@ -89,7 +95,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         Team join = smallestTeam;
-        if (!player.getPlayer().getBukkit().hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
+        if (!player.getBukkit().hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
         } else if (join.isFull()) {
@@ -122,7 +128,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void joinTeam(GamePlayer player, String query) throws CommandException {
         if (!player.isOnline()) {
             throw new CommandException("Player is not not online.");
-        } else if (!player.getPlayer().getBukkit().hasPermission("arcade.command.join.select")) {
+        } else if (!player.getBukkit().hasPermission("arcade.command.join.select")) {
             throw new CommandPermissionException("arcade.command.join.select");
         } else if (query == null) {
             throw new CommandException("No query given.");
@@ -147,7 +153,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         if (result == null) {
             throw new CommandException("No teams found from the given query.");
-        } else if (!player.getPlayer().getBukkit().hasPermission("arcade.command.join.overfill") && result.isOverfill()) {
+        } else if (!player.getBukkit().hasPermission("arcade.command.join.overfill") && result.isOverfill()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
         } else if (result.isFull()) {
@@ -204,7 +210,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
     }
 
-    @Handler(priority = Priority.LOWER)
+    @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinGame(GameCommands.JoinCommandEvent event) {
         if (event.isCanceled()) {
             return;

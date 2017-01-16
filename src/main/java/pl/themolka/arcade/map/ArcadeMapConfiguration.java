@@ -48,7 +48,7 @@ public class ArcadeMapConfiguration {
 
     private void preprocess(String path, Element parent) throws MapParserException {
         for (Element child : parent.getChildren()) {
-            String newPath = path += "/<" + child.getName() + ">";
+            String newPath = path + "/<" + child.getName() + ">";
 
             this.preprocessElement(newPath, child);
             this.preprocess(newPath, child);
@@ -58,7 +58,8 @@ public class ArcadeMapConfiguration {
     private void preprocessElement(String path, Element element) throws MapParserException {
         String uniqueId = element.getAttributeValue("id");
         if (uniqueId != null && !this.addElement(uniqueId, element, false)) {
-            throw new MapParserException("Given ID already exists in " + path);
+//            throw new MapParserException("Given ID already exists in " + path);
+            // TODO?
         }
     }
 }

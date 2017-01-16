@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemStackBuilder implements Builder<ItemStack> {
-    private int amount;
+    private int amount = 1;
     private final List<String> description = new ArrayList<>();
     private String displayName;
     private short durability;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private Material type;
+    private Material type = Material.AIR;
     private boolean unbreakable;
 
     @Override

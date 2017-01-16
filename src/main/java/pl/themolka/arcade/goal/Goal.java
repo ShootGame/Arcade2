@@ -1,9 +1,13 @@
 package pl.themolka.arcade.goal;
 
+import pl.themolka.arcade.match.MatchWinner;
+
 public interface Goal {
     String getName();
 
-    boolean isScored();
+    boolean isScorable(MatchWinner winner);
 
-    void setScored(boolean scored);
+    boolean isScored(MatchWinner winner);
+
+    void setScored(MatchWinner winner, boolean scored);
 }
