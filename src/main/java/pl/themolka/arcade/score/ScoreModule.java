@@ -3,11 +3,12 @@ package pl.themolka.arcade.score;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.team.TeamsModule;
 
-@ModuleInfo(id = "score", dependency = {TeamsModule.class})
+@ModuleInfo(id = "score", dependency = {MatchModule.class}, loadBefore = {TeamsModule.class})
 public class ScoreModule extends Module<ScoreGame> {
     public static final int LIMIT_NULL = Integer.MAX_VALUE;
 

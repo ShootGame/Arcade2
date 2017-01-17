@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T extends GameModule> extends SimpleModuleListener implements Listener, Serializable, StringId {
+public class Module<T> extends SimpleModuleListener implements Listener, Serializable, StringId {
     private transient ArcadePlugin plugin;
 
     private String id;
