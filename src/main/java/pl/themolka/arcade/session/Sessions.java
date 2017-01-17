@@ -78,6 +78,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
             game.addPlayer(gamePlayer);
 
             player.getBukkit().teleport(game.getMap().getSpawn());
+            player.reset();
         }
 
         this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));

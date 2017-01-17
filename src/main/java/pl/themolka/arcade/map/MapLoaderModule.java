@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -51,7 +50,11 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
 
             File file = new File(path);
             if (file.exists()) {
-                this.worldFiles.addAll(Arrays.asList(file.listFiles(filter)));
+                for (File worldFile : file.listFiles(filter)) {
+                    if (!this.worldFiles.contains(worldFile)) {
+                        this.worldFiles.add(worldFile);
+                    }
+                }
             }
         }
     }
@@ -59,6 +62,8 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
     @Override
     public MapContainer loadContainer() {
         MapContainer container = new MapContainer();
+        List<String> registeredNames = new ArrayList<>();
+
         for (File worldDirectory : this.worldFiles) {
             if (!worldDirectory.isDirectory()) {
                 continue;
@@ -67,10 +72,16 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
             try {
                 OfflineMap map = this.readMapDirectory(worldDirectory);
                 if (map != null) {
+                    if (registeredNames.contains(map.getName())) {
+                        this.getLogger().log(Level.CONFIG, "'" + map.getName() + "' from '" + worldDirectory.getPath() + "' is a duplicate.");
+                        continue;
+                    }
+
                     container.register(map);
+                    registeredNames.add(map.getName());
                 }
             } catch (Throwable th) {
-                this.getLogger().log(Level.SEVERE, "Could not load map " + worldDirectory.getName() + ": " + th.getMessage(), th);
+                this.getLogger().log(Level.SEVERE, "Could not load map " + worldDirectory.getName() + ": " + th.getMessage());
             }
         }
 
@@ -98,6 +109,7 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
             map.setSettings(file);
             return map;
         } catch (MapParserException ex) {
+            this.getLogger().log(Level.CONFIG, "Could not load '" + file.getName() + "': " + ex.getMessage());
             return null;
         }
     }

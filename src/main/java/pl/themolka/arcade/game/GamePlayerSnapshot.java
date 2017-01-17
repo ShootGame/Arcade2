@@ -22,7 +22,7 @@ public class GamePlayerSnapshot implements Snapshot<GamePlayer> {
     }
 
     @Override
-    public Class<GamePlayer> getType() {
+    public Class<GamePlayer> getSnapshotType() {
         return GamePlayer.class;
     }
 

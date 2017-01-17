@@ -1,13 +1,13 @@
-package pl.themolka.arcade.goal;
+package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.commons.event.Cancelable;
 
-public class GoalScoreEvent extends GoalEvent implements Cancelable {
+public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
     private boolean cancel;
 
-    public GoalScoreEvent(ArcadePlugin plugin, Goal goal) {
-        super(plugin, goal);
+    public ScoreScoredEvent(ArcadePlugin plugin, Score score) {
+        super(plugin, score);
     }
 
     @Override

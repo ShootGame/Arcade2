@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
+    <!-- Default cycle settings -->
+    <cycle countdown="25s" />
+
     <!-- Server environment type -->
     <!-- Values: `development`, `production` -->
     <environment type="development">
@@ -42,7 +45,7 @@
         <match>
             <auto-start>true</auto-start>
             <observers color="aqua" dye-color="light blue">Observers</observers>
-            <start-countdown>25</start-countdown>
+            <start-countdown>25s</start-countdown>
         </match>
     </modules>
 </settings>

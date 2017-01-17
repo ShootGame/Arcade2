@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 public class ServerSessionFile {
-    public static final String DEFAULT_FILENAME = "server-session.json";
+    public static final String DEFAULT_FILENAME = "session.json";
 
     private final ArcadePlugin plugin;
 

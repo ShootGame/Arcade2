@@ -183,9 +183,9 @@ public class MapCommands {
         boolean paramRestart = context.hasFlag("r") || context.hasFlag("restart");
         String paramMap = context.getParams(0);
 
-        this.plugin.getGames().setNextRestart(paramRestart);
         if (paramRestart) {
-            throw new CommandException("Server will be restarted after this game.");
+            this.plugin.getGames().setNextRestart(paramRestart);
+            throw new CommandException("The server will be restarted after this game.");
         }
 
         List<OfflineMap> results = new ArrayList<>();

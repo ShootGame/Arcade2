@@ -7,6 +7,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
+import pl.themolka.arcade.goal.GoalScoreEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
@@ -21,7 +22,6 @@ import java.util.List;
 public class MatchGame extends GameModule {
     private boolean autoStart;
     private int defaultStartCountdown;
-    private final DrawMatchWinner drawWinner = new DrawMatchWinner();
     private Match match;
     private Observers observers;
     private MatchStartCountdown startCountdown;
@@ -54,10 +54,6 @@ public class MatchGame extends GameModule {
         return this.defaultStartCountdown;
     }
 
-    public DrawMatchWinner getDrawWinner() {
-        return this.drawWinner;
-    }
-
     public Match getMatch() {
         return this.match;
     }
@@ -78,6 +74,7 @@ public class MatchGame extends GameModule {
 
         if (this.getMatch().getState().equals(MatchState.STARTING)) {
             sender.sendSuccess(message + " the match in " + seconds + " seconds...");
+            this.getMatch().setForceStart(force);
             this.startCountdown(seconds);
         } else {
             throw new CommandException("The match is not in the starting state.");
@@ -88,13 +85,13 @@ public class MatchGame extends GameModule {
         if (this.getMatch().getState().equals(MatchState.RUNNING)) {
             MatchWinner winner = null;
             if (auto) {
-                winner = this.getMatch().findWinner();
+                winner = this.getMatch().getWinner();
 
                 if (winner == null) {
                     throw new CommandException("No winners are currently winning.");
                 }
             } else if (draw) {
-                winner = this.getDrawWinner();
+                winner = this.getMatch().getDrawWinner();
             } else if (winnerQuery != null) {
                 winner = this.getMatch().findWinner(winnerQuery);
 
@@ -121,6 +118,24 @@ public class MatchGame extends GameModule {
 
     public boolean isAutoStart() {
         return this.autoStart;
+    }
+
+    public int startCountdown(int seconds) {
+        if (this.getStartCountdown() == null) {
+            this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.match);
+            this.getStartCountdown().setGame(this.getGame());
+        }
+
+        if (!this.getStartCountdown().isTaskRunning()) {
+            return this.getStartCountdown().countStart(seconds);
+        }
+
+        return this.getStartCountdown().getTaskId();
+    }
+
+    @Handler(priority = Priority.LOWEST)
+    public void onGoalScore(GoalScoreEvent event) {
+        this.getMatch().refreshWinners();
     }
 
     @Handler(priority = Priority.HIGHEST)
@@ -189,7 +204,6 @@ public class MatchGame extends GameModule {
                     break;
                 }
 
-
                 result = ChatColor.LIGHT_PURPLE + "Playing " + map + ChatColor.LIGHT_PURPLE + " for " +
                         TimeUtils.prettyTime(Time.now().minus(Time.of(this.getMatch().getStartTime()))) + ChatColor.LIGHT_PURPLE + "...";
             case CYCLING:
@@ -214,18 +228,5 @@ public class MatchGame extends GameModule {
         if (result != null) {
             event.setDescription(result);
         }
-    }
-
-    public int startCountdown(int seconds) {
-        if (this.getStartCountdown() == null) {
-            this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.match);
-            this.getStartCountdown().setGame(this.getGame());
-        }
-
-        if (!this.getStartCountdown().isTaskRunning()) {
-            return this.getStartCountdown().countStart(seconds);
-        }
-
-        return this.getStartCountdown().getTaskId();
     }
 }

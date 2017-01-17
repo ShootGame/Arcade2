@@ -1,5 +1,7 @@
 package pl.themolka.arcade.map;
 
+import pl.themolka.arcade.util.Container;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,8 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MapContainer {
+public class MapContainer implements Container<OfflineMap> {
     private final Map<String, OfflineMap> maps = new HashMap<>();
+
+    @Override
+    public Class<OfflineMap> getType() {
+        return OfflineMap.class;
+    }
 
     public boolean contains(String name) {
         return this.getMapNames().contains(name);

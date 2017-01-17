@@ -1,15 +1,21 @@
 package pl.themolka.arcade.game;
 
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.util.Container;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class GameModuleContainer {
+public class GameModuleContainer implements Container<GameModule> {
     private final Map<Class<? extends Module<?>>, GameModule> modulesByClass = new HashMap<>();
     private final Map<String, GameModule> modulesById = new HashMap<>();
+
+    @Override
+    public Class<GameModule> getType() {
+        return GameModule.class;
+    }
 
     public boolean contains(Class<? extends Module<?>> clazz) {
         return this.getModuleClasses().contains(clazz);

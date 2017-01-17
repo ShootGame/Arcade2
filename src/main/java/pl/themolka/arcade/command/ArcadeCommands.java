@@ -17,10 +17,10 @@ import pl.themolka.commons.session.Session;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class ArcadeCommand {
+public class ArcadeCommands {
     private final ArcadePlugin plugin;
 
-    public ArcadeCommand(ArcadePlugin plugin) {
+    public ArcadeCommands(ArcadePlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -93,7 +93,7 @@ public class ArcadeCommand {
     }
 
     private String helpItem(String item, String description) {
-        return ChatColor.GOLD + "/arcade " + item + ChatColor.RESET + " " + ChatColor.GRAY + " - " + description;
+        return ChatColor.GOLD + "/arcade " + item + ChatColor.RESET + ChatColor.GRAY + " - " + description;
     }
 
     //

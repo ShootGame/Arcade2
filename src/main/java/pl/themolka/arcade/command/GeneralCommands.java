@@ -133,6 +133,8 @@ public class GeneralCommands {
             return;
         }
 
+        this.plugin.getGames().setNextRestart(true);
+
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
             for (Countdown countdown : game.getRunningCountdowns()) {

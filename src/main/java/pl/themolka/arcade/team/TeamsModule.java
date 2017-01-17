@@ -9,7 +9,6 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
-import pl.themolka.arcade.match.XMLObservers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -25,7 +24,6 @@ import java.util.List;
 
 @ModuleInfo(id = "teams", dependency = MatchModule.class, loadBefore = {FiltersModule.class, KitsModule.class})
 public class TeamsModule extends Module<TeamsGame> {
-    public static final String METADATA_OBSERVERS = "Observers";
     public static final String METADATA_TEAM = "Team";
     public static final String METADATA_TEAMS = "Teams";
 
@@ -39,7 +37,7 @@ public class TeamsModule extends Module<TeamsGame> {
             }
         }
 
-        return new TeamsGame(XMLObservers.parse(xml.getChild("observers"), this.getPlugin()), teams);
+        return new TeamsGame(teams);
     }
 
     @CommandInfo(name = {"myteam", "team", "mt"},

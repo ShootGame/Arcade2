@@ -55,6 +55,11 @@ public class Observers extends Team {
     }
 
     @Override
+    public boolean hasGoal(Goal goal) {
+        return false;
+    }
+
+    @Override
     public boolean isFriendlyFire() {
         return true;
     }
@@ -81,7 +86,7 @@ public class Observers extends Team {
 
     @Override
     public boolean isWinning() {
-        throw new UnsupportedOperationException("Not supported here.");
+        return false;
     }
 
     @Override

@@ -15,7 +15,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import pl.themolka.arcade.command.ArcadeCommand;
+import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
@@ -310,13 +310,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public ArcadePlayer getPlayer(Player bukkit) {
-        for (ArcadePlayer player : this.getPlayers()) {
-            if (player.getBukkit().equals(bukkit)) {
-                return player;
-            }
-        }
-
-        return null;
+        return this.getPlayer(bukkit.getUniqueId());
     }
 
     public ArcadePlayer getPlayer(String username) {
@@ -431,7 +425,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadCommands() {
         for (Object command : new Object[] {
-                new ArcadeCommand(this),
+                new ArcadeCommands(this),
                 new GameCommands(this),
                 new GeneralCommands(this),
                 new InfoCommands(this),

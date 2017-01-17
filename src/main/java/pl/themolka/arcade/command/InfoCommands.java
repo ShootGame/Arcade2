@@ -70,7 +70,7 @@ public class InfoCommands {
 
     private class TPSHandler extends Task {
         float lastLostTicks;
-        Time lastTime;
+        Time lastTime = Time.now();
 
         public TPSHandler(TaskManager tasks) {
             super(tasks);

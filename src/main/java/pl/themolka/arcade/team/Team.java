@@ -2,13 +2,16 @@ package pl.themolka.arcade.team;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.match.MatchWinner;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
@@ -37,8 +40,39 @@ public class Team implements MatchWinner, StringId {
         this.id = id;
     }
 
+    @Override
+    public boolean addGoal(Goal goal) {
+        if (this.hasGoal(goal)) {
+            return false;
+        }
+
+        this.plugin.getEventBus().publish(new GoalCreateEvent(this.plugin, goal));
+        return this.goals.add(goal);
+    }
+
+    @Override
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    public boolean contains(Player bukkit) {
+        return this.contains(this.plugin.getPlayer(bukkit));
+    }
+
+    @Override
+    public boolean contains(ArcadePlayer player) {
+        return this.contains(player.getGamePlayer());
+    }
+
+    @Override
+    public boolean contains(GamePlayer player) {
+        return this.hasPlayer(player);
+    }
+
+    @Override
+    public List<Goal> getGoals() {
+        return this.goals;
     }
 
     @Override
@@ -57,12 +91,13 @@ public class Team implements MatchWinner, StringId {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
+    public boolean removeGoal(Goal goal) {
+        return this.goals.remove(goal);
     }
 
-    public boolean addGoal(Goal goal) {
-        return this.goals.add(goal);
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
     }
 
     public boolean areGoalsScored() {
@@ -85,10 +120,6 @@ public class Team implements MatchWinner, StringId {
 
     public Game getGame() {
         return this.getMatch().getGame();
-    }
-
-    public List<Goal> getGoals() {
-        return this.goals;
     }
 
     public Match getMatch() {
@@ -204,10 +235,6 @@ public class Team implements MatchWinner, StringId {
 
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
-    }
-
-    public boolean removeGoal(Goal goal) {
-        return this.goals.remove(goal);
     }
 
     public void send(String message) {

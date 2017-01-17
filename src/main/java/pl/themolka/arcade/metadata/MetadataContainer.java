@@ -1,11 +1,12 @@
 package pl.themolka.arcade.metadata;
 
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.util.Container;
 
 import java.util.HashMap;
 import java.util.Set;
 
-public class MetadataContainer extends HashMap<String, Object> implements Metadata {
+public class MetadataContainer extends HashMap<String, Object> implements Container<Object>, Metadata {
     public static final char KEY_SEPARATOR = '/';
 
     @Override
@@ -16,6 +17,11 @@ public class MetadataContainer extends HashMap<String, Object> implements Metada
     @Override
     public Set<String> getMetadataKeys() {
         return this.keySet();
+    }
+
+    @Override
+    public Class<Object> getType() {
+        return Object.class;
     }
 
     @Override

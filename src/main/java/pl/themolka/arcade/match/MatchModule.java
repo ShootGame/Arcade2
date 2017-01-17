@@ -8,6 +8,8 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
@@ -20,6 +22,7 @@ import java.util.List;
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 25;
     public static final String METADATA_MATCH = "Match";
+    public static final String METADATA_OBSERVERS = "Observers";
 
     private Observers defaultObservers;
     private int defaultStartCountdown = DEFAULT_START_COUNTDOWN;
@@ -36,9 +39,10 @@ public class MatchModule extends Module<MatchGame> {
 
         Element startCountdownElement = xml.getChild("start-countdown");
         if (startCountdownElement != null) {
-            try {
-                startCountdown = Integer.parseInt(startCountdownElement.getTextNormalize());
-            } catch (NumberFormatException ignored) {
+            Time time = XMLTime.parse(startCountdownElement.getTextNormalize());
+            if (time != null) {
+                startCountdown = (int) time.toSeconds();
+            } else {
                 startCountdown = this.getDefaultStartCountdown();
             }
         }
@@ -54,6 +58,7 @@ public class MatchModule extends Module<MatchGame> {
             observers.setName(this.getDefaultObservers().getName());
         }
 
+        this.getGame().setMetadata(MatchModule.class, METADATA_OBSERVERS, observers);
         return new MatchGame(autoStart, startCountdown, observers);
     }
 

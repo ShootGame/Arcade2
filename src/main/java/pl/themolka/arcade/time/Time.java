@@ -217,7 +217,9 @@ public class Time {
             foreverKey = FOREVER_KEY;
         }
 
-        if (time.equalsIgnoreCase(foreverKey)) {
+        if (time == null) {
+            return def;
+        } else if (time.equalsIgnoreCase(foreverKey)) {
             return FOREVER;
         }
 

@@ -121,7 +121,7 @@ public class SimpleGameManager implements GameManager {
             target = next;
 
             // refill queue if it's empty
-            if (this.getQueue().hasNextMap()) {
+            if (!this.getQueue().hasNextMap()) {
                 this.fillDefaultQueue();
             }
         }

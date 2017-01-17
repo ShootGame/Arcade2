@@ -2,6 +2,7 @@ package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Commands;
@@ -18,6 +19,7 @@ import java.util.List;
 public class Match {
     private final ArcadePlugin plugin;
 
+    private final DrawMatchWinner drawWinner = new DrawMatchWinner();
     private boolean forceEnd;
     private boolean forceStart;
     private final Game game;
@@ -111,32 +113,42 @@ public class Match {
         }
     }
 
-    public MatchWinner findWinner() {
-        return this.findWinner(null);
-    }
-
     public MatchWinner findWinner(String query) {
-        if (query != null) {
-            for (MatchWinner winner : this.getWinnerList()) {
-                if (winner.getName().equalsIgnoreCase(query)) {
-                    return winner;
-                }
+        for (MatchWinner winner : this.getWinnerList()) {
+            if (winner.getName().equalsIgnoreCase(query)) {
+                return winner;
             }
+        }
 
-            for (MatchWinner winner : this.getWinnerList()) {
-                if (winner.getName().toLowerCase().contains(query.toLowerCase())) {
-                    return winner;
-                }
-            }
-        } else {
-            for (MatchWinner winner : this.getWinnerList()) {
-                if (winner.isWinning()) {
-                    return winner;
-                }
+        for (MatchWinner winner : this.getWinnerList()) {
+            if (winner.getName().toLowerCase().contains(query.toLowerCase())) {
+                return winner;
             }
         }
 
         return null;
+    }
+
+    public MatchWinner findWinnerByPlayer(Player bukkit) {
+        return this.findWinnerByPlayer(this.plugin.getPlayer(bukkit));
+    }
+
+    public MatchWinner findWinnerByPlayer(ArcadePlayer player) {
+        return this.findWinnerByPlayer(player.getGamePlayer());
+    }
+
+    public MatchWinner findWinnerByPlayer(GamePlayer player) {
+        for (MatchWinner winner : this.getWinnerList()) {
+            if (winner.contains(player)) {
+                return winner;
+            }
+        }
+
+        return null;
+    }
+
+    public DrawMatchWinner getDrawWinner() {
+        return this.drawWinner;
     }
     
     public Game getGame() {
@@ -167,8 +179,39 @@ public class Match {
         return this.time;
     }
 
+    /**
+     * Returns currently winning `MatchWinner`, or `DrawWinner` (if draw), or `null`.
+     */
+    public MatchWinner getWinner() {
+        List<MatchWinner> winners = this.getWinners();
+        if (winners.isEmpty()) {
+            return null;
+        } else if (winners.size() == 1) {
+            return winners.get(0);
+        } else {
+            return this.getDrawWinner();
+        }
+    }
+
+    /**
+     * Returns a `List` of all `MatchWinner` objects in this `Match`.
+     */
     public List<MatchWinner> getWinnerList() {
         return this.winnerList;
+    }
+
+    /**
+     * Returns a `List` of currently winning `MatchWinner` objects in this `Match`.
+     */
+    public List<MatchWinner> getWinners() {
+        List<MatchWinner> results = new ArrayList<>();
+        for (MatchWinner winner : this.getWinnerList()) {
+            if (winner.isWinning()) {
+                results.add(winner);
+            }
+        }
+
+        return results;
     }
 
     public boolean isForceEnd() {
@@ -184,6 +227,10 @@ public class Match {
         boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
 
         return !this.getState().equals(MatchState.RUNNING) && observing;
+    }
+
+    public void refreshWinners() {
+        MatchWinner winner = this.getWinner();
     }
 
     public boolean registerWinner(MatchWinner winner) {
@@ -232,7 +279,7 @@ public class Match {
     public boolean unregisterWinner(MatchWinner winner) {
         return this.winnerList.remove(winner);
     }
-    
+
     public interface IObserverHandler {
         boolean isPlayerObserving(GamePlayer player);
     }
