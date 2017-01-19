@@ -102,7 +102,7 @@ public class Team implements MatchWinner, StringId {
 
     public boolean areGoalsScored() {
         for (Goal goal : this.getGoals()) {
-            if (!goal.isScored(this)) {
+            if (!goal.isCompleted(this)) {
                 return false;
             }
         }

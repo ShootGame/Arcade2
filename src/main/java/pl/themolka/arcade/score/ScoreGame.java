@@ -4,12 +4,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
 
-public class ScoreGame extends GameModule {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class ScoreGame extends GameModule implements DynamicWinnable {
     private final int kills;
     private final int limit;
     private Match match;
@@ -28,8 +33,53 @@ public class ScoreGame extends GameModule {
 
         for (MatchWinner winner : this.getMatch().getWinnerList()) {
             Score score = new Score(this, winner);
+            score.setLimit(this.getLimit());
+
             winner.addGoal(score);
         }
+    }
+
+    @Override
+    public MatchWinner getDynamicWinner() {
+        List<MatchWinner> winners = this.getDynamicWinners();
+        if (winners == null) {
+            return null;
+        }
+
+        if (winners.size() == 1) {
+            return winners.get(0);
+        } else {
+            return this.getMatch().getDrawWinner();
+        }
+    }
+
+    public List<MatchWinner> getDynamicWinners() {
+        int highestScore = 0;
+
+        List<MatchWinner> results = new ArrayList<>();
+        for (MatchWinner winner : this.getMatch().getWinners()) {
+            if (winner.isWinning()) {
+                return Collections.singletonList(winner);
+            }
+
+            Score score = this.getScore(winner);
+            if (score == null) {
+                continue;
+            } else if (score.getScore() > highestScore) {
+                results.clear();
+                highestScore = score.getScore();
+            }
+
+            if (score.getScore() >= highestScore) {
+                results.add(score.getOwner());
+            }
+        }
+
+        if (highestScore != 0) {
+            return results;
+        }
+
+        return null;
     }
 
     public int getKills() {
@@ -56,11 +106,11 @@ public class ScoreGame extends GameModule {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (this.getMatch() == null) {
+        if (this.getMatch() == null || event.getEntity().getKiller() == null) {
             return;
         }
 
-        MatchWinner winner = this.getMatch().findWinnerByPlayer(event.getEntity());
+        MatchWinner winner = this.getMatch().findWinnerByPlayer(event.getEntity().getKiller());
         if (winner == null) {
             return;
         }

@@ -1,6 +1,8 @@
 package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalProgressEvent;
+import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.GoalScoreEvent;
 import pl.themolka.arcade.match.MatchWinner;
 
@@ -8,10 +10,10 @@ public class Score implements Goal {
     private final ScoreGame game;
 
     private final MatchWinner owner;
+    private boolean completed;
     private final int initScore;
-    private int limit = ScoreModule.LIMIT_NULL;
+    private int limit;
     private int score;
-    private boolean scored;
     private boolean scoreTouched;
 
     public Score(ScoreGame game, MatchWinner owner) {
@@ -28,11 +30,21 @@ public class Score implements Goal {
 
     @Override
     public String getName() {
-        return this.getClass().getName();
+        return "Score";
     }
 
+    /**
+     * Current progress of this score.
+     * This method may return a percentage of this goal it it has a limit,
+     * or #PROGRESS_UNTOUCHED of not.
+     * @return a double between 0 (0% - untouched) and 1 (100% - completed).
+     */
     @Override
     public double getProgress() {
+        if (!this.hasLimit()) {
+            return Goal.PROGRESS_UNTOUCHED;
+        }
+
         double progress = this.getScore() / this.getLimit();
         if (progress < Goal.PROGRESS_UNTOUCHED) {
             return Goal.PROGRESS_UNTOUCHED;
@@ -44,18 +56,18 @@ public class Score implements Goal {
     }
 
     @Override
-    public boolean isScorableBy(MatchWinner winner) {
-        return !this.getOwner().equals(winner);
+    public boolean isCompletableBy(MatchWinner winner) {
+        return this.getOwner().equals(winner);
     }
 
     @Override
-    public boolean isScored() {
-        return this.getScore() >= this.getLimit();
+    public boolean isCompleted() {
+        return this.completed || (this.hasLimit() && this.getScore() >= this.getLimit());
     }
 
     @Override
-    public boolean isScored(MatchWinner winner) {
-        return this.scored || this.isScorableBy(winner) && this.isScored();
+    public boolean isCompleted(MatchWinner winner) {
+        return this.isCompletableBy(winner) && this.isCompleted();
     }
 
     @Override
@@ -64,8 +76,29 @@ public class Score implements Goal {
     }
 
     @Override
-    public void setScored(MatchWinner winner, boolean scored) {
-        this.score = this.getLimit();
+    public boolean reset() {
+        ScoreResetEvent event = new ScoreResetEvent(this.game.getPlugin(), this);
+        this.game.getPlugin().getEventBus().publish(event);
+
+        if (!event.isCanceled()) {
+            this.game.getPlugin().getEventBus().publish(new GoalResetEvent(this.game.getPlugin(), this));
+
+            this.completed = false;
+            this.scoreTouched = false;
+            this.score = this.getInitScore();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void setCompleted(MatchWinner winner, boolean completed) {
+        if (completed) {
+            this.handleGoalScored();
+        } else {
+            this.reset();
+        }
     }
 
     public MatchWinner getOwner() {
@@ -84,6 +117,10 @@ public class Score implements Goal {
         return this.score;
     }
 
+    public boolean hasLimit() {
+        return this.score != ScoreModule.LIMIT_NULL;
+    }
+
     public boolean isScoreTouched() {
         return this.scoreTouched;
     }
@@ -92,6 +129,14 @@ public class Score implements Goal {
         this.limit = limit;
     }
 
+    /**
+     * Events called in this method:
+     *   - ScoreIncrementEvent (cancelable)
+     *   - GoalProgressEvent
+     *   ... and if this goal is being completed:
+     *     - ScoreScoredEvent (cancelable)
+     *     - GoalScoreEvent (cancelable)
+     */
     public void incrementScore(int points) {
         ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, points);
         this.game.getPlugin().getEventBus().publish(event);
@@ -100,29 +145,23 @@ public class Score implements Goal {
             return;
         }
 
+        double oldProgress = this.getProgress();
+
         this.scoreTouched = true;
         this.score += event.getPoints();
 
-        if (this.isScored()) {
+        this.game.getPlugin().getEventBus().publish(new GoalProgressEvent(this.game.getPlugin(), this, oldProgress));
+
+        if (this.isCompleted()) {
             this.handleGoalScored();
         }
     }
 
-    public void resetScore() {
-        ScoreResetEvent event = new ScoreResetEvent(this.game.getPlugin(), this);
-        this.game.getPlugin().getEventBus().publish(event);
-
-        if (!event.isCanceled()) {
-            this.scoreTouched = false;
-            this.score = this.getInitScore();
-        }
-    }
-
     private void handleGoalScored() {
-        if (this.scored) {
+        if (this.completed) {
             return;
         }
-        this.scored = true;
+        this.completed = true;
 
         ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this);
         this.game.getPlugin().getEventBus().publish(event);

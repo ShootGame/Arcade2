@@ -135,7 +135,9 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.LOWEST)
     public void onGoalScore(GoalScoreEvent event) {
-        this.getMatch().refreshWinners();
+        if (!event.isCanceled()) {
+            this.getMatch().refreshWinners();
+        }
     }
 
     @Handler(priority = Priority.HIGHEST)

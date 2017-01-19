@@ -102,10 +102,29 @@
 
         <teams>
             <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
+                <kits>
+                    <kit>blue-leather-armor-kit</kit>
+                    <kit handle="on-join">my-kit</kit>
+                    <kit handle="on-start">my-kit</kit>
+                    <kit handle="on-respawn">my-kit</kit>
+                </kits>
 
+                <spawns>
+                    <region>my-region</region>
+                </spawns>
             </team>
-            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
 
+            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
+                <kits>
+                    <kit>red-leather-armor-kit</kit>
+                    <kit handle="on-join">my-kit</kit>
+                    <kit handle="on-start">my-kit</kit>
+                    <kit handle="on-respawn">my-kit</kit>
+                </kits>
+
+                <spawns>
+                    <region>my-region</region>
+                </spawns>
             </team>
         </teams>
     </modules>

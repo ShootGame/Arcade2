@@ -3,6 +3,9 @@ package pl.themolka.arcade.goal;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.commons.event.Cancelable;
 
+/**
+ * Called when a `Goal` is being completed.
+ */
 public class GoalScoreEvent extends GoalEvent implements Cancelable {
     private boolean cancel;
 
