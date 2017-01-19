@@ -5,7 +5,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.GamePlayerEvent;
-import pl.themolka.commons.event.Cancelable;
 
 public class ArcadePlayerMoveEvent extends GamePlayerEvent implements Cancelable {
     private boolean cancel;

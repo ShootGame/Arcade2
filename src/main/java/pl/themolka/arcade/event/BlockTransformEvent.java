@@ -2,7 +2,6 @@ package pl.themolka.arcade.event;
 
 import org.bukkit.block.Block;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Cancelable;
 
 import java.util.Collections;
 import java.util.List;

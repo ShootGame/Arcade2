@@ -3,16 +3,18 @@ package pl.themolka.arcade.event;
 import org.bukkit.Server;
 import pl.themolka.arcade.ArcadePlugin;
 
-public class Event extends pl.themolka.commons.event.Event {
+/**
+ * Base class for all events in Arcade.
+ */
+public class Event {
     private final ArcadePlugin plugin;
 
     public Event(ArcadePlugin plugin) {
         this.plugin = plugin;
     }
 
-    @Override
-    public boolean post() {
-        throw new UnsupportedOperationException("Not supported here!");
+    public String getEventName() {
+        return this.getClass().getName();
     }
 
     public ArcadePlugin getPlugin() {
@@ -21,5 +23,9 @@ public class Event extends pl.themolka.commons.event.Event {
 
     public Server getServer() {
         return this.getPlugin().getServer();
+    }
+
+    public boolean isAsync() {
+        return false;
     }
 }

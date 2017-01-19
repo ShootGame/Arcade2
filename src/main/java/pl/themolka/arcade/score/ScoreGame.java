@@ -35,7 +35,9 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             Score score = new Score(this, winner);
             score.setLimit(this.getLimit());
 
-            winner.addGoal(score);
+            if (this.getScore(winner) == null) {
+                winner.addGoal(score);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package pl.themolka.arcade.command;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
@@ -11,7 +12,6 @@ import pl.themolka.arcade.task.Countdown;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.event.Cancelable;
 import pl.themolka.commons.session.Session;
 
 import java.time.Duration;

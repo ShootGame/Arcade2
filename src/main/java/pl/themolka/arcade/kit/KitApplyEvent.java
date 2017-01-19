@@ -1,8 +1,8 @@
 package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.commons.event.Cancelable;
 
 public class KitApplyEvent extends KitEvent implements Cancelable {
     private boolean cancel;

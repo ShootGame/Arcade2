@@ -1,7 +1,7 @@
 package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Cancelable;
+import pl.themolka.arcade.event.Cancelable;
 
 public class ScoreResetEvent extends ScoreEvent implements Cancelable {
     private boolean cancel;

@@ -1,7 +1,7 @@
 package pl.themolka.arcade.match;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Cancelable;
+import pl.themolka.arcade.event.Cancelable;
 
 public class MatchEndEvent extends MatchEvent implements Cancelable {
     private boolean cancel;

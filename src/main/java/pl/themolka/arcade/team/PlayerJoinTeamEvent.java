@@ -1,8 +1,8 @@
 package pl.themolka.arcade.team;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.commons.event.Cancelable;
 
 public class PlayerJoinTeamEvent extends PlayerTeamEvent implements Cancelable {
     private boolean cancel;

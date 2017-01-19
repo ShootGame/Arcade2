@@ -1,7 +1,7 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Cancelable;
+import pl.themolka.arcade.event.Cancelable;
 
 /**
  * Called when a `Goal` is being completed.

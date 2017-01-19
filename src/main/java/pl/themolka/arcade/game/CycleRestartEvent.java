@@ -1,7 +1,7 @@
 package pl.themolka.arcade.game;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.event.Cancelable;
+import pl.themolka.arcade.event.Cancelable;
 
 public class CycleRestartEvent extends CycleEvent implements Cancelable {
     private boolean cancel;

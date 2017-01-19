@@ -1,13 +1,13 @@
 package pl.themolka.arcade.command;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.ArcadeSession;
 import pl.themolka.commons.command.CommandContext;
 import pl.themolka.commons.command.CommandException;
 import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.event.Cancelable;
 import pl.themolka.commons.session.Session;
 
 import java.util.List;
