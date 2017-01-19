@@ -49,7 +49,6 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
-import pl.themolka.arcade.storage.Storages;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.SimpleTaskManager;
 import pl.themolka.arcade.task.TaskManager;
@@ -57,6 +56,7 @@ import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.XMLLocation;
 import pl.themolka.commons.Commons;
 import pl.themolka.commons.event.Event;
+import pl.themolka.commons.storage.Storages;
 
 import java.io.File;
 import java.io.FileReader;

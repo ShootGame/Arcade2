@@ -10,8 +10,13 @@ import pl.themolka.arcade.map.ArcadeMap;
 import java.util.Properties;
 import java.util.Random;
 
-public class VoidGenerator extends pl.themolka.commons.generator.VoidGenerator implements Generator {
+public class VoidGenerator extends ChunkGenerator implements Generator {
     private VoidGenerator() {
+    }
+
+    @Override
+    public byte[] generate(World world, Random random, int x, int z) {
+        return new byte[16 * 256 * 16]; // generate an empty world without any blocks
     }
 
     @Override
