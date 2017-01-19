@@ -6,10 +6,10 @@ import pl.themolka.commons.event.Cancelable;
 /**
  * Called when a `Goal` is being completed.
  */
-public class GoalScoreEvent extends GoalEvent implements Cancelable {
+public class GoalCompleteEvent extends GoalEvent implements Cancelable {
     private boolean cancel;
 
-    public GoalScoreEvent(ArcadePlugin plugin, Goal goal) {
+    public GoalCompleteEvent(ArcadePlugin plugin, Goal goal) {
         super(plugin, goal);
     }
 

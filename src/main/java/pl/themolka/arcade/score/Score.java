@@ -1,9 +1,9 @@
 package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
-import pl.themolka.arcade.goal.GoalScoreEvent;
 import pl.themolka.arcade.match.MatchWinner;
 
 public class Score implements Goal {
@@ -35,7 +35,7 @@ public class Score implements Goal {
 
     /**
      * Current progress of this score.
-     * This method may return a percentage of this goal it it has a limit,
+     * This method may return a percentage of this goal if it has a limit,
      * or #PROGRESS_UNTOUCHED of not.
      * @return a double between 0 (0% - untouched) and 1 (100% - completed).
      */
@@ -135,7 +135,7 @@ public class Score implements Goal {
      *   - GoalProgressEvent
      *   ... and if this goal is being completed:
      *     - ScoreScoredEvent (cancelable)
-     *     - GoalScoreEvent (cancelable)
+     *     - GoalCompleteEvent (cancelable)
      */
     public void incrementScore(int points) {
         ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, points);
@@ -170,7 +170,7 @@ public class Score implements Goal {
             // This game for this `MatchWinner` has been scored - we can tell it
             // to the plugin, so it can end the match. This method will loop all
             // `MatchWinner`s (like players or teams) to find the winner.
-            this.game.getPlugin().getEventBus().publish(new GoalScoreEvent(this.game.getPlugin(), this));
+            this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
         }
     }
 }

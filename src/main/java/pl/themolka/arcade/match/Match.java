@@ -231,6 +231,9 @@ public class Match {
 
     public void refreshWinners() {
         MatchWinner winner = this.getWinner();
+        if (winner != null) {
+            this.end(winner);
+        }
     }
 
     public boolean registerWinner(MatchWinner winner) {

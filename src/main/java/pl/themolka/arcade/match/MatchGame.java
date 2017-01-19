@@ -7,7 +7,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
-import pl.themolka.arcade.goal.GoalScoreEvent;
+import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
@@ -134,7 +134,7 @@ public class MatchGame extends GameModule {
     }
 
     @Handler(priority = Priority.LOWEST)
-    public void onGoalScore(GoalScoreEvent event) {
+    public void onGoalScore(GoalCompleteEvent event) {
         if (!event.isCanceled()) {
             this.getMatch().refreshWinners();
         }
