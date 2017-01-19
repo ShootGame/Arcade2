@@ -80,7 +80,7 @@ public class InfoCommands {
         public void onSecond(long seconds) {
             Time now = Time.now();
 
-            this.lastLostTicks = now.minus(this.lastTime).toMillis() - 0.02F;
+            this.lastLostTicks = now.minus(this.lastTime).toMillis() - 1F;
             this.lastTime = now;
         }
     }
