@@ -2,18 +2,17 @@ package pl.themolka.arcade.match;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.command.CommandContext;
+import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +65,7 @@ public class MatchGame extends GameModule {
         return this.startCountdown;
     }
 
-    public void handleBeginCommand(Session<ArcadePlayer> sender, int seconds, boolean force) {
+    public void handleBeginCommand(Sender sender, int seconds, boolean force) {
         String message = "Starting";
         if (force) {
             message = "Force starting";
@@ -81,7 +80,7 @@ public class MatchGame extends GameModule {
         }
     }
 
-    public void handleEndCommand(Session<ArcadePlayer> sender, boolean auto, String winnerQuery, boolean draw) {
+    public void handleEndCommand(Sender sender, boolean auto, String winnerQuery, boolean draw) {
         if (this.getMatch().getState().equals(MatchState.RUNNING)) {
             MatchWinner winner = null;
             if (auto) {
@@ -107,7 +106,7 @@ public class MatchGame extends GameModule {
         }
     }
 
-    public List<String> handleEndCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+    public List<String> handleEndCompleter(Sender sender, CommandContext context) {
         List<String> results = new ArrayList<>();
         for (MatchWinner winner : this.getMatch().getWinnerList()) {
             results.add(winner.getName());

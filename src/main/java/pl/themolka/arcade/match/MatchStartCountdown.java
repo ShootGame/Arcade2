@@ -98,9 +98,18 @@ public class MatchStartCountdown extends PrintableCountdown {
         this.setDuration(Duration.ofSeconds(seconds));
 
         if (this.isTaskRunning()) {
-            return this.getTaskId();
+            this.cancelCountdown();
         }
-        return this.countSync();
+
+        MatchStartCountdownEvent event = new MatchStartCountdownEvent(this.plugin, this.match, this);
+        this.plugin.getEventBus().publish(event);
+
+        if (!event.isCanceled()) {
+            this.cancelCountdown();
+            return this.countSync();
+        }
+
+        return -1;
     }
 
     private String getCancelMessage() {

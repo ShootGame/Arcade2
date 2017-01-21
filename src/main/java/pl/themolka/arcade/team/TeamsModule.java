@@ -3,7 +3,11 @@ package pl.themolka.arcade.team;
 import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import pl.themolka.arcade.command.Commands;
+import pl.themolka.arcade.command.CommandContext;
+import pl.themolka.arcade.command.CommandException;
+import pl.themolka.arcade.command.CommandInfo;
+import pl.themolka.arcade.command.CommandUtils;
+import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.KitsModule;
@@ -11,11 +15,6 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,19 +41,25 @@ public class TeamsModule extends Module<TeamsGame> {
 
     @CommandInfo(name = {"myteam", "team", "mt"},
             description = "Show your current team",
-            userOnly = true,
+            clientOnly = true,
             permission = "arcade.command.myteam")
-    public void myTeam(Session<ArcadePlayer> sender, CommandContext context) {
+    public void myTeam(Sender sender, CommandContext context) {
         if (!this.isGameModuleEnabled()) {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        TeamsGame game = (TeamsGame) this.getGameModule();
-        Team team = game.getTeam(sender.getRepresenter().getGamePlayer());
+        TeamsGame game = this.getGameModule();
+        Team team = game.getTeam(sender.getGamePlayer());
+
+        if (team == null) {
+            team = game.getMatch().getObservers();
+            team.join(sender.getGamePlayer(), false);
+        }
+
         sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.YELLOW + ".");
 
         if (team instanceof Observers) {
-            sender.getRepresenter().sendTip("Join the game by typing /join.");
+            sender.sendTip("Join the game by typing /join.");
         }
     }
 
@@ -64,14 +69,14 @@ public class TeamsModule extends Module<TeamsGame> {
             usage = "[-xml]",
             permission = "arcade.command.teams",
             completer = "teamsCompleter")
-    public void teams(Session<ArcadePlayer> sender, CommandContext context) {
+    public void teams(Sender sender, CommandContext context) {
         if (!this.isGameModuleEnabled()) {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        TeamsGame game = (TeamsGame) this.getGameModule();
+        TeamsGame game = this.getGameModule();
         Collection<Team> teams = game.getTeams();
-        Commands.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
+        CommandUtils.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
 
         for (Team team : teams) {
             String message = ChatColor.GRAY + " - " + team.getPrettyName() + ChatColor.GRAY + " - " +
@@ -91,7 +96,7 @@ public class TeamsModule extends Module<TeamsGame> {
         }
     }
 
-    public List<String> teamsCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+    public List<String> teamsCompleter(Sender sender, CommandContext context) {
         return Collections.singletonList("-xml");
     }
 

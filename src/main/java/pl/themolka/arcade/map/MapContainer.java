@@ -5,6 +5,7 @@ import pl.themolka.arcade.util.Container;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,43 +32,33 @@ public class MapContainer implements Container<OfflineMap> {
     }
 
     public List<OfflineMap> findMap(String query, boolean first) {
-        List<OfflineMap> results = new ArrayList<>();
-
         if (query.equals("*")) {
             return new ArrayList<>(this.getMaps());
         }
 
         OfflineMap exact = this.getMap(query);
         if (exact != null) {
-            results.add(exact);
-
-            if (first) {
-                return results;
-            }
+            return Collections.singletonList(exact);
         }
 
         query = query.toLowerCase();
 
+        // query map name
         for (OfflineMap map : this.getMaps()) {
-            if (!results.contains(map) && map.getName().equalsIgnoreCase(query)) {
-                results.add(map);
-
-                if (first) {
-                    return results;
-                }
+            if (map.getName().equalsIgnoreCase(query)) {
+                return Collections.singletonList(map);
             }
         }
 
+        // query map directory name
         for (OfflineMap map : this.getMaps()) {
-            if (!results.contains(map) && map.getDirectory().getName().equalsIgnoreCase(query)) {
-                results.add(map);
-
-                if (first) {
-                    return results;
-                }
+            if (map.getDirectory().getName().equalsIgnoreCase(query)) {
+                return Collections.singletonList(map);
             }
         }
 
+        // query map name
+        List<OfflineMap> results = new ArrayList<>();
         for (OfflineMap map : this.getMaps()) {
             if (!results.contains(map) && map.getName().toLowerCase().contains(query)) {
                 results.add(map);
@@ -78,6 +69,7 @@ public class MapContainer implements Container<OfflineMap> {
             }
         }
 
+        // query world description
         for (OfflineMap map : this.getMaps()) {
             if (!results.contains(map) && map.getDescription() != null && map.getDescription().toLowerCase().contains(query)) {
                 results.add(map);

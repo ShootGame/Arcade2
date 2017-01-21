@@ -1,8 +1,8 @@
 package pl.themolka.arcade.util.pagination;
 
 import org.bukkit.ChatColor;
-import pl.themolka.arcade.command.Commands;
-import pl.themolka.commons.session.Session;
+import pl.themolka.arcade.command.CommandUtils;
+import pl.themolka.arcade.command.Sender;
 
 public abstract class PrettyPagination<T> extends SimplePagination<T> {
     private String title;
@@ -22,7 +22,7 @@ public abstract class PrettyPagination<T> extends SimplePagination<T> {
     }
 
     @Override
-    public void display(Session<?> sender, int page) {
+    public void display(Sender sender, int page) {
         super.display(sender, page);
 
         if (this.hasDescription() && page != this.getPages()) {
@@ -37,7 +37,7 @@ public abstract class PrettyPagination<T> extends SimplePagination<T> {
             title = this.getTitle();
         }
 
-        return Commands.createTitle(title, "Page " + page + "/" + this.getPages());
+        return CommandUtils.createTitle(title, "Page " + page + "/" + this.getPages());
     }
 
     public String getTitle() {

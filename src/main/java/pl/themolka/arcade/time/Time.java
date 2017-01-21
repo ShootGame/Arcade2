@@ -2,6 +2,7 @@ package pl.themolka.arcade.time;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 import java.util.Objects;
 
 public class Time {
@@ -108,6 +109,10 @@ public class Time {
     // Converting
     //
 
+    public Date toDate() {
+        return Date.from(this.toInstant());
+    }
+
     public Duration toDuration() {
         return Duration.ofMillis(this.toMillis());
     }
@@ -150,6 +155,10 @@ public class Time {
 
     public static Time now() {
         return ofMillis(System.currentTimeMillis());
+    }
+
+    public static Time of(Date date) {
+        return of(date.toInstant());
     }
 
     public static Time of(Duration duration) {

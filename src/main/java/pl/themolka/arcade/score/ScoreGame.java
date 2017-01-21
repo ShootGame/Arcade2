@@ -17,11 +17,14 @@ import java.util.List;
 public class ScoreGame extends GameModule implements DynamicWinnable {
     private final int kills;
     private final int limit;
+    private final String name;
+
     private Match match;
 
-    public ScoreGame(int kills, int limit) {
+    public ScoreGame(int kills, int limit, String name) {
         this.kills = kills;
         this.limit = limit;
+        this.name = name;
     }
 
     @Override
@@ -34,6 +37,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         for (MatchWinner winner : this.getMatch().getWinnerList()) {
             Score score = new Score(this, winner);
             score.setLimit(this.getLimit());
+            score.setName(this.getName());
 
             if (this.getScore(winner) == null) {
                 winner.addGoal(score);
@@ -94,6 +98,10 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
 
     public Match getMatch() {
         return this.match;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public Score getScore(MatchWinner winner) {

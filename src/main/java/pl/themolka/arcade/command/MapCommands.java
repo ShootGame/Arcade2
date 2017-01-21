@@ -7,13 +7,7 @@ import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainer;
 import pl.themolka.arcade.map.OfflineMap;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.pagination.DynamicPagination;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.command.CommandUsageException;
-import pl.themolka.commons.session.Session;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +45,7 @@ public class MapCommands {
             usage = "[-current|-next|<map...>]",
             permission = "arcade.command.mapinfo",
             completer = "mapInfoCompleter")
-    public void mapInfo(Session<ArcadePlayer> sender, CommandContext context) {
+    public void mapInfo(Sender sender, CommandContext context) {
         boolean paramCurrent = context.hasFlag("c") || context.hasFlag("current");
         boolean paramNext = context.hasFlag("n") || context.hasFlag("next");
         String paramMap = context.getParams(0);
@@ -84,7 +78,7 @@ public class MapCommands {
         this.mapInfoDescribe(sender, results.get(0));
     }
 
-    public List<String> mapInfoCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+    public List<String> mapInfoCompleter(Sender sender, CommandContext context) {
         List<String> results = this.mapCompleter();
         results.addAll(Arrays.asList("-current", "-next"));
 
@@ -92,8 +86,8 @@ public class MapCommands {
         return results;
     }
 
-    private void mapInfoDescribe(Session<ArcadePlayer> sender, OfflineMap map) {
-        Commands.sendTitleMessage(sender, map.getName(), map.getVersion().toString());
+    private void mapInfoDescribe(Sender sender, OfflineMap map) {
+        CommandUtils.sendTitleMessage(sender, map.getName(), map.getVersion().toString());
         if (map.hasDescription() && !map.getDescription().isEmpty()) {
             sender.send(ChatColor.GOLD + map.getDescription());
         }
@@ -128,7 +122,7 @@ public class MapCommands {
             description = "Show all loaded maps",
             usage = "[# page]",
             permission = "arcade.command.maplist")
-    public void mapList(Session<ArcadePlayer> sender, CommandContext context) {
+    public void mapList(Sender sender, CommandContext context) {
         int paramPage = context.getParamInt(0, 1);
 
         MapContainer container = this.plugin.getMaps().getContainer();
@@ -152,7 +146,7 @@ public class MapCommands {
     @CommandInfo(name = {"nextmap", "mapnext", "nm", "mn", "next"},
             description = "Describe next map",
             permission = "arcade.command.nextmap")
-    public void nextMap(Session<ArcadePlayer> sender, CommandContext context) {
+    public void nextMap(Sender sender, CommandContext context) {
         if (this.plugin.getGames().isNextRestart()) {
             throw new CommandException("Server will be restarted.");
         } else {
@@ -177,7 +171,7 @@ public class MapCommands {
             usage = "[-after] [-current|-restart|<map...>]",
             permission = "arcade.command.setnext",
             completer = "setNextCompleter")
-    public void setNext(Session<ArcadePlayer> sender, CommandContext context) {
+    public void setNext(Sender sender, CommandContext context) {
         boolean paramAfter = context.hasFlag("a") || context.hasFlag("after");
         boolean paramCurrent = context.hasFlag("c") || context.hasFlag("current");
         boolean paramRestart = context.hasFlag("r") || context.hasFlag("restart");
@@ -211,7 +205,7 @@ public class MapCommands {
         this.setNextMap(sender, results.get(0), !paramAfter);
     }
 
-    public List<String> setNextCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+    public List<String> setNextCompleter(Sender sender, CommandContext context) {
         List<String> results = this.mapCompleter();
         results.addAll(Arrays.asList("-add", "-current", "-restart"));
 
@@ -219,10 +213,10 @@ public class MapCommands {
         return results;
     }
 
-    private void setNextMap(Session<ArcadePlayer> sender, OfflineMap map, boolean setNext) {
+    private void setNextMap(Sender sender, OfflineMap map, boolean next) {
         GameManager games = this.plugin.getGames();
 
-        if (setNext) {
+        if (next) {
             games.getQueue().setNextMap(map);
             sender.sendSuccess(map.getName() + " has been set to next in the queue.");
         } else {

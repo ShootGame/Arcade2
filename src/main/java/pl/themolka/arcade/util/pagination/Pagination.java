@@ -1,6 +1,6 @@
 package pl.themolka.arcade.util.pagination;
 
-import pl.themolka.commons.session.Session;
+import pl.themolka.arcade.command.Sender;
 
 import java.util.List;
 
@@ -8,11 +8,11 @@ public interface Pagination<T> {
     int EXTRA_ITEMS_PER_PAGE = 2;
     int ITEMS_PER_PAGE = 8;
 
-    default void display(Session<?> sender) {
+    default void display(Sender sender) {
         this.display(sender, 1);
     }
 
-    void display(Session<?> sender, int page);
+    void display(Sender sender, int page);
 
     String formatHeader(int page);
 

@@ -16,7 +16,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommands;
-import pl.themolka.arcade.command.Commands;
+import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.InfoCommands;
@@ -24,7 +24,6 @@ import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.EventBus;
-import pl.themolka.arcade.event.Events;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.DescriptionTickable;
 import pl.themolka.arcade.game.Game;
@@ -46,7 +45,6 @@ import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
@@ -54,9 +52,6 @@ import pl.themolka.arcade.task.SimpleTaskManager;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.xml.XMLLocation;
-import pl.themolka.commons.Commons;
-import pl.themolka.commons.event.Event;
-import pl.themolka.commons.storage.Storages;
 
 import java.io.File;
 import java.io.FileReader;
@@ -83,7 +78,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public static final String DEFAULT_SERVER_NAME = "server";
 
-    private ArcadeCommons commons;
+    private BukkitCommands commands;
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
@@ -112,8 +107,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public final void start() throws Throwable {
         this.manifest.readManifestFile();
-        this.commons = new ArcadeCommons(this);
         this.eventBus = new EventBus(this);
+
+        this.commands = new BukkitCommands(this);
+        this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
 
         this.settings = new Settings(this);
         this.reloadConfig();
@@ -277,8 +274,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return null;
     }
 
-    public Commands getCommands() {
-        return this.getCommons().getCommands();
+    public BukkitCommands getCommands() {
+        return this.commands;
     }
 
     public Environment getEnvironment() {
@@ -417,10 +414,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         if (object instanceof Listener) {
             HandlerList.unregisterAll((Listener) object);
         }
-    }
-
-    private ArcadeCommons getCommons() {
-        return this.commons;
     }
 
     private void loadCommands() {
@@ -570,42 +563,5 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 plugin.getGames().setNextRestart(true);
             }
         });
-    }
-
-    private class ArcadeCommons implements Commons {
-        private final Commands commands;
-        private final Events events;
-        private final Sessions sessions;
-        private final Storages storages;
-
-        public ArcadeCommons(ArcadePlugin plugin) {
-            this.commands = new Commands(plugin);
-            this.events = new Events();
-            this.sessions = new Sessions(plugin);
-            this.storages = new Storages();
-
-            this.commands.setSessions(this.sessions);
-            Event.setAutoEventPoster(this.getEvents());
-        }
-
-        @Override
-        public Commands getCommands() {
-            return this.commands;
-        }
-
-        @Override
-        public Events getEvents() {
-            return this.events;
-        }
-
-        @Override
-        public Sessions getSessions() {
-            return this.sessions;
-        }
-
-        @Override
-        public Storages getStorages() {
-            return this.storages;
-        }
     }
 }

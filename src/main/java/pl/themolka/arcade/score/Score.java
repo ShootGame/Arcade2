@@ -7,12 +7,15 @@ import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.match.MatchWinner;
 
 public class Score implements Goal {
+    public static final String DEFAULT_GOAL_NAME = "Score";
+
     private final ScoreGame game;
 
     private final MatchWinner owner;
     private boolean completed;
     private final int initScore;
     private int limit;
+    private String name;
     private int score;
     private boolean scoreTouched;
 
@@ -30,7 +33,11 @@ public class Score implements Goal {
 
     @Override
     public String getName() {
-        return "Score";
+        if (this.hasName()) {
+            return this.name;
+        }
+
+        return DEFAULT_GOAL_NAME;
     }
 
     /**
@@ -121,12 +128,20 @@ public class Score implements Goal {
         return this.score != ScoreModule.LIMIT_NULL;
     }
 
+    public boolean hasName() {
+        return this.name != null;
+    }
+
     public boolean isScoreTouched() {
         return this.scoreTouched;
     }
 
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

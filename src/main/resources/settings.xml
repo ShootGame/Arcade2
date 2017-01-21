@@ -44,7 +44,7 @@
 
         <match>
             <auto-start>true</auto-start>
-            <observers color="aqua" dye-color="light blue">Observers</observers>
+            <observers name="Observers" color="aqua" dye-color="light blue" />
             <start-countdown>25s</start-countdown>
         </match>
     </modules>

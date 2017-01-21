@@ -15,7 +15,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 
-public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession> implements Listener {
+public class Sessions implements Listener {
     private final ArcadePlugin plugin;
 
     public Sessions(ArcadePlugin plugin) {
@@ -63,7 +63,7 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
         }
     }
 
-    public ArcadeSession createSession(Player bukkit) {
+    public ArcadePlayer createSession(Player bukkit) {
         ArcadePlayer player = new ArcadePlayer(bukkit);
 
         Game game = this.plugin.getGames().getCurrentGame();
@@ -78,25 +78,35 @@ public class Sessions extends pl.themolka.commons.session.Sessions<ArcadeSession
             game.addPlayer(gamePlayer);
 
             player.getBukkit().teleport(game.getMap().getSpawn());
-            player.reset();
+            player.resetFull();
         }
 
-        this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));
-
-        ArcadeSession session = new ArcadeSession(player);
-        player.setSession(session);
-
         this.plugin.addPlayer(player);
-        return session;
+        return player;
     }
 
-    public ArcadeSession destroySession(Player bukkit) {
-        ArcadeSession session = (ArcadeSession) this.getSession(bukkit.getUniqueId());
-        session.getRepresenter().getGamePlayer().setPlayer(null); // make offline
+    public ArcadePlayer destroySession(Player bukkit) {
+        ArcadePlayer player = this.plugin.getPlayer(bukkit.getUniqueId());
 
-        this.plugin.removePlayer(session.getRepresenter());
-        this.postEvent(new ArcadePlayerQuitEvent(this.plugin, session.getRepresenter()));
-        return session;
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            game.removePlayer(player.getGamePlayer());
+        }
+
+        if (player.getGamePlayer() != null) {
+            player.getGamePlayer().setPlayer(null); // make offline
+        }
+
+        this.plugin.removePlayer(player);
+        return player;
+    }
+
+    public void insertSession(ArcadePlayer player) {
+        this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));
+    }
+
+    public void removeSession(ArcadePlayer player) {
+        this.postEvent(new ArcadePlayerQuitEvent(this.plugin, player));
     }
 
     private void postEvent(Event event) {

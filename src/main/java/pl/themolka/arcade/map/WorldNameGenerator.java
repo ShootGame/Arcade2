@@ -43,8 +43,7 @@ public class WorldNameGenerator {
             randomId = UUID.randomUUID();
         }
 
-        String randomIdString = randomId.toString().replace("-", "");
-        return this.normalizeWorldName(name + "_" + randomIdString);
+        return this.normalizeWorldName(randomId.toString().replace("-", ""));
     }
 
     public String normalizeWorldName(String worldName) {

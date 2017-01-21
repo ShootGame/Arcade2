@@ -2,6 +2,8 @@ package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.command.CommandException;
+import pl.themolka.arcade.command.CommandPermissionException;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
@@ -12,10 +14,9 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchStartCountdownEvent;
+import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
 import pl.themolka.arcade.session.ArcadePlayerQuitEvent;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.command.CommandPermissionException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,12 +39,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
         this.match = matchGame.getMatch();
 
-        this.teamsById.put(this.match.getObservers().getId(), this.match.getObservers());
-
         for (Team team : this.getTeams()) {
             team.setMatch(this.getMatch());
             this.getMatch().registerWinner(team);
         }
+
+        this.teamsById.put(this.match.getObservers().getId(), this.match.getObservers());
 
         this.getMatch().setObserverHandler(this);
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
@@ -178,6 +179,11 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     @Handler(priority = Priority.HIGHER)
     public void onMatchStartCountdown(MatchStartCountdownEvent event) {
+        if (!this.getMatch().getState().equals(MatchState.STARTING)) {
+            event.setCanceled(true);
+            return;
+        }
+
         boolean idle = false;
         for (Team team : this.getTeams()) {
             if (team.isParticipating() && team.getOnlineMembers().size() < team.getMinPlayers()) {
@@ -206,10 +212,13 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         try {
-            if (event.isAuto()) {
-                this.autoJoinTeam(event.getJoinPlayer().getGamePlayer());
+            Team team = this.getTeam(event.getJoinGamePlayer());
+            if (team != null && !team.equals(this.getMatch().getObservers()) && this.getMatch().getState().equals(MatchState.RUNNING)) {
+                throw new CommandException("You are already in the game.");
+            } else if (event.isAuto()) {
+                this.autoJoinTeam(event.getJoinGamePlayer());
             } else {
-                this.joinTeam(event.getJoinPlayer().getGamePlayer(), event.getContext().getParams(0));
+                this.joinTeam(event.getJoinGamePlayer(), event.getContext().getParams(0));
             }
         } catch (CommandException ex) {
             if (ex.getMessage() != null) {
@@ -234,7 +243,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     @Handler(priority = Priority.HIGH)
     public void onPlayerLeaveGame(GameCommands.LeaveCommandEvent event) {
         try {
-            this.joinTeam(event.getLeavePlayer().getGamePlayer(), this.getMatch().getObservers(), true);
+            Team team = this.getTeam(event.getLeaveGamePlayer());
+            if (team != null && team.equals(this.getMatch().getObservers())) {
+                throw new CommandException("You are not in the game.");
+            }
+
+            this.joinTeam(event.getLeaveGamePlayer(), this.getMatch().getObservers(), true);
         } catch (CommandException ex) {
             if (ex.getMessage() != null) {
                 event.getSender().sendError(ex.getMessage());

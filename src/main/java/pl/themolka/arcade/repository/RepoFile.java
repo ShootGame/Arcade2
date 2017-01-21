@@ -1,7 +1,7 @@
 package pl.themolka.arcade.repository;
 
-import pl.themolka.commons.command.Command;
-import pl.themolka.commons.command.CommandContext;
+import pl.themolka.arcade.command.Command;
+import pl.themolka.arcade.command.CommandContext;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

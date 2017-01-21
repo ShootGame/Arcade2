@@ -6,7 +6,6 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
-import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.util.StringId;
 
 import java.io.Serializable;
@@ -77,10 +76,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         return this.plugin.getGames().getCurrentGame();
     }
 
-    public GameModule getGameModule() {
+    public T getGameModule() {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            return game.getModules().getModuleById(this.getId());
+            return (T) game.getModules().getModuleById(this.getId());
         }
 
         return null;

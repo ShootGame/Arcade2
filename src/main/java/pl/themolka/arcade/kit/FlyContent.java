@@ -9,7 +9,7 @@ import pl.themolka.arcade.game.GamePlayer;
 public class FlyContent implements KitContent<Boolean> {
     public static final boolean DEFAULT_ALLOW_FLYING = false;
     public static final boolean DEFAULT_FLYING = false;
-    public static final float DEFAULT_SPEED = 1F;
+    public static final float DEFAULT_SPEED = 0.1F;
 
     private final boolean flying;
     private final float speed;

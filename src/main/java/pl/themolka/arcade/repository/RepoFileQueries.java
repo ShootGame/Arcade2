@@ -1,11 +1,10 @@
 package pl.themolka.arcade.repository;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.command.Commands;
-import pl.themolka.commons.command.ConsoleSender;
-import pl.themolka.commons.session.Session;
+import pl.themolka.arcade.command.CommandContext;
+import pl.themolka.arcade.command.CommandInfo;
+import pl.themolka.arcade.command.Commands;
+import pl.themolka.arcade.command.Sender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class RepoFileQueries extends Commands {
     @CommandInfo(name = "define", min = 1, flags = {
             "environment",
             "server-name"})
-    public void defineQuery(Session<ConsoleSender> sender, CommandContext context) {
+    public void defineQuery(Sender sender, CommandContext context) {
         if (!this.filter(context)) {
             return;
         }
@@ -40,7 +39,7 @@ public class RepoFileQueries extends Commands {
     @CommandInfo(name = "exclude", min = 1, flags = {
             "environment",
             "server-name"})
-    public void excludeQuery(Session<ConsoleSender> sender, CommandContext context) {
+    public void excludeQuery(Sender sender, CommandContext context) {
         if (!this.filter(context)) {
             return;
         }
@@ -51,7 +50,7 @@ public class RepoFileQueries extends Commands {
     @CommandInfo(name = "include", min = 1, flags = {
             "environment",
             "server-name"})
-    public void includeQuery(Session<ConsoleSender> sender, CommandContext context) {
+    public void includeQuery(Sender sender, CommandContext context) {
         if (!this.filter(context)) {
             return;
         }
@@ -62,7 +61,7 @@ public class RepoFileQueries extends Commands {
     @CommandInfo(name = "import", min = 1, flags = {
             "environment",
             "server-name"})
-    public void importQuery(Session<ConsoleSender> sender, CommandContext context) {
+    public void importQuery(Sender sender, CommandContext context) {
         if (!this.filter(context)) {
             return;
         }

@@ -1,6 +1,6 @@
 package pl.themolka.arcade.util.pagination;
 
-import pl.themolka.commons.session.Session;
+import pl.themolka.arcade.command.Sender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class SimplePagination<T> implements Pagination<T> {
     }
 
     @Override
-    public void display(Session<?> sender, int page) {
+    public void display(Sender sender, int page) {
         String header = this.formatHeader(page);
         if (header != null) {
             sender.send(header);

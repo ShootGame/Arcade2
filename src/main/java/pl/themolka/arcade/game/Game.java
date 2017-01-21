@@ -114,9 +114,13 @@ public class Game implements Metadata, Serializable {
     }
 
     public void enableModule(GameModule module) {
+        if (module == null || module.getModule() == null) {
+            return;
+        }
+
         for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
             ModuleInfo info = dependency.getAnnotation(ModuleInfo.class);
-            if (info == null || !this.getModules().contains(dependency)) {
+            if (info == null || this.getModules().contains(dependency)) {
                 break;
             } else if (!this.getModules().contains(dependency)) {
                 try {
@@ -135,7 +139,7 @@ public class Game implements Metadata, Serializable {
 
         for (Class<? extends Module<?>> loadBefore : module.getModule().getLoadBefore()) {
             ModuleInfo info = loadBefore.getAnnotation(ModuleInfo.class);
-            if (info == null || !this.getModules().contains(loadBefore)) {
+            if (info == null || this.getModules().contains(loadBefore)) {
                 continue;
             }
 
@@ -290,6 +294,14 @@ public class Game implements Metadata, Serializable {
         this.readGlobalModule();
     }
 
+    public void removePlayer(GamePlayer player) {
+        this.removePlayer(player.getUuid());
+    }
+
+    public void removePlayer(UUID uuid) {
+        this.players.remove(uuid);
+    }
+
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
     }
@@ -297,7 +309,7 @@ public class Game implements Metadata, Serializable {
     public void start() {
         this.startTime = Instant.now();
 
-        for (GameModule module : this.getModules().getModules()) {
+        for (GameModule module : new ArrayList<>(this.getModules().getModules())) {
             this.enableModule(module);
         }
 

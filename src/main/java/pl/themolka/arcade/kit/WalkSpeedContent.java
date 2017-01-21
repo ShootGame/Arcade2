@@ -7,7 +7,7 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class WalkSpeedContent implements KitContent<Float> {
-    public static final float DEFAULT_SPEED = 1F;
+    public static final float DEFAULT_SPEED = 0.2F;
 
     private final float result;
 

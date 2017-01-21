@@ -6,13 +6,9 @@ import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.RestartCountdown;
+import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.session.Session;
 
 import java.time.Duration;
 import java.util.List;
@@ -33,7 +29,7 @@ public class GeneralCommands {
             flags = {"f", "force"},
             usage = "[-force]",
             permission = "arcade.command.cancel")
-    public void cancel(Session<ArcadePlayer> sender, CommandContext context) {
+    public void cancel(Sender sender, CommandContext context) {
         boolean paramForce = context.hasFlag("f") || context.hasFlag("force");
 
         Game game = this.plugin.getGames().getCurrentGame();
@@ -69,7 +65,7 @@ public class GeneralCommands {
             description = "Cycle to next map",
             usage = "[seconds]",
             permission = "arcade.command.cycle")
-    public void cycle(Session<ArcadePlayer> sender, CommandContext context) {
+    public void cycle(Sender sender, CommandContext context) {
         int paramSeconds = context.getParamInt(0);
 
         OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();
@@ -106,6 +102,54 @@ public class GeneralCommands {
             }
 
             CycleCountdown countdown = this.plugin.getGames().getCycleCountdown();
+            countdown.cancelCountdown();
+            countdown.setDuration(Duration.ofSeconds(seconds));
+
+            countdown.countSync();
+        }
+    }
+
+    //
+    // /recycle command
+    //
+
+    @CommandInfo(name = "recycle",
+            description = "Recycle current map",
+            usage = "[seconds]",
+            permission = "arcade.command.cycle")
+    public void recycle(Sender sender, CommandContext context) {
+        if (this.plugin.getGames().getCurrentGame() == null) {
+            throw new CommandException("Game is not running right now.");
+        }
+
+        MapQueue queue = this.plugin.getGames().getQueue();
+        queue.setNextMap(this.plugin.getGames().getCurrentGame().getMap().getMapInfo());
+
+        CycleCommandEvent commandEvent = new CycleCommandEvent(this.plugin, sender, context, queue.getNextMap());
+        this.plugin.getEventBus().publish(commandEvent);
+
+        if (commandEvent.isCanceled()) {
+            return;
+        }
+
+        int seconds = context.getParamInt(0);
+        if (seconds < 5) {
+            seconds = 5;
+        }
+
+        CycleStartEvent startEvent = new CycleStartEvent(this.plugin, queue.getNextMap(), seconds);
+        this.plugin.getEventBus().publish(startEvent);
+
+        this.plugin.getGames().setNextRestart(false);
+
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            for (Countdown countdown : game.getRunningCountdowns()) {
+                countdown.cancelCountdown();
+            }
+
+            CycleCountdown countdown = this.plugin.getGames().getCycleCountdown();
+            countdown.cancelCountdown();
             countdown.setDuration(Duration.ofSeconds(seconds));
 
             countdown.countSync();
@@ -120,13 +164,13 @@ public class GeneralCommands {
             description = "Cycle to next map",
             usage = "[seconds]",
             permission = "arcade.command.restart")
-    public void restart(Session<ArcadePlayer> sender, CommandContext context) {
+    public void restart(Sender sender, CommandContext context) {
         int seconds = context.getParamInt(0);
         if (seconds < 5) {
             seconds = 5;
         }
 
-        CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, null);
+        CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, this.plugin.getGames().getQueue().getNextMap());
         this.plugin.getEventBus().publish(event);
 
         if (event.isCanceled()) {
@@ -142,6 +186,7 @@ public class GeneralCommands {
             }
 
             RestartCountdown countdown = this.plugin.getGames().getRestartCountdown();
+            countdown.cancelCountdown();
             countdown.setDuration(Duration.ofSeconds(seconds));
 
             countdown.countSync();
@@ -152,7 +197,7 @@ public class GeneralCommands {
         private boolean cancel;
         private final OfflineMap nextMap;
 
-        public CycleCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context, OfflineMap nextMap) {
+        public CycleCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context, OfflineMap nextMap) {
             super(plugin, sender, context);
 
             this.nextMap = nextMap;

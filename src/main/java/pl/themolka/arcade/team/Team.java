@@ -208,7 +208,7 @@ public class Team implements MatchWinner, StringId {
             player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
             if (message) {
-                player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
+                player.getPlayer().sendSuccess("You joined " + this.getPrettyName() + ChatColor.GREEN + ".");
             }
 
             this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));

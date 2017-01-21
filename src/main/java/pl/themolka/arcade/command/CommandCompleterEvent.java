@@ -1,8 +1,6 @@
 package pl.themolka.arcade.command;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.session.ArcadeSession;
-import pl.themolka.commons.command.CommandContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +8,11 @@ import java.util.List;
 public class CommandCompleterEvent extends CommandEvent {
     private final List<String> results = new ArrayList<>();
 
-    public CommandCompleterEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context) {
+    public CommandCompleterEvent(ArcadePlugin plugin, Sender sender, CommandContext context) {
         this(plugin, sender, context, null);
     }
 
-    public CommandCompleterEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context, List<String> results) {
+    public CommandCompleterEvent(ArcadePlugin plugin, Sender sender, CommandContext context, List<String> results) {
         super(plugin, sender, context);
 
         if (results != null) {

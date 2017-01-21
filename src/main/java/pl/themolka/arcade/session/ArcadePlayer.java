@@ -1,31 +1,39 @@
 package pl.themolka.arcade.session;
 
-import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
+import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.FoodLevelContent;
+import pl.themolka.arcade.kit.HealthContent;
+import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.time.Time;
 
-import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-public class ArcadePlayer implements Metadata {
+public class ArcadePlayer implements Metadata, Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
 
     private final transient Player bukkit;
     private transient GamePlayer gamePlayer;
-    private Instant lastPlayedSound;
+    private Time lastPlayedSound;
     private final MetadataContainer metadata = new MetadataContainer();
-    private ArcadeSession session;
 
     public ArcadePlayer(Player bukkit) {
         this.bukkit = bukkit;
+    }
+
+    @Override
+    public GamePlayer getGamePlayer() {
+        return this.gamePlayer;
     }
 
     @Override
@@ -36,6 +44,31 @@ public class ArcadePlayer implements Metadata {
     @Override
     public Set<String> getMetadataKeys() {
         return this.metadata.getMetadataKeys();
+    }
+
+    @Override
+    public ArcadePlayer getPlayer() {
+        return this;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getBukkit().getName();
+    }
+
+    @Override
+    public UUID getUuid() {
+        return this.getBukkit().getUniqueId();
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        return this.getBukkit().hasPermission(permission);
+    }
+
+    @Override
+    public boolean isConsole() {
+        return false;
     }
 
     @Override
@@ -67,24 +100,8 @@ public class ArcadePlayer implements Metadata {
         return this.bukkit.getDisplayName();
     }
 
-    public GamePlayer getGamePlayer() {
-        return this.gamePlayer;
-    }
-
-    public Instant getLastPlayedSound() {
+    public Time getLastPlayedSound() {
         return this.lastPlayedSound;
-    }
-
-    public ArcadeSession getSession() {
-        return this.session;
-    }
-
-    public String getUsername() {
-        return this.getBukkit().getName();
-    }
-
-    public UUID getUuid() {
-        return this.getBukkit().getUniqueId();
     }
 
     public void play(ArcadeSound sound) {
@@ -104,7 +121,7 @@ public class ArcadePlayer implements Metadata {
     }
 
     public void play(ArcadeSound sound, Location position, float volume) {
-        this.play(sound, position, volume);
+        this.play(sound.getSound(), position, volume);
     }
 
     public void play(Sound sound, Location position, float volume) {
@@ -116,8 +133,8 @@ public class ArcadePlayer implements Metadata {
     }
 
     public void play(Sound sound, Location position, float volume, float pitch) {
-        Instant now = Instant.now();
-        if (now.toEpochMilli() - this.getLastPlayedSound().toEpochMilli() < SOUND_INTERVAL) {
+        Time now = Time.now();
+        if (now.minus(this.getLastPlayedSound()).toMillis() < SOUND_INTERVAL) {
             return;
         }
 
@@ -126,12 +143,28 @@ public class ArcadePlayer implements Metadata {
     }
 
     public void reset() {
+        this.getBukkit().setArrowsStuck(0);
+        this.getBukkit().setExp(0);
+        this.getBukkit().setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
+        this.getBukkit().setGameMode(GameMode.CREATIVE);
+        this.getBukkit().setHealthScale(HealthContent.DEFAULT_HEALTH);
+        this.getBukkit().setHealth(HealthContent.DEFAULT_HEALTH);
+        this.getBukkit().setWalkSpeed(WalkSpeedContent.DEFAULT_SPEED);
+
+        this.getBukkit().resetPlayerTime();
+        this.getBukkit().resetPlayerWeather();
+        this.getBukkit().resetTitle();
+    }
+
+    public void resetFull() {
         this.clearInventory(true);
         this.resetDisplayName();
 
         for (PotionEffectType potion : PotionEffectType.values()) {
             this.getBukkit().removePotionEffect(potion);
         }
+
+        this.reset();
     }
 
     public void resetDisplayName() {
@@ -142,31 +175,11 @@ public class ArcadePlayer implements Metadata {
         this.getBukkit().sendMessage(message);
     }
 
-    public void sendError(String error) {
-        this.send(ChatColor.RED + error);
-    }
-
-    public void sendInfo(String info) {
-        this.send(ChatColor.GRAY + info);
-    }
-
-    public void sendSuccess(String success) {
-        this.send(ChatColor.GREEN + success);
-    }
-
-    public void sendTip(String tip) {
-        this.send(ChatColor.AQUA + ChatColor.BOLD.toString() + "[Tip] " + ChatColor.RESET + ChatColor.GRAY + ChatColor.ITALIC + tip);
-    }
-
     public void setDisplayName(String displayName) {
         this.bukkit.setDisplayName(displayName);
     }
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
-    }
-
-    public void setSession(ArcadeSession session) {
-        this.session = session;
     }
 }

@@ -2,13 +2,9 @@ package pl.themolka.arcade.command;
 
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Task;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.time.Time;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.session.Session;
 
 public class InfoCommands {
     private final ArcadePlugin plugin;
@@ -22,7 +18,7 @@ public class InfoCommands {
     @CommandInfo(name = "info",
             description = "Describe server information",
             permission = "arcade.command.info")
-    public void info(Session<ArcadePlayer> sender, CommandContext context) {
+    public void info(Sender sender, CommandContext context) {
         String command = context.getParam(0);
 
         if (command != null) {
@@ -37,12 +33,12 @@ public class InfoCommands {
         }
     }
 
-    public void printHelp(Session<ArcadePlayer> sender) {
-        Commands.sendTitleMessage(sender, "Help");
+    public void printHelp(Sender sender) {
+        CommandUtils.sendTitleMessage(sender, "Help");
         sender.send(ChatColor.GOLD + "/info tps" + ChatColor.GRAY + " - lost ticks per second");
     }
 
-    private void printTps(Session<ArcadePlayer> sender) {
+    private void printTps(Sender sender) {
         if (this.tps == null) {
             this.tps = new TPSHandler(this.plugin.getTasks());
             this.tps.scheduleSyncTask();
@@ -69,7 +65,7 @@ public class InfoCommands {
     }
 
     private class TPSHandler extends Task {
-        float lastLostTicks;
+        long lastLostTicks;
         Time lastTime = Time.now();
 
         public TPSHandler(TaskManager tasks) {
@@ -80,7 +76,8 @@ public class InfoCommands {
         public void onSecond(long seconds) {
             Time now = Time.now();
 
-            this.lastLostTicks = now.minus(this.lastTime).toMillis() - 1F;
+            long second = 1000L;
+            this.lastLostTicks = (now.minus(this.lastTime).toMillis() - second) / 50L;
             this.lastTime = now;
         }
     }

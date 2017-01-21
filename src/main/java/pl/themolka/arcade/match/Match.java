@@ -5,7 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.command.Commands;
+import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.ItemStackBuilder;
@@ -47,16 +47,16 @@ public class Match {
 
             String winnerMessage = null;
             if (winner != null) {
-                winnerMessage = Commands.createTitle(ChatColor.GOLD + winner.getMessage());
+                winnerMessage = CommandUtils.createTitle(ChatColor.GOLD + winner.getMessage());
             }
 
             ArcadePlayer player = gamePlayer.getPlayer();
-            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
-            player.send(Commands.createTitle(ChatColor.GOLD + "The match has ended!"));
+            player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
+            player.send(CommandUtils.createTitle(ChatColor.GOLD + "The match has ended!"));
             if (winnerMessage != null) {
                 player.send(winnerMessage);
             }
-            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
+            player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
     }
 
@@ -67,12 +67,12 @@ public class Match {
             }
 
             ArcadePlayer player = gamePlayer.getPlayer();
-            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
-            player.send(Commands.createTitle(ChatColor.GREEN + "The match has started!"));
+            player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
+            player.send(CommandUtils.createTitle(ChatColor.GREEN + "The match has started!"));
             if (gamePlayer.isParticipating()) {
-                player.send(Commands.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!"));
+                player.send(CommandUtils.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!"));
             }
-            player.send(" " + Commands.createLine(Commands.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
+            player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
     }
 
@@ -108,6 +108,7 @@ public class Match {
         ItemStack compass = new ItemStackBuilder().type(Material.COMPASS).build();
         for (GamePlayer player : this.getGame().getPlayers()) {
             if (player.isOnline()) {
+                player.getPlayer().reset();
                 player.getBukkit().getInventory().addItem(compass);
             }
         }

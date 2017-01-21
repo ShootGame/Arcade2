@@ -2,6 +2,7 @@ package pl.themolka.arcade.game;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class SimpleGameManager implements GameManager {
@@ -170,6 +172,12 @@ public class SimpleGameManager implements GameManager {
 
         if (!event.isCanceled()) {
             this.plugin.getLogger().info("Restarting the server...");
+
+            String reason = "Restarting the server...";
+            for (Player online : new ArrayList<>(this.plugin.getServer().getOnlinePlayers())) {
+                online.kickPlayer(reason);
+            }
+
             this.plugin.getServer().shutdown();
         }
     }
@@ -262,7 +270,7 @@ public class SimpleGameManager implements GameManager {
                 continue;
             }
 
-            player.getPlayer().reset();
+            player.getPlayer().resetFull();
             player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }

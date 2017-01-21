@@ -3,12 +3,8 @@ package pl.themolka.arcade.command;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.session.ArcadeSession;
-import pl.themolka.commons.command.CommandContext;
-import pl.themolka.commons.command.CommandException;
-import pl.themolka.commons.command.CommandInfo;
-import pl.themolka.commons.session.Session;
 
 import java.util.List;
 
@@ -26,13 +22,13 @@ public class GameCommands {
     @CommandInfo(name = {"gameinfo", "game"},
             description = "Describe the game",
             permission = "arcade.command.gameinfo")
-    public void gameInfo(Session<ArcadePlayer> sender, CommandContext context) {
+    public void gameInfo(Sender sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
             throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
-        Commands.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
+        CommandUtils.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
         this.plugin.getEventBus().publish(new GameCommandEvent(this.plugin, sender, context));
     }
 
@@ -43,10 +39,10 @@ public class GameCommands {
     @CommandInfo(name = {"join", "play"},
             description = "Join the game",
             usage = "[context...]",
-            userOnly = true,
+            clientOnly = true,
             permission = "arcade.command.join",
             completer = "joinCompleter")
-    public void join(Session<ArcadePlayer> sender, CommandContext context) {
+    public void join(Sender sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
             throw new CommandException("Could not join the game right now. Please try again later.");
@@ -61,15 +57,15 @@ public class GameCommands {
             }
         }
 
-        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, (ArcadeSession) sender, context, param == null));
+        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, sender, context, param == null));
     }
 
-    public List<String> joinCompleter(Session<ArcadePlayer> sender, CommandContext context) {
+    public List<String> joinCompleter(Sender sender, CommandContext context) {
         if (this.plugin.getGames().getCurrentGame() == null) {
             throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
-        JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, (ArcadeSession) sender, context);
+        JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, sender, context);
         this.plugin.getEventBus().publish(event);
 
         return event.getResults();
@@ -81,22 +77,22 @@ public class GameCommands {
 
     @CommandInfo(name = {"leave", "quit"},
             description = "Leave the game",
-            userOnly = true,
+            clientOnly = true,
             permission = "arcade.command.leave")
-    public void leave(Session<ArcadePlayer> sender, CommandContext context) {
+    public void leave(Sender sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
             throw new CommandException("Could not leave the game right now. Please try again later.");
         }
 
-        this.plugin.getEventBus().publish(new LeaveCommandEvent(this.plugin, (ArcadeSession) sender, context));
+        this.plugin.getEventBus().publish(new LeaveCommandEvent(this.plugin, sender, context));
     }
 
     public static class JoinCommandEvent extends CommandEvent implements Cancelable {
         private final boolean auto;
         private boolean cancel;
 
-        public JoinCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context, boolean auto) {
+        public JoinCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context, boolean auto) {
             super(plugin, sender, context);
 
             this.auto = auto;
@@ -112,8 +108,12 @@ public class GameCommands {
             this.cancel = cancel;
         }
 
+        public GamePlayer getJoinGamePlayer() {
+            return this.getJoinPlayer().getGamePlayer();
+        }
+
         public ArcadePlayer getJoinPlayer() {
-            return this.getSender().getRepresenter();
+            return this.getSender().getPlayer();
         }
 
         public boolean isAuto() {
@@ -122,28 +122,28 @@ public class GameCommands {
     }
 
     public static class GameCommandEvent extends CommandEvent {
-        public GameCommandEvent(ArcadePlugin plugin, Session<ArcadePlayer> sender, CommandContext context) {
+        public GameCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context) {
             super(plugin, sender, context);
         }
     }
 
     public static class JoinCompleterEvent extends CommandCompleterEvent {
-        public JoinCompleterEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context) {
+        public JoinCompleterEvent(ArcadePlugin plugin, Sender sender, CommandContext context) {
             super(plugin, sender, context);
-        }
-
-        public ArcadePlayer getJoinPlayer() {
-            return this.getSender().getRepresenter();
         }
     }
 
     public static class LeaveCommandEvent extends CommandEvent {
-        public LeaveCommandEvent(ArcadePlugin plugin, ArcadeSession sender, CommandContext context) {
+        public LeaveCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context) {
             super(plugin, sender, context);
         }
 
+        public GamePlayer getLeaveGamePlayer() {
+            return this.getLeavePlayer().getGamePlayer();
+        }
+
         public ArcadePlayer getLeavePlayer() {
-            return this.getSender().getRepresenter();
+            return this.getSender().getPlayer();
         }
     }
 }
