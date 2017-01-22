@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.Random;
 
 public abstract class AbstractRegion implements Region {
-    public static final int RANDOM_LIMIT = 10;
-
     private static final Random random = new Random();
 
     private final Map<RegionEventType, FilterSet> filters = new HashMap<>();

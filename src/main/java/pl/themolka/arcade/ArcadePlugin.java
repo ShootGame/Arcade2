@@ -17,6 +17,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.BukkitCommands;
+import pl.themolka.arcade.command.ConsoleSender;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.InfoCommands;
@@ -79,6 +80,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final String DEFAULT_SERVER_NAME = "server";
 
     private BukkitCommands commands;
+    private ConsoleSender console;
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
@@ -108,6 +110,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public final void start() throws Throwable {
         this.manifest.readManifestFile();
         this.eventBus = new EventBus(this);
+
+        this.console = new ConsoleSender(this);
 
         this.commands = new BukkitCommands(this);
         this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
@@ -276,6 +280,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public BukkitCommands getCommands() {
         return this.commands;
+    }
+
+    public ConsoleSender getConsole() {
+        return this.console;
     }
 
     public Environment getEnvironment() {

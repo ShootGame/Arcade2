@@ -3,6 +3,7 @@ package pl.themolka.arcade.team;
 import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.channel.ChannelsModule;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
@@ -15,13 +16,16 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.region.RegionsModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-@ModuleInfo(id = "teams", dependency = MatchModule.class, loadBefore = {FiltersModule.class, KitsModule.class})
+@ModuleInfo(id = "teams",
+        dependency = MatchModule.class,
+        loadBefore = {ChannelsModule.class, FiltersModule.class, KitsModule.class, RegionsModule.class})
 public class TeamsModule extends Module<TeamsGame> {
     public static final String METADATA_TEAM = "Team";
     public static final String METADATA_TEAMS = "Teams";

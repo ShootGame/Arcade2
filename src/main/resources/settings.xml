@@ -36,6 +36,8 @@
             <directory>./archive</directory>
         </archive>
 
+        <channels />
+
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>

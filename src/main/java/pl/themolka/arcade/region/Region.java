@@ -16,6 +16,7 @@ import java.util.Random;
 public interface Region extends StringId {
     double MIN_HEIGHT = -0.1;
     double MAX_HEIGHT = Double.MAX_VALUE;
+    int RANDOM_LIMIT = 10;
 
     boolean contains(Block block);
 

@@ -1,5 +1,7 @@
 package pl.themolka.arcade.session;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -16,6 +18,7 @@ import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.time.Time;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -72,6 +75,21 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     @Override
+    public void send(String message) {
+        this.sendMessage(ChatMessageType.SYSTEM, message);
+    }
+
+    @Override
+    public void sendAction(String action) {
+        this.sendMessage(ChatMessageType.ACTION_BAR, action);
+    }
+
+    @Override
+    public void sendChat(String chat) {
+        this.sendMessage(ChatMessageType.CHAT, chat);
+    }
+
+    @Override
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
     }
@@ -102,6 +120,10 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public Time getLastPlayedSound() {
         return this.lastPlayedSound;
+    }
+
+    public Locale getLocale() {
+        return this.bukkit.getCurrentLocale();
     }
 
     public void play(ArcadeSound sound) {
@@ -138,7 +160,7 @@ public class ArcadePlayer implements Metadata, Sender {
             return;
         }
 
-        this.getBukkit().playSound(position, sound, volume, pitch);
+        this.bukkit.playSound(position, sound, volume, pitch);
         this.lastPlayedSound = now;
     }
 
@@ -161,7 +183,7 @@ public class ArcadePlayer implements Metadata, Sender {
         this.resetDisplayName();
 
         for (PotionEffectType potion : PotionEffectType.values()) {
-            this.getBukkit().removePotionEffect(potion);
+            this.bukkit.removePotionEffect(potion);
         }
 
         this.reset();
@@ -171,15 +193,15 @@ public class ArcadePlayer implements Metadata, Sender {
         this.setDisplayName(null);
     }
 
-    public void send(String message) {
-        this.getBukkit().sendMessage(message);
-    }
-
     public void setDisplayName(String displayName) {
         this.bukkit.setDisplayName(displayName);
     }
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
+    }
+
+    private void sendMessage(ChatMessageType type, String message) {
+        this.bukkit.sendMessage(type, TextComponent.fromLegacyText(message));
     }
 }

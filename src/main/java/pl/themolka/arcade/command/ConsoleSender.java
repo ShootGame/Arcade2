@@ -46,4 +46,14 @@ public class ConsoleSender implements Sender {
     public void send(String message) {
         this.plugin.getLogger().log(Level.INFO, ChatColor.stripColor(message));
     }
+
+    @Override
+    public void sendAction(String action) {
+        this.send("[Action] " + action);
+    }
+
+    @Override
+    public void sendChat(String chat) {
+        this.send("[Chat] " + chat);
+    }
 }

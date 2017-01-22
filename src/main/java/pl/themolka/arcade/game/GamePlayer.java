@@ -1,6 +1,8 @@
 package pl.themolka.arcade.game;
 
 import org.bukkit.entity.Player;
+import pl.themolka.arcade.channel.ChatChannel;
+import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -9,7 +11,8 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import java.util.Set;
 import java.util.UUID;
 
-public class GamePlayer implements Metadata {
+public class GamePlayer implements Metadata, Sender {
+    private ChatChannel channel;
     private String displayName;
     private final transient Game game;
     private final MetadataContainer metadata = new MetadataContainer();
@@ -41,6 +44,31 @@ public class GamePlayer implements Metadata {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return this.getPlayer().hasPermission(permission);
+    }
+
+    @Override
+    public boolean isConsole() {
+        return false;
+    }
+
+    @Override
+    public void send(String message) {
+        this.getPlayer().send(message);
+    }
+
+    @Override
+    public void sendAction(String action) {
+        this.getPlayer().sendAction(action);
+    }
+
+    @Override
+    public void sendChat(String chat) {
+        this.getPlayer().sendChat(chat);
+    }
+
+    @Override
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
     }
@@ -53,8 +81,16 @@ public class GamePlayer implements Metadata {
         return null;
     }
 
+    public ChatChannel getCurrentChannel() {
+        return this.channel;
+    }
+
     public String getDisplayName() {
-        return this.displayName;
+        if (this.displayName != null) {
+            return this.displayName;
+        }
+
+        return this.getPlayer().getDisplayName();
     }
 
     public Game getGame() {
@@ -87,6 +123,10 @@ public class GamePlayer implements Metadata {
 
     public void resetDisplayName() {
         this.setDisplayName(null);
+    }
+
+    public void setCurrentChannel(ChatChannel channel) {
+        this.channel = channel;
     }
 
     public void setDisplayName(String displayName) {

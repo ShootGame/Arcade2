@@ -16,6 +16,7 @@ public class RepoFileQueries extends Commands {
     private final RepositoriesModule module;
 
     public RepoFileQueries(ArcadePlugin plugin, RepoFile info, RepositoriesModule module) {
+        super(plugin.getConsole());
         this.plugin = plugin;
 
         this.info = info;

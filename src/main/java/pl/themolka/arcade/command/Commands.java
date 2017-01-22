@@ -15,10 +15,6 @@ public class Commands {
     private final ConsoleSender console;
     private String prefix;
 
-    public Commands() {
-        this(null, null);
-    }
-
     public Commands(ConsoleSender console) {
         this(console, null);
     }

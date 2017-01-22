@@ -26,6 +26,7 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
     private Set<HelpTopic> helpTopics = new TreeSet<>(HelpTopicComparator.helpTopicComparatorInstance());
 
     public BukkitCommands(ArcadePlugin plugin) {
+        super(plugin.getConsole());
         this.plugin = plugin;
 
         try {

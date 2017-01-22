@@ -2,6 +2,7 @@ package pl.themolka.arcade.team;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
@@ -17,10 +18,14 @@ import pl.themolka.arcade.util.StringId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class Team implements MatchWinner, StringId {
+    private static final Random random = new Random();
+
     private final ArcadePlugin plugin;
 
+    private final TeamChannel channel;
     private ChatColor color;
     private DyeColor dyeColor;
     private boolean friendlyFire;
@@ -33,10 +38,12 @@ public class Team implements MatchWinner, StringId {
     private String name;
     private final List<GamePlayer> onlineMembers = new ArrayList<>();
     private int slots;
+    private final List<TeamSpawn> spawns = new ArrayList<>();
 
     public Team(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
 
+        this.channel = new TeamChannel(plugin, this);
         this.id = id;
     }
 
@@ -100,6 +107,10 @@ public class Team implements MatchWinner, StringId {
         return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
     }
 
+    public boolean addSpawn(TeamSpawn spawn) {
+        return this.spawns.add(spawn);
+    }
+
     public boolean areGoalsScored() {
         for (Goal goal : this.getGoals()) {
             if (!goal.isCompleted(this)) {
@@ -108,6 +119,10 @@ public class Team implements MatchWinner, StringId {
         }
 
         return true;
+    }
+
+    public TeamChannel getChannel() {
+        return this.channel;
     }
 
     public ChatColor getColor() {
@@ -144,6 +159,27 @@ public class Team implements MatchWinner, StringId {
 
     public String getPrettyName() {
         return this.getColor() + this.getName() + ChatColor.RESET;
+    }
+
+    public TeamSpawn getRandomSpawn() {
+        if (this.spawns.isEmpty()) {
+            return null;
+        }
+
+        return this.spawns.get(random.nextInt(this.spawns.size()));
+    }
+
+    public Location getRandomSpawnLocation() {
+        TeamSpawn spawn = this.getRandomSpawn();
+        if (spawn != null) {
+            return spawn.getSpawnLocation();
+        }
+
+        return null;
+    }
+
+    public List<TeamSpawn> getSpawns() {
+        return this.spawns;
     }
 
     @Override
@@ -205,6 +241,7 @@ public class Team implements MatchWinner, StringId {
 
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
             player.setParticipating(this.isParticipating());
+            player.setCurrentChannel(this.getChannel());
             player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
             if (message) {
@@ -228,6 +265,9 @@ public class Team implements MatchWinner, StringId {
             this.onlineMembers.remove(player);
 
             player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
+            player.setParticipating(false);
+            player.setCurrentChannel(null);
+            player.resetDisplayName();
 
             this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
         }
@@ -235,6 +275,10 @@ public class Team implements MatchWinner, StringId {
 
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
+    }
+
+    public boolean removeSpawn(TeamSpawn spawn) {
+        return this.spawns.remove(spawn);
     }
 
     public void send(String message) {
@@ -273,5 +317,9 @@ public class Team implements MatchWinner, StringId {
 
     public void setSlots(int slots) {
         this.slots = slots;
+    }
+
+    public void setSpawns(List<TeamSpawn> spawns) {
+        this.spawns.addAll(spawns);
     }
 }
