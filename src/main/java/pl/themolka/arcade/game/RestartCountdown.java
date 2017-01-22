@@ -24,7 +24,6 @@ public class RestartCountdown extends PrintableCountdown {
 
     @Override
     public void onCancel() {
-        this.plugin.getServer().broadcastMessage(this.getCancelMessage());
         this.getBossBar().setVisible(false);
     }
 

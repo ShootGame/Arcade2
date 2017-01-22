@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.FoodLevelContent;
@@ -16,6 +17,7 @@ import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
+import pl.themolka.arcade.permission.PermissionContext;
 import pl.themolka.arcade.time.Time;
 
 import java.util.Locale;
@@ -25,13 +27,19 @@ import java.util.UUID;
 public class ArcadePlayer implements Metadata, Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
 
-    private final transient Player bukkit;
+    private final ArcadePlugin plugin;
+
+    private final transient Player bukkit; // Bukkit
     private transient GamePlayer gamePlayer;
     private Time lastPlayedSound;
     private final MetadataContainer metadata = new MetadataContainer();
+    private final PermissionContext permissions;
 
-    public ArcadePlayer(Player bukkit) {
+    public ArcadePlayer(ArcadePlugin plugin, Player bukkit) {
+        this.plugin = plugin;
+
         this.bukkit = bukkit;
+        this.permissions = new PermissionContext(plugin, this);
     }
 
     @Override
@@ -124,6 +132,10 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public Locale getLocale() {
         return this.bukkit.getCurrentLocale();
+    }
+
+    public PermissionContext getPermissions() {
+        return this.permissions;
     }
 
     public void play(ArcadeSound sound) {

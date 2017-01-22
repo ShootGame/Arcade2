@@ -1,13 +1,14 @@
 package pl.themolka.arcade.match;
 
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import pl.themolka.arcade.event.BlockTransformEvent;
+import pl.themolka.arcade.event.Priority;
 
 public class MatchListeners implements Listener {
     private final MatchGame game;
@@ -17,21 +18,16 @@ public class MatchListeners implements Listener {
     }
 
     @EventHandler
-    public void onArrowsRemove(PlayerRespawnEvent event) {
-        event.getPlayer().setArrowsStuck(0);
-    }
-
-    @EventHandler
     public void onBlock36Damage(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.PISTON_MOVING_PIECE)) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
-    public void onBlockPhysics(BlockPhysicsEvent event) {
+    @Handler(priority = Priority.NORMAL)
+    public void onBlockTransform(BlockTransformEvent event) {
         if (this.isMatchIdle()) {
-            event.setCancelled(true);
+            event.setCanceled(true);
         }
     }
 

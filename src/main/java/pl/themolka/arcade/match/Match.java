@@ -227,7 +227,7 @@ public class Match {
         IObserverHandler handler = this.getObserverHandler();
         boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
 
-        return !this.getState().equals(MatchState.RUNNING) && observing;
+        return !this.getState().equals(MatchState.RUNNING) || observing;
     }
 
     public void refreshWinners() {

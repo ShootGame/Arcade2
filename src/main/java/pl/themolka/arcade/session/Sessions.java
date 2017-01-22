@@ -20,8 +20,6 @@ public class Sessions implements Listener {
 
     public Sessions(ArcadePlugin plugin) {
         this.plugin = plugin;
-
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -64,7 +62,7 @@ public class Sessions implements Listener {
     }
 
     public ArcadePlayer createSession(Player bukkit) {
-        ArcadePlayer player = new ArcadePlayer(bukkit);
+        ArcadePlayer player = new ArcadePlayer(this.plugin, bukkit);
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {

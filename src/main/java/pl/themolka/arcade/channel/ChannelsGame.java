@@ -15,7 +15,7 @@ public class ChannelsGame extends GameModule {
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
-        register.add(new ChannelListener(this));
+        register.add(new ChannelListeners(this));
         return register;
     }
 

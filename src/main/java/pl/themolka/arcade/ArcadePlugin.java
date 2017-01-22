@@ -31,7 +31,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.SimpleGameManager;
 import pl.themolka.arcade.generator.GeneratorType;
-import pl.themolka.arcade.listener.BlockTransformListener;
+import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
 import pl.themolka.arcade.listener.ServerPingListener;
@@ -45,7 +45,9 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
+import pl.themolka.arcade.permission.PermissionListeners;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
@@ -553,10 +555,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.serverName = nameAttribute.getValue();
         }
 
-        this.registerListenerObject(new BlockTransformListener(this));
+        this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
         this.registerListenerObject(new ServerPingListener(this));
+
+        // permissions
+        this.registerListenerObject(new PermissionListeners(this));
+
+        // sessions
+        this.registerListenerObject(new Sessions(this));
     }
 
     private void loadTasks() {

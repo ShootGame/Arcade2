@@ -81,7 +81,12 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
                     registeredNames.add(map.getName());
                 }
             } catch (Throwable th) {
-                this.getLogger().log(Level.SEVERE, "Could not load map " + worldDirectory.getName() + ": " + th.getMessage());
+                String message = th.getMessage();
+                if (message == null) {
+                    message = th.getClass().getName();
+                }
+
+                this.getLogger().log(Level.SEVERE, "Could not load map " + worldDirectory.getName() + ": " + message);
             }
         }
 

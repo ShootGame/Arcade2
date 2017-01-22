@@ -31,7 +31,6 @@ public class CycleCountdown extends PrintableCountdown {
             return;
         }
 
-        this.plugin.getServer().broadcastMessage(this.getCancelMessage(nextMap.getName()));
         this.getBossBar().setVisible(false);
     }
 

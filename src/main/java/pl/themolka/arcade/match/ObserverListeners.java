@@ -155,6 +155,7 @@ public class ObserverListeners implements Listener {
 
             if (!this.isObserving(player)) {
                 this.handleInventorySpy(event.getPlayer(), player);
+                event.setCancelled(true);
             }
         }
     }

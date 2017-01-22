@@ -13,7 +13,7 @@
     <spawn x="0.5" y="64" z="0.5" />
 
     <!-- Server settings -->
-    <server name="server" />
+    <server name="The server" />
 
     <!-- Directory where played maps will be stored -->
     <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->

@@ -45,6 +45,24 @@ public class MapParserException extends Exception {
         this.module = module;
     }
 
+    @Override
+    public String getMessage() {
+        StringBuilder builder = new StringBuilder();
+        if (super.getMessage() != null) {
+            builder.append(super.getMessage());
+        }
+
+        if (super.getMessage() != null && this.getCause() != null && this.getCause().getMessage() != null) {
+            builder.append(": ");
+        }
+
+        if (this.getCause() != null && this.getCause().getMessage() != null) {
+            builder.append(this.getCause().getMessage());
+        }
+
+        return builder.toString();
+    }
+
     public Module<?> getModule() {
         return this.module;
     }
