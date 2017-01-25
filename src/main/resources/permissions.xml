@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<permissions>
+    <groups>
+        <group id="admin" name="Administrator" prefix="`c[Admin] ">
+            <operator />
+        </group>
+
+        <group id="mod" name="Moderator" prefix="`5[Mod]">
+            <inherit>premium</inherit>
+            
+            <grant>arcade.channel.spy</grant>
+            <grant>arcade.command.cancel</grant>
+            <grant>arcade.command.cycle</grant>
+            <grant>arcade.command.info</grant>
+            <grant>arcade.command.restart</grant>
+            <grant>arcade.command.setnext</grant>
+
+            <!-- Match Module -->
+            <grant>arcade.command.begin</grant>
+            <grant>arcade.command.end</grant>
+        </group>
+
+        <group id="dev" name="Developer" prefix="`a[Dev]">
+            <inherit>premium</inherit>
+        </group>
+        
+        <group id="premium" name="Premium Member" prefix="`e[Premium] ">
+            <inherit>member</inherit>
+
+            <!-- Teams Module -->
+            <grant>arcade.command.join.overfill</grant>
+        </group>
+        
+        <group id="member" name="Member" default="true" color="gray">
+            <grant>arcade.channel.global</grant>
+            <grant>arcade.channel.teamchat</grant>
+            <grant>arcade.command.global</grant>
+            <grant>arcade.command.gameinfo</grant>
+            <grant>arcade.command.join</grant>
+            <grant>arcade.command.leave</grant>
+            <grant>arcade.command.mapinfo</grant>
+            <grant>arcade.command.maplist</grant>
+            <grant>arcade.command.nextmap</grant>
+            
+            <revoke>bukkit.command.me</revoke>
+            <revoke>minecraft.command.me</revoke>
+
+            <!-- Teams Module -->
+            <grant>arcade.command.myteam</grant>
+            <grant>arcade.command.teams</grant>
+        </group>
+    </groups>
+
+    <players>
+        <!-- TheMolkaPL -->
+        <player uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89">
+            <group>dev</group>
+        </player>
+    </players>
+</permissions>
