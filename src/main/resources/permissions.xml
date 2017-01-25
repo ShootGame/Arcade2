@@ -5,7 +5,7 @@
             <operator />
         </group>
 
-        <group id="mod" name="Moderator" prefix="`5[Mod]">
+        <group id="mod" name="Moderator" prefix="`5[Mod] ">
             <inherit>premium</inherit>
             
             <grant>arcade.channel.spy</grant>
@@ -20,8 +20,10 @@
             <grant>arcade.command.end</grant>
         </group>
 
-        <group id="dev" name="Developer" prefix="`a[Dev]">
+        <group id="dev" name="Developer" prefix="`a[Dev] ">
             <inherit>premium</inherit>
+
+            <grant>arcade.command.info</grant>
         </group>
         
         <group id="premium" name="Premium Member" prefix="`e[Premium] ">
@@ -31,7 +33,7 @@
             <grant>arcade.command.join.overfill</grant>
         </group>
         
-        <group id="member" name="Member" default="true" color="gray">
+        <group id="member" name="Member" default="true">
             <grant>arcade.channel.global</grant>
             <grant>arcade.channel.teamchat</grant>
             <grant>arcade.command.global</grant>
