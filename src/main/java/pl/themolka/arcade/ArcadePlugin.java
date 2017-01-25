@@ -46,6 +46,7 @@ import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.permission.PermissionListeners;
+import pl.themolka.arcade.permission.PermissionManager;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
@@ -79,7 +80,8 @@ import java.util.logging.Level;
 public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final String[] COPYRIGHTS = {"TheMolkaPL"};
 
-    public static final String DEFAULT_SERVER_NAME = "server";
+    public static final String DEFAULT_SERVER_NAME = "The server";
+    public static final String YAML_NOT_SUPPORTED = "YAML is not supported!";
 
     private BukkitCommands commands;
     private ConsoleSender console;
@@ -90,6 +92,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private final ManifestFile manifest = new ManifestFile();
     private MapManager maps;
     private final ModuleContainer modules = new ModuleContainer();
+    private PermissionManager permissions;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private String serverDescription;
     private String serverName = DEFAULT_SERVER_NAME;
@@ -132,6 +135,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             return;
         }
 
+        this.loadPermissions();
         this.loadCommands();
         this.loadModules();
         this.loadMaps();
@@ -202,7 +206,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public FileConfiguration getConfig() {
-        throw new UnsupportedOperationException("YAML is not supported!");
+        throw new UnsupportedOperationException(YAML_NOT_SUPPORTED);
     }
 
     @Override
@@ -235,7 +239,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public void saveConfig() {
-        throw new UnsupportedOperationException("YAML is not supported!");
+        throw new UnsupportedOperationException(YAML_NOT_SUPPORTED);
     }
 
     @Override
@@ -314,6 +318,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public ModuleContainer getModules() {
         return this.modules;
+    }
+
+    public PermissionManager getPermissions() {
+        return this.permissions;
     }
 
     public ArcadePlayer getPlayer(Player bukkit) {
@@ -535,6 +543,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
             }
         }
+    }
+
+    private void loadPermissions() {
+        this.permissions = new PermissionManager(this);
     }
 
     private void loadServer() {

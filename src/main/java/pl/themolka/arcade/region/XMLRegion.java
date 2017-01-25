@@ -36,7 +36,7 @@ public class XMLRegion extends XMLParser {
     }
 
     public static CylinderRegion parseCylinder(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, "center", Region.MIN_HEIGHT, xml);
+        Vector center = parseVector(map, "origin", Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         double height = Region.MAX_HEIGHT;
 
@@ -72,7 +72,7 @@ public class XMLRegion extends XMLParser {
     }
 
     public static SphereRegion parseSphere(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, "center", Region.MIN_HEIGHT, xml);
+        Vector center = parseVector(map, "origin", Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         return new SphereRegion(parseId(xml), map, center, radius);
     }

@@ -9,6 +9,8 @@ import java.util.Set;
 
 public class Group implements StringId {
     private final String id;
+    private boolean def;
+    private String name;
     private boolean operator;
     private final Map<String, Permission> permissions = new HashMap<>();
     private String prefix;
@@ -65,6 +67,10 @@ public class Group implements StringId {
         return this.contains(permission.getName());
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public Set<String> getPermissionNames() {
         return this.permissions.keySet();
     }
@@ -77,6 +83,10 @@ public class Group implements StringId {
         return this.prefix;
     }
 
+    public boolean isDefault() {
+        return this.def;
+    }
+
     public boolean isOperator() {
         return this.operator;
     }
@@ -87,6 +97,14 @@ public class Group implements StringId {
 
     public void removePermission(Permission permission) {
         this.permissions.remove(permission);
+    }
+
+    public void setDefault(boolean def) {
+        this.def = def;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setOperator(boolean operator) {

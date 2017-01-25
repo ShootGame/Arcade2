@@ -68,6 +68,11 @@ public class BlockRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        return this.getParent().getHighestY();
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         return this.getParent().getRandomVector(random, limit);
     }

@@ -53,6 +53,11 @@ public class CylinderRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        return this.getCenter().getY() + this.getHeight();
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         for (int i = 0; i < limit; i++) {
             Vector vector = this.getBounds().getRandomVector(random, limit);
@@ -70,10 +75,6 @@ public class CylinderRegion extends AbstractRegion {
 
     public double getHeight() {
         return this.height;
-    }
-
-    public double getHighestY() {
-        return this.getCenter().getY() + this.getHeight();
     }
 
     public double getRadius() {

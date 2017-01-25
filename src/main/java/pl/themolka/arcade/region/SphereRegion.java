@@ -40,7 +40,12 @@ public class SphereRegion extends AbstractRegion {
 
     @Override
     public Vector getCenter() {
-        return center;
+        return this.center;
+    }
+
+    @Override
+    public double getHighestY() {
+        return this.getCenter().getY() + this.getRadius();
     }
 
     @Override

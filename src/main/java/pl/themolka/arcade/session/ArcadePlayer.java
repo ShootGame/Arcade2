@@ -123,7 +123,15 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public String getDisplayName() {
-        return this.bukkit.getDisplayName();
+        if (this.bukkit.getDisplayName() != null) {
+            return this.bukkit.getDisplayName();
+        }
+
+        return this.getUsername();
+    }
+
+    public String getFullName() {
+        return this.getDisplayName();
     }
 
     public Time getLastPlayedSound() {

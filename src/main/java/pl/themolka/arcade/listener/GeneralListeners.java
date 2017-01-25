@@ -52,7 +52,7 @@ public class GeneralListeners implements Listener {
 
     /**
      * Bukkit's {@link PlayerMoveEvent} is not what we need. We can simply cancel the last
-     * player move using the setCanceled(...) method in {@link ArcadePlayerMoveEvent}.
+     * player movement using the setCanceled(...) method in {@link ArcadePlayerMoveEvent}.
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {

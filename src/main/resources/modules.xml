@@ -6,6 +6,7 @@
     <module class="pl.themolka.arcade.filter.FiltersModule" />
     <module class="pl.themolka.arcade.gamerule.GameRulesModule" />
     <module class="pl.themolka.arcade.kit.KitsModule" />
+    <module class="pl.themolka.arcade.leak.LeakModule" />
     <module class="pl.themolka.arcade.lobby.LobbyModule" />
     <module class="pl.themolka.arcade.map.ArchiveModule" />
     <module class="pl.themolka.arcade.map.MapLoaderModule" />

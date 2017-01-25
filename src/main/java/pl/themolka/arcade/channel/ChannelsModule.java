@@ -19,7 +19,7 @@ public class ChannelsModule extends Module<ChannelsGame> {
     @CommandInfo(name = {"global", "g", "!"},
             description = "Send a message to the global channel",
             min = 1,
-            flags = "console",
+            flags = {"c", "console"},
             usage = "[-console] <message...>",
             permission = "arcade.command.global")
     public void global(Sender sender, CommandContext context) {

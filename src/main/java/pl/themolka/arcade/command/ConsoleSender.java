@@ -24,7 +24,7 @@ public class ConsoleSender implements Sender {
 
     @Override
     public String getUsername() {
-        return CONSOLE_NAME;
+        return getConsoleName();
     }
 
     @Override
@@ -55,5 +55,9 @@ public class ConsoleSender implements Sender {
     @Override
     public void sendChat(String chat) {
         this.send("[Chat] " + chat);
+    }
+
+    public static String getConsoleName() {
+        return "*" + CONSOLE_NAME;
     }
 }

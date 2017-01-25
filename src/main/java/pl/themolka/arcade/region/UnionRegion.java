@@ -60,6 +60,19 @@ public class UnionRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        double y = 0D;
+        for (Region region : this.getRegions()) {
+            double regionY = region.getHighestY();
+            if (regionY > y) {
+                y = regionY;
+            }
+        }
+
+        return y;
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         for (int i = 0; i < limit; i++) {
             Vector vector = this.getRegions()[random.nextInt(this.getRegions().length)].getRandomVector(random, limit);

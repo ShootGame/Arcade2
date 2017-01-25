@@ -53,6 +53,11 @@ public class PointRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        return this.getPoint().getY();
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         return this.getPoint();
     }

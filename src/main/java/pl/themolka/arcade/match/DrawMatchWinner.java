@@ -62,4 +62,8 @@ public class DrawMatchWinner implements MatchWinner {
     public boolean removeGoal(Goal goal) {
         return false;
     }
+
+    @Override
+    public void sendGoalMessage(String message) {
+    }
 }

@@ -37,6 +37,14 @@ public class PermissionContext {
         return this.player;
     }
 
+    public boolean hasPermission(String permission) {
+        return this.getAttachment().getPermissions().getOrDefault(permission.toLowerCase(), false);
+    }
+
+    public boolean isMember(Group group) {
+        return this.groups.contains(group);
+    }
+
     public boolean isOperator() {
         for (Group group : this.getGroups()) {
             if (group.isOperator()) {

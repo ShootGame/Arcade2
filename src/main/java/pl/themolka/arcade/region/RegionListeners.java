@@ -103,6 +103,10 @@ public class RegionListeners implements Listener {
     }
 
     private FilterResult getFilterResult(Region region, RegionEventType type, Player player, GamePlayer game, Block block) {
+        if (region == null) {
+            return FilterResult.ABSTAIN;
+        }
+
         Filter filter = region.getFilter(type);
         if (filter == null) {
             return FilterResult.ABSTAIN;

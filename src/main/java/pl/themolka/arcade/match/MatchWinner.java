@@ -38,4 +38,6 @@ public interface MatchWinner {
     boolean isWinning();
 
     boolean removeGoal(Goal goal);
+
+    void sendGoalMessage(String message);
 }

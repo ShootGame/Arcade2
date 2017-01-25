@@ -103,6 +103,13 @@ public class Team implements MatchWinner, StringId {
     }
 
     @Override
+    public void sendGoalMessage(String message) {
+        for (GamePlayer player : this.getOnlineMembers()) {
+            player.sendAction(message);
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
     }
@@ -245,7 +252,7 @@ public class Team implements MatchWinner, StringId {
             player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
             if (message) {
-                player.getPlayer().sendSuccess("You joined " + this.getPrettyName() + ChatColor.GREEN + ".");
+                player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
             }
 
             this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));

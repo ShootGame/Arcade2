@@ -7,6 +7,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.util.StringId;
+import pl.themolka.arcade.util.Version;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -16,6 +17,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 public class Module<T> extends SimpleModuleListener implements Listener, Serializable, StringId {
+    public static final String DEFAULT_VERSION_STRING = "1.0";
+    public static final Version DEFAULT_VERSION = Version.valueOf(DEFAULT_VERSION_STRING);
+
     private transient ArcadePlugin plugin;
 
     private String id;
@@ -24,6 +28,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
     private boolean global;
     private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
+    private Version version = DEFAULT_VERSION;
 
     public Module() {
     }
@@ -36,12 +41,12 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.loaded = true;
         this.plugin = plugin;
 
-        Annotation annotation = this.getClass().getAnnotation(ModuleInfo.class);
-        if (annotation == null) {
+        Annotation infoAnnotation = this.getClass().getAnnotation(ModuleInfo.class);
+        if (infoAnnotation == null) {
             throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
         }
 
-        ModuleInfo info = (ModuleInfo) annotation;
+        ModuleInfo info = (ModuleInfo) infoAnnotation;
         if (info.id() == null) {
             throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
         }
@@ -49,6 +54,18 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         this.id = info.id().toLowerCase();
         this.dependency = info.dependency();
         this.loadBefore = info.loadBefore();
+
+        Annotation versionAnnotation = this.getClass().getAnnotation(ModuleVersion.class);
+        if (versionAnnotation != null) {
+            ModuleVersion version = (ModuleVersion) versionAnnotation;
+            if (version.value() != null) {
+                Version versionObject = Version.valueOf(version.value());
+
+                if (versionObject != null) {
+                    this.setVersion(versionObject);
+                }
+            }
+        }
     }
 
     @Override
@@ -105,6 +122,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         return this.getPlugin().getServer();
     }
 
+    public Version getVersion(Version version) {
+        return this.version;
+    }
+
     public boolean isGameModuleEnabled() {
         return this.getGame() != null && this.getGameModule() != null;
     }
@@ -152,6 +173,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
 
     public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
         this.loadBefore = loadBefore;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
     }
 
     public boolean unregisterListenerObject(Object object) {

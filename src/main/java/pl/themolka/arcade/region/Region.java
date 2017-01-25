@@ -48,6 +48,8 @@ public interface Region extends StringId {
 
     FilterSet getFilter(RegionEventType event, FilterSet def);
 
+    double getHighestY();
+
     ArcadeMap getMap();
 
     Vector getRandomVector();

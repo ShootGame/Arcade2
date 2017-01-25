@@ -93,6 +93,10 @@ public class GamePlayer implements Metadata, Sender {
         return this.getPlayer().getDisplayName();
     }
 
+    public String getFullName() {
+        return this.getDisplayName();
+    }
+
     public Game getGame() {
         return this.game;
     }

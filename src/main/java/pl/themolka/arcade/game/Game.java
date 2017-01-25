@@ -151,6 +151,7 @@ public class Game implements Metadata, Serializable {
             return;
         }
 
+        this.getPlugin().getLogger().info("Enabling '" + module.getModule().getId() + "' module...");
         module.registerListeners();
         module.onEnable();
     }

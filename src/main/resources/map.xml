@@ -12,6 +12,34 @@
     </world>
 
     <modules>
+        <teams>
+            <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
+                <kits>
+                    <kit>blue-leather-armor-kit</kit>
+                    <kit handle="on-join">my-kit</kit>
+                    <kit handle="on-start">my-kit</kit>
+                    <kit handle="on-respawn">my-kit</kit>
+                </kits>
+
+                <spawns>
+                    <region>my-region</region>
+                </spawns>
+            </team>
+
+            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
+                <kits>
+                    <kit>red-leather-armor-kit</kit>
+                    <kit handle="on-join">my-kit</kit>
+                    <kit handle="on-start">my-kit</kit>
+                    <kit handle="on-respawn">my-kit</kit>
+                </kits>
+
+                <spawns>
+                    <region>my-region</region>
+                </spawns>
+            </team>
+        </teams>
+
         <filters>
             <filter id="custom-filter">
 
@@ -100,32 +128,18 @@
             </kit>
         </kits>
 
-        <teams>
-            <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
-                <kits>
-                    <kit>blue-leather-armor-kit</kit>
-                    <kit handle="on-join">my-kit</kit>
-                    <kit handle="on-start">my-kit</kit>
-                    <kit handle="on-respawn">my-kit</kit>
-                </kits>
+        <leak>
+            <leakable id="blue-core" name="Blue Core" owner="blue-team" liquid="lava" detector-level="5">
+                <region>
+                    <sphere origin-x="25" origin-y="16" origin-z="0" radius="3" />
+                </region>
+            </leakable>
 
-                <spawns>
-                    <region>my-region</region>
-                </spawns>
-            </team>
-
-            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
-                <kits>
-                    <kit>red-leather-armor-kit</kit>
-                    <kit handle="on-join">my-kit</kit>
-                    <kit handle="on-start">my-kit</kit>
-                    <kit handle="on-respawn">my-kit</kit>
-                </kits>
-
-                <spawns>
-                    <region>my-region</region>
-                </spawns>
-            </team>
-        </teams>
+            <leakable id="red-core" name="Red core" owner="red-team" liquid="lava" detector-level="5">
+                <region>
+                    <sphere origin-x="-25" origin-y="16" origin-z="0" radius="3" />
+                </region>
+            </leakable>
+        </leak>
     </modules>
 </map>

@@ -64,7 +64,7 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompletableBy(MatchWinner winner) {
-        return this.getOwner().equals(winner);
+        return !this.getOwner().equals(winner);
     }
 
     @Override
@@ -84,6 +84,10 @@ public class Score implements Goal {
 
     @Override
     public boolean reset() {
+        if (!this.isCompleted()) {
+            return false;
+        }
+
         ScoreResetEvent event = new ScoreResetEvent(this.game.getPlugin(), this);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -102,7 +106,7 @@ public class Score implements Goal {
     @Override
     public void setCompleted(MatchWinner winner, boolean completed) {
         if (completed) {
-            this.handleGoalScored();
+            this.handleGoalComplete();
         } else {
             this.reset();
         }
@@ -132,18 +136,6 @@ public class Score implements Goal {
         return this.name != null;
     }
 
-    public boolean isScoreTouched() {
-        return this.scoreTouched;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * Events called in this method:
      *   - ScoreIncrementEvent (cancelable)
@@ -168,11 +160,23 @@ public class Score implements Goal {
         this.game.getPlugin().getEventBus().publish(new GoalProgressEvent(this.game.getPlugin(), this, oldProgress));
 
         if (this.isCompleted()) {
-            this.handleGoalScored();
+            this.handleGoalComplete();
         }
     }
 
-    private void handleGoalScored() {
+    public boolean isScoreTouched() {
+        return this.scoreTouched;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private void handleGoalComplete() {
         if (this.completed) {
             return;
         }
@@ -182,9 +186,9 @@ public class Score implements Goal {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            // This game for this `MatchWinner` has been scored - we can tell it
-            // to the plugin, so it can end the match. This method will loop all
-            // `MatchWinner`s (like players or teams) to find the winner.
+            // This game for this `MatchWinner` has been completed - we can tell
+            // it to the plugin, so it can end the match. This method will loop
+            // all `MatchWinner`s (like players or teams) to find the winner.
             this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
         }
     }

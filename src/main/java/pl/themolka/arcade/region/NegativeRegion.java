@@ -34,6 +34,11 @@ public class NegativeRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        return this.getRegion().getHighestY();
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         return this.getRegion().getRandomVector(random, limit);
     }

@@ -7,7 +7,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 
-@ModuleInfo(id = "regions", loadBefore = FiltersModule.class)
+@ModuleInfo(id = "regions", loadBefore = {FiltersModule.class})
 public class RegionsModule extends Module<RegionsGame> {
     @Override
     public RegionsGame buildGameModule(Element xml, Game game) throws JDOMException {

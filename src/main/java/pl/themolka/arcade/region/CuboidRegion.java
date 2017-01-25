@@ -57,6 +57,11 @@ public class CuboidRegion extends AbstractRegion {
     }
 
     @Override
+    public double getHighestY() {
+        return this.getMax().getY();
+    }
+
+    @Override
     public Vector getRandom(Random random, int limit) {
         Vector min = this.getMin();
         Vector max = this.getMax();

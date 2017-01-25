@@ -193,7 +193,7 @@ public class MatchGame extends GameModule {
         switch (this.getMatch().getState()) {
             case STARTING:
                 if (this.getStartCountdown() == null) {
-                    result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " very soon...";
+                    result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " soon...";
                     break;
                 }
 
@@ -210,7 +210,7 @@ public class MatchGame extends GameModule {
             case CYCLING:
                 if (this.getPlugin().getGames().isNextRestart()) {
                     if (this.getPlugin().getGames().getRestartCountdown() == null) {
-                        result = ChatColor.RED + "Restarting very soon...";
+                        result = ChatColor.RED + "Restarting soon...";
                         break;
                     }
 
