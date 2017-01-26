@@ -5,8 +5,7 @@ import pl.themolka.arcade.command.Sender;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class
-        SimplePagination<T> implements Pagination<T> {
+public abstract class SimplePagination<T> implements Pagination<T> {
     private int extraItemsPerPage = EXTRA_ITEMS_PER_PAGE;
     private final List<T> items = new ArrayList<>();
     private int itemsPerPage = ITEMS_PER_PAGE;
