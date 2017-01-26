@@ -56,7 +56,9 @@ public interface Goal {
      * @param winner `MatchWinner` to check.
      * @return `true` if the given `Goal` is completed, otherwise `false`.
      */
-    boolean isCompleted(MatchWinner winner);
+    default boolean isCompleted(MatchWinner winner) {
+        return this.isCompleted() && this.isCompletableBy(winner);
+    }
 
     /**
      * Check if this `Goal` is or was touched. Touched means that `Goal` was interacted, but not completed.

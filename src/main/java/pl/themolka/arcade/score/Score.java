@@ -64,17 +64,12 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompletableBy(MatchWinner winner) {
-        return !this.getOwner().equals(winner);
+        return this.getOwner().equals(winner);
     }
 
     @Override
     public boolean isCompleted() {
         return this.completed || (this.hasLimit() && this.getScore() >= this.getLimit());
-    }
-
-    @Override
-    public boolean isCompleted(MatchWinner winner) {
-        return this.isCompletableBy(winner) && this.isCompleted();
     }
 
     @Override

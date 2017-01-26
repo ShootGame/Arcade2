@@ -1,7 +1,9 @@
-package pl.themolka.arcade.session;
+package pl.themolka.arcade.respawn;
 
 import org.bukkit.Location;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.ArcadePlayerEvent;
 
 public class ArcadePlayerRespawnEvent extends ArcadePlayerEvent {
     private Location respawnPosition;

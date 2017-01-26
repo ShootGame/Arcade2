@@ -1,5 +1,6 @@
 package pl.themolka.arcade.permission;
 
+import org.jdom2.Element;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.Collection;
@@ -10,13 +11,19 @@ import java.util.Set;
 public class Group implements StringId {
     private final String id;
     private boolean def;
+    private final Element element;
     private String name;
     private boolean operator;
     private final Map<String, Permission> permissions = new HashMap<>();
     private String prefix;
 
     public Group(String id) {
+        this(id, null);
+    }
+
+    public Group(String id, Element element) {
         this.id = id;
+        this.element = element;
     }
 
     @Override
@@ -36,12 +43,12 @@ public class Group implements StringId {
         this.addPermission(permission, permission.isAccess());
     }
 
-    public void addPermission(String permission, boolean access) {
-        this.addPermission(new Permission(permission), access);
+    public void addPermission(String permission, boolean grant) {
+        this.addPermission(new Permission(permission), grant);
     }
 
-    public void addPermission(Permission permission, boolean access) {
-        permission.setAccess(access);
+    public void addPermission(Permission permission, boolean grant) {
+        permission.setAccess(grant);
         this.permissions.put(permission.getName(), permission);
     }
 
@@ -65,6 +72,10 @@ public class Group implements StringId {
 
     public boolean contains(Permission permission) {
         return this.contains(permission.getName());
+    }
+
+    public Element getElement() {
+        return this.element;
     }
 
     public String getName() {
@@ -96,7 +107,7 @@ public class Group implements StringId {
     }
 
     public void removePermission(Permission permission) {
-        this.permissions.remove(permission);
+        this.permissions.remove(permission.getName());
     }
 
     public void setDefault(boolean def) {

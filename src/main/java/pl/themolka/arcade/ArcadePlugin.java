@@ -45,8 +45,13 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
+import pl.themolka.arcade.permission.ClientPermissionStorage;
+import pl.themolka.arcade.permission.Group;
 import pl.themolka.arcade.permission.PermissionListeners;
 import pl.themolka.arcade.permission.PermissionManager;
+import pl.themolka.arcade.permission.PermissionsReloadEvent;
+import pl.themolka.arcade.permission.PermissionsReloadedEvent;
+import pl.themolka.arcade.permission.XMLPermissions;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
@@ -394,6 +399,41 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    public void reloadPermissions() {
+        PermissionManager permissions = this.getPermissions();
+
+        try {
+            permissions.setDocument(permissions.readPermissionsFile());
+            this.getEventBus().publish(new PermissionsReloadEvent(this, permissions));
+
+            permissions.clearGroups();
+            permissions.setDefaultGroup(null);
+
+            XMLPermissions xml = new XMLPermissions(permissions.getDocument());
+
+            // groups
+            for (Group group : xml.readGroups()) {
+                permissions.addGroup(group);
+
+                if (group.isDefault()) {
+                    if (permissions.getDefaultGroup() != null) {
+                        this.getLogger().log(Level.CONFIG, "Duplicate of default permission group found: " + group.getId());
+                    } else {
+                        permissions.setDefaultGroup(group);
+                    }
+                }
+            }
+
+            // players
+            ClientPermissionStorage permissionStorage = xml.readPlayers(new ArrayList<>(permissions.getGroups()));
+            permissions.setPermissionStorage(permissionStorage);
+
+            this.getEventBus().publish(new PermissionsReloadedEvent(this, permissions));
+        } catch (IOException | JDOMException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public void removePlayer(ArcadePlayer player) {
         this.removePlayer(player.getUuid());
     }
@@ -547,6 +587,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadPermissions() {
         this.permissions = new PermissionManager(this);
+        this.reloadPermissions();
     }
 
     private void loadServer() {

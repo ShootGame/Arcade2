@@ -13,6 +13,7 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.FoodLevelContent;
 import pl.themolka.arcade.kit.HealthContent;
+import pl.themolka.arcade.kit.SaturationContent;
 import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
@@ -185,17 +186,23 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public void reset() {
+        this.getBukkit().setAffectsSpawning(true);
         this.getBukkit().setArrowsStuck(0);
         this.getBukkit().setExp(0);
         this.getBukkit().setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
         this.getBukkit().setGameMode(GameMode.CREATIVE);
+        this.getBukkit().setGlowing(false);
         this.getBukkit().setHealthScale(HealthContent.DEFAULT_HEALTH);
         this.getBukkit().setHealth(HealthContent.DEFAULT_HEALTH);
+        this.getBukkit().setLevel(0);
+        this.getBukkit().setSaturation(SaturationContent.DEFAULT_SATURATION);
         this.getBukkit().setWalkSpeed(WalkSpeedContent.DEFAULT_SPEED);
 
         this.getBukkit().resetPlayerTime();
         this.getBukkit().resetPlayerWeather();
         this.getBukkit().resetTitle();
+
+        this.getBukkit().showInvisibles(true);
     }
 
     public void resetFull() {

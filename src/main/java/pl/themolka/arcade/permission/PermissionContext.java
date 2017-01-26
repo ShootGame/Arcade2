@@ -22,7 +22,11 @@ public class PermissionContext {
     }
 
     public boolean addGroup(Group group) {
-        return this.groups.add(group);
+        return !this.isMember(group) && this.groups.add(group);
+    }
+
+    public void clearGroups() {
+        this.groups.clear();
     }
 
     public PermissionAttachment getAttachment() {
@@ -56,6 +60,20 @@ public class PermissionContext {
     }
 
     public void refresh() {
+        if (this.getGroups().isEmpty()) {
+            Group defaultGroup = this.plugin.getPermissions().getDefaultGroup();
+            if (defaultGroup != null) {
+                this.addGroup(defaultGroup);
+            }
+
+            ClientPermissionStorage storage = this.plugin.getPermissions().getPermissionStorage();
+            Group[] groups = storage.fetch(this.getPlayer());
+
+            for (Group group : groups) {
+                this.addGroup(group);
+            }
+        }
+
         this.refreshPermissions();
 
         boolean operator = this.isOperator();

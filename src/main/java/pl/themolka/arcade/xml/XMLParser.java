@@ -5,11 +5,30 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class XMLParser {
     public static final char COLOR_CHAR = '&';
+    public static final String SPLIT_KEY = ",";
+
+    public static List<String> parseArray(String value) {
+        return parseArray(value, SPLIT_KEY);
+    }
+
+    public static List<String> parseArray(String value, String key) {
+        List<String> results = new ArrayList<>();
+        for (String split : value.split(key)) {
+            String trim = split.trim();
+            if (!trim.isEmpty()) {
+                results.add(trim);
+            }
+        }
+
+        return results;
+    }
 
     public static Attribute getAttribute(Element xml, String name, Object def) throws DataConversionException {
         Attribute attribute = xml.getAttribute(name);

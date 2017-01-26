@@ -246,6 +246,8 @@ public class Team implements MatchWinner, StringId {
             this.members.add(player);
             this.onlineMembers.add(player);
 
+            player.getPlayer().resetFull();
+
             player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
             player.setParticipating(this.isParticipating());
             player.setCurrentChannel(this.getChannel());

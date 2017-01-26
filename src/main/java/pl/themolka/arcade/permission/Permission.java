@@ -13,9 +13,9 @@ public class Permission implements Paginationable {
         this(name, true);
     }
 
-    public Permission(String name, boolean access) {
+    public Permission(String name, boolean grant) {
         this.name = name.toLowerCase();
-        this.revoke = !access;
+        this.revoke = !grant;
     }
 
     public Permission(Permission permission) {

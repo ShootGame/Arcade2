@@ -71,11 +71,6 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     @Override
-    public boolean isCompleted(MatchWinner winner) {
-        return this.isCompleted();
-    }
-
-    @Override
     public boolean isUntouched() {
         return !this.touched;
     }

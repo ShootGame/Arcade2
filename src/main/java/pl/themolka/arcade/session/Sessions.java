@@ -14,6 +14,7 @@ import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.respawn.ArcadePlayerRespawnEvent;
 
 public class Sessions implements Listener {
     private final ArcadePlugin plugin;

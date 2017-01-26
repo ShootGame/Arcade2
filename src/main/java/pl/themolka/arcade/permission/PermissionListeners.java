@@ -2,7 +2,12 @@ package pl.themolka.arcade.permission;
 
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.ServerCycleEvent;
+import pl.themolka.arcade.match.MatchEndedEvent;
+import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
 import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
@@ -14,19 +19,59 @@ public class PermissionListeners {
         this.plugin = plugin;
     }
 
+    // player join the server
     @Handler(priority = Priority.LOWER)
     public void onPlayerJoinServer(ArcadePlayerJoinEvent event) {
         this.refresh(event.getPlayer());
     }
 
+    // server cycle the game
     @Handler(priority = Priority.LOWER)
-    public void onPlayerTeamSwitched(PlayerJoinedTeamEvent event) {
-        this.refresh(event.getPlayer());
+    public void onServerCycle(ServerCycleEvent event) {
+        for (GamePlayer player : event.getNewGame().getPlayers()) {
+            this.refresh(player.getPlayer());
+        }
     }
 
-    private void refresh(ArcadePlayer player) {
+    // server start
+    @Handler(priority = Priority.LOWER)
+    public void onServerStart(PluginReadyEvent event) {
+        for (ArcadePlayer player : event.getPlugin().getPlayers()) {
+            this.refresh(player);
+        }
+    }
+
+    public void refresh(ArcadePlayer player) {
         if (player != null) {
+            player.getPermissions().clearGroups(); // we want to have fresh groups from the storage
             player.getPermissions().refresh();
         }
+    }
+
+    //
+    // Match Module
+    //
+
+    @Handler(priority = Priority.LOWER)
+    public void onMatchEnded(MatchEndedEvent event) {
+        for (GamePlayer player : event.getGame().getPlayers()) {
+            this.refresh(player.getPlayer());
+        }
+    }
+
+    @Handler(priority = Priority.LOWER)
+    public void onMatchStarted(MatchStartedEvent event) {
+        for (GamePlayer player : event.getGame().getPlayers()) {
+            this.refresh(player.getPlayer());
+        }
+    }
+
+    //
+    // Teams Module
+    //
+
+    @Handler(priority = Priority.LOWER)
+    public void onPlayerSwitchedTeam(PlayerJoinedTeamEvent event) {
+        this.refresh(event.getPlayer());
     }
 }

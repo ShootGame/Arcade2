@@ -93,6 +93,7 @@ public class LeakGame extends GameModule {
             leakable.build(liquid, region, detector);
 
             this.addLeakable(leakable);
+            leakable.getOwner().addGoal(leakable); // register
         }
     }
 

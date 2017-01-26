@@ -1,5 +1,6 @@
 package pl.themolka.arcade.settings;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -46,7 +47,7 @@ public class Settings {
         if (!parent.exists()) {
             parent.mkdir();
         } else if (force) {
-            file.delete();
+            FileUtils.deleteQuietly(file);
         }
 
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(file.getName())) {

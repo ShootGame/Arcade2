@@ -7,7 +7,7 @@
 
         <group id="mod" name="Moderator" prefix="`5[Mod] ">
             <inherit>premium</inherit>
-            
+
             <grant>arcade.channel.spy</grant>
             <grant>arcade.command.cancel</grant>
             <grant>arcade.command.cycle</grant>
@@ -25,14 +25,14 @@
 
             <grant>arcade.command.info</grant>
         </group>
-        
+
         <group id="premium" name="Premium Member" prefix="`e[Premium] ">
             <inherit>member</inherit>
 
             <!-- Teams Module -->
             <grant>arcade.command.join.overfill</grant>
         </group>
-        
+
         <group id="member" name="Member" default="true">
             <grant>arcade.channel.global</grant>
             <grant>arcade.channel.teamchat</grant>
@@ -43,7 +43,7 @@
             <grant>arcade.command.mapinfo</grant>
             <grant>arcade.command.maplist</grant>
             <grant>arcade.command.nextmap</grant>
-            
+
             <revoke>bukkit.command.me</revoke>
             <revoke>minecraft.command.me</revoke>
 
