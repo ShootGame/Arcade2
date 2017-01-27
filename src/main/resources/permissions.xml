@@ -33,6 +33,7 @@
             <inherit>member</inherit>
 
             <!-- Teams Module -->
+            <grant>arcade.command.join.choose</grant>
             <grant>arcade.command.join.overfill</grant>
         </group>
 

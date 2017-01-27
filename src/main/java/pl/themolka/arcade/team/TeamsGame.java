@@ -118,8 +118,8 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void joinTeam(GamePlayer player, String query) throws CommandException {
         if (!player.isOnline()) {
             throw new CommandException("Player is not not online.");
-        } else if (!player.getBukkit().hasPermission("arcade.command.join.select")) {
-            throw new CommandPermissionException("arcade.command.join.select");
+        } else if (!player.getBukkit().hasPermission("arcade.command.join.choose")) {
+            throw new CommandPermissionException("arcade.command.join.choose");
         } else if (query == null) {
             throw new CommandException("No query given.");
         }

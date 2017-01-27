@@ -39,7 +39,8 @@ permissions:
     description: 'Gives access to the /join command.'
     default: true
     children:
-      arcade.command.join.overfill: op
+      arcade.command.join.choose: false
+      arcade.command.join.overfill: false
   arcade.command.leave:
     description: 'Gives access to the /leave command.'
     default: true
