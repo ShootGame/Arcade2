@@ -21,10 +21,10 @@ public class ChannelsModule extends Module<ChannelsGame> {
             min = 1,
             flags = {"c", "console"},
             usage = "[-console] <message...>",
-            permission = "arcade.command.global")
+            permission = "arcade.channel.global")
     public void global(Sender sender, CommandContext context) {
         boolean console = context.hasFlag("c") || context.hasFlag("console");
-        if (console && sender.hasPermission("arcade.command.global.console")) {
+        if (console && sender.hasPermission("arcade.channel.global.console")) {
             sender = this.getPlugin().getConsole();
         }
 

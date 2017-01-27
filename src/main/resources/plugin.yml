@@ -1,11 +1,93 @@
 name: '${project.name}'
-version: 'Minecraft ${plugin.minecraft}: ${project.version}-${git.commit.id.abbrev}'
-authors:
-- TheMolkaPL
-website: https://github.com/ShootGame/Arcade2
+version: '${plugin.minecraft}: ${project.version}-${git.commit.id.abbrev}'
 description: '${project.description}'
-prefix: '${project.name}'
-load: STARTUP
-loadbefore:
-- WorldEdit
 main: '${plugin.mainClass}'
+
+load: STARTUP
+author: 'TheMolkaPL <themolkapl@gmail.com>'
+website: 'https://github.com/ShootGame/Arcade2'
+
+database: false
+prefix: '${project.name}'
+softdepend:
+- WorldEdit
+
+permissions:
+  #
+  # General
+  #
+  arcade.command.cancel:
+    description: 'Gives access to the /cancel command.'
+    default: op
+  arcade.command.cycle:
+    description: 'Gives access to the /cycle command.'
+    default: op
+  arcade.command.info:
+    description: 'Gives access to the /info command.'
+    default: op
+  arcade.command.reload:
+    description: 'Gives access to the /arcade reload command.'
+    default: op
+  arcade.command.restart:
+    description: 'Gives access to the /restart command.'
+    default: op
+  # game
+  arcade.command.gameinfo:
+    description: 'Gives access to the /gameinfo command.'
+    default: true
+  arcade.command.join:
+    description: 'Gives access to the /join command.'
+    default: true
+    children:
+      arcade.command.join.overfill: op
+  arcade.command.leave:
+    description: 'Gives access to the /leave command.'
+    default: true
+  # map
+  arcade.command.mapinfo:
+    description: 'Gives access to the /mapinfo command.'
+    default: true
+  arcade.command.maplist:
+    description: 'Gives access to the /maplist command.'
+    default: true
+  arcade.command.nextmap:
+    description: 'Gives access to the /nextmap command.'
+    default: true
+  arcade.command.setnext:
+    description: 'Gives access to the /setnext command.'
+    default: op
+
+  #
+  # Channels Module
+  #
+  arcade.channel.global:
+    description: 'Gives access to the global chat channel.'
+    default: true
+    children:
+      arcade.channel.global.console: op
+  arcade.channel.teamchat:
+    description: 'Gives access to the team chat channel.'
+    default: true
+  arcade.channel.spy:
+    description: 'Gives access to the spy chat channel.'
+    default: op
+
+  #
+  # Match Module
+  #
+  arcade.command.begin:
+    description: 'Gives access to the /begin command.'
+    default: op
+  arcade.command.end:
+    description: 'Gives access to the /end command.'
+    default: op
+
+  #
+  # Teams Module
+  #
+  arcade.command.myteam:
+    description: 'Gives access to the /myteam command.'
+    default: true
+  arcade.command.teams:
+    description: 'Gives access to the /teams command.'
+    default: true

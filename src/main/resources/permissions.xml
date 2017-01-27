@@ -8,10 +8,13 @@
         <group id="mod" name="Moderator" prefix="`5[Mod] ">
             <inherit>premium</inherit>
 
+            <grant>arcade.channel.global.console</grant>
             <grant>arcade.channel.spy</grant>
+
             <grant>arcade.command.cancel</grant>
             <grant>arcade.command.cycle</grant>
             <grant>arcade.command.info</grant>
+            <grant>arcade.command.reload</grant>
             <grant>arcade.command.restart</grant>
             <grant>arcade.command.setnext</grant>
 
@@ -36,7 +39,7 @@
         <group id="member" name="Member" default="true">
             <grant>arcade.channel.global</grant>
             <grant>arcade.channel.teamchat</grant>
-            <grant>arcade.command.global</grant>
+
             <grant>arcade.command.gameinfo</grant>
             <grant>arcade.command.join</grant>
             <grant>arcade.command.leave</grant>
