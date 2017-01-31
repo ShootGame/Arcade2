@@ -4,6 +4,8 @@ import net.engio.mbassy.listener.Handler;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -28,6 +30,20 @@ public class MatchListeners implements Listener {
     public void onBlockTransform(BlockTransformEvent event) {
         if (this.isMatchIdle()) {
             event.setCanceled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (this.isMatchIdle()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemSpawn(ItemSpawnEvent event) {
+        if (this.isMatchIdle()) {
+            event.setCancelled(true);
         }
     }
 

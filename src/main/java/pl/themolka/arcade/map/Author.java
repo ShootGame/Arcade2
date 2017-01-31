@@ -6,19 +6,25 @@ import java.util.UUID;
 
 public class Author implements Comparable<Author> {
     private final UUID uuid;
+    private final UUID offlineUuid;
     private final String username;
     private final String description;
 
     public Author(String username) {
-        this(null, username);
+        this((UUID) null, username);
     }
 
     public Author(String username, String description) {
         this(null, username, description);
     }
 
+    public Author(UUID uuid, String username) {
+        this(uuid, username, null);
+    }
+
     public Author(UUID uuid, String username, String description) {
         this.uuid = uuid;
+        this.offlineUuid = this.newOfflineUuid(username);
         this.username = username;
         this.description = description;
     }
@@ -30,6 +36,14 @@ public class Author implements Comparable<Author> {
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public UUID getOfflineUuid() {
+        if (this.hasUuid()) {
+            return this.offlineUuid;
+        }
+
+        return null;
     }
 
     public String getUsername() {
@@ -54,11 +68,24 @@ public class Author implements Comparable<Author> {
 
     @Override
     public String toString() {
-        String author = ChatColor.GRAY + " - " + ChatColor.GOLD + this.getUsername() + ChatColor.RESET;
-        if (!this.hasDescription()) {
-            return author;
+        if (this.hasUsername()) {
+            String author = ChatColor.GOLD + this.getUsername() + ChatColor.RESET;
+            if (!this.hasDescription()) {
+                return author;
+            }
+
+            return author + ChatColor.GRAY + " - " + ChatColor.ITALIC + this.getDescription() + ChatColor.RESET;
         }
 
-        return author + ChatColor.GRAY + " - " + ChatColor.ITALIC + this.getDescription() + ChatColor.RESET;
+        return null;
+    }
+
+    private UUID newOfflineUuid(String username) {
+        if (username != null) {
+            String offline = "OfflinePlayer:" + username;
+            return UUID.nameUUIDFromBytes(offline.getBytes());
+        }
+
+        return null;
     }
 }

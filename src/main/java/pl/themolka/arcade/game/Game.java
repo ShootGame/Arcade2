@@ -13,6 +13,7 @@ import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
@@ -36,6 +37,7 @@ public class Game implements Metadata, Serializable {
     private final transient MetadataContainer metadata = new MetadataContainer();
     private final transient GameModuleContainer modules = new GameModuleContainer();
     private final transient Map<UUID, GamePlayer> players = new HashMap<>();
+    private final ScoreboardContext scoreboard;
     private Instant startTime;
     private final transient List<Task> taskList = new ArrayList<>();
     private final transient World world;
@@ -44,6 +46,7 @@ public class Game implements Metadata, Serializable {
         this.plugin = plugin;
 
         this.map = map;
+        this.scoreboard = new ScoreboardContext(plugin, this);
         this.world = world;
 
         Element modules = map.getConfiguration().getRoot().getChild("modules");
@@ -114,13 +117,13 @@ public class Game implements Metadata, Serializable {
     }
 
     public void enableModule(GameModule module) {
-        if (module == null || module.getModule() == null) {
+        if (module == null || module.getModule() == null || module.isEnabled()) {
             return;
         }
 
         for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
             ModuleInfo info = dependency.getAnnotation(ModuleInfo.class);
-            if (info == null || this.getModules().contains(dependency)) {
+            if (info == null) {
                 break;
             } else if (!this.getModules().contains(dependency)) {
                 try {
@@ -139,7 +142,7 @@ public class Game implements Metadata, Serializable {
 
         for (Class<? extends Module<?>> loadBefore : module.getModule().getLoadBefore()) {
             ModuleInfo info = loadBefore.getAnnotation(ModuleInfo.class);
-            if (info == null || this.getModules().contains(loadBefore)) {
+            if (info == null) {
                 continue;
             }
 
@@ -154,6 +157,17 @@ public class Game implements Metadata, Serializable {
         this.getPlugin().getLogger().info("Enabling '" + module.getModule().getId() + "' module...");
         module.registerListeners();
         module.onEnable();
+        module.setEnabled(true);
+    }
+
+    public GamePlayer findPlayer(String query) {
+        for (GamePlayer player : this.getPlayers()) {
+            if (player.getUsername().toLowerCase().startsWith(query.toLowerCase())) {
+                return player;
+            }
+        }
+
+        return null;
     }
 
     public List<Countdown> getCountdowns() {
@@ -229,6 +243,10 @@ public class Game implements Metadata, Serializable {
         }
 
         return results;
+    }
+
+    public ScoreboardContext getScoreboard() {
+        return this.scoreboard;
     }
 
     public Server getServer() {
@@ -321,6 +339,7 @@ public class Game implements Metadata, Serializable {
         this.plugin.getEventBus().publish(new GameStopEvent(this.plugin, this));
 
         for (GameModule module : this.getModules().getModules()) {
+            module.setEnabled(false);
             module.onDisable();
             module.destroy();
         }
@@ -356,6 +375,7 @@ public class Game implements Metadata, Serializable {
                 }
             } catch (MapParserException ex) {
                 this.addError(ex);
+                ex.printStackTrace();
             }
         }
     }

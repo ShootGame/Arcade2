@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
@@ -12,6 +13,7 @@ import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.match.MatchWinner;
+import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.StringId;
 
@@ -21,10 +23,13 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Team implements MatchWinner, StringId {
+    public static final int NAME_MAX_LENGTH = 16;
+
     private static final Random random = new Random();
 
     private final ArcadePlugin plugin;
 
+    private org.bukkit.scoreboard.Team bukkit;
     private final TeamChannel channel;
     private ChatColor color;
     private DyeColor dyeColor;
@@ -44,6 +49,7 @@ public class Team implements MatchWinner, StringId {
         this.plugin = plugin;
 
         this.channel = new TeamChannel(plugin, this);
+        this.channel.setFormat(TeamChannel.TEAM_FORMAT);
         this.id = id;
     }
 
@@ -126,6 +132,10 @@ public class Team implements MatchWinner, StringId {
         }
 
         return true;
+    }
+
+    public org.bukkit.scoreboard.Team getBukkit() {
+        return this.bukkit;
     }
 
     public TeamChannel getChannel() {
@@ -296,6 +306,12 @@ public class Team implements MatchWinner, StringId {
         }
     }
 
+    public void setBukkit(org.bukkit.scoreboard.Team bukkit) {
+        this.bukkit = bukkit;
+
+        this.updateBukkitTeam();
+    }
+
     public void setColor(ChatColor color) {
         this.color = color;
     }
@@ -321,6 +337,10 @@ public class Team implements MatchWinner, StringId {
     }
 
     public void setName(String name) {
+        if (name.length() > NAME_MAX_LENGTH) {
+            throw new IllegalArgumentException("Name too long (" + name.length() + " > " + NAME_MAX_LENGTH + ")");
+        }
+
         this.name = name;
     }
 
@@ -330,5 +350,28 @@ public class Team implements MatchWinner, StringId {
 
     public void setSpawns(List<TeamSpawn> spawns) {
         this.spawns.addAll(spawns);
+    }
+
+    private void updateBukkitTeam() {
+        if (this.getBukkit() != null) {
+            this.getBukkit().setAllowFriendlyFire(this.isFriendlyFire());
+            this.getBukkit().setOption(
+                    org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
+                    org.bukkit.scoreboard.Team.OptionStatus.NEVER);
+        }
+    }
+
+    public static org.bukkit.scoreboard.Team createBukkitTeam(Scoreboard board, Team team) {
+        String id = team.getId();
+        if (id.length() > ScoreboardContext.TEAM_MAX_LENGTH) {
+            id = id.substring(0, ScoreboardContext.TEAM_MAX_LENGTH);
+        }
+
+        org.bukkit.scoreboard.Team bukkit = board.registerNewTeam(id);
+        bukkit.setPrefix(team.getColor().toString());
+        bukkit.setDisplayName(team.getName());
+        bukkit.setSuffix(ChatColor.RESET.toString());
+
+        return bukkit;
     }
 }

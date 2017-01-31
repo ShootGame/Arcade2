@@ -11,6 +11,10 @@
         <spawn x="0.5" y="64" z="0.5" />
     </world>
 
+    <scoreboard>
+        <title>`eMatch Goals</title>
+    </scoreboard>
+
     <modules>
         <teams>
             <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">

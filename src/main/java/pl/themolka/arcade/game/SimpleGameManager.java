@@ -130,8 +130,9 @@ public class SimpleGameManager implements GameManager {
 
         this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
         try {
+            Game oldGame = this.getCurrentGame();
             Game game = this.createGame(target);
-            this.plugin.getEventBus().publish(new ServerCycleEvent(this.plugin, game));
+            this.plugin.getEventBus().publish(new ServerCycleEvent(this.plugin, game, oldGame));
 
             if (this.currentGame != null) {
                 this.destroyGame(this.getCurrentGame());

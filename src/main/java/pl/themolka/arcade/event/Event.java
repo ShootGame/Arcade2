@@ -6,7 +6,7 @@ import pl.themolka.arcade.ArcadePlugin;
 /**
  * Base class for all events in Arcade.
  */
-public class Event {
+public abstract class Event {
     private final ArcadePlugin plugin;
 
     public Event(ArcadePlugin plugin) {

@@ -65,7 +65,7 @@ permissions:
     description: 'Gives access to the global chat channel.'
     default: true
     children:
-      arcade.channel.global.console: op
+      arcade.channel.global.console: false
   arcade.channel.teamchat:
     description: 'Gives access to the team chat channel.'
     default: true

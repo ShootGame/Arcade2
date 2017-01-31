@@ -129,7 +129,7 @@ public class Command {
     }
 
     public boolean hasPermission() {
-        return this.permission != null;
+        return this.permission != null && !this.permission.isEmpty();
     }
 
     public boolean isClientOnly() {

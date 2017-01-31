@@ -94,6 +94,10 @@ public class Group implements StringId {
         return this.prefix;
     }
 
+    public boolean hasPrefix() {
+        return this.prefix != null;
+    }
+
     public boolean isDefault() {
         return this.def;
     }

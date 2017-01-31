@@ -1,11 +1,13 @@
 package pl.themolka.arcade.map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.generator.GeneratorType;
+import pl.themolka.arcade.scoreboard.ScoreboardContext;
 
 public class ArcadeMap {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.PEACEFUL;
@@ -21,6 +23,7 @@ public class ArcadeMap {
     private transient Game game;
     private transient Generator generator;
     private boolean pvp;
+    private String scoreboardTitle;
     private long seed;
     private transient Location spawn;
     private transient World world;
@@ -66,6 +69,19 @@ public class ArcadeMap {
         return DEFAULT_GENERATOR;
     }
 
+    public String getScoreboardTitle() {
+        if (this.hasScoreboardTitle()) {
+            return this.scoreboardTitle;
+        }
+
+        String mapName = ChatColor.YELLOW + this.getMapInfo().getName();
+        if (mapName.length() <= ScoreboardContext.OBJECTIVE_MAX_LENGTH) {
+            return mapName;
+        }
+
+        return null;
+    }
+
     public long getSeed() {
         if (this.hasSeed()) {
             return this.seed;
@@ -96,6 +112,10 @@ public class ArcadeMap {
 
     public boolean hasGenerator() {
         return this.generator != null;
+    }
+
+    public boolean hasScoreboardTitle() {
+        return this.scoreboardTitle != null;
     }
 
     public boolean hasSeed() {
@@ -130,6 +150,12 @@ public class ArcadeMap {
 
     public void setPvp(boolean pvp) {
         this.pvp = pvp;
+    }
+
+    public void setScoreboardTitle(String title) {
+        if (title == null || title.length() <= ScoreboardContext.OBJECTIVE_MAX_LENGTH) {
+            this.scoreboardTitle = title;
+        }
     }
 
     public void setSeed(long seed) {

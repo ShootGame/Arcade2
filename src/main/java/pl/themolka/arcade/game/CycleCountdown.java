@@ -94,6 +94,10 @@ public class CycleCountdown extends PrintableCountdown {
         this.plugin.getLogger().info(message);
     }
 
+    public void setDefaultDuration() {
+        this.setDuration(DEFAULT_DURATION);
+    }
+
     private String getCancelMessage(String mapName) {
         String message = ChatColor.GRAY + "Cycle countdown to " + ChatColor.AQUA + ChatColor.BOLD + FIELD_MAP_NAME +
                 ChatColor.RESET + ChatColor.GRAY + " has been canceled.";
@@ -111,9 +115,5 @@ public class CycleCountdown extends PrintableCountdown {
             return result + "..";
         }
         return result;
-    }
-
-    public void setDefaultDuration() {
-        this.setDuration(DEFAULT_DURATION);
     }
 }

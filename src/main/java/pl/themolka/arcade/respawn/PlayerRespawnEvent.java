@@ -5,10 +5,10 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.ArcadePlayerEvent;
 
-public class ArcadePlayerRespawnEvent extends ArcadePlayerEvent {
+public class PlayerRespawnEvent extends ArcadePlayerEvent {
     private Location respawnPosition;
 
-    public ArcadePlayerRespawnEvent(ArcadePlugin plugin, ArcadePlayer player) {
+    public PlayerRespawnEvent(ArcadePlugin plugin, ArcadePlayer player) {
         super(plugin, player);
     }
 

@@ -3,6 +3,7 @@ package pl.themolka.arcade.channel;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.CommandContext;
+import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.Game;
@@ -23,6 +24,10 @@ public class ChannelsModule extends Module<ChannelsGame> {
             usage = "[-console] <message...>",
             permission = "arcade.channel.global")
     public void global(Sender sender, CommandContext context) {
+        if (!this.isGameModuleEnabled()) {
+            throw new CommandException("Channels module is not enabled in this game.");
+        }
+
         boolean console = context.hasFlag("c") || context.hasFlag("console");
         if (console && sender.hasPermission("arcade.channel.global.console")) {
             sender = this.getPlugin().getConsole();

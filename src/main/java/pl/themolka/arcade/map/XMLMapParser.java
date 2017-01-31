@@ -172,11 +172,17 @@ public class XMLMapParser implements MapParser {
             world = new Element("world");
         }
 
+        Element scoreboard = root.getChild("scoreboard");
+        if (scoreboard == null) {
+            scoreboard = new Element("scoreboard");
+        }
+
         ArcadeMap map = new ArcadeMap(offline);
         map.setConfiguration(new ArcadeMapConfiguration(root));
         map.setDifficulty(this.parseDifficulty(world));
         map.setEnvironment(this.parseEnvironment(world));
         map.setGenerator(this.parseGenerator(world, plugin, map));
+        map.setScoreboardTitle(this.parseScoreboardTitle(scoreboard));
         map.setSeed(this.parseSeed(world));
         map.setSpawn(this.parseSpawn(world));
         map.setPvp(this.parsePvp(world));
@@ -208,6 +214,17 @@ public class XMLMapParser implements MapParser {
             Element xml = parent.getChild("generator");
             if (xml != null) {
                 return XMLGenerator.parse(xml, plugin, map);
+            }
+        }
+
+        return null;
+    }
+
+    private String parseScoreboardTitle(Element parent) {
+        if (parent != null) {
+            Element xml = parent.getChild("title");
+            if (xml != null) {
+                return xml.getTextNormalize();
             }
         }
 

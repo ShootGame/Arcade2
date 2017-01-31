@@ -79,10 +79,22 @@ public class MapCommands {
     }
 
     public List<String> mapInfoCompleter(Sender sender, CommandContext context) {
-        List<String> results = this.mapCompleter();
-        results.addAll(Arrays.asList("-current", "-next"));
+        String request = context.getParams(0);
+        if (request == null) {
+            request = "";
+        }
 
-        Collections.sort(results);
+        List<String> array = this.mapCompleter();
+        array.addAll(Arrays.asList("-current", "-next"));
+        Collections.sort(array);
+
+        List<String> results = this.mapCompleter();
+        for (String item : array) {
+            if (item.toLowerCase().startsWith(request.toLowerCase())) {
+                results.add(item);
+            }
+        }
+
         return results;
     }
 
@@ -178,7 +190,7 @@ public class MapCommands {
         String paramMap = context.getParams(0);
 
         if (paramRestart) {
-            this.plugin.getGames().setNextRestart(paramRestart);
+            this.plugin.getGames().setNextRestart(true);
             throw new CommandException("The server will be restarted after this game.");
         }
 
@@ -206,16 +218,29 @@ public class MapCommands {
     }
 
     public List<String> setNextCompleter(Sender sender, CommandContext context) {
-        List<String> results = this.mapCompleter();
-        results.addAll(Arrays.asList("-add", "-current", "-restart"));
+        String request = context.getParams(0);
+        if (request == null) {
+            request = "";
+        }
 
-        Collections.sort(results);
+        List<String> array = this.mapCompleter();
+        array.addAll(Arrays.asList("-add", "-current", "-restart"));
+        Collections.sort(array);
+
+        List<String> results = this.mapCompleter();
+        for (String item : array) {
+            if (item.toLowerCase().startsWith(request.toLowerCase())) {
+                results.add(item);
+            }
+        }
+
         return results;
     }
 
     private void setNextMap(Sender sender, OfflineMap map, boolean next) {
         GameManager games = this.plugin.getGames();
 
+        games.setNextRestart(false);
         if (next) {
             games.getQueue().setNextMap(map);
             sender.sendSuccess(map.getName() + " has been set to next in the queue.");

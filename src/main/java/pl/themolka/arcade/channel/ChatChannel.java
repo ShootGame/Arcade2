@@ -40,6 +40,11 @@ public class ChatChannel extends AbstractChannel {
     }
 
     @Override
+    public boolean hasMember(Sender member) {
+        return this.members.contains(member);
+    }
+
+    @Override
     public boolean removeMember(Sender member) {
         return this.members.remove(member);
     }

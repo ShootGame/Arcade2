@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class GameModule extends SimpleGameListener implements Listener, Serializable {
     private ArcadePlugin plugin;
 
+    private boolean enabled;
     private transient Game game;
     private boolean loaded = false;
     private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
@@ -100,6 +101,10 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
         return this.taskList;
     }
 
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
     public boolean isLoaded() {
         return this.loaded;
     }
@@ -157,6 +162,10 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
 
         this.taskList.add(task);
         return result;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public boolean unregisterListenerObject(Object object) {

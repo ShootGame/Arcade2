@@ -15,8 +15,8 @@ import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchStartCountdownEvent;
 import pl.themolka.arcade.match.MatchState;
-import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
-import pl.themolka.arcade.session.ArcadePlayerQuitEvent;
+import pl.themolka.arcade.session.PlayerJoinEvent;
+import pl.themolka.arcade.session.PlayerQuitEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -92,6 +92,8 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         if (!player.getBukkit().hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
+        } else if (this.getTeam(player) != null && this.getTeam(player).equals(join)) {
+            throw new CommandException("You already joined " + join.getName() + ".");
         } else if (join.isFull()) {
             throw new CommandException("Teams are overfilled!");
         }
@@ -143,6 +145,8 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         if (result == null) {
             throw new CommandException("No teams found from the given query.");
+        } else if (this.getTeam(player) != null && this.getTeam(player).equals(result)) {
+            throw new CommandException("You already joined " + result.getName() + ".");
         } else if (!player.getBukkit().hasPermission("arcade.command.join.overfill") && result.isOverfill()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
@@ -228,7 +232,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     }
 
     @Handler(priority = Priority.HIGH)
-    public void onPlayerJoinServer(ArcadePlayerJoinEvent event) {
+    public void onPlayerJoinServer(PlayerJoinEvent event) {
         this.teamsByPlayer.remove(event.getGamePlayer());
 
         try {
@@ -259,7 +263,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     }
 
     @Handler(priority = Priority.LAST)
-    public void onPlayerLeaveServer(ArcadePlayerQuitEvent event) {
+    public void onPlayerLeaveServer(PlayerQuitEvent event) {
         Team team = this.getTeam(event.getGamePlayer());
         if (team != null) {
             team.leaveServer(event.getGamePlayer());
@@ -267,10 +271,15 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onPlayerWantToJoin(GameCommands.JoinCompleterEvent event) {
+    public void onPlayerWantsToJoin(GameCommands.JoinCompleterEvent event) {
+        String request = event.getContext().getParams(0);
+        if (request == null) {
+            request = "";
+        }
+
         for (Team team : this.getTeams()) {
-            if (team.getName() != null) {
-                event.addResult(team.getName().toLowerCase());
+            if (team.getName() != null && team.getName().toLowerCase().startsWith(request.toLowerCase())) {
+                event.addResult(team.getName());
             }
         }
     }

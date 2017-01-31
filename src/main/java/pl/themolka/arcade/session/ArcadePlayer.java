@@ -2,6 +2,7 @@ package pl.themolka.arcade.session;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -27,6 +28,8 @@ import java.util.UUID;
 
 public class ArcadePlayer implements Metadata, Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
+    public static final int USERNAME_MIN_LENGTH = 3; // was changed to 4 in beta
+    public static final int USERNAME_MAX_LENGTH = 16;
 
     private final ArcadePlugin plugin;
 
@@ -132,7 +135,7 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public String getFullName() {
-        return this.getDisplayName();
+        return this.getPermissions().getPrefixes() + this.getDisplayName() + ChatColor.RESET;
     }
 
     public Time getLastPlayedSound() {

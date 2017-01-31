@@ -40,24 +40,31 @@ public class Match {
     }
 
     public void broadcastEndMessage(MatchWinner winner) {
+        String winnerMessage = null;
+        if (winner != null) {
+            winnerMessage = CommandUtils.createTitle(ChatColor.GOLD + winner.getMessage());
+        }
+
         for (GamePlayer gamePlayer : this.getGame().getPlayers()) {
             if (!gamePlayer.isOnline()) {
                 continue;
             }
 
-            String winnerMessage = null;
-            if (winner != null) {
-                winnerMessage = CommandUtils.createTitle(ChatColor.GOLD + winner.getMessage());
-            }
-
             ArcadePlayer player = gamePlayer.getPlayer();
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
-            player.send(CommandUtils.createTitle(ChatColor.GOLD + "The match has ended!"));
+            player.send(" " + CommandUtils.createTitle(ChatColor.GOLD + "The match has ended!") + " ");
             if (winnerMessage != null) {
-                player.send(winnerMessage);
+                player.send(" " + winnerMessage + " ");
             }
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
+
+        String logMessage = "no result.";
+        if (winnerMessage != null) {
+            logMessage = "result: " + winnerMessage;
+        }
+
+        this.plugin.getLogger().info("The match has ended with " + logMessage);
     }
 
     public void broadcastStartMessage() {
@@ -68,12 +75,14 @@ public class Match {
 
             ArcadePlayer player = gamePlayer.getPlayer();
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
-            player.send(CommandUtils.createTitle(ChatColor.GREEN + "The match has started!"));
+            player.send(" " + CommandUtils.createTitle(ChatColor.GREEN + "The match has started!") + " ");
             if (gamePlayer.isParticipating()) {
-                player.send(CommandUtils.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!"));
+                player.send(" " + CommandUtils.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!") + " ");
             }
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
         }
+
+        this.plugin.getLogger().info("The match has started.");
     }
 
     public void end(boolean force) {

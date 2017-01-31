@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionContext {
+    public static final String EMPTY_PREFIX = "";
+
     private final ArcadePlugin plugin;
 
     private final PermissionAttachment attachment;
     private final List<Group> groups = new ArrayList<>();
     private final ArcadePlayer player;
+    private String prefixes;
 
     public PermissionContext(ArcadePlugin plugin, ArcadePlayer player) {
         this.plugin = plugin;
@@ -41,8 +44,20 @@ public class PermissionContext {
         return this.player;
     }
 
+    public String getPrefixes() {
+        if (this.hasPrefixes()) {
+            return this.prefixes;
+        }
+
+        return EMPTY_PREFIX;
+    }
+
     public boolean hasPermission(String permission) {
         return this.getAttachment().getPermissions().getOrDefault(permission.toLowerCase(), false);
+    }
+
+    public boolean hasPrefixes() {
+        return this.prefixes != null;
     }
 
     public boolean isMember(Group group) {
@@ -90,9 +105,26 @@ public class PermissionContext {
                 this.getAttachment().setPermission(permission.getName(), permission.isAccess());
             }
         }
+
+        this.refreshPrefixes();
+    }
+
+    public void refreshPrefixes() {
+        StringBuilder builder = new StringBuilder();
+        for (Group group : this.getGroups()) {
+            if (group.hasPrefix()) {
+                builder.append(group.getPrefix());
+            }
+        }
+
+        this.setPrefixes(builder.toString());
     }
 
     public boolean removeGroup(Group group) {
         return this.groups.remove(group);
+    }
+
+    public void setPrefixes(String prefixes) {
+        this.prefixes = prefixes;
     }
 }

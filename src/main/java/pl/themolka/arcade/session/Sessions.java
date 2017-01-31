@@ -14,7 +14,6 @@ import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.respawn.ArcadePlayerRespawnEvent;
 
 public class Sessions implements Listener {
     private final ArcadePlugin plugin;
@@ -52,7 +51,8 @@ public class Sessions implements Listener {
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            ArcadePlayerRespawnEvent respawnEvent = new ArcadePlayerRespawnEvent(this.plugin, player);
+            pl.themolka.arcade.respawn.PlayerRespawnEvent respawnEvent =
+                    new pl.themolka.arcade.respawn.PlayerRespawnEvent(this.plugin, player);
             respawnEvent.setRespawnPosition(game.getMap().getSpawn());
 
             this.postEvent(respawnEvent);
@@ -101,11 +101,11 @@ public class Sessions implements Listener {
     }
 
     public void insertSession(ArcadePlayer player) {
-        this.postEvent(new ArcadePlayerJoinEvent(this.plugin, player));
+        this.postEvent(new pl.themolka.arcade.session.PlayerJoinEvent(this.plugin, player));
     }
 
     public void removeSession(ArcadePlayer player) {
-        this.postEvent(new ArcadePlayerQuitEvent(this.plugin, player));
+        this.postEvent(new pl.themolka.arcade.session.PlayerQuitEvent(this.plugin, player));
     }
 
     private void postEvent(Event event) {

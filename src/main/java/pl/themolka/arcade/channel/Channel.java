@@ -12,6 +12,8 @@ public interface Channel extends Messageable, StringId {
 
     String getPermission();
 
+    boolean hasMember(Sender member);
+
     boolean removeMember(Sender member);
 
     void sendChat(Sender author, String chat);

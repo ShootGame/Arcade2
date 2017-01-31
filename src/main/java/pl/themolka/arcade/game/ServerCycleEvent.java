@@ -5,13 +5,13 @@ import pl.themolka.arcade.map.ArcadeMap;
 
 public class ServerCycleEvent extends CycleEvent {
     private final Game newGame;
-    private final ArcadeMap newMap;
+    private final Game oldGame;
 
-    public ServerCycleEvent(ArcadePlugin plugin, Game newGame) {
+    public ServerCycleEvent(ArcadePlugin plugin, Game newGame, Game oldGame) {
         super(plugin, newGame.getMap().getMapInfo());
 
         this.newGame = newGame;
-        this.newMap = newGame.getMap();
+        this.oldGame = oldGame;
     }
 
     public Game getNewGame() {
@@ -19,6 +19,18 @@ public class ServerCycleEvent extends CycleEvent {
     }
 
     public ArcadeMap getNewMap() {
-        return this.newMap;
+        return this.getNewGame().getMap();
+    }
+
+    public Game getOldGame() {
+        return this.oldGame;
+    }
+
+    public ArcadeMap getOldMap() {
+        if (this.getOldGame() != null) {
+            return this.getOldGame().getMap();
+        }
+
+        return null;
     }
 }

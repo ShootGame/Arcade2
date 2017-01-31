@@ -35,6 +35,7 @@ import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
 import pl.themolka.arcade.listener.ServerPingListener;
+import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
@@ -52,6 +53,7 @@ import pl.themolka.arcade.permission.PermissionManager;
 import pl.themolka.arcade.permission.PermissionsReloadEvent;
 import pl.themolka.arcade.permission.PermissionsReloadedEvent;
 import pl.themolka.arcade.permission.XMLPermissions;
+import pl.themolka.arcade.scoreboard.ScoreboardListeners;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
@@ -83,7 +85,9 @@ import java.util.logging.Level;
  * The Arcade main class
  */
 public final class ArcadePlugin extends JavaPlugin implements Runnable {
-    public static final String[] COPYRIGHTS = {"TheMolkaPL"};
+    public static final String[] COPYRIGHTS = {
+            new Author(UUID.fromString("2b5f34f6-fb05-4852-a86c-2e03bccbdf89"), "TheMolkaPL").toString()
+    };
 
     public static final String DEFAULT_SERVER_NAME = "The server";
     public static final String YAML_NOT_SUPPORTED = "YAML is not supported!";
@@ -592,11 +596,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadServer() {
         this.serverSession = new ServerSessionFile(this);
-        try {
-            this.serverSession.deserialize();
-        } catch (IOException io) {
-            this.getLogger().log(Level.SEVERE, "Could not load server-session file: " + io.getMessage(), io);
-        }
+//        try {
+//            this.serverSession.deserialize();
+//        } catch (IOException io) {
+//            this.getLogger().log(Level.SEVERE, "Could not load server-session file: " + io.getMessage(), io);
+//        }
 
         Element serverElement = this.getSettings().getData().getChild("server");
         if (serverElement == null) {
@@ -615,6 +619,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // permissions
         this.registerListenerObject(new PermissionListeners(this));
+
+        // scoreboards
+        this.registerListenerObject(new ScoreboardListeners(this));
 
         // sessions
         this.registerListenerObject(new Sessions(this));

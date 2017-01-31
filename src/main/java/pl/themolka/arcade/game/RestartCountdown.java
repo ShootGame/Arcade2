@@ -10,6 +10,7 @@ import pl.themolka.arcade.task.PrintableCountdown;
 import java.time.Duration;
 
 public class RestartCountdown extends PrintableCountdown {
+    public static final Duration DEFAULT_DURATION = Duration.ofSeconds(25);
     public static final String FIELD_SERVER_NAME = "%SERVER_NAME%";
 
     private final ArcadePlugin plugin;
@@ -77,6 +78,10 @@ public class RestartCountdown extends PrintableCountdown {
         }
 
         this.plugin.getLogger().info(message);
+    }
+
+    public void setDefaultDuration() {
+        this.setDuration(DEFAULT_DURATION);
     }
 
     private String getCancelMessage() {

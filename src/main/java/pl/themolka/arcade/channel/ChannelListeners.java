@@ -9,8 +9,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.ArcadeSound;
 
 public class ChannelListeners implements Listener {
+    public static final String CHANNEL_MENTION_KEY = "@";
+    public static final int CHANNEL_MENTION_LIMIT = 1;
     public static final String CHANNEL_SPY_PERMISSION = "arcade.channel.spy";
 
     private final ChannelsGame game;
@@ -36,6 +39,43 @@ public class ChannelListeners implements Listener {
 
         channel.sendChat(player, message);
         event.setCancelled(true);
+    }
+
+    @Handler(priority = Priority.LOW)
+    public void onChannelMention(ChannelChatEvent event) {
+        if (event.isCanceled()) {
+            return;
+        }
+
+        int mentioned = 0;
+        for (String split : event.getMessage().split(" ")) {
+            if (mentioned >= CHANNEL_MENTION_LIMIT || !split.startsWith(CHANNEL_MENTION_KEY)) {
+                continue;
+            }
+
+            String username = split.substring(1);
+            if (username.isEmpty() ||
+                    username.length() < ArcadePlayer.USERNAME_MIN_LENGTH ||
+                    username.length() > ArcadePlayer.USERNAME_MAX_LENGTH) {
+                continue;
+            }
+
+            GamePlayer player = this.game.getGame().findPlayer(username);
+            if (player == null) {
+                continue;
+            } else if (!event.getChannel().hasMember(player)) {
+                event.getAuthor().sendError("Player " + player.getFullName() + ChatColor.RED + " is not a member of this channel.");
+                continue;
+            }
+
+            event.setMessage(event.getMessage().replace(split, player.getFullName()));
+
+            // notify
+            player.sendInfo("You have been mentioned by " + event.getAuthorName());
+            player.getPlayer().play(ArcadeSound.CHAT_MENTION);
+
+            mentioned++;
+        }
     }
 
     @Handler(priority = Priority.LAST)

@@ -36,6 +36,7 @@ public class TeamsModule extends Module<TeamsGame> {
         for (Element teamElement : xml.getChildren("team")) {
             Team team = XMLTeam.parse(teamElement, this.getPlugin());
             if (team != null) {
+                team.setBukkit(Team.createBukkitTeam(game.getScoreboard().getScoreboard(), team));
                 teams.add(team);
             }
         }
@@ -84,8 +85,11 @@ public class TeamsModule extends Module<TeamsGame> {
 
         for (Team team : teams) {
             String message = ChatColor.GRAY + " - " + team.getPrettyName() + ChatColor.GRAY + " - " +
-                    ChatColor.GOLD + ChatColor.BOLD + team.getOnlineMembers().size() + ChatColor.RESET +
-                    ChatColor.GRAY + "/" + team.getSlots();
+                    ChatColor.GOLD + ChatColor.BOLD + team.getOnlineMembers().size() + ChatColor.RESET;
+
+            if (team.getSlots() != Integer.MAX_VALUE) {
+                message += ChatColor.GRAY + "/" + team.getSlots();
+            }
 
             if (context.hasFlag("xml")) {
                 message += " " + this.teamsKeyValue("id", team.getId()) + ", " +
@@ -101,7 +105,20 @@ public class TeamsModule extends Module<TeamsGame> {
     }
 
     public List<String> teamsCompleter(Sender sender, CommandContext context) {
-        return Collections.singletonList("-xml");
+        String requestedContext = context.getParams(0);
+        if (requestedContext == null) {
+            requestedContext = "";
+        }
+
+        List<String> completions = Collections.singletonList("-xml");
+        List<String> results = new ArrayList<>();
+        for (String completion : completions) {
+            if (completion.toLowerCase().startsWith(requestedContext.toLowerCase())) {
+                results.add(completion);
+            }
+        }
+
+        return results;
     }
 
     private String teamsKeyValue(String key, Object value) {

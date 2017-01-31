@@ -69,6 +69,7 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
         org.bukkit.command.Command performer = new CommandPerformer(command.getCommand());
         performer.setAliases(aliases);
         performer.setDescription(command.getDescription());
+        performer.setPermission(command.getPermission());
         performer.setUsage(command.getUsage());
         return performer;
     }

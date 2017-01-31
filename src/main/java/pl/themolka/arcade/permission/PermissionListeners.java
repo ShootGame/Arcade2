@@ -9,7 +9,7 @@ import pl.themolka.arcade.game.ServerCycleEvent;
 import pl.themolka.arcade.match.MatchEndedEvent;
 import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.session.ArcadePlayerJoinEvent;
+import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
 
 public class PermissionListeners {
@@ -19,13 +19,13 @@ public class PermissionListeners {
         this.plugin = plugin;
     }
 
-    // player join the server
+    // player joins the server
     @Handler(priority = Priority.LOWER)
-    public void onPlayerJoinServer(ArcadePlayerJoinEvent event) {
+    public void onPlayerJoinServer(PlayerJoinEvent event) {
         this.refresh(event.getPlayer());
     }
 
-    // server cycle the game
+    // server cycles the game
     @Handler(priority = Priority.LOWER)
     public void onServerCycle(ServerCycleEvent event) {
         for (GamePlayer player : event.getNewGame().getPlayers()) {
@@ -33,7 +33,7 @@ public class PermissionListeners {
         }
     }
 
-    // server start
+    // server starts
     @Handler(priority = Priority.LOWER)
     public void onServerStart(PluginReadyEvent event) {
         for (ArcadePlayer player : event.getPlugin().getPlayers()) {

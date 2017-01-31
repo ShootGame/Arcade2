@@ -94,7 +94,10 @@ public class XMLTeam extends XMLParser {
     public static String parseName(Element xml) {
         Attribute attribute = xml.getAttribute("name");
         if (attribute != null) {
-            return attribute.getValue();
+            String name = attribute.getValue();
+            if (name.length() <= Team.NAME_MAX_LENGTH) {
+                return name;
+            }
         }
 
         return RandomStringUtils.randomAlphanumeric(5);
@@ -116,6 +119,10 @@ public class XMLTeam extends XMLParser {
         List<TeamSpawn> spawns = new ArrayList<>();
 
         Element spawnsElement = xml.getChild("spawns");
+        if (spawnsElement == null) {
+            return spawns;
+        }
+
         for (Element element : spawnsElement.getChildren()) {
             TeamSpawn spawn = null;
             switch (element.getName().toLowerCase()) {
