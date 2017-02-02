@@ -28,8 +28,14 @@ public class MatchModule extends Module<MatchGame> {
 
     @Override
     public MatchGame buildGameModule(Element xml, Game game) throws JDOMException {
+        boolean autoCycle = true;
         boolean autoStart = true;
         int startCountdown = this.defaultStartCountdown;
+
+        Element autoCycleElement = xml.getChild("auto-cycle");
+        if (autoCycleElement != null) {
+            autoCycle = XMLParser.parseBoolean(autoCycleElement.getTextNormalize(), true);
+        }
 
         Element autoStartElement = xml.getChild("auto-start");
         if (autoStartElement != null) {
@@ -58,7 +64,7 @@ public class MatchModule extends Module<MatchGame> {
         }
 
         this.getGame().setMetadata(MatchModule.class, METADATA_OBSERVERS, observers);
-        return new MatchGame(autoStart, startCountdown, observers);
+        return new MatchGame(autoCycle, autoStart, startCountdown, observers);
     }
 
     @Override
@@ -103,8 +109,8 @@ public class MatchModule extends Module<MatchGame> {
         }
 
         int seconds = context.getParamInt(0);
-        if (seconds < 5) {
-            seconds = 5;
+        if (seconds < 3) {
+            seconds = 3;
         }
 
         MatchGame game = this.getGameModule();

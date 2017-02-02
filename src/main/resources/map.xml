@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map>
+    <!-- Basic settings -->
     <name>Example Map</name>
     <version>1.0</version>
     <description>Kill the enemy</description>
@@ -7,15 +8,21 @@
         <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
     </authors>
 
+    <!-- Include global data (matches) -->
+    <include type="global">match.xml</include>
+
+    <!-- World settings -->
     <world difficulty="easy" environment="normal" pvp="true">
         <spawn x="0.5" y="64" z="0.5" />
     </world>
 
+    <!-- Scoreboard settings -->
     <scoreboard>
         <title>`eMatch Goals</title>
     </scoreboard>
 
     <modules>
+        <!-- Format -->
         <teams>
             <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
                 <kits>
@@ -44,6 +51,22 @@
             </team>
         </teams>
 
+        <!-- Objectives -->
+        <leak>
+            <leakable id="blue-core" name="Blue Core" owner="blue-team" liquid="lava" detector-level="5">
+                <region>
+                    <sphere origin-x="25" origin-y="16" origin-z="0" radius="3" />
+                </region>
+            </leakable>
+
+            <leakable id="red-core" name="Red core" owner="red-team" liquid="lava" detector-level="5">
+                <region>
+                    <sphere origin-x="-25" origin-y="16" origin-z="0" radius="3" />
+                </region>
+            </leakable>
+        </leak>
+
+        <!-- Other modules -->
         <filters>
             <filter id="custom-filter">
 
@@ -131,19 +154,5 @@
                 </item>
             </kit>
         </kits>
-
-        <leak>
-            <leakable id="blue-core" name="Blue Core" owner="blue-team" liquid="lava" detector-level="5">
-                <region>
-                    <sphere origin-x="25" origin-y="16" origin-z="0" radius="3" />
-                </region>
-            </leakable>
-
-            <leakable id="red-core" name="Red core" owner="red-team" liquid="lava" detector-level="5">
-                <region>
-                    <sphere origin-x="-25" origin-y="16" origin-z="0" radius="3" />
-                </region>
-            </leakable>
-        </leak>
     </modules>
 </map>

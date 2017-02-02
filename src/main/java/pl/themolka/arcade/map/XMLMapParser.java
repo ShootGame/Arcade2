@@ -15,6 +15,7 @@ import pl.themolka.arcade.generator.XMLGenerator;
 import pl.themolka.arcade.xml.XMLDifficulty;
 import pl.themolka.arcade.xml.XMLEnvironment;
 import pl.themolka.arcade.xml.XMLLocation;
+import pl.themolka.arcade.xml.XMLPreProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,13 @@ import java.util.UUID;
 public class XMLMapParser implements MapParser {
     public static final String XML_DEFAULT_FILENAME = "map.xml";
 
+    private final ArcadePlugin plugin;
+
     private Document document;
+
+    public XMLMapParser(ArcadePlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void readFile(File file) throws IOException, MapParserException {
@@ -37,6 +44,8 @@ public class XMLMapParser implements MapParser {
         } catch (JDOMException jdom) {
             throw new MapParserException("Failed to parse XML", jdom);
         }
+
+        this.preprocess();
     }
 
     @Override
@@ -46,6 +55,8 @@ public class XMLMapParser implements MapParser {
         } catch (JDOMException jdom) {
             throw new MapParserException("Failed to parse XML", jdom);
         }
+
+        this.preprocess();
     }
 
     @Override
@@ -55,6 +66,8 @@ public class XMLMapParser implements MapParser {
         } catch (JDOMException jdom) {
             throw new MapParserException("Failed to parse XML", jdom);
         }
+
+        this.preprocess();
     }
 
     @Override
@@ -64,10 +77,21 @@ public class XMLMapParser implements MapParser {
         } catch (JDOMException jdom) {
             throw new MapParserException("Failed to parse XML", jdom);
         }
+
+        this.preprocess();
     }
 
     public Document getDocument() {
         return this.document;
+    }
+
+    public void preprocess() {
+        XMLPreProcessor handler = new XMLPreProcessor(this.plugin, this.getDocument().getRootElement());
+        handler.prepare();
+        handler.run();
+
+        this.getDocument().detachRootElement();
+        this.getDocument().setRootElement(handler.getElement());
     }
 
     //
@@ -276,6 +300,12 @@ public class XMLMapParser implements MapParser {
     }
 
     public static class XMLParserTechnology implements MapParser.Technology {
+        private final ArcadePlugin plugin;
+
+        public XMLParserTechnology(ArcadePlugin plugin) {
+            this.plugin = plugin;
+        }
+
         @Override
         public String getDefaultFilename() {
             return XML_DEFAULT_FILENAME;
@@ -283,7 +313,7 @@ public class XMLMapParser implements MapParser {
 
         @Override
         public MapParser newInstance() {
-            return new XMLMapParser();
+            return new XMLMapParser(this.plugin);
         }
     }
 }

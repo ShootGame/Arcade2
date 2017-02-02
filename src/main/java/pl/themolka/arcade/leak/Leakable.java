@@ -42,8 +42,8 @@ public class Leakable implements InteractableGoal, StringId {
 
     @Override
     public String getGoalInteractMessage(String interact) {
-        return interact + ChatColor.LIGHT_PURPLE + " broke a piece of " + ChatColor.GREEN + ChatColor.BOLD +
-                ChatColor.ITALIC + this.getName() + ChatColor.RESET + ChatColor.LIGHT_PURPLE + ".";
+        return ChatColor.GOLD + interact + ChatColor.DARK_PURPLE + " broke a piece of " + ChatColor.GOLD +
+                ChatColor.BOLD + ChatColor.ITALIC + this.getName() + ChatColor.RESET + ChatColor.DARK_PURPLE + ".";
     }
 
     @Override
@@ -178,6 +178,8 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     public void leak() {
+        this.game.getMatch().sendGoalMessage(ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.DARK_PURPLE +
+                "'s " + ChatColor.GOLD + this.getName() + ChatColor.DARK_PURPLE + " has leaked.");
         this.setCompleted(null, true);
     }
 

@@ -14,4 +14,8 @@ public class GoalProgressEvent extends GoalEvent {
     public double getOldProgress() {
         return this.oldProgress;
     }
+
+    public double getNewProgress() {
+        return this.getGoal().getProgress();
+    }
 }

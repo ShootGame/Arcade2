@@ -14,8 +14,8 @@ public class CuboidRegion extends AbstractRegion {
     public CuboidRegion(String id, ArcadeMap map, Vector min, Vector max) {
         super(id, map);
 
-        this.max = new Vector(Math.max(max.getX(), min.getX()), Math.max(max.getY(), min.getZ()),  Math.max(max.getZ(), min.getZ()));
-        this.min = new Vector(Math.min(max.getX(), min.getX()), Math.min(max.getY(), min.getZ()), Math.min(max.getZ(), min.getZ()));
+        this.max = new Vector(Math.max(max.getX(), min.getX()), Math.max(max.getY(), min.getY()),  Math.max(max.getZ(), min.getZ()));
+        this.min = new Vector(Math.min(max.getX(), min.getX()), Math.min(max.getY(), min.getY()), Math.min(max.getZ(), min.getZ()));
         this.center = new Vector(
                 (max.getX() - min.getX()) / 2D + min.getX(),
                 (max.getY() - min.getY()) / 2D + min.getY(),

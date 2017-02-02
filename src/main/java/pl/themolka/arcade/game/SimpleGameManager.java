@@ -76,7 +76,7 @@ public class SimpleGameManager implements GameManager {
         this.plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
         World world = maps.createWorld(map);
 
-        Game game = new Game(this.plugin, map, world);
+        Game game = new Game(this.plugin, this.getGameId(), map, world);
         map.setGame(game);
 
         map.getSpawn().setWorld(world);

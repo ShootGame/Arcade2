@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<settings>
+<settings enabled="true">
     <!-- Default cycle settings -->
     <cycle countdown="25s" />
 
@@ -19,6 +19,11 @@
     <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->
     <world-container>./worlds</world-container>
 
+    <!-- Plugin properties -->
+    <properties>
+        <XMLPreProcessor.include.global>./maps/global-xml</XMLPreProcessor.include.global>
+    </properties>
+
     <!-- Default map queue -->
     <queue restart-after="15">
         <map>Unknown map</map>
@@ -36,8 +41,6 @@
             <directory>./archive</directory>
         </archive>
 
-        <channels />
-
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>
@@ -45,6 +48,7 @@
         </map-loader>
 
         <match>
+            <auto-cycle>true</auto-cycle>
             <auto-start>true</auto-start>
             <observers name="Observers" color="aqua" dye-color="light blue" />
             <start-countdown>25s</start-countdown>

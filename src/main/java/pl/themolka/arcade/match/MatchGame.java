@@ -6,6 +6,7 @@ import org.bukkit.scoreboard.Team;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
@@ -23,13 +24,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MatchGame extends GameModule {
+    private boolean autoCycle;
     private boolean autoStart;
     private int defaultStartCountdown;
     private Match match;
     private Observers observers;
     private MatchStartCountdown startCountdown;
 
-    public MatchGame(boolean autoStart, int defaultStartCountdown, Observers observers) {
+    public MatchGame(boolean autoCycle, boolean autoStart, int defaultStartCountdown, Observers observers) {
+        this.autoCycle = autoCycle;
         this.autoStart = autoStart;
         this.defaultStartCountdown = defaultStartCountdown;
         this.observers = observers;
@@ -39,6 +42,9 @@ public class MatchGame extends GameModule {
     public void onEnable() {
         this.match = new Match(this.getPlugin(), this.getGame(), this.getObservers());
         this.getObservers().setMatch(this.getMatch());
+
+        this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.getMatch());
+        this.getStartCountdown().setGame(this.getGame());
 
         Team bukkit = Observers.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), this.getObservers());
         this.getObservers().setBukkit(bukkit);
@@ -129,22 +135,29 @@ public class MatchGame extends GameModule {
         return results;
     }
 
+    public boolean isAutoCycle() {
+        return this.autoCycle;
+    }
+
     public boolean isAutoStart() {
         return this.autoStart;
     }
 
     public int startCountdown(int seconds) {
-        if (this.getStartCountdown() == null) {
-            this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.match);
-            this.getStartCountdown().setGame(this.getGame());
-        }
-
         this.getStartCountdown().cancelCountdown();
         if (!this.getStartCountdown().isTaskRunning()) {
             return this.getStartCountdown().countStart(seconds);
         }
 
         return this.getStartCountdown().getTaskId();
+    }
+
+    @Handler(priority = Priority.HIGH)
+    public void onCycleCommand(GeneralCommands.CycleCommandEvent event) {
+        if (this.getMatch().getState().equals(MatchState.RUNNING)) {
+            event.getSender().sendError("The match is currently running. Type /end to end the match.");
+            event.setCanceled(true);
+        }
     }
 
     @Handler(priority = Priority.LOWEST)
@@ -174,6 +187,11 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.LOWEST)
     public void onCycleCountdownAutoStart(MatchEndedEvent event) {
+        if (!this.isAutoCycle()) {
+            // auto cycle is disabled
+            return;
+        }
+
         GameManager games = event.getPlugin().getGames();
 
         Countdown countdown;

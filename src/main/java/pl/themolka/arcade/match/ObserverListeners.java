@@ -71,7 +71,7 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockInventorySpy(PlayerInteractEvent event) {
         if (this.isObserving(event.getPlayer()) && event.getClickedBlock() != null && !event.getPlayer().isSneaking()) {
             this.handleInventorySpy(event.getPlayer(), event.getClickedBlock());
@@ -202,14 +202,17 @@ public class ObserverListeners implements Listener {
             bukkit.setCollidable(false);
 
             for (GamePlayer player : this.game.getGame().getPlayers()) {
-                player.getPlayer().getBukkit().hidePlayer(bukkit);
+                if (player.isParticipating()) {
+                    player.getPlayer().getBukkit().hidePlayer(bukkit);
+                }
             }
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
-        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
+        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers() &&
+                this.game.getMatch().getState().equals(MatchState.RUNNING)) {
             event.getPlayer().resetFull();
 
             Player bukkit = event.getPlayer().getBukkit();

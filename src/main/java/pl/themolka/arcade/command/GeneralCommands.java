@@ -86,8 +86,8 @@ public class GeneralCommands {
         }
 
         int seconds = paramSeconds;
-        if (seconds < 5) {
-            seconds = 5;
+        if (seconds < 3) {
+            seconds = 3;
         }
 
         CycleStartEvent startEvent = new CycleStartEvent(this.plugin, nextMap, seconds);
@@ -133,8 +133,8 @@ public class GeneralCommands {
         }
 
         int seconds = context.getParamInt(0);
-        if (seconds < 5) {
-            seconds = 5;
+        if (seconds < 3) {
+            seconds = 3;
         }
 
         CycleStartEvent startEvent = new CycleStartEvent(this.plugin, queue.getNextMap(), seconds);
@@ -166,8 +166,8 @@ public class GeneralCommands {
             permission = "arcade.command.restart")
     public void restart(Sender sender, CommandContext context) {
         int seconds = context.getParamInt(0);
-        if (seconds < 5) {
-            seconds = 5;
+        if (seconds < 3) {
+            seconds = 3;
         }
 
         CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, this.plugin.getGames().getQueue().getNextMap());

@@ -5,10 +5,11 @@ import org.bukkit.entity.Player;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.List;
 
-public interface MatchWinner {
+public interface MatchWinner extends StringId {
     boolean addGoal(Goal goal);
 
     boolean contains(Player bukkit);

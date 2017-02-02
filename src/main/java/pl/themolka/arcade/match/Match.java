@@ -14,7 +14,10 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Match {
     private final ArcadePlugin plugin;
@@ -29,7 +32,7 @@ public class Match {
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
-    private final List<MatchWinner> winnerList = new ArrayList<>();
+    private final Map<String, MatchWinner> winnerMap = new HashMap<>();
 
     public Match(ArcadePlugin plugin, Game game, Observers observers) {
         this.plugin = plugin;
@@ -115,11 +118,9 @@ public class Match {
         this.plugin.getEventBus().publish(endedEvent);
 
         ItemStack compass = new ItemStackBuilder().type(Material.COMPASS).build();
-        for (GamePlayer player : this.getGame().getPlayers()) {
-            if (player.isOnline()) {
-                player.getPlayer().reset();
-                player.getBukkit().getInventory().addItem(compass);
-            }
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.getPlayer().reset();
+            player.getBukkit().getInventory().setItem(0, compass);
         }
     }
 
@@ -137,6 +138,10 @@ public class Match {
         }
 
         return null;
+    }
+
+    public MatchWinner findWinnerById(String id) {
+        return this.winnerMap.get(id);
     }
 
     public MatchWinner findWinnerByPlayer(Player bukkit) {
@@ -206,8 +211,8 @@ public class Match {
     /**
      * Returns a `List` of all `MatchWinner` objects in this `Match`.
      */
-    public List<MatchWinner> getWinnerList() {
-        return this.winnerList;
+    public Collection<MatchWinner> getWinnerList() {
+        return this.winnerMap.values();
     }
 
     /**
@@ -246,8 +251,17 @@ public class Match {
         }
     }
 
-    public boolean registerWinner(MatchWinner winner) {
-        return this.winnerList.add(winner);
+    public void registerWinner(MatchWinner winner) {
+        this.winnerMap.put(winner.getId(), winner);
+    }
+
+    public void sendGoalMessage(String message) {
+        this.plugin.getLogger().info(message);
+
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.send(message);
+            player.sendAction(message);
+        }
     }
 
     public void setForceEnd(boolean forceEnd) {
@@ -289,8 +303,8 @@ public class Match {
         this.plugin.getEventBus().publish(startedEvent);
     }
 
-    public boolean unregisterWinner(MatchWinner winner) {
-        return this.winnerList.remove(winner);
+    public void unregisterWinner(MatchWinner winner) {
+        this.winnerMap.remove(winner.getId());
     }
 
     public interface IObserverHandler {

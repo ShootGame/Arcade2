@@ -28,7 +28,7 @@ public class GameCommands {
             throw new CommandException("Could not join the game right now. Please try again later.");
         }
 
-        CommandUtils.sendTitleMessage(sender, "Game", "#" + this.plugin.getGames().getGameId());
+        CommandUtils.sendTitleMessage(sender, "Game", "#" + (game.getGameId() + 1));
         this.plugin.getEventBus().publish(new GameCommandEvent(this.plugin, sender, context));
     }
 

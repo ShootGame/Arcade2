@@ -2,7 +2,10 @@ package pl.themolka.arcade.leak;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
-import org.bukkit.material.MaterialData;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.jdom2.Element;
 import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
@@ -41,7 +44,7 @@ public class LeakGame extends GameModule {
             String paramDetector = leakableElement.getAttributeValue("detector-level");
 
             // region
-            Region region = this.parseRegion(this.getSettings().getChild("region"));
+            Region region = this.parseRegion(leakableElement.getChild("region"));
             if (region == null) {
                 continue;
             }
@@ -63,7 +66,7 @@ public class LeakGame extends GameModule {
             if (paramOwner == null || paramOwner.isEmpty()) {
                 continue;
             } else {
-                owner = this.getMatch().findWinner(paramOwner);
+                owner = this.getMatch().findWinnerById(paramOwner);
                 if (owner == null) {
                     continue;
                 }
@@ -93,7 +96,13 @@ public class LeakGame extends GameModule {
             leakable.build(liquid, region, detector);
 
             this.addLeakable(leakable);
-            leakable.getOwner().addGoal(leakable); // register
+
+            // register
+            for (MatchWinner completableBy : this.match.getWinnerList()) {
+                if (!leakable.getOwner().equals(completableBy)) {
+                    completableBy.addGoal(leakable);
+                }
+            }
         }
     }
 
@@ -152,8 +161,16 @@ public class LeakGame extends GameModule {
 
     @Handler(priority = Priority.NORMAL)
     public void detectBreak(BlockTransformEvent event) {
+        if (event.isCanceled()) {
+            return;
+        }
+
         List<Leakable> leakables = this.findLeakables(event.getBlock().getLocation());
         for (Leakable leakable : leakables) {
+            if (leakable.isCompleted() || leakable.getLiquid().getType().accepts(event.getNewState().getItemType())) {
+                continue;
+            }
+
             if (!event.hasPlayer()) {
                 event.setCanceled(true);
                 continue;
@@ -178,24 +195,33 @@ public class LeakGame extends GameModule {
         }
     }
 
-    @Handler(priority = Priority.LOWEST)
-    public void detectLeak(BlockTransformEvent event) {
-        Leakable leakable = this.findLeakableByDetector(event.getBlock().getLocation());
-        if (leakable == null) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void detectLeak(BlockFromToEvent event) {
+        Leakable leakable = this.findLeakableByDetector(event.getToBlock().getLocation());
+        if (leakable == null || leakable.isCompleted()) {
             return;
         }
 
-        MaterialData newState = event.getNewState();
-        if (!leakable.isCompleted() && leakable.getLiquid().getType().accepts(newState.getItemType())) {
+        Material newType = event.getBlock().getType();
+        if (leakable.getLiquid().getType().accepts(newType)) {
             // leakable has leaked
             leakable.leak();
         }
     }
 
-    @Handler(priority = Priority.NORMAL)
+    @Handler(priority = Priority.HIGHER)
     public void detectLiquid(BlockTransformEvent event) {
+        if (event.isCanceled()) {
+            return;
+        }
+
         for (Leakable leakable : this.getLeakables()) {
-            if (leakable.getLiquid().getSnapshot().contains(event.getBlock())) {
+            Liquid liquid = leakable.getLiquid();
+            if (liquid.getType().accepts(event.getNewState().getItemType())) {
+                return;
+            }
+
+            if (liquid.getSnapshot().contains(event.getBlock())) {
                 event.setCanceled(true);
 
                 if (event.hasPlayer()) {

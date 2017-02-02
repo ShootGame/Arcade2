@@ -1,6 +1,5 @@
 package pl.themolka.arcade.event;
 
-import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
@@ -14,11 +13,6 @@ public class BlockTransformEvent extends BlockEvent implements Cancelable {
     private final MaterialData newState;
     private final ArcadePlayer player;
     private final org.bukkit.event.block.BlockEvent source;
-
-    public BlockTransformEvent(ArcadePlugin plugin, Block block, MaterialData newState,
-                               ArcadePlayer player, org.bukkit.event.block.BlockEvent source) {
-        this(plugin, newState, player, source);
-    }
 
     public BlockTransformEvent(ArcadePlugin plugin, MaterialData newState,
                                ArcadePlayer player,  org.bukkit.event.block.BlockEvent source) {

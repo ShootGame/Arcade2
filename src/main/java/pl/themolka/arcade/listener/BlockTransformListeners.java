@@ -11,9 +11,7 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFallEvent;
 import org.bukkit.event.block.BlockFormEvent;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -70,12 +68,12 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
-    public void onBlockFromTo(BlockFromToEvent event) {
-        if (this.postWrapped(event, event.getToBlock().getState().getMaterialData(), null, event.getBlock())) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onBlockFromTo(BlockFromToEvent event) {
+//        if (this.postWrapped(event, event.getToBlock().getState().getMaterialData(), null, event.getBlock())) {
+//            event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler
     public void onBlockMultiPlace(BlockMultiPlaceEvent event) {
@@ -84,12 +82,12 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
-    public void onBlockPhysics(BlockPhysicsEvent event) {
-        if (this.postWrapped(event, new MaterialData(event.getChangedType()), null, event.getBlock())) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onBlockPhysics(BlockPhysicsEvent event) {
+//        if (this.postWrapped(event, new MaterialData(event.getChangedType()), null, event.getBlock())) {
+//            event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {

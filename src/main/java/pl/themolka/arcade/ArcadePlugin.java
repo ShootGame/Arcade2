@@ -103,6 +103,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private final ModuleContainer modules = new ModuleContainer();
     private PermissionManager permissions;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
+    private final Map<String, Object> properties = new HashMap<>();
     private String serverDescription;
     private String serverName = DEFAULT_SERVER_NAME;
     private ServerSessionFile serverSession;
@@ -132,6 +133,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.settings = new Settings(this);
         this.reloadConfig();
+
+        if (!this.getSettings().isEnabled()) {
+            this.getLogger().log(Level.INFO, this.getName() + " isn't enabled in the settings file, skipped enabling...");
+            return;
+        }
 
         this.loadServer();
 
@@ -174,6 +180,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public void onDisable() {
+        if (!this.getSettings().isEnabled()) {
+            return;
+        }
+
         try {
             this.stop();
         } catch (Throwable th) {
@@ -227,6 +237,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public void reloadConfig() {
         try {
             this.getSettings().setDocument(this.getSettings().readSettingsFile());
+            this.getSettings().preprocess();
+
+            // reload properties
+            Element propertiesElement = this.getSettings().getData().getChild("properties");
+            if (propertiesElement != null) {
+                for (Element property : propertiesElement.getChildren()) {
+                    this.setProperty(property.getName(), property.getTextNormalize());
+                }
+            }
+
             this.getEventBus().publish(new SettingsReloadEvent(this, this.getSettings()));
         } catch (IOException | JDOMException ex) {
             ex.printStackTrace();
@@ -355,6 +375,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.players.values();
     }
 
+    public Object getProperty(String key) {
+        return this.getProperty(key, null);
+    }
+
+    public Object getProperty(String key, Object def) {
+        return this.properties.getOrDefault(key, def);
+    }
+
     public String getServerDescription() {
         if (this.serverDescription != null) {
             return this.serverDescription;
@@ -389,6 +417,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public BukkitTask getTickableTask() {
         return this.tickableTask;
+    }
+
+    public boolean hasProperty(String key) {
+        return this.getProperty(key) != null;
     }
 
     public void registerCommandObject(Object object) {
@@ -462,6 +494,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    public void setProperty(String key, Object value) {
+        this.properties.put(key, value);
+    }
+
     public void setServerDescription(String serverDescription) {
         this.serverDescription = serverDescription;
     }
@@ -509,7 +545,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadMaps() {
         this.maps = new MapManager(this);
-        this.maps.setParser(new XMLMapParser.XMLParserTechnology());
+        this.maps.setParser(new XMLMapParser.XMLParserTechnology(this)); // map XML parser
         this.maps.setWorldContainer(new File(this.getSettings().getData().getChild("world-container").getValue()));
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);

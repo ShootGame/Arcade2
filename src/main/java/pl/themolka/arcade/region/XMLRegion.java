@@ -117,7 +117,7 @@ public class XMLRegion extends XMLParser {
         }
 
         Attribute yAttribute = xml.getAttribute(prefix + "-y");
-        if (xAttribute != null) {
+        if (yAttribute != null) {
             try {
                 y = yAttribute.getDoubleValue();
             } catch (DataConversionException ignored) {

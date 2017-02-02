@@ -136,7 +136,11 @@ public class Countdown extends Task implements CountdownListener {
     }
 
     public long getDurationSeconds() {
-        return this.getDuration().get(ChronoUnit.SECONDS);
+        if (this.getDuration() != null) {
+            return this.getDuration().get(ChronoUnit.SECONDS);
+        }
+
+        return Long.MAX_VALUE;
     }
 
     public Game getGame() {

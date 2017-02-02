@@ -160,7 +160,7 @@ public class MapCommands {
             permission = "arcade.command.nextmap")
     public void nextMap(Sender sender, CommandContext context) {
         if (this.plugin.getGames().isNextRestart()) {
-            throw new CommandException("Server will be restarted.");
+            throw new CommandException(this.plugin.getServerName() + " will be restarted.");
         } else {
             OfflineMap next = this.plugin.getGames().getQueue().getNextMap();
             if (next == null) {
@@ -191,7 +191,7 @@ public class MapCommands {
 
         if (paramRestart) {
             this.plugin.getGames().setNextRestart(true);
-            throw new CommandException("The server will be restarted after this game.");
+            throw new CommandException(this.plugin.getServerName() + " will be restarted after this game.");
         }
 
         List<OfflineMap> results = new ArrayList<>();

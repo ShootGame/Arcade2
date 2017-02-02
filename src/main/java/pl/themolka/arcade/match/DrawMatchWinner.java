@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class DrawMatchWinner implements MatchWinner {
+    public static final String DRAW_WINNER_ID = "_draw-match-winner";
+
     protected  DrawMatchWinner() {
     }
 
@@ -36,6 +38,11 @@ public class DrawMatchWinner implements MatchWinner {
     @Override
     public List<Goal> getGoals() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public String getId() {
+        return DRAW_WINNER_ID;
     }
 
     @Override

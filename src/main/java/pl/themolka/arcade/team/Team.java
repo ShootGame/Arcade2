@@ -15,14 +15,13 @@ import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class Team implements MatchWinner, StringId {
+public class Team implements MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
 
     private static final Random random = new Random();
@@ -64,11 +63,6 @@ public class Team implements MatchWinner, StringId {
     }
 
     @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
     public boolean contains(Player bukkit) {
         return this.contains(this.plugin.getPlayer(bukkit));
     }
@@ -86,6 +80,11 @@ public class Team implements MatchWinner, StringId {
     @Override
     public List<Goal> getGoals() {
         return this.goals;
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     @Override

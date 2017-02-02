@@ -33,6 +33,7 @@ public class Game implements Metadata, Serializable {
     private final transient ArcadePlugin plugin;
 
     private final List<MapError> errors = new ArrayList<>();
+    private final int gameId;
     private final ArcadeMap map;
     private final transient MetadataContainer metadata = new MetadataContainer();
     private final transient GameModuleContainer modules = new GameModuleContainer();
@@ -42,9 +43,10 @@ public class Game implements Metadata, Serializable {
     private final transient List<Task> taskList = new ArrayList<>();
     private final transient World world;
 
-    public Game(ArcadePlugin plugin, ArcadeMap map, World world) {
+    public Game(ArcadePlugin plugin, int gameId, ArcadeMap map, World world) {
         this.plugin = plugin;
 
+        this.gameId = gameId;
         this.map = map;
         this.scoreboard = new ScoreboardContext(plugin, this);
         this.world = world;
@@ -183,6 +185,10 @@ public class Game implements Metadata, Serializable {
 
     public List<MapError> getErrors() {
         return this.errors;
+    }
+
+    public int getGameId() {
+        return this.gameId;
     }
 
     public ArcadeMap getMap() {
@@ -333,6 +339,8 @@ public class Game implements Metadata, Serializable {
         }
 
         this.plugin.getEventBus().publish(new GameStartEvent(this.plugin, this));
+
+        this.plugin.getLogger().info("Game #" + (this.getGameId() + 1) + " has started.");
     }
 
     public void stop() {
@@ -347,6 +355,8 @@ public class Game implements Metadata, Serializable {
         for (Task task : this.getTasks()) {
             task.cancelTask();
         }
+
+        this.plugin.getLogger().info("Game #" + (this.getGameId() + 1) + " has ended.");
     }
 
     private void readGlobalModule() {

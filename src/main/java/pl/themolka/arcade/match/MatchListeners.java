@@ -3,7 +3,9 @@ package pl.themolka.arcade.match;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -19,42 +21,49 @@ public class MatchListeners implements Listener {
         this.game = game;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlock36Damage(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.PISTON_MOVING_PIECE)) {
             event.setCancelled(true);
         }
     }
 
-    @Handler(priority = Priority.NORMAL)
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBlockFromTo(BlockFromToEvent event) {
+        if (this.isMatchIdle()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Handler(priority = Priority.HIGHEST)
     public void onBlockTransform(BlockTransformEvent event) {
         if (this.isMatchIdle()) {
             event.setCanceled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (this.isMatchIdle()) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onItemSpawn(ItemSpawnEvent event) {
         if (this.isMatchIdle()) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onThunderChange(ThunderChangeEvent event) {
         if (this.isMatchIdle()) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onWeatherChange(WeatherChangeEvent event) {
         if (this.isMatchIdle()) {
             event.setCancelled(true);

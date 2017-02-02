@@ -1,11 +1,14 @@
 package pl.themolka.arcade.settings;
 
 import org.apache.commons.io.FileUtils;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.xml.XMLPreProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +21,7 @@ public class Settings {
     private final ArcadePlugin plugin;
 
     private Document document;
+    private boolean enabled;
     private final File file;
 
     public Settings(ArcadePlugin plugin) {
@@ -67,6 +71,19 @@ public class Settings {
         return this.file;
     }
 
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void preprocess() {
+        XMLPreProcessor handler = new XMLPreProcessor(this.plugin, this.getData());
+        handler.prepare();
+        handler.run();
+
+        this.getDocument().detachRootElement();
+        this.getDocument().setRootElement(handler.getElement());
+    }
+
     public Document readSettingsFile() throws IOException, JDOMException {
         return this.readSettingsFile(this.file);
     }
@@ -82,5 +99,21 @@ public class Settings {
 
     public void setDocument(Document document) {
         this.document = document;
+
+        Element root = document.getRootElement();
+        if (root != null) {
+            this.setup(root);
+        }
+    }
+
+    private void setup(Element root) {
+        Attribute enabled = root.getAttribute("enabled");
+        if (enabled != null) {
+            try {
+                this.enabled = enabled.getBooleanValue();
+            } catch (DataConversionException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }

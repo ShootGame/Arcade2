@@ -8,7 +8,7 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.team.TeamsModule;
 
-@ModuleInfo(id = "leakable", dependency = {MatchModule.class}, loadBefore = {TeamsModule.class})
+@ModuleInfo(id = "leak", dependency = {MatchModule.class}, loadBefore = {TeamsModule.class})
 public class LeakModule extends Module<LeakGame> {
     @Override
     public LeakGame buildGameModule(Element xml, Game game) throws JDOMException {
