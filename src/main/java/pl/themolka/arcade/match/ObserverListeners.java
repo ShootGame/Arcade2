@@ -194,7 +194,7 @@ public class ObserverListeners implements Listener {
             event.getPlayer().resetFull();
 
             Player bukkit = event.getPlayer().getBukkit();
-            if (this.game.getMatch().getState().equals(MatchState.RUNNING)) {
+            if (this.game.getMatch().isRunning()) {
                 bukkit.setHealth(0.0D);
             }
             bukkit.showInvisibles(true);
@@ -211,8 +211,7 @@ public class ObserverListeners implements Listener {
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
-        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers() &&
-                this.game.getMatch().getState().equals(MatchState.RUNNING)) {
+        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers() && this.game.getMatch().isRunning()) {
             event.getPlayer().resetFull();
 
             Player bukkit = event.getPlayer().getBukkit();

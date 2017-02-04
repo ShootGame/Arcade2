@@ -54,8 +54,8 @@ public abstract class SimplePagination<T> implements Pagination<T> {
         int firstIndex = (page - 1) * this.getItemsPerPage();
         int lastIndex = firstIndex + this.getItemsPerPage();
 
-        if (lastIndex + this.getExtraItemsPerPage() - 1 >= this.getItemsSize()) {
-            lastIndex = this.getItemsSize();
+        if (lastIndex + this.getExtraItemsPerPage() + 1 >= this.getItemsSize()) {
+            lastIndex = this.getItemsSize() - 1;
         }
 
         return this.getItems().subList(firstIndex, lastIndex);

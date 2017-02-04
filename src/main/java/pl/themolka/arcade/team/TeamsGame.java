@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandPermissionException;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
@@ -14,7 +15,6 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchStartCountdownEvent;
-import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 
@@ -49,6 +49,11 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.getMatch().setObserverHandler(this);
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
 
+        // cache
+        for (GamePlayer observer : matchGame.getObservers().getOnlineMembers()) {
+            this.teamsByPlayer.put(observer, matchGame.getObservers());
+        }
+
         GameModule kitsGame = this.getGame().getModule(KitsModule.class);
         if (kitsGame != null) {
             this.registerListenerObject(new TeamKitListeners(this, (KitsGame) kitsGame, this.getMatch()));
@@ -64,7 +69,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     @Override
     public boolean isPlayerObserving(GamePlayer player) {
         Team team = this.getTeam(player);
-        return team != null && team.isObserving();
+        return team == null || team.isObserving();
     }
 
     public void autoJoinTeam(GamePlayer player) throws CommandException {
@@ -99,6 +104,21 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         this.joinTeam(player, join);
+    }
+
+    public Team findTeamById(String query) {
+        Team result = this.getTeam(query);
+        if (result != null) {
+            return result;
+        }
+
+        for (Team team : this.getTeams()) {
+            if (team.getId().toLowerCase().startsWith(query.toLowerCase())) {
+                return team;
+            }
+        }
+
+        return null;
     }
 
     public Match getMatch() {
@@ -183,7 +203,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     @Handler(priority = Priority.HIGHER)
     public void onMatchStartCountdown(MatchStartCountdownEvent event) {
-        if (!this.getMatch().getState().equals(MatchState.STARTING)) {
+        if (!this.getMatch().isStarting()) {
             event.setCanceled(true);
             return;
         }
@@ -217,13 +237,15 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         try {
             Team team = this.getTeam(event.getJoinGamePlayer());
-            if (team != null && !team.equals(this.getMatch().getObservers()) && this.getMatch().getState().equals(MatchState.RUNNING)) {
+            if (team != null && !team.equals(this.getMatch().getObservers()) && this.getMatch().isRunning()) {
                 throw new CommandException("You are already in the game.");
             } else if (event.isAuto()) {
                 this.autoJoinTeam(event.getJoinGamePlayer());
             } else {
                 this.joinTeam(event.getJoinGamePlayer(), event.getContext().getParams(0));
             }
+
+            event.setJoined(true);
         } catch (CommandException ex) {
             if (ex.getMessage() != null) {
                 event.getSender().sendError(ex.getMessage());
@@ -282,5 +304,139 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
                 event.addResult(team.getName());
             }
         }
+    }
+
+    //
+    // Commands
+    //
+
+    public void clearCommand(Sender sender, String teamId) {
+        Team team = this.fetchTeam(teamId);
+        if (team.isObservers()) {
+            throw new CommandException("Cannot clear observers.");
+        }
+
+        int result = 0;
+        for (GamePlayer player : team.getOnlineMembers()) {
+            team.leaveForce(player);
+            result++;
+
+            this.getMatch().getObservers().joinForce(player);
+        }
+
+        sender.sendSuccess(team.getName() + " has been cleared (" + result + " players).");
+    }
+
+    public void forceCommand(Sender sender, String username, String teamId) {
+        GamePlayer player = this.fetchPlayer(username);
+        Team team = this.fetchTeam(teamId);
+
+        if (team.contains(player)) {
+            throw new CommandException(player.getUsername() + " is already member of " + team.getName() + ".");
+        }
+
+        team.joinForce(player);
+        sender.sendSuccess(player.getUsername() + " has been moved to " + team.getName() + ".");
+    }
+
+    public void kickCommand(Sender sender, String username) {
+        GamePlayer player = this.fetchPlayer(username);
+        Team team = this.getTeam(player);
+
+        if (team.isObservers()) {
+            throw new CommandException("Cannot kick from observers.");
+        }
+
+        team.leaveForce(player);
+        team.getMatch().getObservers().joinForce(player);
+        sender.sendSuccess(player.getUsername() + " has been kicked from " + team.getName() + ".");
+    }
+
+    public void minCommand(Sender sender, String teamId, int min) {
+        Team team = this.fetchTeam(teamId);
+        if (team.isObservers()) {
+            throw new CommandException("Cannot edit observers.");
+        } else if (min < 0) {
+            throw new CommandException("Number cannot be negative.");
+        }
+
+        sender.sendSuccess(team.getName() + " has been edited.");
+    }
+
+    public void overfillCommand(Sender sender, String teamId, int overfill) {
+        Team team = this.fetchTeam(teamId);
+        if (team.isObservers()) {
+            throw new CommandException("Cannot edit observers.");
+        }
+
+        // set to unlimited if zero or negative
+        int max = Integer.MAX_VALUE;
+        if (overfill > 0) {
+            max = overfill;
+        }
+
+        team.setMaxPlayers(max);
+
+        if (max > team.getSlots()) {
+            team.setSlots(max); // slots
+        }
+
+        sender.sendSuccess(team.getName() + " has been edited.");
+    }
+
+    public void renameCommand(Sender sender, String teamId, String name) {
+        Team team = this.fetchTeam(teamId);
+        if (name == null) {
+            throw new CommandException("New name not given.");
+        } else if (name.length() > Team.NAME_MAX_LENGTH) {
+            throw new CommandException("Name too long (greater than " + Team.NAME_MAX_LENGTH + " characters).");
+        } else if (team.getName().equals(name)) {
+            throw new CommandException("Already named '" + team.getName() + "'.");
+        }
+
+        String oldName = team.getName();
+        team.setName(name);
+
+        this.getPlugin().getEventBus().publish(new TeamRenameEvent(this.getPlugin(), oldName, team));
+        sender.sendSuccess(team.getName() + " has been edited.");
+    }
+
+    public void slotsCommand(Sender sender, String teamId, int slots) {
+        Team team = this.fetchTeam(teamId);
+        if (team.isObservers()) {
+            throw new CommandException("Cannot edit observers.");
+        }
+
+        // set to unlimited if zero or negative
+        int max = Integer.MAX_VALUE;
+        if (slots > 0) {
+            max = slots;
+        }
+
+        team.setSlots(max);
+
+        if (max > team.getMaxPlayers()) {
+            team.setMaxPlayers(max); // overfill
+        }
+
+        sender.sendSuccess(team.getName() + " has been edited.");
+    }
+
+    private GamePlayer fetchPlayer(String player) {
+        GamePlayer result = this.getGame().findPlayer(player);
+        if (result != null) {
+            return result;
+        }
+
+        throw new CommandException("Player not found.");
+    }
+
+    private Team fetchTeam(String team) {
+        Team result = this.findTeamById(team);
+        if (result != null) {
+            return result;
+        }
+
+        throw new CommandException("Team not found.");
     }
 }

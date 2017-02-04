@@ -91,6 +91,7 @@ public class GameCommands {
     public static class JoinCommandEvent extends CommandEvent implements Cancelable {
         private final boolean auto;
         private boolean cancel;
+        private boolean joined;
 
         public JoinCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context, boolean auto) {
             super(plugin, sender, context);
@@ -116,8 +117,16 @@ public class GameCommands {
             return this.getSender().getPlayer();
         }
 
+        public boolean hasJoined() {
+            return this.joined;
+        }
+
         public boolean isAuto() {
             return this.auto;
+        }
+
+        public void setJoined(boolean joined) {
+            this.joined = joined;
         }
     }
 

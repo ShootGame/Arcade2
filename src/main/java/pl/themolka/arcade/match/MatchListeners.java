@@ -71,6 +71,6 @@ public class MatchListeners implements Listener {
     }
 
     private boolean isMatchIdle() {
-        return !this.game.getMatch().getState().equals(MatchState.RUNNING);
+        return !this.game.getMatch().isRunning();
     }
 }

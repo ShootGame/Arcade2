@@ -107,7 +107,9 @@ public class Commands {
     }
 
     public void handleCommand(Sender sender, Command command, String label, String[] args) {
-        this.handleCommand(sender, command, label, args, new CommandContextParser());
+        if (sender != null && command != null && label != null) {
+            this.handleCommand(sender, command, label, args, new CommandContextParser());
+        }
     }
 
     public void handleCommand(Sender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
@@ -161,7 +163,11 @@ public class Commands {
     }
 
     public List<String> handleCompleter(Sender sender, Command command, String label, String[] args) {
-        return this.handleCompleter(sender, command, label, args, new CommandContextParser());
+        if (sender != null && command != null && label != null) {
+            return this.handleCompleter(sender, command, label, args, new CommandContextParser());
+        }
+
+        return new ArrayList<>();
     }
 
     public List<String> handleCompleter(Sender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {

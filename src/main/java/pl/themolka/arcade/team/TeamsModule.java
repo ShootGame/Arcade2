@@ -61,7 +61,7 @@ public class TeamsModule extends Module<TeamsGame> {
             team.join(sender.getGamePlayer(), false);
         }
 
-        sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.YELLOW + ".");
+        sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.GRAY + ".");
 
         if (team instanceof Observers) {
             sender.sendTip("Join the game by typing /join.");
@@ -80,6 +80,44 @@ public class TeamsModule extends Module<TeamsGame> {
         }
 
         TeamsGame game = this.getGameModule();
+        if (sender.hasPermission("arcade.command.teams.manage") && context.getParam(0) != null) {
+            switch (context.getParam(0).toLowerCase()) {
+                case "clear":
+                    game.clearCommand(sender, context.getParam(1));
+                    break;
+                case "force":
+                    game.forceCommand(sender, context.getParam(1), context.getParam(2));
+                    break;
+                case "kick":
+                    game.kickCommand(sender, context.getParam(1));
+                    break;
+                case "min":
+                    game.minCommand(sender, context.getParam(1), context.getParamInt(2));
+                    break;
+                case "overfill":
+                    game.overfillCommand(sender, context.getParam(1), context.getParamInt(2));
+                    break;
+                case "rename":
+                    game.renameCommand(sender, context.getParam(1), context.getParams(2));
+                    break;
+                case "slots":
+                    game.slotsCommand(sender, context.getParam(1), context.getParamInt(2));
+                    break;
+                default:
+                    CommandUtils.sendTitleMessage(sender, "Teams Management");
+                    sender.send(this.teamsCommand(context, "clear <team>", "Kick all players from a team"));
+                    sender.send(this.teamsCommand(context, "force <player> <team>", "Force player to join a team"));
+                    sender.send(this.teamsCommand(context, "kick <player>", "Kick player from the team"));
+                    sender.send(this.teamsCommand(context, "min <team> <min>", "Set minimum amount of players"));
+                    sender.send(this.teamsCommand(context, "overfill <team> <overfill>", "Set maximum team overfill"));
+                    sender.send(this.teamsCommand(context, "rename <team> <name...>", "Rename a team"));
+                    sender.send(this.teamsCommand(context, "slots <team> <slots>", "Set slots in a team"));
+                    break;
+            }
+
+            return;
+        }
+
         Collection<Team> teams = game.getTeams();
         CommandUtils.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
 
@@ -119,6 +157,10 @@ public class TeamsModule extends Module<TeamsGame> {
         }
 
         return results;
+    }
+
+    private String teamsCommand(CommandContext context, String command, String description) {
+        return ChatColor.YELLOW + "/" + context.getLabel() + " " + command + ChatColor.GRAY + " - " + description;
     }
 
     private String teamsKeyValue(String key, Object value) {

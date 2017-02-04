@@ -21,6 +21,10 @@ public class ArchiveModule extends SimpleGlobalModule {
 
     @Override
     public void onEnable(Element global) throws JDOMException {
+        if (global == null) {
+            return;
+        }
+
         Element directoryElement = global.getChild("directory");
         if (directoryElement == null) {
             directoryElement = new Element("directory").setText(DEFAULT_DIRECTORY_NAME);

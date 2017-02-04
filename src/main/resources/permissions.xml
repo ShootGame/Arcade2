@@ -21,6 +21,9 @@
             <!-- Match Module -->
             <grant>arcade.command.begin</grant>
             <grant>arcade.command.end</grant>
+
+            <!-- Teams Module -->
+            <grant>arcade.command.teams.manage</grant>
         </group>
 
         <group id="dev" name="Developer" prefix="`a[Dev] ">

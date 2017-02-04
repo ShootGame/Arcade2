@@ -92,3 +92,5 @@ permissions:
   arcade.command.teams:
     description: 'Gives access to the /teams command.'
     default: true
+    children:
+      arcade.command.teams.manage: false

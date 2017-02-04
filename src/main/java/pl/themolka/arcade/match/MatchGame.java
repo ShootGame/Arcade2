@@ -12,6 +12,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.RestartCountdown;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
@@ -50,6 +51,10 @@ public class MatchGame extends GameModule {
         this.getObservers().setBukkit(bukkit);
 
         this.getGame().setMetadata(MatchModule.class, MatchModule.METADATA_MATCH, this.getMatch());
+
+        for (GamePlayer player : this.getGame().getPlayers()) {
+            this.getObservers().join(player, false);
+        }
     }
 
     @Override
@@ -84,7 +89,7 @@ public class MatchGame extends GameModule {
             message = "Force starting";
         }
 
-        if (this.getMatch().getState().equals(MatchState.STARTING)) {
+        if (this.getMatch().isStarting()) {
             sender.sendSuccess(message + " the match in " + seconds + " seconds...");
             this.getMatch().setForceStart(force);
             this.startCountdown(seconds);
@@ -94,7 +99,7 @@ public class MatchGame extends GameModule {
     }
 
     public void handleEndCommand(Sender sender, boolean auto, String winnerQuery, boolean draw) {
-        if (this.getMatch().getState().equals(MatchState.RUNNING)) {
+        if (this.getMatch().isRunning()) {
             MatchWinner winner = null;
             if (auto) {
                 winner = this.getMatch().getWinner();
@@ -154,7 +159,7 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.HIGH)
     public void onCycleCommand(GeneralCommands.CycleCommandEvent event) {
-        if (this.getMatch().getState().equals(MatchState.RUNNING)) {
+        if (this.getMatch().isRunning()) {
             event.getSender().sendError("The match is currently running. Type /end to end the match.");
             event.setCanceled(true);
         }
@@ -169,15 +174,16 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.HIGHEST)
     public void onJoinWhenMatchEnded(GameCommands.JoinCommandEvent event) {
-        if (this.getMatch().getState().equals(MatchState.CYCLING)) {
+        if (this.getMatch().isCycling()) {
             event.getSender().sendError("The match has ended. " + ChatColor.GOLD + "Please wait until the server cycle.");
             event.setCanceled(true);
+            event.setJoined(false);
         }
     }
 
-    @Handler(priority = Priority.LOWEST)
+    @Handler(priority = Priority.LAST)
     public void onMatchCountdownAutoStart(GameCommands.JoinCommandEvent event) {
-        if (!event.isCanceled() && !this.getStartCountdown().isTaskRunning() && this.isAutoStart()) {
+        if (!event.isCanceled() && event.hasJoined() && !this.getStartCountdown().isTaskRunning() && this.isAutoStart()) {
             MatchStartCountdownEvent countdownEvent = new MatchStartCountdownEvent(this.getPlugin(), this.getMatch(), this.startCountdown);
             if (!countdownEvent.isCanceled()) {
                 this.startCountdown(this.getDefaultStartCountdown());

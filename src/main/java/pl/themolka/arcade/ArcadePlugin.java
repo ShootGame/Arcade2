@@ -24,6 +24,7 @@ import pl.themolka.arcade.command.InfoCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
+import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.game.DescriptionTickable;
@@ -652,6 +653,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
         this.registerListenerObject(new ServerPingListener(this));
+
+        // dead events
+        this.registerListenerObject(new DeadListeners(this));
 
         // permissions
         this.registerListenerObject(new PermissionListeners(this));

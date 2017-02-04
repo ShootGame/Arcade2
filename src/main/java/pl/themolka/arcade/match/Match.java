@@ -64,10 +64,10 @@ public class Match {
 
         String logMessage = "no result.";
         if (winnerMessage != null) {
-            logMessage = "result: " + winnerMessage;
+            logMessage = "result: " + winner.getMessage();
         }
 
-        this.plugin.getLogger().info("The match has ended with " + logMessage);
+        this.plugin.getLogger().info(ChatColor.stripColor("The match has ended with " + logMessage));
     }
 
     public void broadcastStartMessage() {
@@ -97,7 +97,7 @@ public class Match {
     }
 
     public void end(MatchWinner winner, boolean force) {
-        if (!this.getState().equals(MatchState.RUNNING)) {
+        if (!this.isRunning()) {
             return;
         }
 
@@ -229,6 +229,10 @@ public class Match {
         return results;
     }
 
+    public boolean isCycling() {
+        return this.getState().equals(MatchState.CYCLING);
+    }
+
     public boolean isForceEnd() {
         return this.forceEnd;
     }
@@ -241,7 +245,15 @@ public class Match {
         IObserverHandler handler = this.getObserverHandler();
         boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
 
-        return !this.getState().equals(MatchState.RUNNING) || observing;
+        return !this.isRunning() || observing || !player.isParticipating();
+    }
+
+    public boolean isRunning() {
+        return this.getState().equals(MatchState.RUNNING);
+    }
+
+    public boolean isStarting() {
+        return this.getState().equals(MatchState.STARTING);
     }
 
     public void refreshWinners() {
@@ -281,7 +293,7 @@ public class Match {
     }
 
     public void start(boolean force) {
-        if (!this.getState().equals(MatchState.STARTING)) {
+        if (!this.isStarting()) {
             return;
         }
 

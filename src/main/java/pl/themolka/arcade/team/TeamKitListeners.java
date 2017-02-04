@@ -5,7 +5,6 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.match.Match;
-import pl.themolka.arcade.match.MatchState;
 
 public class TeamKitListeners {
     private final TeamsGame game;
@@ -24,7 +23,7 @@ public class TeamKitListeners {
 
     @Handler(priority = Priority.HIGHER)
     public void onPlayerJoinedTeam(PlayerJoinedTeamEvent event) {
-        if (!this.match.getState().equals(MatchState.RUNNING)) {
+        if (!this.match.isRunning()) {
             return;
         }
 

@@ -40,7 +40,7 @@ public class ScoreboardListeners implements Listener {
     }
 
     @Handler(priority = Priority.FIRST)
-    public void onBoardUnregister(ServerCycleEvent event) {
+    public void onScoreboardUnregister(ServerCycleEvent event) {
         if (event.getOldGame() == null) {
             return;
         }

@@ -3,9 +3,12 @@ package pl.themolka.arcade.leak;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.util.Vector;
+import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
@@ -17,10 +20,12 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
+import pl.themolka.arcade.xml.XMLMaterial;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +46,7 @@ public class LeakGame extends GameModule {
             String paramName = leakableElement.getAttributeValue("name");
             String paramOwner = leakableElement.getAttributeValue("owner");
             String paramLiquid = leakableElement.getAttributeValue("liquid");
+            String paramMaterial = leakableElement.getAttributeValue("material");
             String paramDetector = leakableElement.getAttributeValue("detector-level");
 
             // region
@@ -81,6 +87,12 @@ public class LeakGame extends GameModule {
                 }
             }
 
+            // material
+            List<Material> material = Collections.singletonList(Leakable.DEFAULT_MATERIAL);
+            if (paramMaterial != null) {
+                material = XMLMaterial.parseArray(new Attribute("_", paramMaterial), Leakable.DEFAULT_MATERIAL);
+            }
+
             // detector
             int detector = Leakable.DEFAULT_DETECTOR_LEVEL;
             if (paramDetector != null && !paramDetector.isEmpty()) {
@@ -93,6 +105,7 @@ public class LeakGame extends GameModule {
             // object
             Leakable leakable = new Leakable(this, owner, id);
             leakable.setName(name);
+            leakable.setMaterial(material);
             leakable.build(liquid, region, detector);
 
             this.addLeakable(leakable);
@@ -164,10 +177,16 @@ public class LeakGame extends GameModule {
         if (event.isCanceled()) {
             return;
         }
+        Block block = event.getBlock();
+        if (!event.getNewState().getItemType().equals(Material.AIR)) {
+            return;
+        }
 
         List<Leakable> leakables = this.findLeakables(event.getBlock().getLocation());
         for (Leakable leakable : leakables) {
-            if (leakable.isCompleted() || leakable.getLiquid().getType().accepts(event.getNewState().getItemType())) {
+            if (leakable.getLiquid().getType().accepts(event.getNewState().getItemType()) ||
+                    leakable.isCompleted() ||
+                    !leakable.contains(block)) {
                 continue;
             }
 
@@ -189,7 +208,7 @@ public class LeakGame extends GameModule {
                 continue;
             }
 
-            if (!leakable.breakPiece(winner, player)) {
+            if (!leakable.breakPiece(winner, player, new Vector(block.getX(), block.getY(), block.getZ()))) {
                 event.setCanceled(true);
             }
         }

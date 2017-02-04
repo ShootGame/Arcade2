@@ -28,6 +28,7 @@ public class TeamLockGame extends GameModule {
             FilterResult result = rule.getFilter().filter(event.getJoinPlayer(), this.teams, this.teams.getMatch());
             if (result.equals(FilterResult.DENY)) {
                 event.setCanceled(true);
+                event.setJoined(false);
 
                 String message = rule.getMessage();
                 if (message != null) {

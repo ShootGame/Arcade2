@@ -11,7 +11,6 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
-import pl.themolka.arcade.match.MatchState;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -109,9 +108,9 @@ public class Team implements MatchWinner {
 
     @Override
     public void sendGoalMessage(String message) {
-        for (GamePlayer player : this.getOnlineMembers()) {
-            player.sendAction(message);
-        }
+        this.plugin.getLogger().info("[" + this.getName() + "] (Goal) " + ChatColor.stripColor(message));
+        this.getChannel().send(message);
+        this.getChannel().sendAction(message);
     }
 
     @Override
@@ -232,7 +231,7 @@ public class Team implements MatchWinner {
     }
 
     public boolean isPlaying() {
-        return this.getMatch().getState().equals(MatchState.RUNNING);
+        return this.getMatch().isRunning();
     }
 
     public int getSlots() {
@@ -270,6 +269,10 @@ public class Team implements MatchWinner {
         }
     }
 
+    public void joinForce(GamePlayer player) {
+        this.join(player, true);
+    }
+
     public void leave(GamePlayer player) {
         if (!player.isOnline()) {
             return;
@@ -289,6 +292,10 @@ public class Team implements MatchWinner {
 
             this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
         }
+    }
+
+    public void leaveForce(GamePlayer player) {
+        this.leave(player);
     }
 
     public void leaveServer(GamePlayer player) {

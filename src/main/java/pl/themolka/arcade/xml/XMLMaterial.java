@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class XMLMaterial extends XMLParser {
     public static final String ATTRIBUTE_MATERIAL = "material";
 
@@ -35,5 +38,38 @@ public class XMLMaterial extends XMLParser {
         }
 
         return def;
+    }
+
+    public static List<Material> parseArray(Element xml) {
+        return parseArray(xml, null);
+    }
+
+    public static List<Material> parseArray(Element xml, Material def) {
+        return parseArray(xml.getAttribute(ATTRIBUTE_MATERIAL), def);
+    }
+
+    public static List<Material> parseArray(Attribute attribute) {
+        return parseArray(attribute, null);
+    }
+
+    public static List<Material> parseArray(Attribute attribute, Material def) {
+        List<Material> results = new ArrayList<>();
+        if (attribute != null) {
+            List<String> rawList = parseArray(attribute.getValue());
+            for (String raw : rawList) {
+                if (raw.isEmpty()) {
+                    continue;
+                }
+
+                Material material = Material.matchMaterial(parseEnumValue(raw));
+                if (material != null) {
+                    results.add(material);
+                }
+            }
+        } else if (def != null) {
+            results.add(def);
+        }
+
+        return results;
     }
 }

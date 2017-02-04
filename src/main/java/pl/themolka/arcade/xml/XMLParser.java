@@ -53,11 +53,28 @@ public class XMLParser {
     }
 
     public static boolean parseBoolean(String bool, boolean def) {
-        if (bool != null) {
-            return Boolean.parseBoolean(bool);
+        if (bool == null) {
+            return def;
         }
 
-        return def;
+        switch (bool.toLowerCase()) {
+            case "true":
+            case "1":
+            case "yes":
+            case "on":
+            case "enable":
+            case "enabled":
+                return true;
+            case "false":
+            case "0":
+            case "no":
+            case "off":
+            case "disable":
+            case "disabled":
+                return false;
+            default:
+                return def;
+        }
     }
 
     public static String parseEnumValue(String key) {
