@@ -1,20 +1,20 @@
 package pl.themolka.arcade.leak;
 
-import org.bukkit.util.Vector;
+import org.bukkit.block.Block;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.match.MatchWinner;
 
 public class LeakableBreakEvent extends LeakableEvent implements Cancelable {
+    private Block block;
     private final MatchWinner breaker;
     private boolean cancel;
-    private Vector vector;
 
-    public LeakableBreakEvent(ArcadePlugin plugin, Leakable leakable, MatchWinner breaker, Vector vector) {
+    public LeakableBreakEvent(ArcadePlugin plugin, Leakable leakable, MatchWinner breaker, Block block) {
         super(plugin, leakable);
 
+        this.block = block;
         this.breaker = breaker;
-        this.vector = vector;
     }
 
     @Override
@@ -27,11 +27,11 @@ public class LeakableBreakEvent extends LeakableEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public MatchWinner getBreaker() {
-        return this.breaker;
+    public Block getBlock() {
+        return this.block;
     }
 
-    public Vector getVector() {
-        return this.vector;
+    public MatchWinner getBreaker() {
+        return this.breaker;
     }
 }

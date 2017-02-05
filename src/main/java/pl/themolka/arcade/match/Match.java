@@ -1,14 +1,11 @@
 package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.time.Duration;
@@ -117,10 +114,18 @@ public class Match {
         MatchEndedEvent endedEvent = new MatchEndedEvent(this.plugin, this, winner, force);
         this.plugin.getEventBus().publish(endedEvent);
 
-        ItemStack compass = new ItemStackBuilder().type(Material.COMPASS).build();
         for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.getPlayer().reset();
-            player.getBukkit().getInventory().setItem(0, compass);
+            if (player.getGamePlayer() != null) {
+                player.getGamePlayer().setParticipating(false);
+            }
+
+            player.getPermissions().clearGroups();
+            player.getPermissions().refresh();
+
+            player.refresh();
+
+            player.getBukkit().getInventory().setItem(0, ObserversKit.TELEPORTER);
+            player.getBukkit().setGameMode(ObserversKit.GAME_MODE);
         }
     }
 
@@ -313,6 +318,13 @@ public class Match {
 
         MatchStartedEvent startedEvent = new MatchStartedEvent(this.plugin, this, force);
         this.plugin.getEventBus().publish(startedEvent);
+
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.getPermissions().clearGroups();
+            player.getPermissions().refresh();
+
+            player.refresh();
+        }
     }
 
     public void unregisterWinner(MatchWinner winner) {

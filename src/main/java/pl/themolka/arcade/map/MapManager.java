@@ -92,6 +92,7 @@ public class MapManager implements FilenameFilter {
         World world = creator.createWorld();
         world.setAutoSave(false);
         world.setDifficulty(map.getDifficulty());
+        world.setKeepSpawnInMemory(false);
         world.setPVP(map.isPvp());
         world.setSpawnFlags(false, false);
         world.setSpawnLocation(map.getSpawn().getBlockX(), map.getSpawn().getBlockY(), map.getSpawn().getBlockZ());

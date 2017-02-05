@@ -35,7 +35,7 @@ public class Permission implements Paginationable {
     public String paginate(int index) {
         String text = ChatColor.RED + "#" + index + " " + ChatColor.YELLOW + this.getName();
         if (!this.isAccess()) {
-            return text + ChatColor.DARK_PURPLE + ChatColor.ITALIC + " (revoke)";
+            return text + ChatColor.RED + ChatColor.ITALIC + " (revoke)";
         }
 
         return text;

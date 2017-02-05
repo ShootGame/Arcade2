@@ -57,9 +57,8 @@ public class ArcadeMapConfiguration {
 
     private void preprocessElement(String path, Element element) throws MapParserException {
         String uniqueId = element.getAttributeValue("id");
-        if (uniqueId != null && !this.addElement(uniqueId, element, false)) {
-//            throw new MapParserException("Given ID already exists in " + path);
-            // TODO?
+        if (uniqueId != null) {
+            this.addElement(uniqueId, element, false);
         }
     }
 }

@@ -13,84 +13,100 @@ softdepend:
 - WorldEdit
 
 permissions:
-  #
-  # General
-  #
-  arcade.command.cancel:
-    description: 'Gives access to the /cancel command.'
-    default: op
-  arcade.command.cycle:
-    description: 'Gives access to the /cycle command.'
-    default: op
-  arcade.command.info:
-    description: 'Gives access to the /info command.'
-    default: op
-  arcade.command.reload:
-    description: 'Gives access to the /arcade reload command.'
-    default: op
-  arcade.command.restart:
-    description: 'Gives access to the /restart command.'
-    default: op
-  # game
-  arcade.command.gameinfo:
-    description: 'Gives access to the /gameinfo command.'
-    default: true
-  arcade.command.join:
-    description: 'Gives access to the /join command.'
-    default: true
+  arcade:
+    description: 'Gives access to all features.'
     children:
-      arcade.command.join.choose: false
-      arcade.command.join.overfill: false
-  arcade.command.leave:
-    description: 'Gives access to the /leave command.'
-    default: true
-  # map
-  arcade.command.mapinfo:
-    description: 'Gives access to the /mapinfo command.'
-    default: true
-  arcade.command.maplist:
-    description: 'Gives access to the /maplist command.'
-    default: true
-  arcade.command.nextmap:
-    description: 'Gives access to the /nextmap command.'
-    default: true
-  arcade.command.setnext:
-    description: 'Gives access to the /setnext command.'
-    default: op
+      #
+      # Channels
+      #
+      arcade.channel:
+        description: 'Gives access to chat channels.'
+        children:
+          arcade.channel.global:
+            description: 'Gives access to the global chat channel.'
+            default: true
+            children:
+              arcade.channel.global.console:
+                description: 'Gives access to send messages as the console.'
+                default: op
+          arcade.channel.teamchat:
+            description: 'Gives access to the team chat channel.'
+            default: true
+          arcade.channel.spy:
+            description: 'Gives access to the spy chat channel.'
+            default: op
 
-  #
-  # Channels Module
-  #
-  arcade.channel.global:
-    description: 'Gives access to the global chat channel.'
-    default: true
-    children:
-      arcade.channel.global.console: false
-  arcade.channel.teamchat:
-    description: 'Gives access to the team chat channel.'
-    default: true
-  arcade.channel.spy:
-    description: 'Gives access to the spy chat channel.'
-    default: op
+      #
+      # Commands
+      #
+      arcade.command:
+        description: 'Gives access to all commands.'
+        children:
+          # General
+          arcade.command.cancel:
+            description: 'Gives access to the /cancel command.'
+            default: op
+          arcade.command.cycle:
+            description: 'Gives access to the /cycle command.'
+            default: op
+          arcade.command.info:
+            description: 'Gives access to the /info command.'
+            default: op
+          arcade.command.reload:
+            description: 'Gives access to the /arcade reload command.'
+            default: op
+          arcade.command.restart:
+            description: 'Gives access to the /restart command.'
+            default: op
 
-  #
-  # Match Module
-  #
-  arcade.command.begin:
-    description: 'Gives access to the /begin command.'
-    default: op
-  arcade.command.end:
-    description: 'Gives access to the /end command.'
-    default: op
+          # Game
+          arcade.command.gameinfo:
+            description: 'Gives access to the /gameinfo command.'
+            default: true
+          arcade.command.join:
+            description: 'Gives access to the /join command.'
+            default: true
+            children:
+              arcade.command.join.choose:
+                description: 'Gives access to play the game.'
+                default: true
+              arcade.command.join.overfill:
+                description: 'Gives access to play the game if its overfilled.'
+                default: op
+          arcade.command.leave:
+            description: 'Gives access to the /leave command.'
+            default: true
 
-  #
-  # Teams Module
-  #
-  arcade.command.myteam:
-    description: 'Gives access to the /myteam command.'
-    default: true
-  arcade.command.teams:
-    description: 'Gives access to the /teams command.'
-    default: true
-    children:
-      arcade.command.teams.manage: false
+          # Map
+          arcade.command.mapinfo:
+            description: 'Gives access to the /mapinfo command.'
+            default: true
+          arcade.command.maplist:
+            description: 'Gives access to the /maplist command.'
+            default: true
+          arcade.command.nextmap:
+            description: 'Gives access to the /nextmap command.'
+            default: true
+          arcade.command.setnext:
+            description: 'Gives access to the /setnext command.'
+            default: op
+
+          # Match
+          arcade.command.begin:
+            description: 'Gives access to the /begin command.'
+            default: op
+          arcade.command.end:
+            description: 'Gives access to the /end command.'
+            default: op
+
+          # Teams
+          arcade.command.myteam:
+            description: 'Gives access to the /myteam command.'
+            default: true
+          arcade.command.teams:
+            description: 'Gives access to the /teams command.'
+            default: true
+            children:
+              arcade.command.teams.manage:
+                description: 'Gives access to manage the teams.'
+                default: op

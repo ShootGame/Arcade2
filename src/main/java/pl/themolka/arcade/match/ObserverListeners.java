@@ -37,10 +37,10 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import pl.themolka.arcade.event.ArcadePlayerMoveEvent;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.ArcadePlayerMoveEvent;
 import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
 import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
@@ -148,14 +148,13 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventorySpy(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Player && this.isObserving(event.getPlayer()) && !event.getPlayer().isSneaking()) {
             Player player = (Player) event.getRightClicked();
 
             if (!this.isObserving(player)) {
                 this.handleInventorySpy(event.getPlayer(), player);
-                event.setCancelled(true);
             }
         }
     }
@@ -191,19 +190,18 @@ public class ObserverListeners implements Listener {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinedObservers(PlayerJoinedTeamEvent event) {
         if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
-            event.getPlayer().resetFull();
+            this.game.getMatch().getObserversKit().apply(event.getGamePlayer()); // apply kits
 
             Player bukkit = event.getPlayer().getBukkit();
             if (this.game.getMatch().isRunning()) {
                 bukkit.setHealth(0.0D);
             }
-            bukkit.showInvisibles(true);
-            bukkit.setCollidesWithEntities(false);
-            bukkit.setCollidable(false);
 
-            for (GamePlayer player : this.game.getGame().getPlayers()) {
-                if (player.isParticipating()) {
-                    player.getPlayer().getBukkit().hidePlayer(bukkit);
+            for (ArcadePlayer player : this.game.getPlugin().getPlayers()) {
+                if (player.getGamePlayer() != null && player.getGamePlayer().canSee(event.getGamePlayer())) {
+                    player.getBukkit().showPlayer(bukkit);
+                } else {
+                    player.getBukkit().hidePlayer(bukkit);
                 }
             }
         }
@@ -212,15 +210,13 @@ public class ObserverListeners implements Listener {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
         if (event.getGamePlayer().isOnline() && event.getTeam().isObservers() && this.game.getMatch().isRunning()) {
-            event.getPlayer().resetFull();
-
             Player bukkit = event.getPlayer().getBukkit();
-            bukkit.showInvisibles(false);
-            bukkit.setCollidesWithEntities(true);
-            bukkit.setCollidable(true);
-
-            for (GamePlayer player : this.game.getGame().getPlayers()) {
-                player.getPlayer().getBukkit().showPlayer(bukkit);
+            for (ArcadePlayer player : this.game.getPlugin().getPlayers()) {
+                if (player.getGamePlayer() != null && player.getGamePlayer().canSee(event.getGamePlayer())) {
+                    player.getBukkit().showPlayer(bukkit);
+                } else {
+                    player.getBukkit().hidePlayer(bukkit);
+                }
             }
         }
     }
@@ -298,6 +294,7 @@ public class ObserverListeners implements Listener {
     }
 
     private void handleInventorySpy(Player observer, Block block) {
+        // FIXME
         if (block.getState() instanceof InventoryHolder) {
             observer.openInventory(((InventoryHolder) block.getState()).getInventory());
         }

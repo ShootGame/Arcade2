@@ -3,6 +3,7 @@ package pl.themolka.arcade.match;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.team.Team;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class Observers extends Team {
     public static final ChatColor OBSERVERS_COLOR = ChatColor.DARK_AQUA;
     public static final DyeColor OBSERVERS_DYE_COLOR = DyeColor.CYAN;
+    public static final String OBSERVERS_KEY = "@";
     public static final String OBSERVERS_NAME = "Observers";
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;
     public static final String OBSERVERS_TEAM_ID = "_observers-team";
@@ -82,6 +84,16 @@ public class Observers extends Team {
     @Override
     public boolean isPlaying() {
         return false;
+    }
+
+    @Override
+    public boolean join(GamePlayer player, boolean message) {
+        boolean result = super.join(player, message);
+        if (result) {
+            player.setParticipating(false);
+        }
+
+        return result;
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class XMLParser {
-    public static final char COLOR_CHAR = '&';
+    public static final char COLOR_CHAR = '`';
     public static final String SPLIT_KEY = ",";
 
     public static List<String> parseArray(String value) {

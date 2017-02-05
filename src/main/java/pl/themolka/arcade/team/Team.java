@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
@@ -49,6 +50,21 @@ public class Team implements MatchWinner {
         this.channel = new TeamChannel(plugin, this);
         this.channel.setFormat(TeamChannel.TEAM_FORMAT);
         this.id = id;
+    }
+
+    public Team(Team original) {
+        this(original.plugin, original.getId());
+
+        this.setBukkit(original.getBukkit());
+        this.setColor(original.getColor());
+        this.setDyeColor(original.getDyeColor());
+        this.setFriendlyFire(original.isFriendlyFire());
+        this.setMatch(original.getMatch());
+        this.setMaxPlayers(original.getMaxPlayers());
+        this.setMinPlayers(original.getMinPlayers());
+        this.setName(original.getName());
+        this.setSlots(original.getSlots());
+        this.setSpawns(original.getSpawns());
     }
 
     @Override
@@ -238,64 +254,79 @@ public class Team implements MatchWinner {
         return this.slots;
     }
 
-    public void join(GamePlayer player) {
-        this.join(player, true);
+    public boolean join(GamePlayer player) {
+        return this.join(player, true);
     }
 
-    public void join(GamePlayer player, boolean message) {
-        if (!player.isOnline() || this.isFull()) {
-            return;
+    public boolean join(GamePlayer player, boolean message) {
+        if (!player.isOnline() || this.isFull() || this.hasPlayer(player)) {
+            return false;
         }
 
         PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(this.plugin, player, this);
         this.plugin.getEventBus().publish(event);
 
-        if (!event.isCanceled()) {
-            this.members.add(player);
-            this.onlineMembers.add(player);
-
-            player.getPlayer().resetFull();
-
-            player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
-            player.setParticipating(this.isParticipating());
-            player.setCurrentChannel(this.getChannel());
-            player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
-
-            if (message) {
-                player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
-            }
-
-            this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
+        if (event.isCanceled()) {
+            return false;
         }
+
+        // handle
+        this.members.add(player);
+        this.onlineMembers.add(player);
+
+        player.getPlayer().refresh();
+        player.getPlayer().getPermissions().refresh();
+
+        player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
+        player.setParticipating(this.isParticipating());
+        player.setCurrentChannel(this.getCurrentChannel());
+        player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
+
+        this.plugin.getLogger().info(player.getUsername() + " joined team '" + this.getName() + "' (" + this.getId() + ")");
+        if (message) {
+            player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
+        }
+
+        this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
+        return true;
     }
 
-    public void joinForce(GamePlayer player) {
-        this.join(player, true);
+    public boolean joinForce(GamePlayer player) {
+        return this.join(player, true);
     }
 
-    public void leave(GamePlayer player) {
-        if (!player.isOnline()) {
-            return;
+    public boolean leave(GamePlayer player) {
+        if (!player.isOnline() || !this.hasPlayer(player)) {
+            return false;
         }
 
         PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(this.plugin, player, this);
         this.plugin.getEventBus().publish(event);
 
-        if (!event.isCanceled()) {
-            this.members.remove(player);
-            this.onlineMembers.remove(player);
-
-            player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
-            player.setParticipating(false);
-            player.setCurrentChannel(null);
-            player.resetDisplayName();
-
-            this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
+        if (event.isCanceled()) {
+            return false;
         }
+
+        // handle
+        this.members.remove(player);
+        this.onlineMembers.remove(player);
+
+        player.refresh();
+        player.getPlayer().getPermissions().clearGroups();
+
+        player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
+        player.setParticipating(false);
+        player.setCurrentChannel(null);
+        player.resetDisplayName();
+
+        this.plugin.getLogger().info(player.getUsername() + " left team '" + this.getName() + "' (" + this.getId() + ")");
+
+        this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
+        return true;
     }
 
-    public void leaveForce(GamePlayer player) {
-        this.leave(player);
+    public boolean leaveForce(GamePlayer player) {
+        return this.leave(player);
     }
 
     public void leaveServer(GamePlayer player) {
@@ -356,6 +387,14 @@ public class Team implements MatchWinner {
 
     public void setSpawns(List<TeamSpawn> spawns) {
         this.spawns.addAll(spawns);
+    }
+
+    private ChatChannel getCurrentChannel() {
+        if (this.getMatch().isRunning()) {
+            return this.getChannel();
+        } else {
+            return null;
+        }
     }
 
     private void updateBukkitTeam() {

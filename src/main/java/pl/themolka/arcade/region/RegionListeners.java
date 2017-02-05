@@ -9,11 +9,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import pl.themolka.arcade.event.ArcadePlayerMoveEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.session.ArcadePlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,12 @@ public class RegionListeners implements Listener {
         FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_BREAK, event.getPlayer(), null, event.getBlock());
 
         if (result.equals(FilterResult.DENY)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        FilterResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
+        if (buildResult.equals(FilterResult.DENY)) {
             event.setCancelled(true);
         }
     }
@@ -60,6 +66,12 @@ public class RegionListeners implements Listener {
 
         FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_PLACE, event.getPlayer(), null, event.getBlock());
         if (result.equals(FilterResult.DENY)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        FilterResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
+        if (buildResult.equals(FilterResult.DENY)) {
             event.setCancelled(true);
         }
     }

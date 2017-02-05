@@ -15,6 +15,7 @@ import pl.themolka.arcade.generator.XMLGenerator;
 import pl.themolka.arcade.xml.XMLDifficulty;
 import pl.themolka.arcade.xml.XMLEnvironment;
 import pl.themolka.arcade.xml.XMLLocation;
+import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.arcade.xml.XMLPreProcessor;
 
 import java.io.File;
@@ -248,7 +249,7 @@ public class XMLMapParser implements MapParser {
         if (parent != null) {
             Element xml = parent.getChild("title");
             if (xml != null) {
-                return xml.getTextNormalize();
+                return XMLParser.parseMessage(xml.getTextNormalize());
             }
         }
 

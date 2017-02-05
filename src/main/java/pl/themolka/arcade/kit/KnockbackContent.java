@@ -7,7 +7,7 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class KnockbackContent implements KitContent<Float> {
-    public static float DEFAULT_KNOCKBACK = 1F;
+    public static float DEFAULT_KNOCKBACK = 0F;
 
     private final float result;
 

@@ -232,7 +232,7 @@ public class MatchGame extends GameModule {
                 break;
         }
 
-        event.getSender().send(ChatColor.DARK_PURPLE + "Time: " + ChatColor.DARK_AQUA + TimeUtils.prettyTime(time));
+        event.getSender().send(ChatColor.GREEN + "Time: " + ChatColor.DARK_AQUA + TimeUtils.prettyTime(time));
     }
 
     @Handler(priority = Priority.NORMAL)

@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.ArcadePlayerMoveEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.session.ArcadePlayerMoveEvent;
 
 public class GeneralListeners implements Listener {
     public static final String ENDER_CHEST_MESSAGE = "You may not %s Ender Chests on this server.";

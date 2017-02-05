@@ -7,7 +7,7 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class SaturationContent implements KitContent<Integer> {
-    public static final int DEFAULT_SATURATION = 1;
+    public static final int DEFAULT_SATURATION = 5;
 
     private final int result;
 

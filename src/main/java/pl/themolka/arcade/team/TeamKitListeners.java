@@ -2,9 +2,11 @@ package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.MatchStartedEvent;
 
 public class TeamKitListeners {
     private final TeamsGame game;
@@ -19,6 +21,17 @@ public class TeamKitListeners {
 
     public Kit findKit(String id) {
         return this.kits.getKit(id);
+    }
+
+    @Handler(priority = Priority.HIGHEST)
+    public void onClearingOldInventory(MatchStartedEvent event) {
+        for (Team team : this.game.getTeams()) {
+            if (team.isParticipating()) {
+                for (GamePlayer member : team.getOnlineMembers()) {
+                    member.getPlayer().clearInventory(true);
+                }
+            }
+        }
     }
 
     @Handler(priority = Priority.HIGHER)

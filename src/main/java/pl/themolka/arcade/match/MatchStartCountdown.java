@@ -63,13 +63,7 @@ public class MatchStartCountdown extends PrintableCountdown {
         MatchStartCountdownEvent event = new MatchStartCountdownEvent(this.plugin, this.match, this);
         this.plugin.getEventBus().publish(event);
 
-        if (event.isCanceled()) {
-            this.cannotStart = true;
-            this.cancelCountdown();
-            return;
-        }
-
-        if (!this.getMatch().isForceStart() && this.cannotStart) {
+        if (!this.getMatch().isForceStart() && (event.isCanceled() || this.cannotStart)) {
             this.cannotStart = false;
             this.cancelCountdown();
             return;

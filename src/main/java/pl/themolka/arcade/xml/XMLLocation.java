@@ -23,24 +23,24 @@ public class XMLLocation extends XMLParser {
     }
 
     public static Location parse(Element xml,
-                                            double x,
-                                            double z) throws DataConversionException {
+                                 double x,
+                                 double z) throws DataConversionException {
         return parse(xml, x, Y, z);
     }
 
     public static Location parse(Element xml,
-                                            double x,
-                                            double y,
-                                            double z) throws DataConversionException {
+                                 double x,
+                                 double y,
+                                 double z) throws DataConversionException {
         return parse(xml, x, y, z, YAW, PITCH);
     }
 
     public static Location parse(Element xml,
-                                            double x,
-                                            double y,
-                                            double z,
-                                            float yaw,
-                                            float pitch) throws DataConversionException {
+                                 double x,
+                                 double y,
+                                 double z,
+                                 float yaw,
+                                 float pitch) throws DataConversionException {
         if (xml != null) {
             double paramX = getAttribute(xml, ATTRIBUTE_X, X).getDoubleValue();
             double paramY = getAttribute(xml, ATTRIBUTE_Y, Y).getDoubleValue();

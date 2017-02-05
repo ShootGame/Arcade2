@@ -147,12 +147,8 @@ public class MatchModule extends Module<MatchGame> {
 
     @CommandInfo(name = {"matchinfo", "match"},
             description = "Describe the match",
-            permission = "arcade.command.matchinfo")
+            permission = "arcade.command.gameinfo") // inherit from /gameinfo
     public void matchInfo(Sender sender, CommandContext context) {
-        if (!this.isGameModuleEnabled()) {
-            throw new CommandException("Match module is not enabled in this game.");
-        }
-
         CommandUtils.sendTitleMessage(sender, "Match", "#" + this.getPlugin().getGames().getGameId());
         this.getPlugin().getEventBus().publish(new GameCommands.GameCommandEvent(this.getPlugin(), sender, context));
     }

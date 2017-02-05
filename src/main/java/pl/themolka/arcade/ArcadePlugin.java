@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -541,7 +542,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.games.fillDefaultQueue();
 
-        this.addTickable(new DescriptionTickable(this));
+        if (!((CraftServer) this.getServer()).bungee) {
+            this.addTickable(new DescriptionTickable(this));
+        }
     }
 
     private void loadMaps() {

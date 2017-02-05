@@ -56,10 +56,10 @@ public class Leakable implements InteractableGoal, StringId {
 
     @Override
     public String getGoalInteractMessage(String interact) {
-        return ChatColor.GOLD + interact + ChatColor.DARK_PURPLE + " broke a piece of " +
-                ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.DARK_PURPLE +
+        return ChatColor.GOLD + interact + ChatColor.GREEN + " broke a piece of " +
+                ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.GREEN +
                 "'s " + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getName() + ChatColor.RESET + ChatColor.DARK_PURPLE + ".";
+                this.getName() + ChatColor.RESET + ChatColor.GREEN + ".";
     }
 
     @Override
@@ -121,13 +121,13 @@ public class Leakable implements InteractableGoal, StringId {
      *   - LeakableBreakEvent (cancelable)
      *   - GoalProgressEvent
      */
-    public boolean breakPiece(MatchWinner breaker, GamePlayer player, Vector vector) {
+    public boolean breakPiece(MatchWinner breaker, GamePlayer player, Block block) {
         String interactMessage = breaker.getTitle();
         if (player != null) {
             interactMessage = player.getFullName();
         }
 
-        LeakableBreakEvent event = new LeakableBreakEvent(this.game.getPlugin(), this, breaker, vector);
+        LeakableBreakEvent event = new LeakableBreakEvent(this.game.getPlugin(), this, breaker, block);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (event.isCanceled()) {
@@ -136,7 +136,9 @@ public class Leakable implements InteractableGoal, StringId {
 
         double oldProgress = this.getProgress();
 
-        this.breaked.add(vector);
+        block.setType(Material.AIR);
+
+        this.breaked.add(new Vector(block.getX(), block.getY(), block.getZ()));
         if (player != null) {
             this.getContributions().addContributor(player);
         }
@@ -205,8 +207,8 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     public void leak() {
-        String message = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.DARK_PURPLE +
-                "'s " + ChatColor.GOLD + this.getName() + ChatColor.DARK_PURPLE + " has leaked";
+        String message = ChatColor.GOLD + ChatColor.BOLD.toString() + this.getOwner().getTitle() + ChatColor.RESET
+                + ChatColor.GREEN + "'s " + ChatColor.GOLD + this.getName() + ChatColor.GREEN + " has leaked";
 
         List<GoalContributor> contributions = this.getContributions().getContributors();
         if (!contributions.isEmpty()) {
@@ -227,12 +229,12 @@ public class Leakable implements InteractableGoal, StringId {
                 int percentage = Math.round((100F / touches) * contributor.getTouches());
 
                 if (i != 0) {
-                    builder.append(ChatColor.DARK_PURPLE);
+                    builder.append(ChatColor.GREEN);
                     if (i + 1 == size) {
                         builder.append(" and ");
                     } else if (i + 1 == max) {
                         builder.append(" and ").append(ChatColor.GOLD).append(size - max)
-                                .append(ChatColor.DARK_PURPLE).append(" more..");
+                                .append(ChatColor.GREEN).append(" more..");
                         break;
                     } else {
                         builder.append(", ");
@@ -240,14 +242,14 @@ public class Leakable implements InteractableGoal, StringId {
                 }
 
                 builder.append(ChatColor.GOLD).append(name).append(ChatColor.RESET)
-                        .append(ChatColor.DARK_PURPLE).append(" (").append(ChatColor.GREEN)
-                        .append(percentage).append("%").append(ChatColor.DARK_PURPLE).append(")");
+                        .append(ChatColor.GREEN).append(" (").append(ChatColor.GOLD)
+                        .append(percentage).append("%").append(ChatColor.GREEN).append(")");
             }
 
             message += builder.toString();
         }
 
-        this.game.getMatch().sendGoalMessage(message + ChatColor.DARK_PURPLE + ".");
+        this.game.getMatch().sendGoalMessage(message + ChatColor.GREEN + ".");
         this.setCompleted(null, true);
     }
 

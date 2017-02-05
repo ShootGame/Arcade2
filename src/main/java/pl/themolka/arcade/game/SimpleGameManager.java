@@ -173,9 +173,9 @@ public class SimpleGameManager implements GameManager {
         this.postEvent(event);
 
         if (!event.isCanceled()) {
-            this.plugin.getLogger().info("Restarting the server...");
+            this.plugin.getLogger().info("Restarting " + this.plugin.getServerName() + "...");
 
-            String reason = "Restarting the server...";
+            String reason = "Restarting " + this.plugin.getServerName() + "...";
             for (Player online : new ArrayList<>(this.plugin.getServer().getOnlinePlayers())) {
                 online.kickPlayer(reason);
             }
@@ -272,7 +272,7 @@ public class SimpleGameManager implements GameManager {
                 continue;
             }
 
-            player.getPlayer().resetFull();
+            player.refresh();
             player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }

@@ -81,13 +81,6 @@ public enum KitContentType implements KitContentParser<Object> {
         }
     },
 
-    PERMISSION("permission") {
-        @Override
-        public PermissionContent parse(Element xml) throws DataConversionException {
-            return PERMISSION_PARSER.parse(xml);
-        }
-    },
-
     SATURATION("saturation") {
         @Override
         public SaturationContent parse(Element xml) throws DataConversionException {
@@ -121,7 +114,6 @@ public enum KitContentType implements KitContentParser<Object> {
     public static final KnockbackContent.Parser KNOCKBACK_PARSER = new KnockbackContent.Parser();
     public static final MaxHealthContent.Parser MAX_HEALTH_PARSER = new MaxHealthContent.Parser();
     public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();
-    public static final PermissionContent.Parser PERMISSION_PARSER = new PermissionContent.Parser();
     public static final SaturationContent.Parser SATURATION_PARSER = new SaturationContent.Parser();
     public static final SoundContent.Parser SOUND_PARSER = new SoundContent.Parser();
     public static final WalkSpeedContent.Parser WALK_SPEED_PARSER = new WalkSpeedContent.Parser();

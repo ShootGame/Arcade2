@@ -1,8 +1,16 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.kit.FlyContent;
+import pl.themolka.arcade.kit.FoodLevelContent;
+import pl.themolka.arcade.kit.HealthContent;
+import pl.themolka.arcade.kit.KnockbackContent;
+import pl.themolka.arcade.kit.SaturationContent;
+import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -73,6 +81,10 @@ public class GamePlayer implements Metadata, Sender {
         this.metadata.setMetadata(owner, key, metadata);
     }
 
+    public boolean canSee(GamePlayer player) {
+        return !this.isParticipating() || player.isParticipating();
+    }
+
     public Player getBukkit() {
         if (this.isOnline()) {
             return this.getPlayer().getBukkit();
@@ -123,6 +135,58 @@ public class GamePlayer implements Metadata, Sender {
 
     public boolean isParticipating() {
         return this.participating;
+    }
+
+    public void refresh() {
+        boolean participating = this.isParticipating();
+        if (!participating) {
+            this.getBukkit().leaveVehicle();
+        }
+
+        this.getBukkit().setAffectsSpawning(participating);
+        this.getBukkit().setCanPickupItems(participating);
+        this.getBukkit().setCollidesWithEntities(participating);
+        this.getBukkit().showInvisibles(!participating);
+    }
+
+    public void reset() {
+        Player bukkit = this.getBukkit();
+        this.refresh();
+
+        this.getPlayer().clearInventory(true);
+        this.resetDisplayName();
+
+        bukkit.setAbsorption(0F);
+        bukkit.setAllowFlight(false);
+        bukkit.setArrowsStuck(0);
+        bukkit.setExhaustion(0F);
+        bukkit.setExp(0);
+        bukkit.setFallDistance(0F);
+        bukkit.setFireTicks(0);
+        bukkit.setFlying(false);
+        bukkit.setFlySpeed(FlyContent.DEFAULT_SPEED);
+        bukkit.setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
+        bukkit.setGameMode(GameMode.CREATIVE);
+        bukkit.setGlowing(false);
+        bukkit.setHealthScale(HealthContent.DEFAULT_HEALTH);
+        bukkit.setHealth(HealthContent.DEFAULT_HEALTH);
+        bukkit.setKnockbackReduction(KnockbackContent.DEFAULT_KNOCKBACK);
+        bukkit.setLevel(0);
+        bukkit.setSaturation(SaturationContent.DEFAULT_SATURATION);
+        bukkit.setSneaking(false);
+        bukkit.setSprinting(false);
+        bukkit.setWalkSpeed(WalkSpeedContent.DEFAULT_SPEED);
+
+        bukkit.setFastNaturalRegeneration(false);
+        bukkit.setSlowNaturalRegeneration(true);
+
+        bukkit.resetPlayerTime();
+        bukkit.resetPlayerWeather();
+        bukkit.resetTitle();
+
+        for (PotionEffectType potion : PotionEffectType.values()) {
+            this.getBukkit().removePotionEffect(potion);
+        }
     }
 
     public void resetDisplayName() {

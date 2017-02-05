@@ -40,6 +40,11 @@ public class XMLPermissions {
                 continue;
             }
 
+            String family = groupElement.getAttributeValue("family");
+            if (family == null) {
+                family = Group.DEFAULT_FAMILY;
+            }
+
             // name
             String name = groupElement.getAttributeValue("name");
             if (name == null) {
@@ -63,6 +68,7 @@ public class XMLPermissions {
 
             Group group = new Group(id, groupElement);
             group.setDefault(def);
+            group.setFamily(family);
             group.setName(name);
             group.setOperator(operator);
             group.setPrefix(prefix);

@@ -8,7 +8,7 @@
         <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
     </authors>
 
-    <!-- Include global data (matches) -->
+    <!-- Include global settings -->
     <include type="global">match.xml</include>
 
     <!-- World settings -->

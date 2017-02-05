@@ -25,7 +25,7 @@ public class GameCommands {
     public void gameInfo(Sender sender, CommandContext context) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {
-            throw new CommandException("Could not join the game right now. Please try again later.");
+            throw new CommandException("No game running right now. Please try again later.");
         }
 
         CommandUtils.sendTitleMessage(sender, "Game", "#" + (game.getGameId() + 1));
@@ -38,7 +38,8 @@ public class GameCommands {
 
     @CommandInfo(name = {"join", "play"},
             description = "Join the game",
-            usage = "[context...]",
+            flags = {"a", "auto"},
+            usage = "[-auto] [context...]",
             clientOnly = true,
             permission = "arcade.command.join",
             completer = "joinCompleter")
@@ -50,14 +51,15 @@ public class GameCommands {
 
         String param = context.getParam(0);
         if (param != null) {
-            boolean observers = param.equalsIgnoreCase("o") || param.equalsIgnoreCase("obs") || param.equalsIgnoreCase("observers");
+            boolean observers = param.equalsIgnoreCase("obs") || param.equalsIgnoreCase("observers");
             if (observers) {
                 this.leave(sender, context);
                 return;
             }
         }
 
-        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, sender, context, param == null));
+        boolean auto = param == null || context.hasFlag("a") || context.hasFlag("auto");
+        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, sender, context, auto));
     }
 
     public List<String> joinCompleter(Sender sender, CommandContext context) {

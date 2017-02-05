@@ -1,8 +1,9 @@
-package pl.themolka.arcade.event;
+package pl.themolka.arcade.session;
 
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.GamePlayerEvent;
 

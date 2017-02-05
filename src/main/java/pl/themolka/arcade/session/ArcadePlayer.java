@@ -3,19 +3,13 @@ package pl.themolka.arcade.session;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.FoodLevelContent;
-import pl.themolka.arcade.kit.HealthContent;
-import pl.themolka.arcade.kit.SaturationContent;
-import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -78,7 +72,7 @@ public class ArcadePlayer implements Metadata, Sender {
 
     @Override
     public boolean hasPermission(String permission) {
-        return this.getBukkit().hasPermission(permission);
+        return this.getBukkit().isOp() || this.getBukkit().hasPermission(permission);
     }
 
     @Override
@@ -188,35 +182,10 @@ public class ArcadePlayer implements Metadata, Sender {
         this.lastPlayedSound = now;
     }
 
-    public void reset() {
-        this.getBukkit().setAffectsSpawning(true);
-        this.getBukkit().setArrowsStuck(0);
-        this.getBukkit().setExp(0);
-        this.getBukkit().setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
-        this.getBukkit().setGameMode(GameMode.CREATIVE);
-        this.getBukkit().setGlowing(false);
-        this.getBukkit().setHealthScale(HealthContent.DEFAULT_HEALTH);
-        this.getBukkit().setHealth(HealthContent.DEFAULT_HEALTH);
-        this.getBukkit().setLevel(0);
-        this.getBukkit().setSaturation(SaturationContent.DEFAULT_SATURATION);
-        this.getBukkit().setWalkSpeed(WalkSpeedContent.DEFAULT_SPEED);
-
-        this.getBukkit().resetPlayerTime();
-        this.getBukkit().resetPlayerWeather();
-        this.getBukkit().resetTitle();
-
-        this.getBukkit().showInvisibles(true);
-    }
-
-    public void resetFull() {
-        this.clearInventory(true);
-        this.resetDisplayName();
-
-        for (PotionEffectType potion : PotionEffectType.values()) {
-            this.bukkit.removePotionEffect(potion);
+    public void refresh() {
+        if (this.getGamePlayer() != null) {
+            this.getGamePlayer().refresh();
         }
-
-        this.reset();
     }
 
     public void resetDisplayName() {

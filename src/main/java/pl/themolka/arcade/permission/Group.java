@@ -9,9 +9,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class Group implements StringId {
+    public static final String DEFAULT_FAMILY = "default";
+
     private final String id;
     private boolean def;
     private final Element element;
+    private String family;
     private String name;
     private boolean operator;
     private final Map<String, Permission> permissions = new HashMap<>();
@@ -78,6 +81,10 @@ public class Group implements StringId {
         return this.element;
     }
 
+    public String getFamily() {
+        return this.family;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -116,6 +123,10 @@ public class Group implements StringId {
 
     public void setDefault(boolean def) {
         this.def = def;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
     }
 
     public void setName(String name) {

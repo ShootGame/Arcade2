@@ -80,15 +80,19 @@ public class ChannelListeners implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void onChannelSpy(ChannelChatEvent event) {
-        if (event.isCanceled()) {
+        if (event.isCanceled() || event.getChannel() instanceof GlobalChatChannel) {
             return;
         }
 
         String message = ChatColor.DARK_AQUA + ChatColor.ITALIC.toString() + "[Spy]" + ChatColor.RESET + " " +
                 ChatColor.GRAY + event.getAuthorName() + ChatColor.RESET + ChatColor.GRAY + ": " + event.getMessage();
-        for (GamePlayer player : this.game.getGame().getPlayers()) {
-            if (player.isOnline() && !player.isParticipating() &&
-                    player.hasPermission(CHANNEL_SPY_PERMISSION) && !(player.getCurrentChannel() instanceof GlobalChatChannel)) {
+        for (ArcadePlayer online : this.game.getPlugin().getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+            if (player == null) {
+                continue;
+            }
+
+            if (!player.isParticipating() && player.hasPermission(CHANNEL_SPY_PERMISSION)) {
                 player.sendChat(message);
             }
         }

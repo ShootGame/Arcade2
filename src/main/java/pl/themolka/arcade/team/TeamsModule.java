@@ -69,9 +69,9 @@ public class TeamsModule extends Module<TeamsGame> {
     }
 
     @CommandInfo(name = {"teams", "teamlist"},
-            description = "Show all teams in this match",
+            description = "Show all teams in this match or manage them",
             flags = {"xml"},
-            usage = "[-xml]",
+            usage = "[-xml|context...]",
             permission = "arcade.command.teams",
             completer = "teamsCompleter")
     public void teams(Sender sender, CommandContext context) {
@@ -88,6 +88,9 @@ public class TeamsModule extends Module<TeamsGame> {
                 case "force":
                     game.forceCommand(sender, context.getParam(1), context.getParam(2));
                     break;
+                case "friendly":
+                    game.friendlyCommand(sender, context.getParam(1), context.getParamBoolean(2, true));
+                    break;
                 case "kick":
                     game.kickCommand(sender, context.getParam(1));
                     break;
@@ -96,6 +99,9 @@ public class TeamsModule extends Module<TeamsGame> {
                     break;
                 case "overfill":
                     game.overfillCommand(sender, context.getParam(1), context.getParamInt(2));
+                    break;
+                case "paint":
+                    game.paintCommand(sender, context.getParam(1), context.getParam(2));
                     break;
                 case "rename":
                     game.renameCommand(sender, context.getParam(1), context.getParams(2));
@@ -107,11 +113,14 @@ public class TeamsModule extends Module<TeamsGame> {
                     CommandUtils.sendTitleMessage(sender, "Teams Management");
                     sender.send(this.teamsCommand(context, "clear <team>", "Kick all players from a team"));
                     sender.send(this.teamsCommand(context, "force <player> <team>", "Force player to join a team"));
+                    sender.send(this.teamsCommand(context, "friendly <team> <on|off>", "Set friendly-fire"));
                     sender.send(this.teamsCommand(context, "kick <player>", "Kick player from the team"));
                     sender.send(this.teamsCommand(context, "min <team> <min>", "Set minimum amount of players"));
                     sender.send(this.teamsCommand(context, "overfill <team> <overfill>", "Set maximum team overfill"));
+                    sender.send(this.teamsCommand(context, "paint <team> <color>", "Color a team"));
                     sender.send(this.teamsCommand(context, "rename <team> <name...>", "Rename a team"));
                     sender.send(this.teamsCommand(context, "slots <team> <slots>", "Set slots in a team"));
+                    sender.sendTip("Type '" + Observers.OBSERVERS_KEY + "' if you want to specify observers.");
                     break;
             }
 
@@ -134,6 +143,7 @@ public class TeamsModule extends Module<TeamsGame> {
                         this.teamsKeyValue("color", team.getColor()) + ", " +
                         this.teamsKeyValue("dye-color", team.getDyeColor()) + ", " +
                         this.teamsKeyValue("friendly-fire", team.isFriendlyFire()) + ", " +
+                        this.teamsKeyValue("slots", team.getSlots()) + ", " +
                         this.teamsKeyValue("max-players", team.getMaxPlayers()) + ", " +
                         this.teamsKeyValue("min-players", team.getMinPlayers());
             }

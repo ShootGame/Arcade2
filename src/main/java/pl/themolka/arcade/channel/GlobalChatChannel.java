@@ -46,6 +46,11 @@ public class GlobalChatChannel extends ChatChannel {
     }
 
     @Override
+    public boolean hasMember(Sender member) {
+        return true;
+    }
+
+    @Override
     public boolean removeMember(Sender member) {
         return false;
     }

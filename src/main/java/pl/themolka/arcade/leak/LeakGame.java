@@ -7,7 +7,6 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.util.Vector;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.event.BlockTransformEvent;
@@ -208,9 +207,8 @@ public class LeakGame extends GameModule {
                 continue;
             }
 
-            if (!leakable.breakPiece(winner, player, new Vector(block.getX(), block.getY(), block.getZ()))) {
-                event.setCanceled(true);
-            }
+            leakable.breakPiece(winner, player, block);
+            event.setCanceled(true);
         }
     }
 

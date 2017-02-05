@@ -14,6 +14,7 @@
             <grant>arcade.command.cancel</grant>
             <grant>arcade.command.cycle</grant>
             <grant>arcade.command.info</grant>
+            <grant>arcade.command.join.overfill</grant>
             <grant>arcade.command.reload</grant>
             <grant>arcade.command.restart</grant>
             <grant>arcade.command.setnext</grant>
@@ -27,17 +28,9 @@
         </group>
 
         <group id="dev" name="Developer" prefix="`a[Dev] ">
-            <inherit>premium</inherit>
-
-            <grant>arcade.command.info</grant>
-        </group>
-
-        <group id="premium" name="Premium Member" prefix="`e[Premium] ">
             <inherit>member</inherit>
 
-            <!-- Teams Module -->
-            <grant>arcade.command.join.choose</grant>
-            <grant>arcade.command.join.overfill</grant>
+            <grant>arcade.command.info</grant>
         </group>
 
         <group id="member" name="Member" default="true">
@@ -46,6 +39,7 @@
 
             <grant>arcade.command.gameinfo</grant>
             <grant>arcade.command.join</grant>
+            <grant>arcade.command.join.choose</grant>
             <grant>arcade.command.leave</grant>
             <grant>arcade.command.mapinfo</grant>
             <grant>arcade.command.maplist</grant>
@@ -57,6 +51,13 @@
             <!-- Teams Module -->
             <grant>arcade.command.myteam</grant>
             <grant>arcade.command.teams</grant>
+        </group>
+
+        <group id="observers" family="observers" name="Observers">
+            <grant>worldedit.navigation.jumpto.tool</grant>
+            <grant>worldedit.navigation.jumpto.command</grant>
+            <grant>worldedit.navigation.thru.tool</grant>
+            <grant>worldedit.navigation.thru.command</grant>
         </group>
     </groups>
 
