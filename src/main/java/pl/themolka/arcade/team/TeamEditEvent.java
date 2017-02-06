@@ -3,7 +3,7 @@ package pl.themolka.arcade.team;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GameEvent;
 
-public class TeamEditEvent extends GameEvent {
+public class TeamEditEvent extends GameEvent implements TeamHolder {
     private final Team newState;
     private final Team oldState;
     private final Reason reason;
@@ -16,6 +16,11 @@ public class TeamEditEvent extends GameEvent {
         this.reason = reason;
     }
 
+    @Override
+    public Team getTeam() {
+        return this.getNewState();
+    }
+
     public Team getNewState() {
         return this.newState;
     }
@@ -26,10 +31,6 @@ public class TeamEditEvent extends GameEvent {
 
     public Reason getReason() {
         return this.reason;
-    }
-
-    public Team getTeam() {
-        return this.getNewState();
     }
 
     public enum Reason {

@@ -13,7 +13,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.session.ArcadePlayerMoveEvent;
+import pl.themolka.arcade.session.PlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,11 +92,11 @@ public class RegionListeners implements Listener {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onPlayerMove(ArcadePlayerMoveEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) {
         Region from = this.regions.fetch(event.getFrom());
         Region to = this.regions.fetch(event.getTo());
 
-        if (from.equals(to)) {
+        if (from == null || to == null || from.equals(to)) {
             return;
         }
 
@@ -125,7 +125,7 @@ public class RegionListeners implements Listener {
         }
 
         if (game == null && player != null) {
-            game = this.regions.getGame().getPlayer(player.getUniqueId());
+            game = this.regions.getGame().getPlayer(player);
         }
 
         List<Object> data = new ArrayList<>();

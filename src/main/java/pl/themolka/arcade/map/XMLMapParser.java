@@ -9,6 +9,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.generator.XMLGenerator;
@@ -93,6 +95,13 @@ public class XMLMapParser implements MapParser {
 
         this.getDocument().detachRootElement();
         this.getDocument().setRootElement(handler.getElement());
+
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+        try {
+            outputter.output(this.getDocument(), System.out);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
 
     //

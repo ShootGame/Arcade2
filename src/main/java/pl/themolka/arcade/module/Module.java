@@ -9,24 +9,23 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.util.StringId;
 import pl.themolka.arcade.util.Version;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T> extends SimpleModuleListener implements Listener, Serializable, StringId {
+public class Module<T> extends SimpleModuleListener implements Listener, StringId {
     public static final String DEFAULT_VERSION_STRING = "1.0";
     public static final Version DEFAULT_VERSION = Version.valueOf(DEFAULT_VERSION_STRING);
 
-    private transient ArcadePlugin plugin;
+    private ArcadePlugin plugin;
 
     private String id;
     private Class<? extends Module<?>>[] dependency;
     private Class<? extends Module<?>>[] loadBefore;
     private boolean global;
-    private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
+    private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
     private Version version = DEFAULT_VERSION;
 
@@ -47,7 +46,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, Seriali
         }
 
         ModuleInfo info = (ModuleInfo) infoAnnotation;
-        if (info.id() == null) {
+        if (info.id() == null || info.id().isEmpty()) {
             throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
         }
 

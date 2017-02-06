@@ -1,18 +1,17 @@
 package pl.themolka.arcade.session;
 
 import org.bukkit.Location;
-import org.bukkit.event.player.PlayerMoveEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.GamePlayerEvent;
 
-public class ArcadePlayerMoveEvent extends GamePlayerEvent implements Cancelable {
+public class PlayerMoveEvent extends GamePlayerEvent implements Cancelable {
     private boolean cancel;
     private final Location from;
     private final Location to;
 
-    public ArcadePlayerMoveEvent(ArcadePlugin plugin, GamePlayer player, PlayerMoveEvent event) {
+    public PlayerMoveEvent(ArcadePlugin plugin, GamePlayer player, org.bukkit.event.player.PlayerMoveEvent event) {
         super(plugin, player);
 
         this.from = event.getFrom();

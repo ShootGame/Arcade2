@@ -9,8 +9,10 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.module.ModuleVersion;
 
-@ModuleInfo(id = "channels")
+@ModuleInfo(id = "Channels")
+@ModuleVersion("1.0")
 public class ChannelsModule extends Module<ChannelsGame> {
     @Override
     public ChannelsGame buildGameModule(Element xml, Game game) throws JDOMException {

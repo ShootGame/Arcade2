@@ -14,7 +14,10 @@ import pl.themolka.arcade.xml.XMLParser;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(id = "team-lock", dependency = {FiltersModule.class, TeamsModule.class})
+@ModuleInfo(id = "Team-Lock",
+        dependency = {
+                FiltersModule.class,
+                TeamsModule.class})
 public class TeamLockModule extends Module<TeamLockGame> {
     @Override
     public TeamLockGame buildGameModule(Element xml, Game game) throws JDOMException {

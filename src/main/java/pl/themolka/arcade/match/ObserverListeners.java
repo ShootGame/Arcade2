@@ -40,7 +40,7 @@ import org.bukkit.inventory.InventoryHolder;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.session.ArcadePlayerMoveEvent;
+import pl.themolka.arcade.session.PlayerMoveEvent;
 import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
 import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
@@ -55,7 +55,7 @@ public class ObserverListeners implements Listener {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onArcadePlayerMove(ArcadePlayerMoveEvent event) {
+    public void onArcadePlayerMove(PlayerMoveEvent event) {
         ArcadeMap map = this.game.getGame().getMap();
         int y = event.getTo().getBlockY();
 
@@ -314,6 +314,6 @@ public class ObserverListeners implements Listener {
     }
 
     private boolean isObserving(Player player) {
-        return this.game.getMatch().isObserving(this.game.getGame().getPlayer(player.getUniqueId()));
+        return this.game.getMatch().isObserving(this.game.getGame().getPlayer(player));
     }
 }

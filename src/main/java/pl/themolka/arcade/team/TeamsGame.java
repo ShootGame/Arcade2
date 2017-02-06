@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandPermissionException;
+import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
@@ -30,8 +31,13 @@ import java.util.List;
 import java.util.Map;
 
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
+    /** Match where teams are stored */
     private Match match;
+
+    /** Teams indexed by their unique identifier */
     private final Map<String, Team> teamsById = new HashMap<>();
+
+    /** Teams indexed by their members */
     private final Map<GamePlayer, Team> teamsByPlayer = new HashMap<>();
 
     public TeamsGame(List<Team> teams) {
@@ -78,39 +84,9 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         return team == null || team.isObserving();
     }
 
-    public void autoJoinTeam(GamePlayer player) throws CommandException {
-        Team smallestTeam = null;
-        for (Team team : this.getTeams()) {
-            if (team.isParticipating()) {
-                if (smallestTeam != null) {
-                    double first = smallestTeam.getOnlineMembers().size() / smallestTeam.getMaxPlayers();
-                    double second = team.getOnlineMembers().size() / team.getMaxPlayers();
-
-                    if (first > second) {
-                        smallestTeam = team;
-                    }
-                } else {
-                    smallestTeam = team;
-                }
-            }
-        }
-
-        if (smallestTeam == null) {
-            throw new CommandException("No teams were found!");
-        }
-
-        Team join = smallestTeam;
-        if (!player.hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
-            throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
-                    "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
-        } else if (this.getTeam(player) != null && this.getTeam(player).equals(join)) {
-            throw new CommandException("You already joined " + join.getName() + ".");
-        } else if (join.isFull()) {
-            throw new CommandException("Teams are overfilled!");
-        }
-
-        this.joinTeam(player, join);
-    }
+    //
+    // Getters and Setters
+    //
 
     public Team findTeamById(String query) {
         if (query.equals(Observers.OBSERVERS_KEY)) {
@@ -145,6 +121,44 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     public Collection<Team> getTeams() {
         return this.teamsById.values();
+    }
+
+    //
+    // Team Management
+    //
+
+    public void autoJoinTeam(GamePlayer player) throws CommandException {
+        Team smallestTeam = null;
+        for (Team team : this.getTeams()) {
+            if (team.isParticipating()) {
+                if (smallestTeam != null) {
+                    double first = smallestTeam.getOnlineMembers().size() / smallestTeam.getMaxPlayers();
+                    double second = team.getOnlineMembers().size() / team.getMaxPlayers();
+
+                    if (first > second) {
+                        smallestTeam = team;
+                    }
+                } else {
+                    smallestTeam = team;
+                }
+            }
+        }
+
+        if (smallestTeam == null) {
+            throw new CommandException("No teams were found!");
+        }
+
+        Team join = smallestTeam;
+        if (!player.hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
+            throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
+                    "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
+        } else if (this.getTeam(player) != null && this.getTeam(player).equals(join)) {
+            throw new CommandException("You already joined " + join.getName() + ".");
+        } else if (join.isFull()) {
+            throw new CommandException("Teams are overfilled!");
+        }
+
+        this.joinTeam(player, join);
     }
 
     public void joinTeam(GamePlayer player, String query) throws CommandException {
@@ -200,11 +214,16 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         team.join(player, message);
     }
 
+    //
+    // Listeners
+    //
+
     @Handler(priority = Priority.HIGH)
     public void onChannelsUpdate(MatchEndedEvent event) {
         for (Team team : this.getTeams()) {
             for (GamePlayer player : team.getOnlineMembers()) {
                 player.setCurrentChannel(null);
+                player.setParticipating(team.isParticipating());
             }
         }
     }
@@ -214,6 +233,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         for (Team team : this.getTeams()) {
             for (GamePlayer player : team.getOnlineMembers()) {
                 player.setCurrentChannel(team.getChannel());
+                player.setParticipating(team.isParticipating());
             }
         }
     }
@@ -390,6 +410,18 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
     }
 
+    public void infoCommand(Sender sender) {
+        CommandUtils.sendTitleMessage(sender, "Teams", Integer.toString(this.getTeams().size()));
+        for (Team team : this.getTeams()) {
+            sender.send(String.format("%s - %s/%s - %s minimal to play and %s overfill",
+                    team.getPrettyName() + ChatColor.GRAY,
+                    ChatColor.GOLD.toString() + team.getOnlineMembers().size() + ChatColor.GRAY,
+                    Integer.toString(team.getSlots()),
+                    ChatColor.GREEN.toString() + team.getMinPlayers() + ChatColor.GRAY,
+                    ChatColor.RED.toString() + team.getMaxPlayers() + ChatColor.GRAY));
+        }
+    }
+
     public void kickCommand(Sender sender, String username) {
         GamePlayer player = this.fetchPlayer(username);
         Team team = this.getTeam(player);
@@ -520,6 +552,10 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.callEditEvent(team, oldState, TeamEditEvent.Reason.SLOTS);
         sender.sendSuccess(oldState.getName() + " has been edited.");
     }
+
+    //
+    // Commands Utilities
+    //
 
     private void callEditEvent(Team newState, Team oldState, TeamEditEvent.Reason reason) {
         this.getPlugin().getEventBus().publish(new TeamEditEvent(this.getPlugin(), newState, oldState, reason));

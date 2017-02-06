@@ -1,9 +1,9 @@
 package pl.themolka.arcade.game;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.session.ArcadePlayerEvent;
+import pl.themolka.arcade.session.PlayerEvent;
 
-public class GamePlayerEvent extends ArcadePlayerEvent {
+public class GamePlayerEvent extends PlayerEvent {
     private final GamePlayer player;
 
     public GamePlayerEvent(ArcadePlugin plugin, GamePlayer player) {

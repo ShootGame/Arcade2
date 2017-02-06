@@ -7,30 +7,30 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.task.Task;
 import pl.themolka.arcade.task.TaskManager;
+import pl.themolka.arcade.util.StringId;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class GameModule extends SimpleGameListener implements Listener, Serializable {
+public class GameModule extends SimpleGameListener implements Listener, StringId {
     private ArcadePlugin plugin;
 
     private boolean enabled;
-    private transient Game game;
+    private Game game;
     private boolean loaded = false;
-    private final transient List<Object> listenerObjects = new CopyOnWriteArrayList<>();
+    private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private Module<?> module;
     private Element settings;
-    private final transient List<Task> taskList = new CopyOnWriteArrayList<>();
+    private final List<Task> taskList = new CopyOnWriteArrayList<>();
 
     public GameModule() {
     }
 
     public final void initialize(ArcadePlugin plugin, Game game, Module<?> module, Element settings) {
         if (this.isLoaded()) {
-            return;
+            throw new IllegalStateException(this.getId() + " is already loaded.");
         }
 
         this.loaded = true;
@@ -40,6 +40,11 @@ public class GameModule extends SimpleGameListener implements Listener, Serializ
         this.game = game;
         this.loaded = true;
         this.module = module;
+    }
+
+    @Override
+    public String getId() {
+        return this.getModule().getId();
     }
 
     public int cancelAllTasks() {

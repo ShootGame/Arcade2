@@ -33,7 +33,7 @@ permissions:
             description: 'Gives access to the team chat channel.'
             default: true
           arcade.channel.spy:
-            description: 'Gives access to the spy chat channel.'
+            description: 'Gives access to spy the chat channels.'
             default: op
 
       #

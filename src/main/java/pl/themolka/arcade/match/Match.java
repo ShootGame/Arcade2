@@ -1,6 +1,7 @@
 package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.CommandUtils;
@@ -45,12 +46,7 @@ public class Match {
             winnerMessage = CommandUtils.createTitle(ChatColor.GOLD + winner.getMessage());
         }
 
-        for (GamePlayer gamePlayer : this.getGame().getPlayers()) {
-            if (!gamePlayer.isOnline()) {
-                continue;
-            }
-
-            ArcadePlayer player = gamePlayer.getPlayer();
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
             player.send(" " + CommandUtils.createTitle(ChatColor.GOLD + "The match has ended!") + " ");
             if (winnerMessage != null) {
@@ -68,15 +64,10 @@ public class Match {
     }
 
     public void broadcastStartMessage() {
-        for (GamePlayer gamePlayer : this.getGame().getPlayers()) {
-            if (!gamePlayer.isOnline()) {
-                continue;
-            }
-
-            ArcadePlayer player = gamePlayer.getPlayer();
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
             player.send(" " + CommandUtils.createTitle(ChatColor.GREEN + "The match has started!") + " ");
-            if (gamePlayer.isParticipating()) {
+            if (player.getGamePlayer() != null && player.getGamePlayer().isParticipating()) {
                 player.send(" " + CommandUtils.createTitle(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Good luck!") + " ");
             }
             player.send(" " + CommandUtils.createLine(CommandUtils.CHAT_LINE_LENGTH) + ChatColor.RESET + " ");
@@ -319,11 +310,15 @@ public class Match {
         MatchStartedEvent startedEvent = new MatchStartedEvent(this.plugin, this, force);
         this.plugin.getEventBus().publish(startedEvent);
 
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.getPermissions().clearGroups();
-            player.getPermissions().refresh();
+        for (ArcadePlayer online : this.plugin.getPlayers()) {
+            online.getPermissions().clearGroups();
+            online.getPermissions().refresh();
 
-            player.refresh();
+            GamePlayer player = online.getGamePlayer();
+            if (player != null && player.isParticipating()) {
+                player.refresh();
+                player.getBukkit().setGameMode(GameMode.SURVIVAL);
+            }
         }
     }
 

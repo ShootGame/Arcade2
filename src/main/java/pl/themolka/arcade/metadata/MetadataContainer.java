@@ -6,7 +6,13 @@ import pl.themolka.arcade.util.Container;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * Simple implementation of the {@link Metadata} class which stores the data in a {@link HashMap}.
+ */
 public class MetadataContainer extends HashMap<String, Object> implements Container<Object>, Metadata {
+    /**
+     * A key separating a owner module class and a >custom key of the metadata.
+     */
     public static final char KEY_SEPARATOR = '/';
 
     @Override

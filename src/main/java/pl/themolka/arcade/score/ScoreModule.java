@@ -8,7 +8,11 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.team.TeamsModule;
 
-@ModuleInfo(id = "score", dependency = {MatchModule.class}, loadBefore = {TeamsModule.class})
+@ModuleInfo(id = "Score",
+        dependency = {
+                MatchModule.class},
+        loadBefore = {
+                TeamsModule.class})
 public class ScoreModule extends Module<ScoreGame> {
     public static final int LIMIT_NULL = Integer.MAX_VALUE;
 

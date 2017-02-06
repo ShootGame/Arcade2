@@ -27,8 +27,8 @@ public class ArcadePlayer implements Metadata, Sender {
 
     private final ArcadePlugin plugin;
 
-    private final transient Player bukkit; // Bukkit
-    private transient GamePlayer gamePlayer;
+    private final Player bukkit; // Bukkit
+    private GamePlayer gamePlayer;
     private Time lastPlayedSound;
     private final MetadataContainer metadata = new MetadataContainer();
     private final PermissionContext permissions;

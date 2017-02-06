@@ -5,12 +5,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.PrintableCountdown;
 
 import java.time.Duration;
 
 public class RestartCountdown extends PrintableCountdown {
-    public static final Duration DEFAULT_DURATION = Duration.ofSeconds(25);
+    public static final Duration DEFAULT_DURATION = Duration.ofSeconds(15);
     public static final String FIELD_SERVER_NAME = "%SERVER_NAME%";
 
     private final ArcadePlugin plugin;
@@ -47,10 +48,8 @@ public class RestartCountdown extends PrintableCountdown {
         this.getBossBar().setProgress(this.getProgress());
         this.getBossBar().setTitle(new TextComponent(message));
 
-        for (GamePlayer player : game.getPlayers()) {
-            if (player.isOnline()) {
-                this.getBossBar().addPlayer(player.getBukkit());
-            }
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            this.getBossBar().addPlayer(player.getBukkit());
         }
 
         this.getBossBar().setVisible(true);
@@ -71,10 +70,8 @@ public class RestartCountdown extends PrintableCountdown {
         }
 
         String message = this.getPrintMessage(this.getRestartMessage());
-        for (GamePlayer player : game.getPlayers()) {
-            if (player.isOnline()) {
-                player.getPlayer().send(message);
-            }
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.getPlayer().send(message);
         }
 
         this.plugin.getLogger().info(message);

@@ -192,8 +192,6 @@ public class SimpleGameManager implements GameManager {
         game.stop();
 
         File directory = new File(this.plugin.getMaps().getWorldContainer(), game.getMap().getWorldName());
-//        this.serializeGame(new File(directory, Game.JSON_FILENAME), game);
-
         this.plugin.getMaps().destroyWorld(game.getWorld(), worldEvent.isSaveWorld());
 
         GameDestroyedEvent destroyedEvent = new GameDestroyedEvent(this.plugin, game);
@@ -316,15 +314,6 @@ public class SimpleGameManager implements GameManager {
     @Override
     public void setNextRestart(boolean nextRestart) {
         this.nextRestart = nextRestart;
-    }
-
-    @Override
-    public void serializeGame(File file, Game game) {
-        try {
-            this.plugin.serializeJsonFile(file, game);
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
     }
 
     private void postEvent(Event event) {

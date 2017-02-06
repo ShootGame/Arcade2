@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-@ModuleInfo(id = "map-loader", loadBefore = {RepositoriesModule.class})
+@ModuleInfo(id = "Map-Loader",
+        loadBefore = {
+                RepositoriesModule.class})
 public class MapLoaderModule extends SimpleGlobalModule implements MapContainerLoader {
     private final List<File> worldFiles = new ArrayList<>();
 

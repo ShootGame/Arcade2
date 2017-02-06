@@ -67,7 +67,7 @@ public class Sessions implements Listener {
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            GamePlayer gamePlayer = game.getPlayer(bukkit.getUniqueId());
+            GamePlayer gamePlayer = game.getPlayer(bukkit);
             if (gamePlayer == null) {
                 gamePlayer = new GamePlayer(game, player);
             }
@@ -76,8 +76,9 @@ public class Sessions implements Listener {
             player.setGamePlayer(gamePlayer);
             game.addPlayer(gamePlayer);
 
-            player.getBukkit().teleport(game.getMap().getSpawn());
+            gamePlayer.setParticipating(false);
             player.refresh();
+            player.getBukkit().teleport(game.getMap().getSpawn());
         }
 
         this.plugin.addPlayer(player);

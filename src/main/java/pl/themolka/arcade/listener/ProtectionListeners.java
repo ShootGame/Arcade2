@@ -2,6 +2,7 @@ package pl.themolka.arcade.listener;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,8 +12,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 
-import java.util.ArrayList;
-
+/**
+ * Listeners related to anti-grief methods.
+ */
 public class ProtectionListeners implements Listener {
     private final ArcadePlugin plugin;
 
@@ -20,13 +22,32 @@ public class ProtectionListeners implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    /**
+     * Call a {@link PlayerDeathEvent} and handle this logout as a
+     * escape from death by the enemy. If the player wasn't escaped
+     * the {@link Player#getKiller()} returns null. This method is
+     * used to drop the players items on the ground.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void antiLogout(PlayerQuitEvent event) {
-        PlayerDeathEvent fakeEvent = new PlayerDeathEvent(event.getPlayer(), new ArrayList<>(), 0, null);
-        this.plugin.getServer().getPluginManager().callEvent(fakeEvent);
+        Player player = event.getPlayer();
+
+        // call the fake event
+        this.plugin.getServer().getPluginManager().callEvent(new PlayerDeathEvent(
+                player,
+                player.getInventory().contents(),
+                player.getTotalExperience(),
+                null
+        ));
     }
 
-    @EventHandler
+    /**
+     * People destroyed a {@link Material#WORKBENCH} closes all viewers
+     * craft window and drops their items on the ground. This is the
+     * major reason why we need to disable this and open a fake workbench
+     * window instead of the real.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void safeWorkbenches(PlayerInteractEvent event) {
         if (event.isCancelled() || event.getPlayer().isSneaking()) {
             return;

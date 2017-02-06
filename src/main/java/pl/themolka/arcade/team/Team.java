@@ -173,7 +173,11 @@ public class Team implements MatchWinner {
     }
 
     public int getMaxPlayers() {
-        return this.maxPlayers;
+        if (this.maxPlayers >= this.slots) {
+            return this.maxPlayers;
+        }
+
+        return this.slots;
     }
 
     public List<GamePlayer> getMembers() {
@@ -251,7 +255,11 @@ public class Team implements MatchWinner {
     }
 
     public int getSlots() {
-        return this.slots;
+        if (this.slots <= this.maxPlayers) {
+            return this.slots;
+        }
+
+        return this.maxPlayers;
     }
 
     public boolean join(GamePlayer player) {
@@ -278,7 +286,7 @@ public class Team implements MatchWinner {
         player.getPlayer().getPermissions().refresh();
 
         player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
-        player.setParticipating(this.isParticipating());
+        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
         player.setCurrentChannel(this.getCurrentChannel());
         player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
@@ -286,6 +294,9 @@ public class Team implements MatchWinner {
         if (message) {
             player.getPlayer().sendSuccess("You joined the " + this.getPrettyName() + ChatColor.GREEN + ".");
         }
+
+        player.getPlayer().getPermissions().clearGroups();
+        player.getPlayer().getPermissions().refresh();
 
         this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
         return true;

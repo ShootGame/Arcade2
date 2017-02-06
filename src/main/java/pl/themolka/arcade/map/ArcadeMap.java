@@ -20,13 +20,13 @@ public class ArcadeMap {
     private ArcadeMapConfiguration configuration;
     private Difficulty difficulty;
     private World.Environment environment;
-    private transient Game game;
-    private transient Generator generator;
+    private Game game;
+    private Generator generator;
     private boolean pvp;
     private String scoreboardTitle;
     private long seed;
-    private transient Location spawn;
-    private transient World world;
+    private Location spawn;
+    private World world;
     private String worldName;
 
     public ArcadeMap(OfflineMap mapInfo) {

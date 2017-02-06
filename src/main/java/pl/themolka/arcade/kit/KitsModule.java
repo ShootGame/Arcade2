@@ -9,7 +9,7 @@ import pl.themolka.arcade.module.ModuleInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-@ModuleInfo(id = "kits")
+@ModuleInfo(id = "Kits")
 public class KitsModule extends Module<KitsGame> {
     @Override
     public KitsGame buildGameModule(Element xml, Game game) throws JDOMException {

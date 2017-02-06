@@ -1,5 +1,6 @@
 package pl.themolka.arcade.match;
 
+import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.CommandContext;
@@ -17,20 +18,17 @@ import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.List;
 
-@ModuleInfo(id = "match")
+@ModuleInfo(id = "Match")
 public class MatchModule extends Module<MatchGame> {
-    public static final int DEFAULT_START_COUNTDOWN = 25;
+    public static final int DEFAULT_START_COUNTDOWN = 15;
     public static final String METADATA_MATCH = "Match";
     public static final String METADATA_OBSERVERS = "Observers";
-
-    private Observers defaultObservers;
-    private int defaultStartCountdown = DEFAULT_START_COUNTDOWN;
 
     @Override
     public MatchGame buildGameModule(Element xml, Game game) throws JDOMException {
         boolean autoCycle = true;
         boolean autoStart = true;
-        int startCountdown = this.defaultStartCountdown;
+        int startCountdown = DEFAULT_START_COUNTDOWN;
 
         Element autoCycleElement = xml.getChild("auto-cycle");
         if (autoCycleElement != null) {
@@ -48,54 +46,20 @@ public class MatchModule extends Module<MatchGame> {
             if (time != null) {
                 startCountdown = (int) time.toSeconds();
             } else {
-                startCountdown = this.getDefaultStartCountdown();
+                startCountdown = DEFAULT_START_COUNTDOWN;
             }
         }
 
         Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());
         if (observers.getColor() == null) {
-            observers.setColor(this.getDefaultObservers().getColor());
-        }
-        if (observers.getDyeColor() == null) {
-            observers.setDyeColor(this.getDefaultObservers().getDyeColor());
-        }
-        if (observers.getName() == null) {
-            observers.setName(this.getDefaultObservers().getName());
-        }
-
-        this.getGame().setMetadata(MatchModule.class, METADATA_OBSERVERS, observers);
-        return new MatchGame(autoCycle, autoStart, startCountdown, observers);
-    }
-
-    @Override
-    public void onEnable(Element global) throws JDOMException {
-        this.onEnableObservers(global.getChild("observers"));
-        this.onEnableStartCountdown(global.getChild("start-countdown"));
-    }
-
-    private void onEnableObservers(Element xml) throws JDOMException {
-        Observers observers = XMLObservers.parse(xml, this.getPlugin());
-        if (observers.getColor() == null) {
-            observers.setColor(Observers.OBSERVERS_COLOR);
-        }
-        if (observers.getDyeColor() == null) {
-            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
+            observers.setColor(ChatColor.AQUA);
         }
         if (observers.getName() == null) {
             observers.setName(Observers.OBSERVERS_NAME);
         }
 
-        this.defaultObservers = observers;
-    }
-
-    private void onEnableStartCountdown(Element xml) throws JDOMException {
-        if (xml != null) {
-            try {
-                this.defaultStartCountdown = Integer.parseInt(xml.getTextNormalize());
-            } catch (NumberFormatException ignored) {
-                this.defaultStartCountdown = DEFAULT_START_COUNTDOWN;
-            }
-        }
+        this.getGame().setMetadata(MatchModule.class, METADATA_OBSERVERS, observers);
+        return new MatchGame(autoCycle, autoStart, startCountdown, observers);
     }
 
     @CommandInfo(name = {"begin", "start"},
@@ -151,13 +115,5 @@ public class MatchModule extends Module<MatchGame> {
     public void matchInfo(Sender sender, CommandContext context) {
         CommandUtils.sendTitleMessage(sender, "Match", "#" + this.getPlugin().getGames().getGameId());
         this.getPlugin().getEventBus().publish(new GameCommands.GameCommandEvent(this.getPlugin(), sender, context));
-    }
-
-    public Observers getDefaultObservers() {
-        return this.defaultObservers;
-    }
-
-    public int getDefaultStartCountdown() {
-        return this.defaultStartCountdown;
     }
 }

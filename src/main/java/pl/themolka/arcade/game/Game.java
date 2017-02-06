@@ -2,6 +2,7 @@ package pl.themolka.arcade.game;
 
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.ArcadeMap;
@@ -14,35 +15,52 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Game implements Metadata, Serializable {
-    public static final String JSON_FILENAME = "game.json";
-
-    private final transient ArcadePlugin plugin;
+/**
+ * A game representation of the currently playing map.
+ */
+public class Game implements Metadata, PlayerVisibilityFilter {
+    private final ArcadePlugin plugin;
 
     private final List<MapError> errors = new ArrayList<>();
     private final int gameId;
     private final ArcadeMap map;
-    private final transient MetadataContainer metadata = new MetadataContainer();
-    private final transient GameModuleContainer modules = new GameModuleContainer();
-    private final transient Map<UUID, GamePlayer> players = new HashMap<>();
+    private final MetadataContainer metadata = new MetadataContainer();
+    private final GameModuleContainer modules = new GameModuleContainer();
+    private final Map<UUID, GamePlayer> players = new HashMap<>();
     private final ScoreboardContext scoreboard;
     private Instant startTime;
-    private final transient List<Task> taskList = new ArrayList<>();
-    private final transient World world;
+    private final List<Task> taskList = new ArrayList<>();
+    private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>(
+            Collections.singletonList(PlayerVisibilityFilter.DEFAULT));
+    private final World world;
 
+    /**
+     * Create a new game and load modules from the configuration.
+     * @param plugin The main class
+     * @param gameId An unique identifier of this game in this server session.
+     * @param map A map which this game will be playing on.
+     * @param world A world which this game will be playing on.
+     *
+     * TODO: Add multi-world support in the future.
+     * Really - we should add an ability to play the same game on multiple maps...
+     * To do this - we should add a {@link Map} containg a {@link World} as a key
+     *              and {@link Game} as a value. All events should be handled per
+     *              playing game.
+     */
     public Game(ArcadePlugin plugin, int gameId, ArcadeMap map, World world) {
         this.plugin = plugin;
 
@@ -60,6 +78,25 @@ public class Game implements Metadata, Serializable {
         this.readModules(modules);
     }
 
+    /**
+     * Filters <code>player</code>s visibility by the <code>viewer</code> in this game.
+     * @param viewer Viewer who can or cannot see the <code>player</code>.
+     * @param player Player who can or cannot be viewed by the <code>viewer</code>.
+     * @return <code>true</code> if <code>player</code> is visible, <code>false</code> otherwise.
+     */
+    @Override
+    public boolean canSee(GamePlayer viewer, GamePlayer player) {
+        boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, player);
+        for (PlayerVisibilityFilter filter : this.visibilityFilters) {
+            boolean value = filter.canSee(viewer, player);
+            if (value != def) {
+                return value;
+            }
+        }
+
+        return def;
+    }
+
     @Override
     public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
         return this.metadata.getMetadata(owner, key, def);
@@ -73,10 +110,6 @@ public class Game implements Metadata, Serializable {
     @Override
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
-    }
-
-    public void addPlayer(GamePlayer player) {
-        this.players.put(player.getUuid(), player);
     }
 
     public int addAsyncTask(Task task) {
@@ -97,6 +130,10 @@ public class Game implements Metadata, Serializable {
         return this.addError(new MapParserError(this.getMap(), exception));
     }
 
+    public void addPlayer(GamePlayer player) {
+        this.players.put(player.getUuid(), player);
+    }
+
     public int addSyncTask(Task task) {
         this.removeTask(task);
 
@@ -107,6 +144,10 @@ public class Game implements Metadata, Serializable {
         }
 
         return id;
+    }
+
+    public boolean addVisiblityFilter(PlayerVisibilityFilter filter) {
+        return this.visibilityFilters.add(filter);
     }
 
     public boolean clearErrors() {
@@ -129,7 +170,7 @@ public class Game implements Metadata, Serializable {
                 break;
             } else if (!this.getModules().contains(dependency)) {
                 try {
-                    GameModule game = this.readModule(new Element(info.id()));
+                    GameModule game = this.readModule(new Element(info.id().toLowerCase()));
                     if (game != null) {
                         this.getModules().register(game);
                     }
@@ -163,10 +204,9 @@ public class Game implements Metadata, Serializable {
     }
 
     public GamePlayer findPlayer(String query) {
-        for (GamePlayer player : this.getPlayers()) {
-            if (player.getUsername().toLowerCase().startsWith(query.toLowerCase())) {
-                return player;
-            }
+        ArcadePlayer player = this.plugin.findPlayer(query);
+        if (player != null) {
+            return player.getGamePlayer();
         }
 
         return null;
@@ -207,11 +247,18 @@ public class Game implements Metadata, Serializable {
         return this.modules;
     }
 
+    public GamePlayer getPlayer(ArcadePlayer player) {
+        return this.getPlayer(player.getUuid());
+    }
+
+    public GamePlayer getPlayer(Player bukkit) {
+        return this.getPlayer(bukkit.getUniqueId());
+    }
+
     public GamePlayer getPlayer(String username) {
-        for (GamePlayer player : this.getPlayers()) {
-            if (player.getUsername().equalsIgnoreCase(username)) {
-                return player;
-            }
+        ArcadePlayer player = this.plugin.getPlayer(username);
+        if (player != null) {
+            return player.getGamePlayer();
         }
 
         return null;
@@ -221,6 +268,11 @@ public class Game implements Metadata, Serializable {
         return this.players.get(uuid);
     }
 
+    /**
+     * Returns a {@link Collection} of players <bold>ever</bold> played in this game.
+     * @deprecated Use {@link ArcadePlugin#getPlayers()} for online players instead.
+     */
+    @Deprecated
     public Collection<GamePlayer> getPlayers() {
         return this.players.values();
     }
@@ -271,6 +323,10 @@ public class Game implements Metadata, Serializable {
         }
 
         return this.taskList;
+    }
+
+    public List<PlayerVisibilityFilter> getVisibilityFilters() {
+        return new ArrayList<>(this.visibilityFilters);
     }
 
     public World getWorld() {
@@ -329,6 +385,10 @@ public class Game implements Metadata, Serializable {
 
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
+    }
+
+    public boolean removeVisiblityFilter(PlayerVisibilityFilter filter) {
+        return !filter.equals(PlayerVisibilityFilter.DEFAULT) && this.visibilityFilters.remove(filter);
     }
 
     public void start() {

@@ -5,7 +5,6 @@ import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
 
-import java.io.File;
 import java.io.IOException;
 
 public interface GameManager {
@@ -54,8 +53,4 @@ public interface GameManager {
     void setMaxGameId(int maxGameId);
 
     void setNextRestart(boolean nextRestart);
-
-    void serializeGame(File file, Game game);
-
-
 }

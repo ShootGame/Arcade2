@@ -20,7 +20,7 @@ public class MapParserError extends AbstractMapError {
 
     @Override
     public String getProvider() {
-        return this.exception.getClass().getName();
+        return this.exception.getClass().getSimpleName();
     }
 
     public MapParserException getException() {

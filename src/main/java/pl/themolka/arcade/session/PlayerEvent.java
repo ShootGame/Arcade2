@@ -4,10 +4,10 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.game.GamePlayer;
 
-public class ArcadePlayerEvent extends Event {
+public class PlayerEvent extends Event {
     private final ArcadePlayer player;
 
-    public ArcadePlayerEvent(ArcadePlugin plugin, ArcadePlayer player) {
+    public PlayerEvent(ArcadePlugin plugin, ArcadePlayer player) {
         super(plugin);
 
         this.player = player;

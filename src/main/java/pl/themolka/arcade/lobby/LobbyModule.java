@@ -6,7 +6,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 
-@ModuleInfo(id = "lobby")
+@ModuleInfo(id = "Lobby")
 public class LobbyModule extends Module<LobbyGame> {
     @Override
     public LobbyGame buildGameModule(Element xml, Game game) throws JDOMException {

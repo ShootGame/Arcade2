@@ -22,7 +22,7 @@ import java.util.UUID;
 public class GamePlayer implements Metadata, Sender {
     private ChatChannel channel;
     private String displayName;
-    private final transient Game game;
+    private final Game game;
     private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
     private ArcadePlayer player;
@@ -82,7 +82,7 @@ public class GamePlayer implements Metadata, Sender {
     }
 
     public boolean canSee(GamePlayer player) {
-        return !this.isParticipating() || player.isParticipating();
+        return this.getGame().canSee(this, player);
     }
 
     public Player getBukkit() {

@@ -12,10 +12,10 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.RestartCountdown;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
@@ -50,10 +50,13 @@ public class MatchGame extends GameModule {
         Team bukkit = Observers.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), this.getObservers());
         this.getObservers().setBukkit(bukkit);
 
+        this.getGame().addVisiblityFilter(new MatchVisibilityFilter(this.getMatch())); // visibility filter
         this.getGame().setMetadata(MatchModule.class, MatchModule.METADATA_MATCH, this.getMatch());
 
-        for (GamePlayer player : this.getGame().getPlayers()) {
-            this.getObservers().join(player, false);
+        for (ArcadePlayer player : this.getPlugin().getPlayers()) {
+            if (player.getGamePlayer() != null) {
+                this.getObservers().join(player.getGamePlayer(), false);
+            }
         }
     }
 

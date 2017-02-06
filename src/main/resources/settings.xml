@@ -46,12 +46,5 @@
                 <exclude>_ignored</exclude>
             </directory>
         </map-loader>
-
-        <match>
-            <auto-cycle>true</auto-cycle>
-            <auto-start>true</auto-start>
-            <observers name="Observers" color="aqua" dye-color="light blue" />
-            <start-countdown>25s</start-countdown>
-        </match>
     </modules>
 </settings>

@@ -4,12 +4,10 @@ import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 
-import java.io.Serializable;
-
-public class Environment extends SimpleEnvironmentListener implements Listener, Serializable {
+public class Environment extends SimpleEnvironmentListener implements Listener {
     public static final EnvironmentType DEFAULT_TYPE = EnvironmentType.DEVELOPMENT;
 
-    private transient ArcadePlugin plugin;
+    private ArcadePlugin plugin;
 
     private boolean loaded = false;
     private final Element settings;

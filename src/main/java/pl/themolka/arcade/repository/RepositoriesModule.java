@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@ModuleInfo(id = "repositories")
+@ModuleInfo(id = "Repositories")
 public class RepositoriesModule extends SimpleGlobalModule {
     private final Map<String, RepositoryParser<?>> parsers = new HashMap<>();
 

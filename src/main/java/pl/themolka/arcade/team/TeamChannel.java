@@ -8,7 +8,7 @@ import pl.themolka.arcade.command.Sender;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeamChannel extends ChatChannel {
+public class TeamChannel extends ChatChannel implements TeamHolder {
     public static final String TEAM_PERMISSION_NODE = "teamchat";
     public static final String TEAM_FORMAT = ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "%s" + ChatColor.RESET +
             ChatColor.DARK_GRAY + "] " + ChatColor.RESET + "%s" + ChatColor.DARK_GRAY + ": " +  ChatColor.WHITE + "%s";
@@ -37,16 +37,17 @@ public class TeamChannel extends ChatChannel {
     }
 
     @Override
-    public boolean removeMember(Sender member) {
-        return false;
-    }
-
-    @Override
     public String getPermission() {
         return getPermissionNode(TEAM_PERMISSION_NODE);
     }
 
+    @Override
     public Team getTeam() {
         return this.team;
+    }
+
+    @Override
+    public boolean removeMember(Sender member) {
+        return false;
     }
 }

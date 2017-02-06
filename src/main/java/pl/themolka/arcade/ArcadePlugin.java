@@ -588,7 +588,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                     continue;
                 }
 
-                if (!ignoredModuleList.contains(infoAnnotation.id())) {
+                if (!ignoredModuleList.contains(infoAnnotation.id().toLowerCase())) {
                     moduleList.add(module);
                 }
             }

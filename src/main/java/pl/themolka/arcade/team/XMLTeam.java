@@ -68,7 +68,7 @@ public class XMLTeam extends XMLParser {
     }
 
     public static int parseMaxPlayers(Element xml) {
-        Attribute attribute = xml.getAttribute("max-players");
+        Attribute attribute = xml.getAttribute("overfill");
         if (attribute != null) {
             try {
                 return attribute.getIntValue();
@@ -127,6 +127,7 @@ public class XMLTeam extends XMLParser {
             TeamSpawn spawn = null;
             switch (element.getName().toLowerCase()) {
                 case "region":
+
                     break;
             }
 
