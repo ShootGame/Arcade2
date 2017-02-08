@@ -59,7 +59,13 @@ public class GameCommands {
         }
 
         boolean auto = param == null || context.hasFlag("a") || context.hasFlag("auto");
-        this.plugin.getEventBus().publish(new JoinCommandEvent(this.plugin, sender, context, auto));
+
+        JoinCommandEvent event = new JoinCommandEvent(this.plugin, sender, context, auto);
+        this.plugin.getEventBus().publish(event);
+
+        if (!event.isCanceled() && !event.hasJoined()) {
+            sender.sendError("Could not join any game right now.");
+        }
     }
 
     public List<String> joinCompleter(Sender sender, CommandContext context) {

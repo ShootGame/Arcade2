@@ -33,10 +33,8 @@ import java.util.Map;
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
     /** Match where teams are stored */
     private Match match;
-
-    /** Teams indexed by their unique identifier */
+    /** Teams indexed by their unique identifiers */
     private final Map<String, Team> teamsById = new HashMap<>();
-
     /** Teams indexed by their members */
     private final Map<GamePlayer, Team> teamsByPlayer = new HashMap<>();
 
@@ -247,6 +245,16 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         this.teamsByPlayer.put(player, event.getTeam());
+    }
+
+    @Handler(priority = Priority.LAST)
+    public void onMatchEmpty(PlayerLeftTeamEvent event) {
+        Team team = event.getTeam();
+
+        int min = team.getMinPlayers();
+        if (min != 0 && !team.getMatch().isForceStart() && team.isParticipating() && team.getOnlineMembers().size() < min) {
+            team.getMatch().matchEmpty(team);
+        }
     }
 
     @Handler(priority = Priority.HIGHER)

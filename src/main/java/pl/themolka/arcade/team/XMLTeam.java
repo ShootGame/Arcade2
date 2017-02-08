@@ -7,6 +7,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
@@ -16,14 +17,43 @@ import java.util.List;
 
 public class XMLTeam extends XMLParser {
     public static Team parse(Element xml, ArcadePlugin plugin) {
+        String name = parseName(xml);
+        ChatColor color = parseColor(xml);
+        DyeColor dye = parseDyeColor(xml);
+        boolean friendly = parseFriendlyFire(xml);
+        int min = parseMinPlayers(xml);
+        int slots = parseSlots(xml);
+        int overfill = parseMaxPlayers(xml);
+
+        if (color == null) {
+            color = Color.randomChat();
+        }
+
+        if (dye == null) {
+            dye = Color.ofChat(color).toDye();
+        }
+
+        if (slots == 0) {
+            slots = Integer.MAX_VALUE;
+        }
+
+        if (overfill == 0) {
+            if (slots == Integer.MAX_VALUE) {
+                overfill = slots;
+            } else {
+                // overfill = slots + 25%
+                overfill = slots + (slots / 4);
+            }
+        }
+
         return new TeamBuilder(plugin, parseId(xml))
-                .color(parseColor(xml))
-                .dyeColor(parseDyeColor(xml))
-                .friendlyFire(parseFriendlyFire(xml))
-                .maxPlayers(parseMaxPlayers(xml))
-                .minPlayers(parseMinPlayers(xml))
-                .name(parseName(xml))
-                .slots(parseSlots(xml))
+                .color(color)
+                .dyeColor(dye)
+                .friendlyFire(friendly)
+                .maxPlayers(overfill)
+                .minPlayers(min)
+                .name(name)
+                .slots(slots)
                 .spawns(parseSpawns(xml))
                 .build();
     }

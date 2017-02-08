@@ -90,7 +90,7 @@ public class XMLPreProcessor implements Runnable {
     public interface Executor {
         String elementName();
 
-        void process(XMLPreProcessor xml, Entry entry, Element element) throws Throwable;
+        void process(XMLPreProcessor xml, Entry entry, Element map) throws Throwable;
     }
 
     //
@@ -110,8 +110,8 @@ public class XMLPreProcessor implements Runnable {
         }
 
         @Override
-        public void process(XMLPreProcessor xml, Entry entry, Element element) throws Throwable {
-            Attribute typeAttribute = element.getAttribute("type");
+        public void process(XMLPreProcessor xml, Entry entry, Element map) throws Throwable {
+            Attribute typeAttribute = entry.getElement().getAttribute("type");
             Type type = Type.LOCAL; // default value
             if (typeAttribute != null) {
                 Type parsedType = Type.valueOf(XMLParser.parseEnumValue(typeAttribute.getValue()));
@@ -120,45 +120,38 @@ public class XMLPreProcessor implements Runnable {
                 }
             }
 
-            String path = element.getTextNormalize();
-            if (path == null) {
+            String path = entry.getElement().getTextNormalize();
+            if (path.isEmpty()) {
                 return;
             }
 
-            Element include = type.process(this.plugin, element, path);
+            Element include = type.process(this.plugin, entry.getElement(), path);
             if (include == null) {
                 return;
             }
 
-            Element parent = element.getParentElement();
-            if (parent == null) {
-                return;
-            }
-
             for (Element rootChild : include.getChildren()) {
-                rootChild.addContent(this.attachElement(parent, rootChild));
+                this.attachElement(map, rootChild);
             }
         }
 
-        private Element attachElement(Element source, Element destination) {
+        private void attachElement(Element apply, Element from) {
             // attributes
-            for (Attribute attribute : destination.getAttributes()) {
-                if (source.getAttribute(attribute.getName()) == null) {
-                    source.setAttribute(attribute);
+            for (Attribute attribute : from.getAttributes()) {
+                if (apply.getAttribute(attribute.getName()) == null) {
+                    apply.setAttribute(attribute);
                 }
             }
 
             // text
-            if (!destination.getText().isEmpty()) {
-                source.setText(destination.getText());
+            if (!from.getText().isEmpty()) {
+                apply.setText(from.getText());
             }
 
             // children
-            for (Element element : destination.getChildren()) {
-                source.addContent(this.attachElement(source, element));
+            for (Element element : from.getChildren()) {
+                this.attachElement(apply, element.detach());
             }
-
-            return source;
         }
 
         private enum Type {

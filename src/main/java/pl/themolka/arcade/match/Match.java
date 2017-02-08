@@ -252,9 +252,21 @@ public class Match {
         return this.getState().equals(MatchState.STARTING);
     }
 
+    public void matchEmpty(MatchWinner participant) {
+        if (this.isRunning()) {
+            MatchEmptyEvent event = new MatchEmptyEvent(this.plugin, this, participant);
+            this.plugin.getEventBus().publish(event);
+
+            if (!event.isCanceled()) {
+                this.end(null);
+            }
+        }
+    }
+
     public void refreshWinners() {
         MatchWinner winner = this.getWinner();
         if (winner != null) {
+            this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to lack of players.");
             this.end(winner);
         }
     }

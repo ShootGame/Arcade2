@@ -85,7 +85,7 @@ public class MatchModule extends Module<MatchGame> {
             description = "End current match",
             flags = {"a", "auto",
                     "d", "draw"},
-            usage = "[-auto|-draw|<winner...>]",
+            usage = "[?|.|<winner...>]",
             permission = "arcade.command.end",
             completer = "endCompleter")
     public void end(Sender sender, CommandContext context) {
@@ -96,8 +96,17 @@ public class MatchModule extends Module<MatchGame> {
         boolean paramAuto = context.hasFlag("a") || context.hasFlag("auto");
         boolean paramDraw = context.hasFlag("d") || context.hasFlag("draw");
 
+        String args = context.getParams(0);
+        if (args != null) {
+            if (args.equals("?")) {
+                paramAuto = true;
+            } else if (args.equals(".") || args.equals("@")) {
+                paramDraw = true;
+            }
+        }
+
         MatchGame game = this.getGameModule();
-        game.handleEndCommand(sender, paramAuto, context.getParams(0), paramDraw);
+        game.handleEndCommand(sender, paramAuto, args, paramDraw);
     }
 
     public List<String> endCompleter(Sender sender, CommandContext context) {

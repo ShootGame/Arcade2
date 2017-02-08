@@ -28,6 +28,7 @@ import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.event.PluginStartEvent;
 import pl.themolka.arcade.game.DescriptionTickable;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
@@ -134,13 +135,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
 
         this.settings = new Settings(this);
-        this.reloadConfig();
+        try {
+            this.reloadConfig();
+        } catch (RuntimeException ex) {
+            ex.getCause().printStackTrace();
+        }
 
         if (!this.getSettings().isEnabled()) {
             this.getLogger().log(Level.INFO, this.getName() + " isn't enabled in the settings file, skipped enabling...");
             return;
         }
 
+        this.getEventBus().publish(new PluginStartEvent(this));
         this.loadServer();
 
         try {
@@ -251,7 +257,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
             this.getEventBus().publish(new SettingsReloadEvent(this, this.getSettings()));
         } catch (IOException | JDOMException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
@@ -648,7 +654,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         Attribute nameAttribute = serverElement.getAttribute("name");
-        if (nameAttribute != null) {
+        if (nameAttribute != null && this.serverName.equals(DEFAULT_SERVER_NAME)) {
             this.serverName = nameAttribute.getValue();
         }
 
@@ -677,9 +683,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getTasks().scheduleAsync(new SimpleTaskListener() {
             @Override
             public void onDay(long days) {
-                ArcadePlugin plugin = ArcadePlugin.this;
-                plugin.getLogger().info("Server ran now for 24 hours. Will be restarting soon...");
-                plugin.getGames().setNextRestart(true);
+                getLogger().info("Server ran now for 24 hours. Will be restarting soon...");
+                getGames().setNextRestart(true);
             }
         });
     }

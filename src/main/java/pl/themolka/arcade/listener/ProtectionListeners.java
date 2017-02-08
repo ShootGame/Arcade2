@@ -11,6 +11,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.session.ArcadePlayer;
+
+import java.util.Arrays;
 
 /**
  * Listeners related to anti-grief methods.
@@ -32,13 +35,16 @@ public class ProtectionListeners implements Listener {
     public void antiLogout(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        // call the fake event
-        this.plugin.getServer().getPluginManager().callEvent(new PlayerDeathEvent(
-                player,
-                player.getInventory().contents(),
-                player.getTotalExperience(),
-                null
-        ));
+        ArcadePlayer arcade = this.plugin.getPlayer(player);
+        if (arcade != null && arcade.getGamePlayer() != null && arcade.getGamePlayer().isParticipating()) {
+            // call the fake event
+            this.plugin.getServer().getPluginManager().callEvent(new PlayerDeathEvent(
+                    player,
+                    Arrays.asList(player.getInventory().getContents()),
+                    player.getTotalExperience(),
+                    null
+            ));
+        }
     }
 
     /**

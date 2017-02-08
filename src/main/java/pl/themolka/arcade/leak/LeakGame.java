@@ -176,16 +176,16 @@ public class LeakGame extends GameModule {
         if (event.isCanceled()) {
             return;
         }
+
         Block block = event.getBlock();
-        if (!event.getNewState().getItemType().equals(Material.AIR)) {
+        if (!event.getNewState().getMaterial().equals(Material.AIR)) {
             return;
         }
 
         List<Leakable> leakables = this.findLeakables(event.getBlock().getLocation());
         for (Leakable leakable : leakables) {
-            if (leakable.getLiquid().getType().accepts(event.getNewState().getItemType()) ||
-                    leakable.isCompleted() ||
-                    !leakable.contains(block)) {
+            if (leakable.getLiquid().getType().accepts(event.getNewState().getMaterial()) ||
+                    leakable.isCompleted() ||  !leakable.contains(block)) {
                 continue;
             }
 
@@ -234,7 +234,7 @@ public class LeakGame extends GameModule {
 
         for (Leakable leakable : this.getLeakables()) {
             Liquid liquid = leakable.getLiquid();
-            if (liquid.getType().accepts(event.getNewState().getItemType())) {
+            if (liquid.getType().accepts(event.getNewState().getMaterial())) {
                 return;
             }
 
