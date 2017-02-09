@@ -56,10 +56,10 @@ public class Leakable implements InteractableGoal, StringId {
 
     @Override
     public String getGoalInteractMessage(String interact) {
-        return ChatColor.GOLD + interact + ChatColor.GREEN + " broke a piece of " +
-                ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.GREEN +
+        return ChatColor.GOLD + interact + ChatColor.YELLOW + " broke a piece of " +
+                ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW +
                 "'s " + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getName() + ChatColor.RESET + ChatColor.GREEN + ".";
+                this.getName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Leakable implements InteractableGoal, StringId {
     public boolean breakPiece(MatchWinner breaker, GamePlayer player, Block block) {
         String interactMessage = breaker.getTitle();
         if (player != null) {
-            interactMessage = player.getFullName();
+            interactMessage = player.getDisplayName();
         }
 
         LeakableBreakEvent event = new LeakableBreakEvent(this.game.getPlugin(), this, breaker, block);
@@ -207,8 +207,9 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     public void leak() {
-        String message = ChatColor.GOLD + ChatColor.BOLD.toString() + this.getOwner().getTitle() + ChatColor.RESET
-                + ChatColor.GREEN + "'s " + ChatColor.GOLD + this.getName() + ChatColor.GREEN + " has leaked";
+        String message = ChatColor.GOLD + ChatColor.BOLD.toString() + this.getOwner().getTitle() +
+                ChatColor.RESET + ChatColor.YELLOW + "'s " + ChatColor.GOLD + ChatColor.ITALIC +
+                this.getName() + ChatColor.RESET + ChatColor.YELLOW + " has leaked";
 
         List<GoalContributor> contributions = this.getContributions().getContributors();
         if (!contributions.isEmpty()) {
@@ -229,12 +230,12 @@ public class Leakable implements InteractableGoal, StringId {
                 int percentage = Math.round((100F / touches) * contributor.getTouches());
 
                 if (i != 0) {
-                    builder.append(ChatColor.GREEN);
+                    builder.append(ChatColor.YELLOW);
                     if (i + 1 == size) {
                         builder.append(" and ");
                     } else if (i + 1 == max) {
                         builder.append(" and ").append(ChatColor.GOLD).append(size - max)
-                                .append(ChatColor.GREEN).append(" more..");
+                                .append(ChatColor.YELLOW).append(" more..");
                         break;
                     } else {
                         builder.append(", ");
@@ -242,14 +243,14 @@ public class Leakable implements InteractableGoal, StringId {
                 }
 
                 builder.append(ChatColor.GOLD).append(name).append(ChatColor.RESET)
-                        .append(ChatColor.GREEN).append(" (").append(ChatColor.GOLD)
-                        .append(percentage).append("%").append(ChatColor.GREEN).append(")");
+                        .append(ChatColor.YELLOW).append(" (").append(ChatColor.GREEN)
+                        .append(percentage).append("%").append(ChatColor.YELLOW).append(")");
             }
 
             message += builder.toString();
         }
 
-        this.game.getMatch().sendGoalMessage(message + ChatColor.GREEN + ".");
+        this.game.getMatch().sendGoalMessage(message + ChatColor.YELLOW + ".");
         this.setCompleted(null, true);
     }
 

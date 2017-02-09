@@ -2,9 +2,12 @@ package pl.themolka.arcade.session;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EntityPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
@@ -46,6 +49,16 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     @Override
+    public Locale getLocale() {
+        Locale locale = this.bukkit.getCurrentLocale();
+        if (locale != null) {
+            return locale;
+        }
+
+        return DEFAULT_LOCALE;
+    }
+
+    @Override
     public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
         return this.metadata.getMetadata(owner, key, def);
     }
@@ -82,17 +95,23 @@ public class ArcadePlayer implements Metadata, Sender {
 
     @Override
     public void send(String message) {
-        this.sendMessage(ChatMessageType.SYSTEM, message);
+        if (this.getChatState().message()) {
+            this.sendMessage(ChatMessageType.SYSTEM, message);
+        }
     }
 
     @Override
     public void sendAction(String action) {
-        this.sendMessage(ChatMessageType.ACTION_BAR, action);
+        if (this.getChatState().action()) {
+            this.sendMessage(ChatMessageType.ACTION_BAR, action);
+        }
     }
 
     @Override
     public void sendChat(String chat) {
-        this.sendMessage(ChatMessageType.CHAT, chat);
+        if (this.getChatState().chat()) {
+            this.sendMessage(ChatMessageType.CHAT, chat);
+        }
     }
 
     @Override
@@ -120,6 +139,11 @@ public class ArcadePlayer implements Metadata, Sender {
         return this.bukkit;
     }
 
+    public ChatState getChatState() {
+        EntityPlayer mojang = ((CraftPlayer) this.getBukkit()).getHandle();
+        return ChatState.ofMojang(mojang.getChatFlags());
+    }
+
     public String getDisplayName() {
         if (this.bukkit.getDisplayName() != null) {
             return this.bukkit.getDisplayName();
@@ -134,10 +158,6 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public Time getLastPlayedSound() {
         return this.lastPlayedSound;
-    }
-
-    public Locale getLocale() {
-        return this.bukkit.getCurrentLocale();
     }
 
     public PermissionContext getPermissions() {
@@ -202,5 +222,74 @@ public class ArcadePlayer implements Metadata, Sender {
 
     private void sendMessage(ChatMessageType type, String message) {
         this.bukkit.sendMessage(type, TextComponent.fromLegacyText(message));
+    }
+
+    /**
+     * Represents player's chat visibility.
+     */
+    public enum ChatState {
+        /**
+         * The chat is visible for all messages.
+         */
+        VISIBLE(true, true, true),
+
+        /**
+         * The chat is printing only server messages.
+         */
+        HIDDEN(true, true, false),
+
+        /**
+         * The chat is disabled and cannot print any messages.
+         */
+        DISABLED(false, true, false),
+        ;
+
+        private final boolean message;
+        private final boolean action;
+        private final boolean chat;
+
+        ChatState(boolean message, boolean action, boolean chat) {
+            this.message = message;
+            this.action = action;
+            this.chat = chat;
+        }
+
+        /**
+         * Can this chat state print server messages?
+         */
+        public boolean message() {
+            return this.message;
+        }
+
+        /**
+         * Can this chat state print action messages?
+         */
+        public boolean action() {
+            return this.action;
+        }
+
+        /**
+         * Can this chat state print chat messages?
+         */
+        public boolean chat() {
+            return this.chat;
+        }
+
+        /**
+         * Convert Mojang's chat visibility to this enum value.
+         * @param mojang Mojang's chat state enum representation.
+         */
+        static ChatState ofMojang(EntityHuman.EnumChatVisibility mojang) {
+            switch (mojang) {
+                case FULL:
+                    return VISIBLE;
+                case SYSTEM:
+                    return HIDDEN;
+                case HIDDEN:
+                    return DISABLED;
+                default:
+                    return VISIBLE; // defaults
+            }
+        }
     }
 }

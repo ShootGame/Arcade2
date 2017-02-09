@@ -265,8 +265,8 @@ public class Match {
 
     public void refreshWinners() {
         MatchWinner winner = this.getWinner();
-        if (winner != null) {
-            this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to lack of players.");
+        if (winner == null) {
+            this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to the lack of players.");
             this.end(winner);
         }
     }
@@ -279,8 +279,8 @@ public class Match {
         this.plugin.getLogger().info(message);
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.send(message);
-            player.sendAction(message);
+            player.send(ChatColor.YELLOW + message);
+            player.sendAction(ChatColor.YELLOW + message);
         }
     }
 
@@ -328,8 +328,12 @@ public class Match {
 
             GamePlayer player = online.getGamePlayer();
             if (player != null && player.isParticipating()) {
+                String oldName = player.getDisplayName();
+
                 player.refresh();
                 player.getBukkit().setGameMode(GameMode.SURVIVAL);
+
+                player.setDisplayName(oldName);
             }
         }
     }

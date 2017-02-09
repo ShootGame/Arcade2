@@ -24,30 +24,30 @@
     <modules>
         <!-- Format -->
         <teams>
-            <team id="blue-team" name="Blue Team" color="blue" dye-color="blue" friendly-fire="true" max-players="20" min-players="3" slots="15">
-                <kits>
+            <team id="blue-team" name="Blue Team" color="blue" friendly-fire="on" slots="15">
+                <apply on-join="on" on-start="on" on-respawn="on">
                     <kit>blue-leather-armor-kit</kit>
-                    <kit handle="on-join">my-kit</kit>
-                    <kit handle="on-start">my-kit</kit>
-                    <kit handle="on-respawn">my-kit</kit>
-                </kits>
+                    <kit>my-kit</kit>
 
-                <spawns>
-                    <region>my-region</region>
-                </spawns>
+                    <spawns>
+                        <spawn yaw="0">
+                            <region>my-region</region>
+                        </spawn>
+                    </spawns>
+                </apply>
             </team>
 
-            <team id="red-team" name="Red Team" color="dark red" dye-color="red" friendly-fire="true" max-players="20" min-players="3" slots="15">
-                <kits>
+            <team id="red-team" name="Red Team" color="dark red" friendly-fire="on" slots="15">
+                <apply on-join="on" on-start="on" on-respawn="on">
                     <kit>red-leather-armor-kit</kit>
-                    <kit handle="on-join">my-kit</kit>
-                    <kit handle="on-start">my-kit</kit>
-                    <kit handle="on-respawn">my-kit</kit>
-                </kits>
+                    <kit>my-kit</kit>
 
-                <spawns>
-                    <region>my-region</region>
-                </spawns>
+                    <spawns>
+                        <spawn yaw="180">
+                            <region>my-region</region>
+                        </spawn>
+                    </spawns>
+                </apply>
             </team>
         </teams>
 
@@ -99,11 +99,11 @@
                     <enchantments>
                         <enchantment level="3">silk touch</enchantment>
                     </enchantments>
-                    <unbreakable>true</unbreakable>
+                    <unbreakable>on</unbreakable>
                 </item>
                 <item slot="2" material="stone" amount="64" />
                 <item slot="3" material="stone" amount="64" />
-                <potion-effect ambient="true" amplifier="1" dye-color="red" duration="oo" particles="true">fire resistance</potion-effect>
+                <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="on">fire resistance</potion-effect>
             </kit>
 
             <kit id="creative-kit">
@@ -150,7 +150,7 @@
                     <skull owner="TheMolkaPL" />
                 </item>
                 <item slot="6" material="potion">
-                    <potion-effect ambient="true" amplifier="1" dye-color="red" duration="oo" particles="true">fire resistance</potion-effect>
+                    <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="on">fire resistance</potion-effect>
                 </item>
             </kit>
         </kits>

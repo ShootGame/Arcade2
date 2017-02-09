@@ -3,10 +3,20 @@ package pl.themolka.arcade.team;
 import org.bukkit.Location;
 import pl.themolka.arcade.region.Region;
 
-public class RegionSpawn implements TeamSpawn {
+public class RegionSpawn extends TeamSpawn {
     private final Region region;
 
     public RegionSpawn(Region region) {
+        this.region = region;
+    }
+
+    public RegionSpawn(Region region, float yaw) {
+        super(yaw);
+        this.region = region;
+    }
+
+    public RegionSpawn(Region region, float yaw, float pitch) {
+        super(yaw, pitch);
         this.region = region;
     }
 

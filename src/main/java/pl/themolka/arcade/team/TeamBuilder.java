@@ -5,9 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TeamBuilder implements Builder<Team> {
     private final ArcadePlugin plugin;
 
@@ -19,7 +16,6 @@ public class TeamBuilder implements Builder<Team> {
     private int minPlayers;
     private String name;
     private int slots;
-    private final List<TeamSpawn> spawns = new ArrayList<>();
 
     public TeamBuilder(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
@@ -36,7 +32,6 @@ public class TeamBuilder implements Builder<Team> {
         team.setMinPlayers(this.minPlayers());
         team.setName(this.name());
         team.setSlots(this.slots());
-        team.setSpawns(this.spawns());
 
         return team;
     }
@@ -105,20 +100,6 @@ public class TeamBuilder implements Builder<Team> {
 
     public TeamBuilder slots(int slots) {
         this.slots = slots;
-        return this;
-    }
-
-    public TeamBuilder spawn(TeamSpawn spawn) {
-        this.spawns.add(spawn);
-        return this;
-    }
-
-    public List<TeamSpawn> spawns() {
-        return this.spawns;
-    }
-
-    public TeamBuilder spawns(List<TeamSpawn> spawns) {
-        this.spawns.addAll(spawns);
         return this;
     }
 }

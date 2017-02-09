@@ -69,7 +69,7 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompleted() {
-        return this.completed || (this.hasLimit() && this.getScore() >= this.getLimit());
+        return this.completed || (this.isLimitReached());
     }
 
     @Override
@@ -136,6 +136,8 @@ public class Score implements Goal {
      *   - ScoreIncrementEvent (cancelable)
      *   - GoalProgressEvent
      *   ... and if this goal is being completed:
+     *     ... if this goal has reached the score limit:
+     *       - ScoreLimitReachEvent
      *     - ScoreScoredEvent (cancelable)
      *     - GoalCompleteEvent (cancelable)
      */
@@ -159,8 +161,8 @@ public class Score implements Goal {
         }
     }
 
-    public boolean isScoreTouched() {
-        return this.scoreTouched;
+    public boolean isLimitReached() {
+        return this.hasLimit() && this.getScore() >= this.getLimit();
     }
 
     public void setLimit(int limit) {
@@ -176,6 +178,10 @@ public class Score implements Goal {
             return;
         }
         this.completed = true;
+
+        if (this.isLimitReached()) {
+            this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
+        }
 
         ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this);
         this.game.getPlugin().getEventBus().publish(event);

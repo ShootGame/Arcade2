@@ -1,7 +1,10 @@
 package pl.themolka.arcade.score;
 
+import net.engio.mbassy.listener.Handler;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.DynamicWinnable;
@@ -129,5 +132,11 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         if (score != null) {
             score.incrementScore(this.getKills());
         }
+    }
+
+    @Handler(priority = Priority.HIGHER)
+    public void onScoreLimitReach(ScoreLimitReachEvent event) {
+        this.getMatch().sendGoalMessage("The score limit of " + event.getLimit() + " points for " +
+                event.getScore().getOwner().getTitle() + ChatColor.RESET + ChatColor.YELLOW + " has been reached.");
     }
 }

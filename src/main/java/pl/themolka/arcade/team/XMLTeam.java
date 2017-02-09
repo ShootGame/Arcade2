@@ -12,9 +12,6 @@ import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class XMLTeam extends XMLParser {
     public static Team parse(Element xml, ArcadePlugin plugin) {
         String name = parseName(xml);
@@ -54,7 +51,6 @@ public class XMLTeam extends XMLParser {
                 .minPlayers(min)
                 .name(name)
                 .slots(slots)
-                .spawns(parseSpawns(xml))
                 .build();
     }
 
@@ -143,29 +139,5 @@ public class XMLTeam extends XMLParser {
         }
 
         return 0;
-    }
-
-    public static List<TeamSpawn> parseSpawns(Element xml) {
-        List<TeamSpawn> spawns = new ArrayList<>();
-
-        Element spawnsElement = xml.getChild("spawns");
-        if (spawnsElement == null) {
-            return spawns;
-        }
-
-        for (Element element : spawnsElement.getChildren()) {
-            TeamSpawn spawn = null;
-            switch (element.getName().toLowerCase()) {
-                case "region":
-
-                    break;
-            }
-
-            if (spawn != null) {
-                spawns.add(spawn);
-            }
-        }
-
-        return spawns;
     }
 }

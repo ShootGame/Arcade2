@@ -14,7 +14,7 @@ public abstract class Event {
     }
 
     public String getEventName() {
-        return this.getClass().getName();
+        return this.getClass().getSimpleName();
     }
 
     public ArcadePlugin getPlugin() {

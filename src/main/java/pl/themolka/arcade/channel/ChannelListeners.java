@@ -31,6 +31,12 @@ public class ChannelListeners implements Listener {
         ArcadePlayer player = this.game.getPlugin().getPlayer(event.getPlayer());
         ChatChannel channel = this.game.getChannel(player);
 
+        if (!player.getChatState().chat()) {
+            player.sendError("You may not chat because your chat is disabled.");
+            event.setCancelled(true);
+            return;
+        }
+
         String message = event.getMessage();
         if (message.startsWith(GlobalChatChannel.GLOBAL_CHANNEL_KEY)) { // global
             channel = this.game.getGlobalChannel();

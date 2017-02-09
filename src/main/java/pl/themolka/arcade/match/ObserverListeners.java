@@ -71,7 +71,7 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockInventorySpy(PlayerInteractEvent event) {
         if (this.isObserving(event.getPlayer()) && event.getClickedBlock() != null && !event.getPlayer().isSneaking()) {
             this.handleInventorySpy(event.getPlayer(), event.getClickedBlock());
@@ -148,7 +148,7 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInventorySpy(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Player && this.isObserving(event.getPlayer()) && !event.getPlayer().isSneaking()) {
             Player player = (Player) event.getRightClicked();
@@ -294,7 +294,6 @@ public class ObserverListeners implements Listener {
     }
 
     private void handleInventorySpy(Player observer, Block block) {
-        // FIXME
         if (block.getState() instanceof InventoryHolder) {
             observer.openInventory(((InventoryHolder) block.getState()).getInventory());
         }

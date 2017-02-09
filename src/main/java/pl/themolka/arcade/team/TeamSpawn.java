@@ -4,16 +4,50 @@ import org.bukkit.Location;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
 
-public interface TeamSpawn extends PlayerApplicable {
+public abstract class TeamSpawn implements PlayerApplicable {
+    private float yaw;
+    private float pitch;
+
+    public TeamSpawn() {
+        this(0F);
+    }
+
+    public TeamSpawn(float yaw) {
+        this(yaw, 0F);
+    }
+
+    public TeamSpawn(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
     @Override
-    default void apply(GamePlayer player) {
+    public void apply(GamePlayer player) {
         Location spawn;
         do {
             spawn = this.getSpawnLocation();
         } while (spawn == null);
 
+        spawn.setYaw(this.getYaw());
+        spawn.setPitch(this.getPitch());
         player.getBukkit().teleport(spawn);
     }
 
-    Location getSpawnLocation();
+    public abstract Location getSpawnLocation();
+
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
 }

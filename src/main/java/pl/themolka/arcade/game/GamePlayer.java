@@ -16,6 +16,7 @@ import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -39,6 +40,11 @@ public class GamePlayer implements Metadata, Sender {
         this.game = game;
         this.username = username;
         this.uuid = uuid;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return this.getPlayer().getLocale();
     }
 
     @Override

@@ -15,7 +15,7 @@ public class PublicationErrorHandler implements IPublicationErrorHandler {
 
     @Override
     public void handleError(PublicationError error) {
-        this.logger.log(Level.SEVERE, "Could not handle event '" + error.getHandler().getName() + "' in " +
-                error.getListener().getClass().getName() + ": " + error.getMessage(), error.getCause());
+        this.logger.log(Level.SEVERE, "Could not handle event '" + ((Event) error.getPublishedMessage()).getEventName()
+                + "' in " + error.getListener().getClass().getName() + ": " + error.getMessage(), error.getCause());
     }
 }

@@ -11,8 +11,6 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.KitsGame;
-import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchEndedEvent;
 import pl.themolka.arcade.match.MatchGame;
@@ -63,16 +61,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         for (GamePlayer observer : matchGame.getObservers().getOnlineMembers()) {
             this.teamsByPlayer.put(observer, matchGame.getObservers());
         }
-
-        GameModule kitsGame = this.getGame().getModule(KitsModule.class);
-        if (kitsGame != null) {
-            this.registerListenerObject(new TeamKitListeners(this, (KitsGame) kitsGame, this.getMatch()));
-        }
     }
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
         register.add(new TeamFilters(this));
+        register.add(new TeamApplyListeners(this));
         return register;
     }
 
@@ -378,7 +372,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             result++;
         }
 
-        sender.sendSuccess(team.getName() + " has been cleared (" + result + " players).");
+        if (result > 0) {
+            sender.sendSuccess(team.getName() + " has been cleared (" + result + " players) and moved to " +
+                    this.getMatch().getObservers().getName() + ".");
+        } else {
+            sender.sendError("No players to clear.");
+        }
     }
 
     public void forceCommand(Sender sender, String username, String teamId) {
@@ -562,7 +561,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     }
 
     //
-    // Commands Utilities
+    // Command Utilities
     //
 
     private void callEditEvent(Team newState, Team oldState, TeamEditEvent.Reason reason) {
