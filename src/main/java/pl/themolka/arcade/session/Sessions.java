@@ -77,7 +77,7 @@ public class Sessions implements Listener {
             game.addPlayer(gamePlayer);
 
             gamePlayer.setParticipating(false);
-            player.refresh();
+            gamePlayer.reset();
             player.getBukkit().teleport(game.getMap().getSpawn());
         }
 

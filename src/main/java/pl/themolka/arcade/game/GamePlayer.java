@@ -163,13 +163,13 @@ public class GamePlayer implements Metadata, Sender {
         this.resetDisplayName();
 
         bukkit.setAbsorption(0F);
-        bukkit.setAllowFlight(false);
+        bukkit.setAllowFlight(FlyContent.DEFAULT_ALLOW_FLYING);
         bukkit.setArrowsStuck(0);
         bukkit.setExhaustion(0F);
         bukkit.setExp(0);
         bukkit.setFallDistance(0F);
         bukkit.setFireTicks(0);
-        bukkit.setFlying(false);
+        bukkit.setFlying(FlyContent.DEFAULT_FLYING);
         bukkit.setFlySpeed(FlyContent.DEFAULT_SPEED);
         bukkit.setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
         bukkit.setGameMode(GameMode.CREATIVE);

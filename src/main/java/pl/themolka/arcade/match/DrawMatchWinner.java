@@ -47,7 +47,7 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public String getMessage() {
-        return this.getTitle() + "!";
+        return this.getTitle() + ChatColor.GREEN + "!";
     }
 
     @Override

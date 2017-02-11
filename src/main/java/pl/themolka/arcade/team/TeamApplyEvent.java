@@ -1,5 +1,11 @@
 package pl.themolka.arcade.team;
 
+import org.jdom2.Attribute;
+import pl.themolka.arcade.xml.XMLParser;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public enum TeamApplyEvent {
     JOIN("on-join"),
     RESPAWN("on-respawn"),
@@ -34,5 +40,17 @@ public enum TeamApplyEvent {
         }
 
         return null;
+    }
+
+    public static TeamApplyEvent[] ofCodeMany(List<Attribute> xml) {
+        List<TeamApplyEvent> results = new ArrayList<>();
+        for (Attribute attribute : xml) {
+            TeamApplyEvent event = ofCode(attribute.getName());
+            if (event != null && XMLParser.parseBoolean(attribute.getValue())) {
+                results.add(event);
+            }
+        }
+
+        return results.toArray(new TeamApplyEvent[results.size()]);
     }
 }

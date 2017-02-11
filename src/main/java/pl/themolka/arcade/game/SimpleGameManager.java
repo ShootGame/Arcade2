@@ -1,6 +1,7 @@
 package pl.themolka.arcade.game;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
@@ -175,7 +176,7 @@ public class SimpleGameManager implements GameManager {
         if (!event.isCanceled()) {
             this.plugin.getLogger().info("Restarting " + this.plugin.getServerName() + "...");
 
-            String reason = "Restarting " + this.plugin.getServerName() + "...";
+            String reason = ChatColor.RED + this.plugin.getServerName() + " is now restarting...";
             for (Player online : new ArrayList<>(this.plugin.getServer().getOnlinePlayers())) {
                 online.kickPlayer(reason);
             }
@@ -270,7 +271,7 @@ public class SimpleGameManager implements GameManager {
                 continue;
             }
 
-            player.refresh();
+            player.reset();
             player.getBukkit().teleport(newGame.getMap().getSpawn());
         }
     }

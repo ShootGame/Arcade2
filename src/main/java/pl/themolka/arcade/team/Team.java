@@ -287,8 +287,12 @@ public class Team implements MatchWinner {
         this.members.add(player);
         this.onlineMembers.add(player);
 
-        player.getPlayer().refresh();
-        player.getPlayer().getPermissions().refresh();
+        if (this.getMatch().isRunning()) {
+            player.reset();
+
+            player.getPlayer().getPermissions().clearGroups();
+            player.getPlayer().getPermissions().refresh();
+        }
 
         player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
         player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
@@ -299,9 +303,6 @@ public class Team implements MatchWinner {
         if (message) {
             player.getPlayer().sendSuccess("You joined " + this.getPrettyName() + ChatColor.GREEN + ".");
         }
-
-        player.getPlayer().getPermissions().clearGroups();
-        player.getPlayer().getPermissions().refresh();
 
         this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
         return true;
@@ -327,8 +328,12 @@ public class Team implements MatchWinner {
         this.members.remove(player);
         this.onlineMembers.remove(player);
 
-        player.refresh();
-        player.getPlayer().getPermissions().clearGroups();
+        if (this.getMatch().isRunning()) {
+            player.reset();
+
+            player.getPlayer().getPermissions().clearGroups();
+            player.getPlayer().getPermissions().refresh();
+        }
 
         player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
         player.setParticipating(false);

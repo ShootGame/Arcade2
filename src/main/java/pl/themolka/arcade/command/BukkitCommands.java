@@ -24,8 +24,9 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
 
     private CommandMap bukkitCommandMap;
     private Set<HelpTopic> helpTopics = new TreeSet<>(HelpTopicComparator.helpTopicComparatorInstance());
+    private final String name;
 
-    public BukkitCommands(ArcadePlugin plugin) {
+    public BukkitCommands(ArcadePlugin plugin, String name) {
         super(plugin.getConsole());
         this.plugin = plugin;
 
@@ -34,6 +35,8 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }
+
+        this.name = name;
 
         this.plugin.getServer().getHelpMap().addTopic(this.createHelpIndex());
     }
@@ -101,7 +104,7 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
     }
 
     private String getPluginName() {
-        return this.plugin.getName();
+        return this.name;
     }
 
     private String getPrefixName() {

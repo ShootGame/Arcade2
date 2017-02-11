@@ -41,8 +41,6 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.PlayerMoveEvent;
-import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
-import pl.themolka.arcade.team.PlayerLeftTeamEvent;
 
 public class ObserverListeners implements Listener {
     public static final int BORDER_Y = 32;
@@ -56,11 +54,13 @@ public class ObserverListeners implements Listener {
 
     @Handler(priority = Priority.NORMAL)
     public void onArcadePlayerMove(PlayerMoveEvent event) {
-        ArcadeMap map = this.game.getGame().getMap();
-        int y = event.getTo().getBlockY();
+        if (this.isObserving(event.getPlayer().getBukkit())) {
+            ArcadeMap map = this.game.getGame().getMap();
+            int y = event.getTo().getBlockY();
 
-        if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
-            event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
+            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
+                event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
+            }
         }
     }
 
@@ -188,8 +188,8 @@ public class ObserverListeners implements Listener {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onPlayerJoinedObservers(PlayerJoinedTeamEvent event) {
-        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers()) {
+    public void onPlayerJoinedObservers(ObserversJoinEvent event) {
+        if (event.getGamePlayer().isOnline()) {
             this.game.getMatch().getObserversKit().apply(event.getGamePlayer()); // apply kits
 
             Player bukkit = event.getPlayer().getBukkit();
@@ -208,8 +208,8 @@ public class ObserverListeners implements Listener {
     }
 
     @Handler(priority = Priority.NORMAL)
-    public void onPlayerLeftObservers(PlayerLeftTeamEvent event) {
-        if (event.getGamePlayer().isOnline() && event.getTeam().isObservers() && this.game.getMatch().isRunning()) {
+    public void onPlayerLeaveObservers(ObserversLeaveEvent event) {
+        if (event.getGamePlayer().isOnline() && this.game.getMatch().isRunning()) {
             Player bukkit = event.getPlayer().getBukkit();
             for (ArcadePlayer player : this.game.getPlugin().getPlayers()) {
                 if (player.getGamePlayer() != null && player.getGamePlayer().canSee(event.getGamePlayer())) {

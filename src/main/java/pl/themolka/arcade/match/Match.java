@@ -102,22 +102,29 @@ public class Match {
         this.setForceEnd(force);
         this.setState(MatchState.CYCLING);
 
-        MatchEndedEvent endedEvent = new MatchEndedEvent(this.plugin, this, winner, force);
-        this.plugin.getEventBus().publish(endedEvent);
-
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            if (player.getGamePlayer() != null) {
-                player.getGamePlayer().setParticipating(false);
+        for (ArcadePlayer online : this.plugin.getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+            if (online.getGamePlayer() != null && !online.getGamePlayer().isParticipating()) {
+                return;
             }
 
-            player.getPermissions().clearGroups();
-            player.getPermissions().refresh();
+            if (online.getGamePlayer() != null) {
+                player.setParticipating(false);
+            }
 
-            player.refresh();
+            online.getPermissions().clearGroups();
+            online.getPermissions().refresh();
 
-            player.getBukkit().getInventory().setItem(0, ObserversKit.TELEPORTER);
-            player.getBukkit().setGameMode(ObserversKit.GAME_MODE);
+            if (player != null) {
+                player.reset();
+            }
+
+            online.getBukkit().getInventory().setItem(0, ObserversKit.TELEPORTER);
+            online.getBukkit().setGameMode(ObserversKit.GAME_MODE);
+            online.getBukkit().setAllowFlight(true);
         }
+
+        this.plugin.getEventBus().publish(new MatchEndedEvent(this.plugin, this, winner, force));
     }
 
     public MatchWinner findWinner(String query) {
@@ -258,6 +265,7 @@ public class Match {
             this.plugin.getEventBus().publish(event);
 
             if (!event.isCanceled()) {
+                this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to the lack of players.");
                 this.end(null);
             }
         }
@@ -265,8 +273,7 @@ public class Match {
 
     public void refreshWinners() {
         MatchWinner winner = this.getWinner();
-        if (winner == null) {
-            this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to the lack of players.");
+        if (winner != null) {
             this.end(winner);
         }
     }
@@ -315,12 +322,8 @@ public class Match {
         this.startTime = Instant.now();
 
         this.broadcastStartMessage();
-
         this.setForceStart(force);
         this.setState(MatchState.RUNNING);
-
-        MatchStartedEvent startedEvent = new MatchStartedEvent(this.plugin, this, force);
-        this.plugin.getEventBus().publish(startedEvent);
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             online.getPermissions().clearGroups();
@@ -328,14 +331,11 @@ public class Match {
 
             GamePlayer player = online.getGamePlayer();
             if (player != null && player.isParticipating()) {
-                String oldName = player.getDisplayName();
-
-                player.refresh();
                 player.getBukkit().setGameMode(GameMode.SURVIVAL);
-
-                player.setDisplayName(oldName);
             }
         }
+
+        this.plugin.getEventBus().publish(new MatchStartedEvent(this.plugin, this, force));
     }
 
     public void unregisterWinner(MatchWinner winner) {

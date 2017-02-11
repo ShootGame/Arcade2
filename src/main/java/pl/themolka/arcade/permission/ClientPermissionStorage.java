@@ -7,8 +7,15 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ClientPermissionStorage extends HashMap<UUID, Group[]> {
+    private final Group defaultGroup;
+
+    public ClientPermissionStorage(Group defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
     public Group[] fetch(UUID id) {
-        return this.get(id);
+        Group[] def = new Group[] {this.getDefaultGroup()};
+        return this.getOrDefault(id, def);
     }
 
     public Group[] fetch(ArcadePlayer player) {
@@ -17,5 +24,9 @@ public class ClientPermissionStorage extends HashMap<UUID, Group[]> {
 
     public Group[] fetch(GamePlayer player) {
         return this.fetch(player.getUuid());
+    }
+
+    public Group getDefaultGroup() {
+        return this.defaultGroup;
     }
 }

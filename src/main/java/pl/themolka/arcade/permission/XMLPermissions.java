@@ -150,8 +150,8 @@ public class XMLPermissions {
     // Players
     //
 
-    public ClientPermissionStorage readPlayers(List<Group> groupList) throws JDOMException {
-        ClientPermissionStorage result = new ClientPermissionStorage();
+    public ClientPermissionStorage readPlayers(List<Group> groupList, Group defaultGroup) throws JDOMException {
+        ClientPermissionStorage result = new ClientPermissionStorage(defaultGroup);
 
         Element playersElement = this.getDocument().getRootElement().getChild("players");
         if (playersElement == null) {

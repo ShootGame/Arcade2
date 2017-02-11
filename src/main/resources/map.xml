@@ -30,9 +30,9 @@
                     <kit>my-kit</kit>
 
                     <spawns>
-                        <spawn yaw="0">
-                            <region>my-region</region>
-                        </spawn>
+                        <region yaw="0">
+                            <sphere origin-x="25" origin-y="21" origin-z="0" radius="3" />
+                        </region>
                     </spawns>
                 </apply>
             </team>
@@ -43,9 +43,9 @@
                     <kit>my-kit</kit>
 
                     <spawns>
-                        <spawn yaw="180">
-                            <region>my-region</region>
-                        </spawn>
+                        <region yaw="180">
+                            <sphere origin-x="-25" origin-y="21" origin-z="0" radius="3" />
+                        </region>
                     </spawns>
                 </apply>
             </team>

@@ -7,13 +7,19 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.PlayerApplicable;
+import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class XMLTeam extends XMLParser {
-    public static Team parse(Element xml, ArcadePlugin plugin) {
+    public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin) {
         String name = parseName(xml);
         ChatColor color = parseColor(xml);
         DyeColor dye = parseDyeColor(xml);
@@ -43,7 +49,7 @@ public class XMLTeam extends XMLParser {
             }
         }
 
-        return new TeamBuilder(plugin, parseId(xml))
+        Team team = new TeamBuilder(plugin, parseId(xml))
                 .color(color)
                 .dyeColor(dye)
                 .friendlyFire(friendly)
@@ -52,6 +58,15 @@ public class XMLTeam extends XMLParser {
                 .name(name)
                 .slots(slots)
                 .build();
+
+        for (Element applyItem : xml.getChildren("apply")) {
+            ApplyResultEntry entry = parseApply(map, applyItem);
+            for (TeamApplyEvent event : entry.getEvents()) {
+                team.addApplyContent(event, entry.getApplicable());
+            }
+        }
+
+        return team;
     }
 
     public static String parseId(Element xml) {
@@ -139,5 +154,64 @@ public class XMLTeam extends XMLParser {
         }
 
         return 0;
+    }
+
+    //
+    // Applicable
+    //
+
+    public static ApplyResultEntry parseApply(ArcadeMap map, Element xml) {
+        TeamApplyEvent[] events = TeamApplyEvent.ofCodeMany(xml.getAttributes());
+        List<PlayerApplicable> applicableList = new ArrayList<>();
+
+        for (Element apply : xml.getChildren()) {
+            PlayerApplicable result = parseApplyItem(map, apply);
+            if (result != null) {
+                applicableList.add(result);
+            }
+        }
+
+        return new ApplyResultEntry(new PlayerApplicable() {
+            @Override
+            public void apply(GamePlayer player) {
+                for (PlayerApplicable applicable : applicableList) {
+                    applicable.apply(player);
+                }
+            }
+        }, events);
+    }
+
+    private static PlayerApplicable parseApplyItem(ArcadeMap map, Element xml) {
+        switch (xml.getName().toLowerCase()) {
+            case "kit":
+                return null; // TODO kits
+            case "spawns":
+                return TeamSpawnsApply.parse(map, xml);
+            default:
+                return null;
+        }
+    }
+
+    public static class ApplyResultEntry {
+        private final PlayerApplicable applicable;
+        private final TeamApplyEvent[] events;
+
+        private ApplyResultEntry(PlayerApplicable applicable, TeamApplyEvent[] events) {
+            this.applicable = applicable;
+
+            if (events != null && events.length != 0) {
+                this.events = events;
+            } else {
+                this.events = TeamApplyEvent.values();
+            }
+        }
+
+        public PlayerApplicable getApplicable() {
+            return this.applicable;
+        }
+
+        public TeamApplyEvent[] getEvents() {
+            return this.events;
+        }
     }
 }

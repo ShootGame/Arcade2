@@ -131,7 +131,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.console = new ConsoleSender(this);
 
-        this.commands = new BukkitCommands(this);
+        this.commands = new BukkitCommands(this, this.getName());
         this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
 
         this.settings = new Settings(this);
@@ -468,8 +468,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 }
             }
 
+            if (permissions.getDefaultGroup() == null) {
+                this.getLogger().log(Level.CONFIG, "No default permission group found.");
+                permissions.setDefaultGroup(new Group(Group.DEFAULT_FAMILY));
+            }
+
             // players
-            ClientPermissionStorage permissionStorage = xml.readPlayers(new ArrayList<>(permissions.getGroups()));
+            ClientPermissionStorage permissionStorage = xml.readPlayers(
+                    new ArrayList<>(permissions.getGroups()), permissions.getDefaultGroup());
             permissions.setPermissionStorage(permissionStorage);
 
             this.getEventBus().publish(new PermissionsReloadedEvent(this, permissions));

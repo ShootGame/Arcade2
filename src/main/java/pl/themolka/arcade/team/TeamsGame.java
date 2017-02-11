@@ -27,8 +27,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
+    private static final Random random = new Random();
+
     /** Match where teams are stored */
     private Match match;
     /** Teams indexed by their unique identifiers */
@@ -121,6 +124,8 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     public void autoJoinTeam(GamePlayer player) throws CommandException {
         Team smallestTeam = null;
+        boolean changed = false;
+
         for (Team team : this.getTeams()) {
             if (team.isParticipating()) {
                 if (smallestTeam != null) {
@@ -129,6 +134,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
                     if (first > second) {
                         smallestTeam = team;
+                        changed = true;
                     }
                 } else {
                     smallestTeam = team;
@@ -141,6 +147,11 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         Team join = smallestTeam;
+        if (!changed) {
+            Team[] search = this.getTeams().toArray(new Team[this.getTeams().size()]);
+            join = search[random.nextInt(search.length)];
+        }
+
         if (!player.hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
@@ -266,7 +277,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             }
         }
 
-        if (idle) {
+        if (!this.getMatch().isForceStart() && idle) {
             event.setCanceled(true);
         }
     }
@@ -300,6 +311,9 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             if (ex.getMessage() != null) {
                 event.getSender().sendError(ex.getMessage());
             }
+
+            event.setJoined(false);
+            event.setCanceled(true);
         }
     }
 

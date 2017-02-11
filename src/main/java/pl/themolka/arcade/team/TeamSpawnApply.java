@@ -4,19 +4,19 @@ import org.bukkit.Location;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
 
-public abstract class TeamSpawn implements PlayerApplicable {
+public abstract class TeamSpawnApply implements PlayerApplicable {
     private float yaw;
     private float pitch;
 
-    public TeamSpawn() {
+    public TeamSpawnApply() {
         this(0F);
     }
 
-    public TeamSpawn(float yaw) {
+    public TeamSpawnApply(float yaw) {
         this(yaw, 0F);
     }
 
-    public TeamSpawn(float yaw, float pitch) {
+    public TeamSpawnApply(float yaw, float pitch) {
         this.yaw = yaw;
         this.pitch = pitch;
     }

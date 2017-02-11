@@ -1,6 +1,5 @@
 package pl.themolka.arcade.match;
 
-import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.CommandContext;
@@ -52,7 +51,10 @@ public class MatchModule extends Module<MatchGame> {
 
         Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());
         if (observers.getColor() == null) {
-            observers.setColor(ChatColor.AQUA);
+            observers.setColor(Observers.OBSERVERS_COLOR);
+        }
+        if (observers.getDyeColor() == null) {
+            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
         }
         if (observers.getName() == null) {
             observers.setName(Observers.OBSERVERS_NAME);
@@ -72,20 +74,15 @@ public class MatchModule extends Module<MatchGame> {
             throw new CommandException("Match module is not enabled in this game.");
         }
 
-        int seconds = context.getParamInt(0);
-        if (seconds < 3) {
-            seconds = 3;
-        }
-
         MatchGame game = this.getGameModule();
-        game.handleBeginCommand(sender, seconds, context.hasFlag("f") || context.hasFlag("force"));
+        game.handleBeginCommand(sender, context.getParamInt(0, -1), context.hasFlag("f") || context.hasFlag("force"));
     }
 
     @CommandInfo(name = {"end", "finish"},
             description = "End current match",
             flags = {"a", "auto",
                     "d", "draw"},
-            usage = "[?|.|<winner...>]",
+            usage = "[?|*|<winner...>]",
             permission = "arcade.command.end",
             completer = "endCompleter")
     public void end(Sender sender, CommandContext context) {
@@ -100,7 +97,7 @@ public class MatchModule extends Module<MatchGame> {
         if (args != null) {
             if (args.equals("?")) {
                 paramAuto = true;
-            } else if (args.equals(".") || args.equals("@")) {
+            } else if (args.equals("*")) {
                 paramDraw = true;
             }
         }

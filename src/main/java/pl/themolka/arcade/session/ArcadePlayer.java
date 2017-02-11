@@ -280,16 +280,18 @@ public class ArcadePlayer implements Metadata, Sender {
          * @param mojang Mojang's chat state enum representation.
          */
         static ChatState ofMojang(EntityHuman.EnumChatVisibility mojang) {
-            switch (mojang) {
-                case FULL:
-                    return VISIBLE;
-                case SYSTEM:
-                    return HIDDEN;
-                case HIDDEN:
-                    return DISABLED;
-                default:
-                    return VISIBLE; // defaults
+            if (mojang != null) {
+                switch (mojang) {
+                    case FULL:
+                        return VISIBLE;
+                    case SYSTEM:
+                        return HIDDEN;
+                    case HIDDEN:
+                        return DISABLED;
+                }
             }
+
+            return VISIBLE; // defaults
         }
     }
 }

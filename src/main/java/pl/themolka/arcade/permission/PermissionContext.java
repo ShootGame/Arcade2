@@ -84,8 +84,10 @@ public class PermissionContext {
             ClientPermissionStorage storage = this.plugin.getPermissions().getPermissionStorage();
             Group[] groups = storage.fetch(this.getPlayer());
 
-            for (Group group : groups) {
-                this.addGroup(group);
+            if (groups != null) {
+                for (Group group : groups) {
+                    this.addGroup(group);
+                }
             }
         }
 

@@ -66,7 +66,7 @@ public class GeneralCommands {
             usage = "[seconds]",
             permission = "arcade.command.cycle")
     public void cycle(Sender sender, CommandContext context) {
-        int paramSeconds = context.getParamInt(0);
+        int paramSeconds = context.getParamInt(0, (int) CycleCountdown.DEFAULT_DURATION.getSeconds());
 
         OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();
         if (nextMap == null) {
@@ -132,7 +132,7 @@ public class GeneralCommands {
             return;
         }
 
-        int seconds = context.getParamInt(0);
+        int seconds = context.getParamInt(0, (int) CycleCountdown.DEFAULT_DURATION.getSeconds());
         if (seconds < 3) {
             seconds = 3;
         }
@@ -162,15 +162,17 @@ public class GeneralCommands {
 
     @CommandInfo(name = "restart",
             description = "Cycle to next map",
-            usage = "[seconds]",
+            flags = {"f", "force"},
+            usage = "[-force] [seconds]",
             permission = "arcade.command.restart")
     public void restart(Sender sender, CommandContext context) {
-        int seconds = context.getParamInt(0);
+        int seconds = context.getParamInt(0, (int) RestartCountdown.DEFAULT_DURATION.getSeconds());
         if (seconds < 3) {
             seconds = 3;
         }
 
-        CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, this.plugin.getGames().getQueue().getNextMap());
+        boolean force = context.hasFlag("f") || context.hasFlag("force");
+        CycleCommandEvent event = new CycleCommandEvent(this.plugin, sender, context, force);
         this.plugin.getEventBus().publish(event);
 
         if (event.isCanceled()) {
@@ -196,11 +198,28 @@ public class GeneralCommands {
     public static class CycleCommandEvent extends CommandEvent implements Cancelable {
         private boolean cancel;
         private final OfflineMap nextMap;
+        private final boolean forceRestart;
 
+        /**
+         * Create a new map cycle.
+         */
         public CycleCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context, OfflineMap nextMap) {
+            this(plugin, sender, context, nextMap, false);
+        }
+
+        /**
+         * Create a new restart cycle.
+         */
+        public CycleCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context, boolean forceRestart) {
+            this(plugin, sender, context, null, forceRestart);
+        }
+
+        CycleCommandEvent(ArcadePlugin plugin, Sender sender, CommandContext context,
+                                 OfflineMap nextMap, boolean forceRestart) {
             super(plugin, sender, context);
 
             this.nextMap = nextMap;
+            this.forceRestart = forceRestart;
         }
 
         @Override
@@ -217,7 +236,11 @@ public class GeneralCommands {
             return this.nextMap;
         }
 
-        boolean isNextRestart() {
+        public boolean isForceRestart() {
+            return this.isNextRestart() && this.forceRestart;
+        }
+
+        public boolean isNextRestart() {
             return this.nextMap == null;
         }
     }

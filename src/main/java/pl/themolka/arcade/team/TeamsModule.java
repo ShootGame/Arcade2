@@ -17,7 +17,6 @@ import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModuleVersion;
-import pl.themolka.arcade.region.RegionsModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +28,7 @@ import java.util.List;
         loadBefore = {
                 ChannelsModule.class,
                 FiltersModule.class,
-                KitsModule.class,
-                RegionsModule.class})
+                KitsModule.class})
 @ModuleVersion("1.0")
 public class TeamsModule extends Module<TeamsGame> {
     /** Stores {@link Team} in a {@link pl.themolka.arcade.game.GamePlayer} */
@@ -44,7 +42,7 @@ public class TeamsModule extends Module<TeamsGame> {
     public TeamsGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<Team> teams = new ArrayList<>();
         for (Element teamElement : xml.getChildren("team")) {
-            Team team = XMLTeam.parse(teamElement, this.getPlugin());
+            Team team = XMLTeam.parse(game.getMap(), teamElement, this.getPlugin());
             if (team != null) {
                 team.setBukkit(Team.createBukkitTeam(game.getScoreboard().getScoreboard(), team));
                 teams.add(team);
