@@ -28,7 +28,7 @@ public class Permission implements Paginationable {
             return this.getName().compareToIgnoreCase(((Permission) o).getName());
         }
 
-        return this.getClass().getName().compareToIgnoreCase(o.getClass().getName());
+        return this.toString().compareToIgnoreCase(o.toString());
     }
 
     @Override

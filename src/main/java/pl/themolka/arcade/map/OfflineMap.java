@@ -36,7 +36,7 @@ public class OfflineMap implements Paginationable {
             return this.getName().compareToIgnoreCase(((OfflineMap) object).getName());
         }
 
-        return this.getClass().getName().compareToIgnoreCase(object.getClass().getName());
+        return this.toString().compareToIgnoreCase(object.toString());
     }
 
     @Override

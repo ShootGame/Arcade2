@@ -282,8 +282,16 @@ public class Match {
         this.winnerMap.put(winner.getId(), winner);
     }
 
+    public void send(String message) {
+        this.plugin.getLogger().info("[Match] " + message);
+
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.send(message);
+        }
+    }
+
     public void sendGoalMessage(String message) {
-        this.plugin.getLogger().info(message);
+        this.plugin.getLogger().info("[Goal] " + message);
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.send(ChatColor.YELLOW + message);
