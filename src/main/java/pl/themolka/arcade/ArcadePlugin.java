@@ -2,7 +2,6 @@ package pl.themolka.arcade;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
