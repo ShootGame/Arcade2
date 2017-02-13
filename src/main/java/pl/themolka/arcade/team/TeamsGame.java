@@ -3,6 +3,7 @@ package pl.themolka.arcade.team;
 import net.engio.mbassy.listener.Handler;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandPermissionException;
 import pl.themolka.arcade.command.CommandUtils;
@@ -182,10 +183,10 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         if (result == null) {
             throw new CommandException("No teams found from the given query.");
         } else if (this.getTeam(player) != null && this.getTeam(player).equals(result)) {
-            throw new CommandException("You already joined " + result.getName() + ".");
+            throw new CommandException("You already joined " + result.getPrettyName() + Messageable.ERROR_COLOR + ".");
         } else if (!player.hasPermission("arcade.command.join.overfill") && result.isOverfill()) {
-            throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
-                    "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
+            throw new CommandException(result.getPrettyName() + Messageable.ERROR_COLOR + " is full! " + ChatColor.GOLD +
+                    "Only " + ChatColor.BOLD + "VIP" + ChatColor.RESET + Messageable.ERROR_COLOR + "s can join full teams.");
         } else if (result.isFull()) {
             throw new CommandException("Teams are overfilled!");
         } else {

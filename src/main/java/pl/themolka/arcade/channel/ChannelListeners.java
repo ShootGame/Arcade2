@@ -43,7 +43,7 @@ public class ChannelListeners implements Listener {
             message = message.substring(1);
         }
 
-        channel.sendChat(player, message);
+        channel.sendChat(player, message.trim());
         event.setCancelled(true);
     }
 

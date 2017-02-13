@@ -49,6 +49,7 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
+import pl.themolka.arcade.module.ModulesLoadEvent;
 import pl.themolka.arcade.permission.ClientPermissionStorage;
 import pl.themolka.arcade.permission.Group;
 import pl.themolka.arcade.permission.PermissionListeners;
@@ -115,6 +116,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private long tickId = 0L;
     private final List<Tickable> tickableList = new CopyOnWriteArrayList<>();
     private BukkitTask tickableTask;
+
+    ArcadePlugin() {
+    }
 
     @Override
     public void onEnable() {
@@ -608,8 +612,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             ex.printStackTrace();
         }
 
+        ModulesLoadEvent loadEvent = new ModulesLoadEvent(this, moduleList);
+        this.getEventBus().publish(loadEvent);
+
         int success = 0;
-        for (Module<?> module : moduleList) {
+        for (Module<?> module : loadEvent.getModules()) {
             try {
                 module.initialize(this);
                 module.registerCommandObject(module);
@@ -620,8 +627,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
         }
 
-        this.getLogger().info("Successfully loaded " + success + " of " + moduleList.size() + " available modules.");
-        this.getModules().register(moduleList.toArray(new Module<?>[moduleList.size()]));
+        this.getLogger().info("Successfully loaded " + success + " of " + loadEvent.getModules().size() + " available modules.");
+        this.getModules().register(loadEvent.getModules().toArray(new Module<?>[loadEvent.getModules().size()]));
 
         Element globalModules = this.getSettings().getData().getChild("modules");
         if (globalModules == null) {
