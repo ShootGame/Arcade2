@@ -27,6 +27,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
     private boolean global;
     private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
+    private String name;
     private Version version = DEFAULT_VERSION;
 
     public Module() {
@@ -53,6 +54,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         this.id = info.id().toLowerCase();
         this.dependency = info.dependency();
         this.loadBefore = info.loadBefore();
+        this.name = info.id();
 
         Annotation versionAnnotation = this.getClass().getAnnotation(ModuleVersion.class);
         if (versionAnnotation != null) {
@@ -113,6 +115,10 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         return this.getPlugin().getLogger();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public ArcadePlugin getPlugin() {
         return this.plugin;
     }
@@ -121,7 +127,7 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         return this.getPlugin().getServer();
     }
 
-    public Version getVersion(Version version) {
+    public Version getVersion() {
         return this.version;
     }
 

@@ -82,8 +82,7 @@ public class Author implements Comparable<Author> {
 
     private UUID newOfflineUuid(String username) {
         if (username != null) {
-            String offline = "OfflinePlayer:" + username;
-            return UUID.nameUUIDFromBytes(offline.getBytes());
+            return UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes());
         }
 
         return null;

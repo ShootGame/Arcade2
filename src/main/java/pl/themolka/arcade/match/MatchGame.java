@@ -3,6 +3,7 @@ package pl.themolka.arcade.match;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
+import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.GameCommands;
@@ -25,6 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MatchGame extends GameModule {
+    public static final String JOIN_ON_CYCLE_MESSAGE = Messageable.ERROR_COLOR + "The match has ended. " +
+            ChatColor.GOLD + "Please wait until the server cycle.";
+
     private boolean autoCycle;
     private boolean autoStart;
     private int defaultStartCountdown;
@@ -98,13 +102,17 @@ public class MatchGame extends GameModule {
             message = "Force starting";
         }
 
-        if (this.getMatch().isStarting()) {
-            sender.sendSuccess(message + " the match in " + seconds + " seconds...");
-            this.getMatch().setForceStart(force);
-            this.startCountdown(seconds);
-        } else {
+        if (!this.getMatch().isStarting()) {
             throw new CommandException("The match is not in the starting state.");
+        } else if (this.getPlugin().getGames().getCycleCountdown().isTaskRunning()) {
+            throw new CommandException("Cannot start when cycle is running.");
+        } else if (this.getPlugin().getGames().getRestartCountdown().isTaskRunning()) {
+            throw new CommandException("Cannot start when restart is running.");
         }
+
+        sender.sendSuccess(message + " the match in " + seconds + " seconds...");
+        this.getMatch().setForceStart(force);
+        this.startCountdown(seconds);
     }
 
     public void handleEndCommand(Sender sender, boolean auto, String winnerQuery, boolean draw) {
@@ -187,7 +195,7 @@ public class MatchGame extends GameModule {
     @Handler(priority = Priority.HIGHEST)
     public void onJoinWhenMatchEnded(GameCommands.JoinCommandEvent event) {
         if (this.getMatch().isCycling()) {
-            event.getSender().sendError("The match has ended. " + ChatColor.GOLD + "Please wait until the server cycle.");
+            event.getSender().sendError(JOIN_ON_CYCLE_MESSAGE);
             event.setCanceled(true);
             event.setJoined(false);
         }

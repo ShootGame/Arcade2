@@ -287,17 +287,18 @@ public class Team implements MatchWinner {
         this.members.add(player);
         this.onlineMembers.add(player);
 
+        player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
+        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
+        player.setCurrentChannel(this.getCurrentChannel());
+        player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
+
+        // handle it AFTER the setParticipating method
         if (this.getMatch().isRunning()) {
             player.reset();
 
             player.getPlayer().getPermissions().clearGroups();
             player.getPlayer().getPermissions().refresh();
         }
-
-        player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
-        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
-        player.setCurrentChannel(this.getCurrentChannel());
-        player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
 
         this.plugin.getLogger().info(player.getUsername() + " joined team '" + this.getName() + "' (" + this.getId() + ")");
         if (message) {
@@ -328,17 +329,18 @@ public class Team implements MatchWinner {
         this.members.remove(player);
         this.onlineMembers.remove(player);
 
+        player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
+        player.setParticipating(false);
+        player.setCurrentChannel(null);
+        player.resetDisplayName();
+
+        // handle it AFTER the setParticipating method
         if (this.getMatch().isRunning()) {
             player.reset();
 
             player.getPlayer().getPermissions().clearGroups();
             player.getPlayer().getPermissions().refresh();
         }
-
-        player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
-        player.setParticipating(false);
-        player.setCurrentChannel(null);
-        player.resetDisplayName();
 
         this.plugin.getLogger().info(player.getUsername() + " left team '" + this.getName() + "' (" + this.getId() + ")");
 

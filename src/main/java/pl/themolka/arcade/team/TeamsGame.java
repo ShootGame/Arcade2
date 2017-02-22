@@ -28,17 +28,29 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
+    /** Limit the amount of teams in the match */
+    public static final int TEAMS_LIMIT = 26;
+
     /** Match where teams are stored */
     private Match match;
     /** Teams indexed by their unique identifiers */
     private final Map<String, Team> teamsById = new HashMap<>();
     /** Teams indexed by their members */
     private final Map<GamePlayer, Team> teamsByPlayer = new HashMap<>();
+    /** Team picker window */
+    private TeamWindow window;
 
     public TeamsGame(List<Team> teams) {
-        for (Team team : teams) {
+        for (int i = 0; i < teams.size(); i++) {
+            if (i > TEAMS_LIMIT) {
+                this.getLogger().log(Level.SEVERE, "There are too many teams (reached limit of " + TEAMS_LIMIT + ")!");
+                break;
+            }
+
+            Team team = teams.get(i);
             this.teamsById.put(team.getId(), team);
         }
     }
@@ -50,10 +62,14 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         for (Team team : this.getTeams()) {
             team.setMatch(this.getMatch());
-            this.getMatch().registerWinner(team);
+            this.getMatch().registerWinner(team); // register
         }
 
         this.teamsById.put(this.match.getObservers().getId(), this.match.getObservers());
+
+        this.window = new TeamWindow(this);
+        this.getWindow().create();
+        this.getGame().getWindowRegistry().addWindow(this.getWindow()); // register
 
         this.getMatch().setObserverHandler(this);
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
@@ -114,6 +130,10 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     public Collection<Team> getTeams() {
         return this.teamsById.values();
+    }
+
+    public TeamWindow getWindow() {
+        return this.window;
     }
 
     //
@@ -216,7 +236,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         for (Team team : this.getTeams()) {
             for (GamePlayer player : team.getOnlineMembers()) {
                 player.setCurrentChannel(null);
-                player.setParticipating(team.isParticipating());
             }
         }
     }

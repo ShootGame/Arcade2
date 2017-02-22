@@ -14,6 +14,10 @@ public class CommandContextParser implements CommandContext.IContextParser {
 
     @Override
     public CommandContext parse(Command command, String label, String[] args) {
+        if (args == null) {
+            args = new String[0];
+        }
+
         String flag = null;
         StringBuilder flagValue = null;
 

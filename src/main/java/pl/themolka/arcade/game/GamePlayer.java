@@ -1,6 +1,5 @@
 package pl.themolka.arcade.game;
 
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
@@ -155,6 +154,29 @@ public class GamePlayer implements Metadata, Sender {
         this.getBukkit().showInvisibles(!participating);
     }
 
+    public void refreshVisibility(Iterable<ArcadePlayer> viewers) {
+        for (ArcadePlayer online : viewers) {
+            GamePlayer player = online.getGamePlayer();
+            if (player == null) {
+                continue;
+            }
+
+            // can this player see looped player?
+            if (this.canSee(player)) {
+                this.getBukkit().showPlayer(player.getBukkit());
+            } else {
+                this.getBukkit().hidePlayer(player.getBukkit());
+            }
+
+            // can looped player see this player?
+            if (player.canSee(this)) {
+                player.getBukkit().showPlayer(this.getBukkit());
+            } else {
+                player.getBukkit().hidePlayer(this.getBukkit());
+            }
+        }
+    }
+
     public void reset() {
         Player bukkit = this.getBukkit();
         this.refresh();
@@ -172,7 +194,6 @@ public class GamePlayer implements Metadata, Sender {
         bukkit.setFlying(FlyContent.DEFAULT_FLYING);
         bukkit.setFlySpeed(FlyContent.DEFAULT_SPEED);
         bukkit.setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
-        bukkit.setGameMode(GameMode.CREATIVE);
         bukkit.setGlowing(false);
         bukkit.setHealthScale(HealthContent.DEFAULT_HEALTH);
         bukkit.setHealth(HealthContent.DEFAULT_HEALTH);

@@ -46,6 +46,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     private final List<Task> taskList = new ArrayList<>();
     private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>(
             Collections.singletonList(PlayerVisibilityFilter.DEFAULT));
+    private final GameWindowRegistry windowRegistry;
     private final World world;
 
     /**
@@ -67,6 +68,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         this.gameId = gameId;
         this.map = map;
         this.scoreboard = new ScoreboardContext(plugin, this);
+        this.windowRegistry = new GameWindowRegistry(this);
         this.world = world;
 
         Element modules = map.getConfiguration().getRoot().getChild("modules");
@@ -327,6 +329,10 @@ public class Game implements Metadata, PlayerVisibilityFilter {
 
     public List<PlayerVisibilityFilter> getVisibilityFilters() {
         return new ArrayList<>(this.visibilityFilters);
+    }
+
+    public GameWindowRegistry getWindowRegistry() {
+        return this.windowRegistry;
     }
 
     public World getWorld() {

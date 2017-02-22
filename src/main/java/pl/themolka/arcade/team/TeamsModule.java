@@ -12,6 +12,7 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.KitsModule;
+import pl.themolka.arcade.match.FormatModule;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
@@ -30,12 +31,14 @@ import java.util.List;
                 FiltersModule.class,
                 KitsModule.class})
 @ModuleVersion("1.0")
+@FormatModule
 public class TeamsModule extends Module<TeamsGame> {
     /** Stores {@link Team} in a {@link pl.themolka.arcade.game.GamePlayer} */
     public static final String METADATA_TEAM = "Team";
     /** Stores {@link TeamsGame} in a {@link Game} */
     public static final String METADATA_TEAMS = "Teams";
 
+    /** Permission node which allow to edit teams in runtime. */
     public static final String TEAMS_MANAGE_PERMISSION = "arcade.command.teams.manage";
 
     @Override

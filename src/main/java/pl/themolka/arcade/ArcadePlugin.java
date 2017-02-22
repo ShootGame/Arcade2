@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -65,7 +66,10 @@ import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.SimpleTaskManager;
 import pl.themolka.arcade.task.TaskManager;
+import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Tickable;
+import pl.themolka.arcade.window.WindowListeners;
+import pl.themolka.arcade.window.WindowRegistry;
 import pl.themolka.arcade.xml.XMLLocation;
 
 import java.io.File;
@@ -89,8 +93,8 @@ import java.util.logging.Level;
  * The Arcade main class
  */
 public final class ArcadePlugin extends JavaPlugin implements Runnable {
-    public static final String[] COPYRIGHTS = {
-            new Author(UUID.fromString("2b5f34f6-fb05-4852-a86c-2e03bccbdf89"), "TheMolkaPL").toString()
+    public static final Author[] COPYRIGHTS = {
+            new Author(UUID.fromString("2b5f34f6-fb05-4852-a86c-2e03bccbdf89"), "TheMolkaPL")
     };
 
     public static final String DEFAULT_SERVER_NAME = "The server";
@@ -108,17 +112,21 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private PermissionManager permissions;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private final Map<String, Object> properties = new HashMap<>();
+    private boolean running;
     private String serverDescription;
     private String serverName = DEFAULT_SERVER_NAME;
     private ServerSessionFile serverSession;
     private Settings settings;
+    private Time startTime;
     private TaskManager tasks;
     private long tickId = 0L;
     private final List<Tickable> tickableList = new CopyOnWriteArrayList<>();
     private BukkitTask tickableTask;
+    private WindowRegistry windowRegistry;
 
-    ArcadePlugin() {
-    }
+    //
+    // Enable
+    //
 
     @Override
     public void onEnable() {
@@ -130,6 +138,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public final void start() throws Throwable {
+        if (this.isRunning()) {
+            throw new IllegalStateException("Already running!");
+        } else if (this.getStartTime() != null) {
+            throw new IllegalStateException("Outdated class!");
+        }
+
+        this.running = true;
+        this.startTime = Time.now();
+
         this.manifest.readManifestFile();
         this.eventBus = new EventBus(this);
 
@@ -167,6 +184,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadModules();
         this.loadMaps();
         this.loadTasks();
+        this.loadWindows();
         this.loadGames();
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
@@ -185,10 +203,19 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 } catch (DataConversionException ignored) {
                 }
 
-                ArcadePlugin.this.beginLogic();
+                if (ArcadePlugin.this.beginLogic()) {
+                    getLogger().info(getName() + " is fresh and ready to use.");
+                } else {
+                    getLogger().severe("Could not start - see logs above. Shutting down the server...");
+                    getServer().shutdown();
+                }
             }
         }, 1L);
     }
+
+    //
+    // Disable
+    //
 
     @Override
     public void onDisable() {
@@ -204,6 +231,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public final void stop() throws Throwable {
+        if (!this.isRunning()) {
+            throw new IllegalStateException("Already not running!");
+        }
+        this.running = false;
+
         Game game = this.getGames().getCurrentGame();
         if (game != null) {
             this.getGames().destroyGame(game);
@@ -234,6 +266,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getLogger().log(Level.SEVERE, "Could not save server-session file: " + io.getMessage(), io);
         }
     }
+
+    //
+    // Inherited methods
+    //
 
     @Override
     public FileConfiguration getConfig() {
@@ -292,6 +328,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
+    //
+    // Public methods
+    //
+
     public void addPlayer(ArcadePlayer player) {
         this.players.put(player.getUuid(), player);
     }
@@ -300,11 +340,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.tickableList.add(tickable);
     }
 
-    public final void beginLogic() {
+    public final boolean beginLogic() {
         if (this.getGames().getQueue().hasNextMap()) {
             this.getGames().cycleNext();
+            return true;
         } else {
             this.getLogger().severe("Could not cycle because the map queue is empty.");
+            return false;
         }
     }
 
@@ -365,6 +407,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.permissions;
     }
 
+    public ArcadePlayer getPlayer(HumanEntity human) {
+        if (human instanceof Player) {
+            return this.getPlayer((Player) human);
+        }
+
+        return null;
+    }
+
     public ArcadePlayer getPlayer(Player bukkit) {
         return this.getPlayer(bukkit.getUniqueId());
     }
@@ -415,6 +465,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.settings;
     }
 
+    public Time getStartTime() {
+        return this.startTime;
+    }
+
     public TaskManager getTasks() {
         return this.tasks;
     }
@@ -431,8 +485,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.tickableTask;
     }
 
+    public WindowRegistry getWindowRegistry() {
+        return this.windowRegistry;
+    }
+
     public boolean hasProperty(String key) {
         return this.getProperty(key) != null;
+    }
+
+    public boolean isRunning() {
+        return this.running;
     }
 
     public void registerCommandObject(Object object) {
@@ -531,6 +593,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             HandlerList.unregisterAll((Listener) object);
         }
     }
+
+    //
+    // Private Loaders
+    //
 
     private void loadCommands() {
         for (Object command : new Object[] {
@@ -687,6 +753,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // sessions
         this.registerListenerObject(new Sessions(this));
+
+        // windows
+        this.registerCommandObject(new WindowListeners(this));
     }
 
     private void loadTasks() {
@@ -700,5 +769,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 getGames().setNextRestart(true);
             }
         });
+    }
+
+    private void loadWindows() {
+        this.windowRegistry = new WindowRegistry();
     }
 }

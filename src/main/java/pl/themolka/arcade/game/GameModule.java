@@ -90,6 +90,10 @@ public class GameModule extends SimpleGameListener implements Listener, StringId
         return this.module;
     }
 
+    public String getName() {
+        return this.getModule().getName();
+    }
+
     public ArcadePlugin getPlugin() {
         return this.plugin;
     }

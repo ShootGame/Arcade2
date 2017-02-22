@@ -27,6 +27,7 @@ public class Match {
     private IObserverHandler observerHandler;
     private final Observers observers;
     private final ObserversKit observersKit;
+    private PlayMatchWindow playWindow;
     private Instant startTime;
     private MatchState state = MatchState.STARTING;
     private Duration time;
@@ -104,24 +105,19 @@ public class Match {
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             GamePlayer player = online.getGamePlayer();
-            if (online.getGamePlayer() != null && !online.getGamePlayer().isParticipating()) {
-                return;
+            if (player == null || !player.isParticipating()) {
+                continue;
             }
 
-            if (online.getGamePlayer() != null) {
-                player.setParticipating(false);
-            }
+            player.setParticipating(false);
 
             online.getPermissions().clearGroups();
             online.getPermissions().refresh();
+            player.reset();
 
-            if (player != null) {
-                player.reset();
-            }
-
-            online.getBukkit().getInventory().setItem(0, ObserversKit.TELEPORTER);
-            online.getBukkit().setGameMode(ObserversKit.GAME_MODE);
-            online.getBukkit().setAllowFlight(true);
+            player.getBukkit().getInventory().setItem(0, ObserversKit.NAVIGATION);
+            player.getBukkit().setGameMode(ObserversKit.GAME_MODE);
+            player.getBukkit().setAllowFlight(true);
         }
 
         this.plugin.getEventBus().publish(new MatchEndedEvent(this.plugin, this, winner, force));
@@ -185,6 +181,10 @@ public class Match {
         return this.observersKit;
     }
 
+    public PlayMatchWindow getPlayWindow() {
+        return this.playWindow;
+    }
+
     public Instant getStartTime() {
         return this.startTime;
     }
@@ -246,7 +246,8 @@ public class Match {
 
     public boolean isObserving(GamePlayer player) {
         IObserverHandler handler = this.getObserverHandler();
-        boolean observing = this.getObservers().hasPlayer(player) || handler == null || handler.isPlayerObserving(player);
+        boolean observing = this.getObservers().hasPlayer(player) ||
+                handler == null || handler.isPlayerObserving(player);
 
         return !this.isRunning() || observing || !player.isParticipating();
     }
@@ -311,6 +312,10 @@ public class Match {
         this.observerHandler = observerHandler;
     }
 
+    public void setPlayWindow(PlayMatchWindow playWindow) {
+        this.playWindow = playWindow;
+    }
+
     public void setState(MatchState state) {
         this.state = state;
     }
@@ -334,13 +339,18 @@ public class Match {
         this.setState(MatchState.RUNNING);
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+            if (player == null || this.isObserving(player)) {
+                continue;
+            }
+
+            player.setParticipating(true);
+
             online.getPermissions().clearGroups();
             online.getPermissions().refresh();
 
-            GamePlayer player = online.getGamePlayer();
-            if (player != null && player.isParticipating()) {
-                player.getBukkit().setGameMode(GameMode.SURVIVAL);
-            }
+            player.reset();
+            player.getBukkit().setGameMode(GameMode.SURVIVAL);
         }
 
         this.plugin.getEventBus().publish(new MatchStartedEvent(this.plugin, this, force));

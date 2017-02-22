@@ -15,10 +15,22 @@ public class ObserversKit extends Kit {
     public static final String OBSERVERS_KIT_ID = "_observers-kit";
 
     public static final GameMode GAME_MODE = GameMode.CREATIVE;
-    public static final String TELEPORTER_NAME = ChatColor.AQUA + ChatColor.BOLD.toString() + "Teleporter";
-    public static final ItemStack TELEPORTER = new ItemStackBuilder()
+
+    // navigation
+    public static final String NAVIGATION_NAME = ChatColor.AQUA + ChatColor.BOLD.toString() + "Navigation";
+    public static final ItemStack NAVIGATION = new ItemStackBuilder()
             .type(Material.COMPASS)
-            .displayName(TELEPORTER_NAME)
+            .displayName(NAVIGATION_NAME)
+            .description(ChatColor.YELLOW + "Left click to teleport to point",
+                    ChatColor.YELLOW + "Right click to teleport to highest point")
+            .build();
+
+    // play
+    public static final String PLAY_NAME = ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game";
+    public static final ItemStack PLAY = new ItemStackBuilder()
+            .type(Material.NETHER_STAR)
+            .displayName(PLAY_NAME)
+            .description(ChatColor.YELLOW + "Click to join the game")
             .build();
 
     public ObserversKit(ArcadePlugin plugin) {
@@ -31,22 +43,18 @@ public class ObserversKit extends Kit {
         this.addContent(new ClearInventoryContent(true));
         this.addContent(new GameModeContent(GAME_MODE));
 
-        this.addContent(this.createTeleporter()); // 0
-        this.addContent(this.createJoinItem()); // 2
+        this.addContent(this.createNavigationItem()); // 0
+        this.addContent(this.createPlayItem()); // 2
     }
 
-    public ItemStackContent createTeleporter() {
-        ItemStackContent content = new ItemStackContent(TELEPORTER);
+    public ItemStackContent createNavigationItem() {
+        ItemStackContent content = new ItemStackContent(NAVIGATION);
         content.setSlot(0);
         return content;
     }
 
-    public ItemStackContent createJoinItem() {
-        ItemStackContent content = new ItemStackContent(new ItemStackBuilder()
-                .type(Material.NETHER_STAR)
-                .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game")
-                .build());
-
+    public ItemStackContent createPlayItem() {
+        ItemStackContent content = new ItemStackContent(PLAY);
         content.setSlot(2);
         return content;
     }

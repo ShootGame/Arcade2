@@ -37,31 +37,22 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import pl.themolka.arcade.command.Command;
+import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.map.ArcadeMap;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
 public class ObserverListeners implements Listener {
     public static final int BORDER_Y = 32;
+    public static final String PLAY_COMMAND = "join";
     public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE = PlayerTeleportEvent.TeleportCause.SPECTATE;
 
     private final MatchGame game;
 
     public ObserverListeners(MatchGame game) {
         this.game = game;
-    }
-
-    @Handler(priority = Priority.NORMAL)
-    public void onArcadePlayerMove(PlayerMoveEvent event) {
-        if (this.isObserving(event.getPlayer().getBukkit())) {
-            ArcadeMap map = this.game.getGame().getMap();
-            int y = event.getTo().getBlockY();
-
-            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
-                event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
-            }
-        }
     }
 
     @EventHandler
@@ -159,6 +150,34 @@ public class ObserverListeners implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onMatchWindowOpen(PlayerInteractEvent event) {
+        if (event.getItem() != null && event.getItem().equals(ObserversKit.PLAY)) {
+            GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
+            if (player == null) {
+                return;
+            }
+
+            PlayMatchWindow window = this.game.getMatch().getPlayWindow();
+            if (window != null) {
+                window.onOpen(player);
+                return;
+            }
+
+            // The PlayerMatchWindow is not set. As we cannot handle the window
+            // join the given player to match with the '/join' command instead.
+            Commands commands = this.game.getPlugin().getCommands();
+            Command command = commands.getCommand(PLAY_COMMAND);
+
+            if (command != null) {
+                commands.handleCommand(player, command, command.getCommand(), null);
+                return;
+            }
+
+            player.sendError("Could not join the match right now. Did you defined a format module?");
+        }
+    }
+
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (this.isObserving(event.getPlayer())) {
@@ -197,27 +216,14 @@ public class ObserverListeners implements Listener {
                 bukkit.setHealth(0.0D);
             }
 
-            for (ArcadePlayer player : this.game.getPlugin().getPlayers()) {
-                if (player.getGamePlayer() != null && player.getGamePlayer().canSee(event.getGamePlayer())) {
-                    player.getBukkit().showPlayer(bukkit);
-                } else {
-                    player.getBukkit().hidePlayer(bukkit);
-                }
-            }
+            event.getGamePlayer().refreshVisibility(this.game.getPlugin().getPlayers());
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeaveObservers(ObserversLeaveEvent event) {
         if (event.getGamePlayer().isOnline() && this.game.getMatch().isRunning()) {
-            Player bukkit = event.getPlayer().getBukkit();
-            for (ArcadePlayer player : this.game.getPlugin().getPlayers()) {
-                if (player.getGamePlayer() != null && player.getGamePlayer().canSee(event.getGamePlayer())) {
-                    player.getBukkit().showPlayer(bukkit);
-                } else {
-                    player.getBukkit().hidePlayer(bukkit);
-                }
-            }
+            event.getGamePlayer().refreshVisibility(this.game.getPlugin().getPlayers());
         }
     }
 
@@ -239,6 +245,19 @@ public class ObserverListeners implements Listener {
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
+        }
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onPlayerVoidTeleport(PlayerMoveEvent event) {
+        if (this.isObserving(event.getPlayer().getBukkit())) {
+            ArcadeMap map = this.game.getGame().getMap();
+            int y = event.getTo().getBlockY();
+
+            // teleport observers when they are in the void
+            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
+                event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
+            }
         }
     }
 

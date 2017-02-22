@@ -12,10 +12,10 @@ public interface Sender extends Messageable {
 
     default GamePlayer getGamePlayer() {
         if (this.isConsole()) {
-            return this.getPlayer().getGamePlayer();
-        } else {
             return null;
         }
+
+        return this.getPlayer().getGamePlayer();
     }
 
     default Locale getLocale() {
