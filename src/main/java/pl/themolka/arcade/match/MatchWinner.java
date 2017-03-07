@@ -3,15 +3,10 @@ package pl.themolka.arcade.match;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.util.StringId;
 
-import java.util.List;
-
-public interface MatchWinner extends StringId {
-    boolean addGoal(Goal goal);
-
+public interface MatchWinner extends GoalHolder {
     boolean contains(Player bukkit);
 
     default boolean contains(ArcadePlayer player) {
@@ -22,23 +17,7 @@ public interface MatchWinner extends StringId {
         return this.contains(player.getPlayer());
     }
 
-    List<Goal> getGoals();
-
     default String getMessage() {
         return this.getTitle() + ChatColor.GREEN + " won the game!";
     }
-
-    String getName();
-
-    String getTitle();
-
-    default boolean hasGoal(Goal goal) {
-        return this.getGoals().contains(goal);
-    }
-
-    boolean isWinning();
-
-    boolean removeGoal(Goal goal);
-
-    void sendGoalMessage(String message);
 }

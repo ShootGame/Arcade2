@@ -37,7 +37,7 @@ public class ModulesFile {
                     modules.add(module);
                 }
             } catch (ClassCastException cast) {
-                throw new RuntimeException("game module does not inherit the " + Module.class.getName());
+                throw new RuntimeException("module class does not inherit the " + Module.class.getName());
             } catch (ReflectiveOperationException ex) {
                 ex.printStackTrace();
             }

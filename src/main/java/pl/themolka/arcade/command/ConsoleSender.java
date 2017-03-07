@@ -60,4 +60,8 @@ public class ConsoleSender implements Sender {
     public static String getConsoleName() {
         return "*" + CONSOLE_NAME;
     }
+
+    public static String getConsoleColoredName() {
+        return ChatColor.DARK_RED + ChatColor.BOLD.toString() + ChatColor.ITALIC + getConsoleName() + ChatColor.RESET;
+    }
 }

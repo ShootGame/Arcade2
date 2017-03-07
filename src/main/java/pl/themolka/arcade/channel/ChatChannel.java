@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ChatChannel extends AbstractChannel {
     public static final String EMPTY_MESSAGE = "No message specified.";
-    public static final String PERMISSION_ERROR = "You don't have permission to write in this channel.";
+    public static final String PERMISSION_ERROR = "You don't have permission to write to this channel.";
     public static final String PERMISSION_NODE = "arcade.channel";
 
     private final ArcadePlugin plugin;
@@ -61,7 +61,7 @@ public class ChatChannel extends AbstractChannel {
 
         String name = author.getUsername();
         if (author.isConsole()) {
-            name = ChatColor.DARK_RED + ChatColor.BOLD.toString() + ChatColor.ITALIC + ConsoleSender.getConsoleName();
+            name = ConsoleSender.getConsoleColoredName();
         } else {
             GamePlayer player = author.getGamePlayer();
             if (player.hasDisplayName()) {

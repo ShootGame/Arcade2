@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.kit.FlyContent;
 import pl.themolka.arcade.kit.FoodLevelContent;
 import pl.themolka.arcade.kit.HealthContent;
@@ -15,14 +17,17 @@ import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
-public class GamePlayer implements Metadata, Sender {
+public class GamePlayer implements GoalHolder, Metadata, Sender {
     private ChatChannel channel;
     private String displayName;
     private final Game game;
+    private final List<Goal> goals = new ArrayList<>();
     private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
     private ArcadePlayer player;
@@ -42,6 +47,26 @@ public class GamePlayer implements Metadata, Sender {
     }
 
     @Override
+    public boolean addGoal(Goal goal) {
+        return this.goals.add(goal);
+    }
+
+    @Override
+    public boolean areGoalsCompleted() {
+        return false;
+    }
+
+    @Override
+    public List<Goal> getGoals() {
+        return new ArrayList<>(this.goals);
+    }
+
+    @Override
+    public String getId() {
+        return this.getUuid().toString();
+    }
+
+    @Override
     public Locale getLocale() {
         return this.getPlayer().getLocale();
     }
@@ -57,6 +82,31 @@ public class GamePlayer implements Metadata, Sender {
     }
 
     @Override
+    public ArcadePlayer getPlayer() {
+        return this.player;
+    }
+
+    @Override
+    public String getTitle() {
+        return this.getFullName();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
+    @Override
+    public boolean hasGoal(Goal goal) {
+        return this.goals.contains(goal);
+    }
+
+    @Override
     public boolean hasPermission(String permission) {
         return this.getPlayer().hasPermission(permission);
     }
@@ -64,6 +114,11 @@ public class GamePlayer implements Metadata, Sender {
     @Override
     public boolean isConsole() {
         return false;
+    }
+
+    @Override
+    public boolean removeGoal(Goal goal) {
+        return this.goals.remove(goal);
     }
 
     @Override
@@ -79,6 +134,11 @@ public class GamePlayer implements Metadata, Sender {
     @Override
     public void sendChat(String chat) {
         this.getPlayer().sendChat(chat);
+    }
+
+    @Override
+    public void sendGoalMessage(String message) {
+        this.sendAction(message);
     }
 
     @Override
@@ -116,18 +176,6 @@ public class GamePlayer implements Metadata, Sender {
 
     public Game getGame() {
         return this.game;
-    }
-
-    public ArcadePlayer getPlayer() {
-        return this.player;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public UUID getUuid() {
-        return this.uuid;
     }
 
     public boolean hasDisplayName() {

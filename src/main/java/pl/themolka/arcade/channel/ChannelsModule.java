@@ -20,7 +20,7 @@ public class ChannelsModule extends Module<ChannelsGame> {
     }
 
     @CommandInfo(name = {"global", "g", "!"},
-            description = "Send a message to the global channel",
+            description = "Send a message to the global chat channel",
             min = 1,
             flags = {"c", "console"},
             usage = "[-console] <message...>",

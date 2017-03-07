@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.channel.ChannelsModule;
+import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
@@ -59,7 +60,7 @@ public class TeamsModule extends Module<TeamsGame> {
     // Commands
     //
 
-    @CommandInfo(name = {"myteam", "team", "mt"},
+    @CommandInfo(name = {"myteam", "mt"},
             description = "Show your current team",
             clientOnly = true,
             permission = "arcade.command.myteam")
@@ -68,12 +69,9 @@ public class TeamsModule extends Module<TeamsGame> {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        TeamsGame game = this.getGameModule();
-        Team team = game.getTeam(sender.getGamePlayer());
-
+        Team team = this.getGameModule().getTeam(sender.getGamePlayer());
         if (team == null) {
-            team = game.getMatch().getObservers();
-            team.join(sender.getGamePlayer(), false);
+            throw new CommandException("You are not in a team.");
         }
 
         sender.sendInfo("You are currently in " + team.getPrettyName() + ChatColor.GRAY + ".");
@@ -81,6 +79,25 @@ public class TeamsModule extends Module<TeamsGame> {
         if (team instanceof Observers) {
             sender.sendTip("Join the game by typing /join.");
         }
+    }
+
+    @CommandInfo(name = {"team", "t"},
+            description = "Send a message to the teams chat channel",
+            min = 1,
+            usage = "<message...>",
+            clientOnly = true,
+            permission = ChatChannel.PERMISSION_NODE + "." + TeamChannel.TEAM_PERMISSION_NODE)
+    public void team(Sender sender, CommandContext context) {
+        if (!this.isGameModuleEnabled()) {
+            throw new CommandException("Teams module is not enabled in this game.");
+        }
+
+        Team team = this.getGameModule().getTeam(sender.getGamePlayer());
+        if (team == null) {
+            throw new CommandException("You are not in a team.");
+        }
+
+        team.getChannel().sendChat(sender, context.getParams(0));
     }
 
     @CommandInfo(name = {"teams", "teamlist"},

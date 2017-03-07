@@ -27,7 +27,7 @@ permissions:
             default: true
             children:
               arcade.channel.global.console:
-                description: 'Gives access to send messages as the console.'
+                description: 'Gives access to send messages as the console to the global chat channel.'
                 default: op
           arcade.channel.teamchat:
             description: 'Gives access to the team chat channel.'

@@ -2,16 +2,16 @@ package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
+import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
-import pl.themolka.arcade.match.MatchWinner;
 
 public class Score implements Goal {
     public static final String DEFAULT_GOAL_NAME = "Score";
 
     private final ScoreGame game;
 
-    private final MatchWinner owner;
+    private final GoalHolder owner;
     private boolean completed;
     private final int initScore;
     private int limit;
@@ -19,11 +19,11 @@ public class Score implements Goal {
     private int score;
     private boolean scoreTouched;
 
-    public Score(ScoreGame game, MatchWinner owner) {
+    public Score(ScoreGame game, GoalHolder owner) {
         this(game, owner, 0);
     }
 
-    public Score(ScoreGame game, MatchWinner owner, int initScore) {
+    public Score(ScoreGame game, GoalHolder owner, int initScore) {
         this.game = game;
 
         this.owner = owner;
@@ -63,8 +63,8 @@ public class Score implements Goal {
     }
 
     @Override
-    public boolean isCompletableBy(MatchWinner winner) {
-        return this.getOwner().equals(winner);
+    public boolean isCompletableBy(GoalHolder holder) {
+        return this.getOwner().equals(holder);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class Score implements Goal {
     }
 
     @Override
-    public void setCompleted(MatchWinner winner, boolean completed) {
+    public void setCompleted(GoalHolder holder, boolean completed) {
         if (completed) {
             this.handleGoalComplete();
         } else {
@@ -107,7 +107,7 @@ public class Score implements Goal {
         }
     }
 
-    public MatchWinner getOwner() {
+    public GoalHolder getOwner() {
         return this.owner;
     }
 
@@ -187,9 +187,9 @@ public class Score implements Goal {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            // This game for this `MatchWinner` has been completed - we can tell
-            // it to the plugin, so it can end the match. This method will loop
-            // all `MatchWinner`s (like players or teams) to find the winner.
+            // This game for this `GoalHolder` has been completed - we can tell
+            // it to the plugin, so it can end the game. This method will loop
+            // all `GoalHolder`s (like players or teams) to find the winner.
             this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
         }
     }

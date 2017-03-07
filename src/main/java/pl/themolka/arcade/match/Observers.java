@@ -10,6 +10,9 @@ import pl.themolka.arcade.util.Color;
 
 import java.util.List;
 
+/**
+ * A non-participating team observing the match and its players.
+ */
 public class Observers extends Team {
     public static final ChatColor OBSERVERS_COLOR = ChatColor.AQUA;
     public static final DyeColor OBSERVERS_DYE_COLOR = Color.ofChat(OBSERVERS_COLOR).toDye();
@@ -31,7 +34,7 @@ public class Observers extends Team {
     }
 
     @Override
-    public boolean areGoalsScored() {
+    public boolean areGoalsCompleted() {
         throw new UnsupportedOperationException("Not supported here.");
     }
 
@@ -87,11 +90,6 @@ public class Observers extends Team {
 
     @Override
     public boolean isPlaying() {
-        return false;
-    }
-
-    @Override
-    public boolean isWinning() {
         return false;
     }
 

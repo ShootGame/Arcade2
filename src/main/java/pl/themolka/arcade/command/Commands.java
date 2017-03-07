@@ -97,6 +97,10 @@ public class Commands {
             } else {
                 sender.sendError("Nie udalo sie wykonac komendy, poniewaz popelniono jakis blad.");
             }
+
+            if (ex.getCause() != null) {
+                sender.sendError(ex.getCause().getClass().getSimpleName() + ": " + ex.getMessage());
+            }
         } catch (NumberFormatException ex) {
             sender.sendError("Musisz podac liczbe, nie ciag znakow!");
         } catch (Throwable th) {

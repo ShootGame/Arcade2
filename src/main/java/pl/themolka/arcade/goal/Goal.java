@@ -1,9 +1,7 @@
 package pl.themolka.arcade.goal;
 
-import pl.themolka.arcade.match.MatchWinner;
-
 /**
- * An abstract base class for all `Match` goals.
+ * An abstract base class for all goals in games.
  */
 public interface Goal {
     /**
@@ -24,7 +22,7 @@ public interface Goal {
 
     /**
      * Percentage of progress of this `Goal` to be completed.
-     * NOTE: Unlimited loop in `#isScored() -> #getProgress()`.
+     * NOTE: Unlimited loop in `#isCompleted() -> #getProgress()`.
      * @return percentage progress of this `Goal`
      */
     default double getProgress() {
@@ -36,15 +34,15 @@ public interface Goal {
     }
 
     /**
-     * Check if this `Goal` can be completed by the given `MatchWinner`.
-     * @param winner `MatchWinner` to check.
-     * @return `true` if the given `MatchWinner` can complete this goal, otherwise `false`.
+     * Check if this `Goal` can be completed by the given `GoalHolder`.
+     * @param holder `GoalHolder` to check.
+     * @return `true` if the given `GoalHolder` can complete this goal, otherwise `false`.
      */
-    boolean isCompletableBy(MatchWinner winner);
+    boolean isCompletableBy(GoalHolder holder);
 
     /**
      * Check if this `Goal` is completed.
-     * NOTE: Unlimited loop in `#getProgress() -> #isScored()`.
+     * NOTE: Unlimited loop in `#getProgress() -> #isCompleted()`.
      * @return `true` if this `Goal` is completed, otherwise `false`.
      */
     default boolean isCompleted() {
@@ -52,12 +50,12 @@ public interface Goal {
     }
 
     /**
-     * Check if this `Goal` is completed by the specified `MatchWinner`.
-     * @param winner `MatchWinner` to check.
+     * Check if this `Goal` is completed by the given `GoalHolder`.
+     * @param holder `GoalHolder` to check.
      * @return `true` if the given `Goal` is completed, otherwise `false`.
      */
-    default boolean isCompleted(MatchWinner winner) {
-        return this.isCompleted() && this.isCompletableBy(winner);
+    default boolean isCompleted(GoalHolder holder) {
+        return this.isCompleted() && this.isCompletableBy(holder);
     }
 
     /**
@@ -86,8 +84,8 @@ public interface Goal {
 
     /**
      * Set completion of this `Goal` to completed or not.
-     * @param winner `MatchWinner` who completed this `Goal`, may be `null`.
+     * @param holder `GoalHolder` who completed this `Goal`, may be `null`.
      * @param completed `true` if this `Goal` is completed, `false` if not.
      */
-    void setCompleted(MatchWinner winner, boolean completed);
+    void setCompleted(GoalHolder holder, boolean completed);
 }

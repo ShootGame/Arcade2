@@ -681,20 +681,20 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         ModulesLoadEvent loadEvent = new ModulesLoadEvent(this, moduleList);
         this.getEventBus().publish(loadEvent);
 
-        int success = 0;
+        List<Module<?>> success = new ArrayList<>();
         for (Module<?> module : loadEvent.getModules()) {
             try {
                 module.initialize(this);
                 module.registerCommandObject(module);
 
-                success++;
+                success.add(module);
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not load module '" + module.getId() + "': " + th.getMessage(), th);
             }
         }
 
-        this.getLogger().info("Successfully loaded " + success + " of " + loadEvent.getModules().size() + " available modules.");
-        this.getModules().register(loadEvent.getModules().toArray(new Module<?>[loadEvent.getModules().size()]));
+        this.getLogger().info("Successfully loaded " + success.size() + " of " + loadEvent.getModules().size() + " available modules.");
+        this.getModules().register(success.toArray(new Module<?>[success.size()]));
 
         Element globalModules = this.getSettings().getData().getChild("modules");
         if (globalModules == null) {

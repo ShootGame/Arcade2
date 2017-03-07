@@ -8,10 +8,10 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalContributionContext;
 import pl.themolka.arcade.goal.GoalContributor;
+import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.InteractableGoal;
-import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.region.CuboidRegion;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionBounds;
@@ -28,7 +28,7 @@ public class Leakable implements InteractableGoal, StringId {
 
     private final LeakGame game;
 
-    private final MatchWinner owner;
+    private final GoalHolder owner;
     private final List<Vector> breaked;
     private boolean completed;
     private final GoalContributionContext contributions;
@@ -39,7 +39,7 @@ public class Leakable implements InteractableGoal, StringId {
     private String name;
     private Region region;
 
-    public Leakable(LeakGame game, MatchWinner owner, String id) {
+    public Leakable(LeakGame game, GoalHolder owner, String id) {
         this.game = game;
 
         this.owner = owner;
@@ -77,8 +77,8 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     @Override
-    public boolean isCompletableBy(MatchWinner winner) {
-        return !this.getOwner().equals(winner);
+    public boolean isCompletableBy(GoalHolder holder) {
+        return !this.getOwner().equals(holder);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     @Override
-    public void setCompleted(MatchWinner winner, boolean completed) {
+    public void setCompleted(GoalHolder holder, boolean completed) {
         if (completed) {
             this.handleGoalComplete();
         } else {
@@ -121,13 +121,13 @@ public class Leakable implements InteractableGoal, StringId {
      *   - LeakableBreakEvent (cancelable)
      *   - GoalProgressEvent
      */
-    public boolean breakPiece(MatchWinner breaker, GamePlayer player, Block block) {
+    public boolean breakPiece(GoalHolder breaker, GamePlayer player, Block block) {
         String interactMessage = breaker.getTitle();
         if (player != null) {
             interactMessage = player.getDisplayName();
         }
 
-        LeakableBreakEvent event = new LeakableBreakEvent(this.game.getPlugin(), this, breaker, block);
+        LeakableBreakEvent event = new LeakableBreakEvent(this.game.getPlugin(), this, breaker, block, player);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (event.isCanceled()) {
@@ -187,7 +187,7 @@ public class Leakable implements InteractableGoal, StringId {
         return this.material;
     }
 
-    public MatchWinner getOwner() {
+    public GoalHolder getOwner() {
         return this.owner;
     }
 
@@ -290,9 +290,9 @@ public class Leakable implements InteractableGoal, StringId {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            // This game for this `MatchWinner` has been completed - we can tell
-            // it to the plugin, so it can end the match. This method will loop
-            // all `MatchWinner`s (like players or teams) to find the winner.
+            // This game for this `GoalHolder` has been completed - we can tell
+            // it to the plugin, so it can end the game. This method will loop
+            // all `GameHolder`s (like players or teams) to find the winner.
             this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
         }
     }

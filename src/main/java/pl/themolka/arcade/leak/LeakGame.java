@@ -13,10 +13,10 @@ import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
-import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLMaterial;
@@ -32,7 +32,7 @@ import java.util.Map;
 public class LeakGame extends GameModule {
     private final Map<String, Leakable> leakablesById = new HashMap<>();
     private final Map<Liquid.Type, Leakable> leakablesByLiquid = new HashMap<>();
-    private final Map<MatchWinner, Leakable> leakablesByOwner = new HashMap<>();
+    private final Map<GoalHolder, Leakable> leakablesByOwner = new HashMap<>();
 
     private Match match;
 
@@ -67,7 +67,7 @@ public class LeakGame extends GameModule {
             }
 
             // owner
-            MatchWinner owner;
+            GoalHolder owner;
             if (paramOwner == null || paramOwner.isEmpty()) {
                 continue;
             } else {
@@ -110,7 +110,7 @@ public class LeakGame extends GameModule {
             this.addLeakable(leakable);
 
             // register
-            for (MatchWinner completableBy : this.match.getWinnerList()) {
+            for (GoalHolder completableBy : this.match.getWinnerList()) {
                 if (!leakable.getOwner().equals(completableBy)) {
                     completableBy.addGoal(leakable);
                 }
@@ -153,7 +153,7 @@ public class LeakGame extends GameModule {
         return this.leakablesByLiquid.get(liquid);
     }
 
-    public Leakable getLeakable(MatchWinner owner) {
+    public Leakable getLeakable(GoalHolder owner) {
         return this.leakablesByOwner.get(owner);
     }
 
@@ -200,7 +200,7 @@ public class LeakGame extends GameModule {
                 continue;
             }
 
-            MatchWinner winner = this.getMatch().findWinnerByPlayer(player);
+            GoalHolder winner = this.getMatch().findWinnerByPlayer(player);
             if (leakable.getOwner().equals(winner)) {
                 event.setCanceled(true);
                 player.sendError("You may not damage your own " + leakable.getName() + ".");

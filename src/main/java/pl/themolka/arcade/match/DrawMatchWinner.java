@@ -2,6 +2,7 @@ package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -9,15 +10,29 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A {@link MatchWinner} which specifies a draw win.
+ */
 public class DrawMatchWinner implements MatchWinner {
     public static final String DRAW_WINNER_ID = "_draw-match-winner";
 
-    protected  DrawMatchWinner() {
+    private final ArcadePlugin plugin;
+
+    /**
+     * Should be constructed ONLY from the {@link Match} class.
+     */
+    protected DrawMatchWinner(ArcadePlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
     public boolean addGoal(Goal goal) {
         return false;
+    }
+
+    @Override
+    public boolean areGoalsCompleted() {
+        return true;
     }
 
     @Override
@@ -61,7 +76,7 @@ public class DrawMatchWinner implements MatchWinner {
     }
 
     @Override
-    public boolean isWinning() {
+    public boolean hasGoal(Goal goal) {
         return true;
     }
 

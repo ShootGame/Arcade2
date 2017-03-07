@@ -7,6 +7,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.match.DrawMatchWinner;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
@@ -49,25 +51,17 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
     }
 
     @Override
-    public MatchWinner getDynamicWinner() {
-        List<MatchWinner> winners = this.getDynamicWinners();
-        if (winners == null) {
-            return null;
-        }
-
-        if (winners.size() == 1) {
-            return winners.get(0);
-        } else {
-            return this.getMatch().getDrawWinner();
-        }
+    public DrawMatchWinner getDrawWinner() {
+        return this.getMatch().getDrawWinner();
     }
 
+    @Override
     public List<MatchWinner> getDynamicWinners() {
         int highestScore = 0;
 
         List<MatchWinner> results = new ArrayList<>();
         for (MatchWinner winner : this.getMatch().getWinners()) {
-            if (winner.isWinning()) {
+            if (winner.areGoalsCompleted()) {
                 return Collections.singletonList(winner);
             }
 
@@ -80,11 +74,14 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             }
 
             if (score.getScore() >= highestScore) {
-                results.add(score.getOwner());
+                GoalHolder owner = score.getOwner();
+                if (owner instanceof MatchWinner) {
+                    results.add((MatchWinner) owner);
+                }
             }
         }
 
-        if (highestScore != 0) {
+        if (highestScore != 0 || results.isEmpty()) {
             return results;
         }
 

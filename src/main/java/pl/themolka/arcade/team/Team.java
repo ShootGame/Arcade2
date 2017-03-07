@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A group with defined players in it.
+ */
 public class Team implements MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
 
@@ -93,7 +96,7 @@ public class Team implements MatchWinner {
 
     @Override
     public List<Goal> getGoals() {
-        return this.goals;
+        return new ArrayList<>(this.goals);
     }
 
     @Override
@@ -112,8 +115,8 @@ public class Team implements MatchWinner {
     }
 
     @Override
-    public boolean isWinning() {
-        return this.areGoalsScored();
+    public boolean hasGoal(Goal goal) {
+        return this.goals.contains(goal);
     }
 
     @Override
@@ -158,16 +161,6 @@ public class Team implements MatchWinner {
                 this.apply(player.getGamePlayer(), event);
             }
         }
-    }
-
-    public boolean areGoalsScored() {
-        for (Goal goal : this.getGoals()) {
-            if (!goal.isCompleted(this)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public List<PlayerApplicable> getApplyContent(TeamApplyEvent event) {

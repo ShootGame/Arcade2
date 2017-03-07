@@ -20,7 +20,7 @@ import java.util.Map;
 public class Match {
     private final ArcadePlugin plugin;
 
-    private final DrawMatchWinner drawWinner = new DrawMatchWinner();
+    private final DrawMatchWinner drawWinner;
     private boolean forceEnd;
     private boolean forceStart;
     private final Game game;
@@ -36,6 +36,7 @@ public class Match {
     public Match(ArcadePlugin plugin, Game game, Observers observers) {
         this.plugin = plugin;
 
+        this.drawWinner = new DrawMatchWinner(plugin);
         this.game = game;
         this.observers = observers;
         this.observersKit = new ObserversKit(plugin);
@@ -224,7 +225,7 @@ public class Match {
     public List<MatchWinner> getWinners() {
         List<MatchWinner> results = new ArrayList<>();
         for (MatchWinner winner : this.getWinnerList()) {
-            if (winner.isWinning()) {
+            if (winner.areGoalsCompleted()) {
                 results.add(winner);
             }
         }
