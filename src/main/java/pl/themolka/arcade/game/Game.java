@@ -22,7 +22,6 @@ import pl.themolka.arcade.task.Task;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +43,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     private final ScoreboardContext scoreboard;
     private Instant startTime;
     private final List<Task> taskList = new ArrayList<>();
-    private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>(
-            Collections.singletonList(PlayerVisibilityFilter.DEFAULT));
+    private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>();
     private final GameWindowRegistry windowRegistry;
     private final World world;
 
@@ -394,7 +392,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public boolean removeVisiblityFilter(PlayerVisibilityFilter filter) {
-        return !filter.equals(PlayerVisibilityFilter.DEFAULT) && this.visibilityFilters.remove(filter);
+        return this.visibilityFilters.remove(filter);
     }
 
     public void start() {

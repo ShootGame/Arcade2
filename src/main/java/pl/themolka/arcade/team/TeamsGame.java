@@ -97,6 +97,36 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     // Getters and Setters
     //
 
+    public boolean areTeamsFull() {
+        int did = 0;
+        for (Team team : this.getTeams()) {
+            if (team.isParticipating()) {
+                did++;
+
+                if (!team.isFull()) {
+                    return false;
+                }
+            }
+        }
+
+        return did != 0;
+    }
+
+    public boolean areTeamsOverfilled() {
+        int did = 0;
+        for (Team team : this.getTeams()) {
+            if (team.isParticipating()) {
+                did++;
+
+                if (!team.isOverfilled()) {
+                    return false;
+                }
+            }
+        }
+
+        return did != 0;
+    }
+
     public Team findTeamById(String query) {
         if (query.equals(Observers.OBSERVERS_KEY)) {
             return this.getMatch().getObservers();
@@ -162,12 +192,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         Team join = smallestTeam;
-        if (!player.hasPermission("arcade.command.join.overfill") && join.isOverfill()) {
+        if (!player.hasPermission("arcade.command.join.overfill") && join.isFull()) {
             throw new CommandException("Teams are full! " + ChatColor.GOLD + "Only " + ChatColor.BOLD +
                     "VIP" + ChatColor.RESET + ChatColor.GOLD + "s can join full teams.");
         } else if (this.getTeam(player) != null && this.getTeam(player).equals(join)) {
             throw new CommandException("You already joined " + join.getName() + ".");
-        } else if (join.isFull()) {
+        } else if (join.isOverfilled()) {
             throw new CommandException("Teams are overfilled!");
         }
 
@@ -204,10 +234,10 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             throw new CommandException("No teams found from the given query.");
         } else if (this.getTeam(player) != null && this.getTeam(player).equals(result)) {
             throw new CommandException("You already joined " + result.getPrettyName() + Messageable.ERROR_COLOR + ".");
-        } else if (!player.hasPermission("arcade.command.join.overfill") && result.isOverfill()) {
+        } else if (!player.hasPermission("arcade.command.join.overfill") && result.isFull()) {
             throw new CommandException(result.getPrettyName() + Messageable.ERROR_COLOR + " is full! " + ChatColor.GOLD +
                     "Only " + ChatColor.BOLD + "VIP" + ChatColor.RESET + Messageable.ERROR_COLOR + "s can join full teams.");
-        } else if (result.isFull()) {
+        } else if (result.isOverfilled()) {
             throw new CommandException("Teams are overfilled!");
         } else {
             this.joinTeam(player, result);

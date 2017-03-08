@@ -229,7 +229,7 @@ public class Team implements MatchWinner {
     }
 
     public boolean isFull() {
-        return this.getOnlineMembers().size() >= this.getMaxPlayers();
+        return this.getOnlineMembers().size() >= this.getSlots();
     }
 
     public boolean isObservers() {
@@ -240,8 +240,8 @@ public class Team implements MatchWinner {
         return !this.isPlaying();
     }
 
-    public boolean isOverfill() {
-        return this.getOnlineMembers().size() >= this.getSlots();
+    public boolean isOverfilled() {
+        return this.getOnlineMembers().size() >= this.getMaxPlayers();
     }
 
     public boolean isParticipating() {
