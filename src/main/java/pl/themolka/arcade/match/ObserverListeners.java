@@ -159,8 +159,7 @@ public class ObserverListeners implements Listener {
             }
 
             PlayMatchWindow window = this.game.getMatch().getPlayWindow();
-            if (window != null) {
-                window.onOpen(player);
+            if (window != null && window.open(player)) {
                 return;
             }
 

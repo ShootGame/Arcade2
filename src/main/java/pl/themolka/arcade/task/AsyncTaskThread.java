@@ -25,7 +25,9 @@ public class AsyncTaskThread extends Thread {
             try {
                 this.getExecutor().run();
             } catch (Throwable th) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not run async task executor #" + this.getExecutor().getId(), th);
+                if (this.getId() != Task.DEFAULT_TASK_ID && !this.isInterrupted()) {
+                    this.plugin.getLogger().log(Level.SEVERE, "Could not run async task executor #" + this.getExecutor().getId(), th);
+                }
             }
 
             try {

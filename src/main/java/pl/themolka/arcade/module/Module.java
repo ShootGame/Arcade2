@@ -147,10 +147,13 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         this.plugin.registerCommandObject(object);
     }
 
-    public void registerListenerObject(Object object) {
-        if (this.listenerObjects.add(object)) {
+    public boolean registerListenerObject(Object object) {
+        boolean result = this.listenerObjects.add(object);
+        if (result) {
             this.getPlugin().registerListenerObject(object);
         }
+
+        return result;
     }
 
     public void registerListeners() {

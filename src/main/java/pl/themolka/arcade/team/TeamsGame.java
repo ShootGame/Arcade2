@@ -70,6 +70,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.window = new TeamWindow(this);
         this.getWindow().create();
         this.getGame().getWindowRegistry().addWindow(this.getWindow()); // register
+        this.getMatch().setPlayWindow(this.getWindow());
 
         this.getMatch().setObserverHandler(this);
         this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));

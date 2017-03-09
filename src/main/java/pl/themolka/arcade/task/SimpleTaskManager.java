@@ -24,7 +24,9 @@ public class SimpleTaskManager implements TaskManager, Tickable {
             try {
                 task.run();
             } catch (Throwable th) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not run task executor #" + task.getId(), th);
+                if (task.getId() != Task.DEFAULT_TASK_ID) {
+                    this.plugin.getLogger().log(Level.SEVERE, "Could not run task executor #" + task.getId(), th);
+                }
             }
         }
     }

@@ -1,10 +1,13 @@
 package pl.themolka.arcade.map;
 
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 
 public class WorldNameGenerator {
+    public static final char SLUG_MAGIC_KEY = '_';
+
     private OfflineMap map;
 
     public WorldNameGenerator() {
@@ -47,19 +50,19 @@ public class WorldNameGenerator {
     }
 
     public String normalizeWorldName(String worldName) {
-        char[] array = worldName.toCharArray();
+        char[] array = StringUtils.stripAccents(worldName).toCharArray();
         char[] result = new char[array.length];
 
         for (int i = 0; i < array.length; i++) {
             char c = array[i];
             if (CharUtils.isAsciiAlphanumeric(c)) {
-                result[i] = c;
+                result[i] = Character.toLowerCase(c);
             } else {
-                result[i] = '_';
+                result[i] = SLUG_MAGIC_KEY;
             }
         }
 
-        return String.valueOf(result).toLowerCase();
+        return String.valueOf(result);
     }
 
     public void setMap(OfflineMap map) {

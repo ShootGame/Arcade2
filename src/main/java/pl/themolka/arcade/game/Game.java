@@ -197,7 +197,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
             return;
         }
 
-        this.getPlugin().getLogger().info("Enabling '" + module.getModule().getId() + "' module...");
+        this.getPlugin().getLogger().info("Enabling '" + module.getModule().getName() + "' module...");
         module.registerListeners();
         module.onEnable();
         module.setEnabled(true);

@@ -31,6 +31,11 @@ public class TaskExecutor implements Comparable<TaskExecutor>, IncrementalId,  R
 
     @Override
     public void run() {
+        if (this.getId() == Task.DEFAULT_TASK_ID) {
+            // not running
+            return;
+        }
+
         // ticks
         this.getListener().onTick(this.ticks++);
 

@@ -158,11 +158,12 @@ public class Leakable implements InteractableGoal, StringId {
         if (detectorLevel == 0) {
             detectorLevel = DEFAULT_DETECTOR_LEVEL;
         }
-        int distance = detectorLevel * 3;
+        int distance = detectorLevel * 4;
 
         RegionBounds bounds = region.getBounds();
         Vector min = bounds.getMin().clone().subtract(distance, 0, distance).setY(Region.MIN_HEIGHT);
-        Vector max = bounds.getMax().clone().add(distance, 0, distance).setY(bounds.getMax().getY() - detectorLevel);
+        Vector max = bounds.getMax().clone().add(distance, 0, distance).setY(bounds.getMax().getY() -
+                (bounds.getMax().getY() - bounds.getMin().getY()) - detectorLevel);
         this.setDetector(new CuboidRegion(region.getId() + DETECTOR_REGION_SUFFIX, region.getMap(), min, max));
 
         // liquid

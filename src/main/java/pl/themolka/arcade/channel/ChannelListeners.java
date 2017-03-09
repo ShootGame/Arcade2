@@ -94,7 +94,7 @@ public class ChannelListeners implements Listener {
                 ChatColor.GRAY + event.getAuthorName() + ChatColor.RESET + ChatColor.GRAY + ": " + event.getMessage();
         for (ArcadePlayer online : this.game.getPlugin().getPlayers()) {
             GamePlayer player = online.getGamePlayer();
-            if (player == null) {
+            if (player == null || event.getChannel().hasMember(player)) {
                 continue;
             }
 

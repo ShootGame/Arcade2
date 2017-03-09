@@ -32,7 +32,7 @@ public class ArcadePlayer implements Metadata, Sender {
 
     private final Player bukkit; // Bukkit
     private GamePlayer gamePlayer;
-    private Time lastPlayedSound;
+    private Time lastPlayedSound = Time.now();
     private final MetadataContainer metadata = new MetadataContainer();
     private final PermissionContext permissions;
 
