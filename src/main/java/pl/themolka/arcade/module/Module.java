@@ -80,7 +80,6 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
 
     public final void destroy() {
         this.unregisterListenerObject(this);
-
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }

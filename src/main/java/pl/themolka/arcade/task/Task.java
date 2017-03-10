@@ -11,10 +11,7 @@ public class Task extends SimpleTaskListener {
     }
 
     public boolean cancelTask() {
-        boolean result = this.tasks.cancel(this);
-        this.setTaskId(DEFAULT_TASK_ID);
-
-        return result;
+        return this.tasks.cancel(this);
     }
 
     public int getTaskId() {

@@ -250,6 +250,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not disable module '" + module.getId() + "': " + th.getMessage(), th);
             }
+
+            module.destroy();
         }
 
         try {

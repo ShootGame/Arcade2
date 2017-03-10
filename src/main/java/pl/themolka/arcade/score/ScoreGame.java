@@ -22,14 +22,14 @@ import java.util.List;
 public class ScoreGame extends GameModule implements DynamicWinnable {
     private final int kills;
     private final int limit;
-    private final String name;
+    private final String scoreName;
 
     private Match match;
 
-    public ScoreGame(int kills, int limit, String name) {
+    public ScoreGame(int kills, int limit, String scoreName) {
         this.kills = kills;
         this.limit = limit;
-        this.name = name;
+        this.scoreName = scoreName;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         for (MatchWinner winner : this.getMatch().getWinnerList()) {
             Score score = new Score(this, winner);
             score.setLimit(this.getLimit());
-            score.setName(this.getName());
+            score.setName(this.getScoreName());
 
             if (this.getScore(winner) == null) {
                 winner.addGoal(score);
@@ -100,10 +100,6 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.match;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public Score getScore(MatchWinner winner) {
         for (Goal goal : winner.getGoals()) {
             if (goal instanceof Score) {
@@ -112,6 +108,10 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         }
 
         return null;
+    }
+
+    public String getScoreName() {
+        return this.scoreName;
     }
 
     @EventHandler

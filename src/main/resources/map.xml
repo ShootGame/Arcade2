@@ -2,11 +2,17 @@
 <map>
     <!-- Basic settings -->
     <name>Example Map</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <description>Kill the enemy</description>
     <authors>
         <author uuid="2b5f34f6-fb05-4852-a86c-2e03bccbdf89" description="Design">TheMolkaPL</author>
     </authors>
+
+    <changelog>
+        <version version="1.1" release="2017-03-10">
+            <log>Introduce changelogs</log>
+        </version>
+    </changelog>
 
     <!-- Include global settings -->
     <include type="global">match.xml</include>

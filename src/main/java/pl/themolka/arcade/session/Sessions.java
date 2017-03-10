@@ -89,11 +89,6 @@ public class Sessions implements Listener {
     public ArcadePlayer destroySession(Player bukkit) {
         ArcadePlayer player = this.plugin.getPlayer(bukkit.getUniqueId());
 
-        Game game = this.plugin.getGames().getCurrentGame();
-        if (game != null) {
-            game.removePlayer(player.getGamePlayer());
-        }
-
         if (player.getGamePlayer() != null) {
             player.getGamePlayer().setPlayer(null); // make offline
         }

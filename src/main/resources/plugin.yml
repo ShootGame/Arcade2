@@ -76,6 +76,9 @@ permissions:
           arcade.command.leave:
             description: 'Gives access to the /leave command.'
             default: true
+          arcade.command.modulelist:
+            description: 'Gives access to the /modulelist command.'
+            default: true
 
           # Map
           arcade.command.mapinfo:

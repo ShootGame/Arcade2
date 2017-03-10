@@ -38,6 +38,11 @@ public class SimpleTaskManager implements TaskManager, Tickable {
         }
 
         task.destroyTask();
+
+        if (task.getListener() instanceof Task) {
+            ((Task) task.getListener()).setTaskId(Task.DEFAULT_TASK_ID);
+        }
+
         return this.taskList.remove(task);
     }
 

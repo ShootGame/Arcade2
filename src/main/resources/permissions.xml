@@ -43,6 +43,7 @@
             <grant>arcade.command.leave</grant>
             <grant>arcade.command.mapinfo</grant>
             <grant>arcade.command.maplist</grant>
+            <grant>arcade.command.modulelist</grant>
             <grant>arcade.command.nextmap</grant>
 
             <revoke>bukkit.command.me</revoke>

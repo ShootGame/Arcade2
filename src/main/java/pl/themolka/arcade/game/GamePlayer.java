@@ -52,11 +52,6 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
-    public boolean areGoalsCompleted() {
-        return false;
-    }
-
-    @Override
     public List<Goal> getGoals() {
         return new ArrayList<>(this.goals);
     }
@@ -68,7 +63,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public Locale getLocale() {
-        return this.getPlayer().getLocale();
+        if (this.isOnline()) {
+            return this.getPlayer().getLocale();
+        } else {
+            return DEFAULT_LOCALE;
+        }
     }
 
     @Override
@@ -108,7 +107,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public boolean hasPermission(String permission) {
-        return this.getPlayer().hasPermission(permission);
+        return this.isOnline() && this.getPlayer().hasPermission(permission);
     }
 
     @Override
@@ -123,17 +122,23 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public void send(String message) {
-        this.getPlayer().send(message);
+        if (this.isOnline()) {
+            this.getPlayer().send(message);
+        }
     }
 
     @Override
     public void sendAction(String action) {
-        this.getPlayer().sendAction(action);
+        if (this.isOnline()) {
+            this.getPlayer().sendAction(action);
+        }
     }
 
     @Override
     public void sendChat(String chat) {
-        this.getPlayer().sendChat(chat);
+        if (this.isOnline()) {
+            this.getPlayer().sendChat(chat);
+        }
     }
 
     @Override
@@ -147,31 +152,41 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean canSee(GamePlayer player) {
-        return this.getGame().canSee(this, player);
+        return this.isOnline() && player.isOnline() && this.getGame().canSee(this, player);
     }
 
     public Player getBukkit() {
         if (this.isOnline()) {
             return this.getPlayer().getBukkit();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     public ChatChannel getCurrentChannel() {
-        return this.channel;
+        if (this.isOnline()) {
+            return this.channel;
+        } else {
+            return null;
+        }
     }
 
     public String getDisplayName() {
         if (this.displayName != null) {
             return this.displayName;
+        } else if (this.isOnline()) {
+            return this.getPlayer().getDisplayName();
+        } else {
+            return this.getUsername();
         }
-
-        return this.getPlayer().getDisplayName();
     }
 
     public String getFullName() {
-        return this.getPlayer().getFullName();
+        if (this.isOnline()) {
+            return this.getPlayer().getFullName();
+        } else {
+            return this.getDisplayName();
+        }
     }
 
     public Game getGame() {
@@ -179,7 +194,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean hasDisplayName() {
-        return this.displayName != null || (this.isOnline() && this.getPlayer().getDisplayName() != null);
+        return this.isOnline() && (this.displayName != null || this.getPlayer().getDisplayName() != null);
     }
 
     public boolean isOnline() {
@@ -187,10 +202,18 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean isParticipating() {
-        return this.participating;
+        if (this.isOnline()) {
+            return this.participating;
+        } else {
+            return false;
+        }
     }
 
     public void refresh() {
+        if (!this.isOnline()) {
+            return;
+        }
+
         boolean participating = this.isParticipating();
         if (!participating) {
             this.getBukkit().leaveVehicle();
@@ -203,6 +226,10 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public void refreshVisibility(Iterable<ArcadePlayer> viewers) {
+        if (!this.isOnline()) {
+            return;
+        }
+
         for (ArcadePlayer online : viewers) {
             GamePlayer player = online.getGamePlayer();
             if (player == null) {
@@ -226,6 +253,10 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public void reset() {
+        if (!this.isOnline()) {
+            return;
+        }
+
         Player bukkit = this.getBukkit();
         this.refresh();
 
@@ -269,17 +300,23 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public void setCurrentChannel(ChatChannel channel) {
-        this.channel = channel;
+        if (this.isOnline()) {
+            this.channel = channel;
+        }
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        if (this.isOnline()) {
+            this.displayName = displayName;
 
-        this.getPlayer().setDisplayName(displayName);
+            this.getPlayer().setDisplayName(displayName);
+        }
     }
 
     public void setParticipating(boolean participating) {
-        this.participating = participating;
+        if (this.isOnline()) {
+            this.participating = participating;
+        }
     }
 
     public void setPlayer(ArcadePlayer player) {

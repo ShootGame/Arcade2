@@ -54,13 +54,9 @@ public class Version {
     }
 
     public boolean isOlderThan(Version version) {
-        if (this.equals(version)) {
-            return false;
-        } else {
-            return version.getMajor() > this.getMajor() ||
-                    (version.getMajor() == this.getMajor() && version.getMinor() > this.getMinor() ||
-                            (version.getMinor() == this.getMinor() && version.getPatch() > this.getPatch()));
-        }
+        return !this.equals(version) && (version.getMajor() > this.getMajor() ||
+                (version.getMajor() == this.getMajor() && version.getMinor() > this.getMinor() ||
+                        (version.getMinor() == this.getMinor() && version.getPatch() > this.getPatch())));
     }
 
     public String toString(boolean full) {

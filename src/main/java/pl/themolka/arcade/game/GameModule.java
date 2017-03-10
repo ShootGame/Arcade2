@@ -1,5 +1,7 @@
 package pl.themolka.arcade.game;
 
+import org.apache.commons.lang3.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.jdom2.Element;
@@ -8,13 +10,14 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.task.Task;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.util.StringId;
+import pl.themolka.arcade.util.pagination.Paginationable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class GameModule extends SimpleGameListener implements Listener, StringId {
+public class GameModule extends SimpleGameListener implements Listener, Paginationable, StringId {
     private ArcadePlugin plugin;
 
     private boolean enabled;
@@ -43,8 +46,44 @@ public class GameModule extends SimpleGameListener implements Listener, StringId
     }
 
     @Override
+    public int compareTo(Paginationable o) {
+        if (o == null) {
+            return 0;
+        } else if (o instanceof GameModule) {
+            return this.getId().compareToIgnoreCase(((GameModule) o).getId());
+        }
+
+        return this.toString().compareToIgnoreCase(o.toString());
+    }
+
+    @Override
     public String getId() {
         return this.getModule().getId();
+    }
+
+    @Override
+    public String paginate(int index) {
+        ChatColor color;
+        if (this.isEnabled()) {
+            color = ChatColor.GREEN;
+        } else {
+            color = ChatColor.RED;
+        }
+
+        String global = "";
+        if (this.getModule().isGlobal()) {
+            global = ChatColor.RED + " <global>";
+        }
+
+        Class<? extends Module<?>>[] dependency = this.getModule().getDependency();
+        String dependencies = "";
+        if (dependency.length > 0) {
+            dependencies = ChatColor.DARK_AQUA + " depends: " + StringUtils.join(
+                    dependency, ChatColor.YELLOW + ", " + ChatColor.DARK_AQUA);
+        }
+
+        return ChatColor.GRAY + "#" + index + " " + color + this.getName() + " v" + this.getModule().getVersion() +
+                ChatColor.YELLOW + " (" + this.getId() + ")" + global + dependencies;
     }
 
     public int cancelAllTasks() {
@@ -67,8 +106,9 @@ public class GameModule extends SimpleGameListener implements Listener, StringId
     }
 
     public final void destroy() {
-        this.unregisterListenerObject(this);
+        this.cancelAllTasks();
 
+        this.unregisterListenerObject(this);
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }

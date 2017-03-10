@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -107,12 +109,13 @@ public class XMLMapParser implements MapParser {
         MapVersion version = this.parseVersion(root.getChildTextNormalize("version"));
         String description = this.parseDescription(root.getChildTextNormalize("description"));
         List<Author> authors = this.parseAuthors(root.getChild("authors"));
+        List<Changelog> changelogs = this.parseChangelog(root.getChild("changelog"));
 
         if (description == null) {
             description = this.parseDescription(root.getChildTextNormalize("objective"));
         }
 
-        return new OfflineMap(name, version, description, authors);
+        return new OfflineMap(name, version, description, authors, changelogs);
     }
 
     private String parseName(String name) throws MapParserException {
@@ -182,6 +185,40 @@ public class XMLMapParser implements MapParser {
         }
 
         return new Author(uuid, username, description);
+    }
+
+    private List<Changelog> parseChangelog(Element parent) {
+        List<Changelog> changelogs = new ArrayList<>();
+        for (Element version : parent.getChildren()) {
+            Attribute versionAttribute = version.getAttribute("version");
+            if (versionAttribute == null) {
+                continue;
+            }
+
+            Changelog changelog = new Changelog(MapVersion.valueOf(versionAttribute.getValue()));
+
+            Attribute releaseAttribute = version.getAttribute("release");
+            if (releaseAttribute != null) {
+                try {
+                    LocalDate release = Changelog.parseRelease(releaseAttribute.getValue());
+                    if (release != null) {
+                        changelog.setRelease(release);
+                    }
+                } catch (DateTimeParseException ignored) {
+                }
+            }
+
+            for (Element log : version.getChildren("log")) {
+                String value = log.getTextNormalize();
+                if (!value.isEmpty()) {
+                    changelog.add(value);
+                }
+            }
+
+            changelogs.add(changelog);
+        }
+
+        return changelogs;
     }
 
     //

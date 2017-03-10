@@ -267,7 +267,8 @@ public class Match {
             this.plugin.getEventBus().publish(event);
 
             if (!event.isCanceled()) {
-                this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() + "The match has ended due to the lack of players.");
+                this.sendGoalMessage(ChatColor.RED + ChatColor.ITALIC.toString() +
+                        "The match has ended due to the lack of players.");
                 this.end(null);
             }
         }

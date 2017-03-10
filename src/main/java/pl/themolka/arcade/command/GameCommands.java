@@ -1,11 +1,15 @@
 package pl.themolka.arcade.command;
 
+import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.pagination.DynamicPagination;
+import pl.themolka.arcade.util.pagination.Paginationable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameCommands {
@@ -94,6 +98,40 @@ public class GameCommands {
         }
 
         this.plugin.getEventBus().publish(new LeaveCommandEvent(this.plugin, sender, context));
+    }
+
+    //
+    // /modules command
+    //
+
+    @CommandInfo(name = {"modulelist", "modules"},
+            description = "Show a list of modules available in this game",
+            usage = "[# page]",
+            permission = "arcade.command.modulelist")
+    public void modules(Sender sender, CommandContext context) {
+        int paramPage = context.getParamInt(0, 1);
+
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game == null) {
+            throw new CommandException("No game running right now.");
+        }
+
+        List<Paginationable> modules = new ArrayList<>(game.getModules().getModules());
+        if (modules.isEmpty()) {
+            throw new CommandException("No modules were installed in this map.");
+        }
+
+        DynamicPagination pagination = new DynamicPagination.Builder()
+                .description(ChatColor.GOLD + "Next page: /" + context.getLabel() + " " + (paramPage + 1))
+                .items(modules)
+                .title("Module List")
+                .build();
+
+        if (paramPage < 1 || paramPage > pagination.getPages()) {
+            throw new CommandException("Page #" + paramPage + " not found.");
+        }
+
+        pagination.display(sender, paramPage);
     }
 
     public static class JoinCommandEvent extends CommandEvent implements Cancelable {

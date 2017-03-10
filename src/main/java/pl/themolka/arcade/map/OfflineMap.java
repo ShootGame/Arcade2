@@ -5,8 +5,11 @@ import pl.themolka.arcade.util.pagination.Paginationable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OfflineMap implements Paginationable {
     public static final int NAME_MAX_LENGTH = 32;
@@ -15,11 +18,12 @@ public class OfflineMap implements Paginationable {
     private final MapVersion version;
     private final String description;
     private final List<Author> authors = new ArrayList<>();
+    private final Map<MapVersion, Changelog> changelogMap = new HashMap<>();
 
     private File directory;
     private File settings;
 
-    public OfflineMap(String name, MapVersion version, String description, List<Author> authors) {
+    public OfflineMap(String name, MapVersion version, String description, List<Author> authors, List<Changelog> changelogs) {
         this.name = name;
         this.version = version;
         this.description = description;
@@ -27,6 +31,12 @@ public class OfflineMap implements Paginationable {
         if (authors != null) {
             this.authors.addAll(authors);
             Collections.sort(this.authors);
+        }
+
+        if (changelogs != null) {
+            for (Changelog changelog : changelogs) {
+                this.addChangelog(changelog);
+            }
         }
     }
 
@@ -48,6 +58,15 @@ public class OfflineMap implements Paginationable {
 
         return ChatColor.GRAY + "#" + index + " " + ChatColor.AQUA + ChatColor.BOLD + this.getName() + ChatColor.RESET +
                 ChatColor.GRAY + " v" + ChatColor.AQUA + this.getVersion() + authorsString;
+    }
+
+    public boolean addChangelog(Changelog changelog) {
+        boolean result = !this.hasChangelog(changelog);
+        if (result) {
+            this.changelogMap.put(changelog.getVersion(), changelog);
+        }
+
+        return result;
     }
 
     public String getName() {
@@ -88,6 +107,18 @@ public class OfflineMap implements Paginationable {
         return ChatColor.AQUA + ChatColor.ITALIC.toString() + "(unknown)";
     }
 
+    public Changelog getChangelog() {
+        return this.getChangelog(this.getVersion());
+    }
+
+    public Changelog getChangelog(MapVersion version) {
+        return this.changelogMap.get(version);
+    }
+
+    public Collection<Changelog> getChangelogs() {
+        return this.changelogMap.values();
+    }
+
     public File getDirectory() {
         return this.directory;
     }
@@ -96,12 +127,37 @@ public class OfflineMap implements Paginationable {
         return this.settings;
     }
 
+    public boolean hasChangelog() {
+        return this.hasChangelog(this.getVersion());
+    }
+
+    public boolean hasChangelog(Changelog changelog) {
+        return this.hasChangelog(changelog.getVersion());
+    }
+
+    public boolean hasChangelog(MapVersion version) {
+        return this.getChangelog(version) != null;
+    }
+
     public boolean hasDescription() {
         return this.description != null;
     }
 
     public boolean hasAuthors() {
         return !this.authors.isEmpty();
+    }
+
+    public boolean removeChangelog(Changelog changelog) {
+        return this.removeChangelog(changelog.getVersion());
+    }
+
+    public boolean removeChangelog(MapVersion version) {
+        boolean result = this.hasChangelog(version);
+        if (result) {
+            this.changelogMap.remove(version);
+        }
+
+        return result;
     }
 
     public void setDirectory(File directory) {

@@ -251,6 +251,10 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         return this.getPlayer(player.getUuid());
     }
 
+    public GamePlayer getPlayer(GamePlayerSnapshot snapshot) {
+        return this.getPlayer(snapshot.getUuid());
+    }
+
     public GamePlayer getPlayer(Player bukkit) {
         return this.getPlayer(bukkit.getUniqueId());
     }
