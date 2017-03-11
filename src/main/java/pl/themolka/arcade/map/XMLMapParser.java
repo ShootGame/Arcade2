@@ -189,33 +189,40 @@ public class XMLMapParser implements MapParser {
 
     private List<Changelog> parseChangelog(Element parent) {
         List<Changelog> changelogs = new ArrayList<>();
-        for (Element version : parent.getChildren()) {
-            Attribute versionAttribute = version.getAttribute("version");
-            if (versionAttribute == null) {
-                continue;
-            }
+        if (parent != null) {
+            for (Element version : parent.getChildren()) {
+                Attribute versionAttribute = version.getAttribute("version");
+                if (versionAttribute == null) {
+                    continue;
+                }
 
-            Changelog changelog = new Changelog(MapVersion.valueOf(versionAttribute.getValue()));
+                MapVersion mapVersion = MapVersion.valueOf(versionAttribute.getValue());
+                if (mapVersion == null) {
+                    continue;
+                }
 
-            Attribute releaseAttribute = version.getAttribute("release");
-            if (releaseAttribute != null) {
-                try {
-                    LocalDate release = Changelog.parseRelease(releaseAttribute.getValue());
-                    if (release != null) {
-                        changelog.setRelease(release);
+                Changelog changelog = new Changelog(mapVersion);
+
+                Attribute releaseAttribute = version.getAttribute("release");
+                if (releaseAttribute != null) {
+                    try {
+                        LocalDate release = Changelog.parseRelease(releaseAttribute.getValue());
+                        if (release != null) {
+                            changelog.setRelease(release);
+                        }
+                    } catch (DateTimeParseException ignored) {
                     }
-                } catch (DateTimeParseException ignored) {
                 }
-            }
 
-            for (Element log : version.getChildren("log")) {
-                String value = log.getTextNormalize();
-                if (!value.isEmpty()) {
-                    changelog.add(value);
+                for (Element log : version.getChildren("log")) {
+                    String value = log.getTextNormalize();
+                    if (!value.isEmpty()) {
+                        changelog.add(value);
+                    }
                 }
-            }
 
-            changelogs.add(changelog);
+                changelogs.add(changelog);
+            }
         }
 
         return changelogs;

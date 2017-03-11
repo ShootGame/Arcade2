@@ -152,7 +152,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean canSee(GamePlayer player) {
-        return this.isOnline() && player.isOnline() && this.getGame().canSee(this, player);
+        return this.isOnline() && player.isOnline() && this.getGame() != null && this.getGame().canSee(this, player);
     }
 
     public Player getBukkit() {

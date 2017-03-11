@@ -21,6 +21,14 @@ public interface Goal {
     String getName();
 
     /**
+     * Owner of this {@link Goal}.
+     * @return owner of this {@link Goal} or `null` if it doesn't contain an owner.
+     */
+    default GoalHolder getOwner() {
+        return null;
+    }
+
+    /**
      * Percentage of progress of this `Goal` to be completed.
      * NOTE: Unlimited loop in `#isCompleted() -> #getProgress()`.
      * @return percentage progress of this `Goal`

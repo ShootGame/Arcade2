@@ -40,6 +40,11 @@ public class Score implements Goal {
         return DEFAULT_GOAL_NAME;
     }
 
+    @Override
+    public GoalHolder getOwner() {
+        return this.owner;
+    }
+
     /**
      * Current progress of this score.
      * This method may return a percentage of this goal if it has a limit,
@@ -105,10 +110,6 @@ public class Score implements Goal {
         } else {
             this.reset();
         }
-    }
-
-    public GoalHolder getOwner() {
-        return this.owner;
     }
 
     public int getInitScore() {

@@ -286,7 +286,7 @@ public class Match {
     }
 
     public void send(String message) {
-        this.plugin.getLogger().info("[Match] " + message);
+        this.plugin.getLogger().info("[Match] " + ChatColor.stripColor(message));
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.send(message);
@@ -294,7 +294,7 @@ public class Match {
     }
 
     public void sendGoalMessage(String message) {
-        this.plugin.getLogger().info("[Goal] " + message);
+        this.plugin.getLogger().info("[Goal] " + ChatColor.stripColor(message));
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.send(ChatColor.YELLOW + message);

@@ -77,6 +77,11 @@ public class Leakable implements InteractableGoal, StringId {
     }
 
     @Override
+    public GoalHolder getOwner() {
+        return this.owner;
+    }
+
+    @Override
     public boolean isCompletableBy(GoalHolder holder) {
         return !this.getOwner().equals(holder);
     }
@@ -186,10 +191,6 @@ public class Leakable implements InteractableGoal, StringId {
 
     public List<Material> getMaterial() {
         return this.material;
-    }
-
-    public GoalHolder getOwner() {
-        return this.owner;
     }
 
     public Region getRegion() {

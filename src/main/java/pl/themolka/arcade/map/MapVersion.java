@@ -23,7 +23,12 @@ public class MapVersion extends Version {
     }
 
     public static MapVersion valueOf(String string) {
-        return valueOf(Version.valueOf(string));
+        Version version = Version.valueOf(string);
+        if (version != null) {
+            return valueOf(version);
+        }
+
+        return null;
     }
 
     public static MapVersion valueOf(Version version) {

@@ -60,6 +60,7 @@ public class XMLParser {
         switch (bool.toLowerCase()) {
             case "true":
             case "1":
+            case "+":
             case "yes":
             case "on":
             case "enable":
@@ -67,6 +68,7 @@ public class XMLParser {
                 return true;
             case "false":
             case "0":
+            case "-":
             case "no":
             case "off":
             case "disable":
