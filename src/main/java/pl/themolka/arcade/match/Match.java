@@ -110,6 +110,7 @@ public class Match {
                 continue;
             }
 
+            player.setCurrentChannel(null);
             player.setParticipating(false);
 
             online.getPermissions().clearGroups();

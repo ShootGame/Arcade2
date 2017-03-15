@@ -13,7 +13,6 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.Match;
-import pl.themolka.arcade.match.MatchEndedEvent;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchStartCountdownEvent;
@@ -261,15 +260,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     //
     // Listeners
     //
-
-    @Handler(priority = Priority.HIGH)
-    public void onChannelsUpdate(MatchEndedEvent event) {
-        for (Team team : this.getTeams()) {
-            for (GamePlayer player : team.getOnlineMembers()) {
-                player.setCurrentChannel(null);
-            }
-        }
-    }
 
     @Handler(priority = Priority.HIGH)
     public void onChannelsUpdate(MatchStartedEvent event) {
@@ -568,12 +558,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         Team oldState = new Team(team);
-        team.setColor(color);
+        team.setChatColor(color);
 
         this.callEditEvent(team, oldState, TeamEditEvent.Reason.PAINT);
         sender.sendSuccess(oldState.getName() + " has been painted from " +
-                StringUtils.capitalize(oldState.getColor().name().toLowerCase().replace("_", " ")) + " to " +
-                StringUtils.capitalize(team.getColor().name().toLowerCase().replace("_", " ")) + ".");
+                StringUtils.capitalize(oldState.getChatColor().name().toLowerCase().replace("_", " ")) + " to " +
+                StringUtils.capitalize(team.getChatColor().name().toLowerCase().replace("_", " ")) + ".");
     }
 
     public void renameCommand(Sender sender, String teamId, String name) {

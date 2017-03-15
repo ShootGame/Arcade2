@@ -20,4 +20,8 @@ public interface MatchWinner extends GoalHolder {
     default String getMessage() {
         return this.getTitle() + ChatColor.GREEN + " won the game!";
     }
+
+    default String getTitle() {
+        return this.getColor().toChat() + this.getName() + ChatColor.RESET;
+    }
 }

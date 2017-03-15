@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
@@ -16,6 +17,7 @@ import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public class GamePlayer implements GoalHolder, Metadata, Sender {
+    public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
+
     private ChatChannel channel;
+    private ChatColor chatColor;
     private String displayName;
     private final Game game;
     private final List<Goal> goals = new ArrayList<>();
@@ -49,6 +54,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     @Override
     public boolean addGoal(Goal goal) {
         return this.goals.add(goal);
+    }
+
+    @Override
+    public Color getColor() {
+        return Color.ofChat(this.getChatColor());
     }
 
     @Override
@@ -163,6 +173,14 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         }
     }
 
+    public ChatColor getChatColor() {
+        if (this.hasChatColor()) {
+            return this.chatColor;
+        }
+
+        return DEFAULT_CHAT_COLOR;
+    }
+
     public ChatChannel getCurrentChannel() {
         if (this.isOnline()) {
             return this.channel;
@@ -193,6 +211,10 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         return this.game;
     }
 
+    public boolean hasChatColor() {
+        return this.chatColor != null;
+    }
+
     public boolean hasDisplayName() {
         return this.isOnline() && (this.displayName != null || this.getPlayer().getDisplayName() != null);
     }
@@ -202,11 +224,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean isParticipating() {
-        if (this.isOnline()) {
-            return this.participating;
-        } else {
-            return false;
-        }
+        return this.isOnline() && this.participating;
     }
 
     public void refresh() {
@@ -297,6 +315,10 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     public void resetDisplayName() {
         this.setDisplayName(null);
+    }
+
+    public void setChatColor(ChatColor chatColor) {
+        this.chatColor = chatColor;
     }
 
     public void setCurrentChannel(ChatChannel channel) {

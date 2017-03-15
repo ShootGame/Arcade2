@@ -8,7 +8,6 @@ import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.match.PlayMatchWindow;
-import pl.themolka.arcade.util.Color;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,7 +101,7 @@ public class TeamWindow extends PlayMatchWindow {
     private ItemStack buildTeamItem(Team team) {
         return new ItemStackBuilder()
                 .type(Material.WOOL)
-                .durability(Color.ofChat(team.getColor()).getWoolData())
+                .durability(team.getColor().getWoolData())
                 .displayName(ChatColor.YELLOW + "Join " + ChatColor.BOLD + team.getPrettyName())
                 .build();
     }

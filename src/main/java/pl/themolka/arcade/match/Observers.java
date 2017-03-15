@@ -14,8 +14,8 @@ import java.util.List;
  * A non-participating team observing the match and its players.
  */
 public class Observers extends Team {
-    public static final ChatColor OBSERVERS_COLOR = ChatColor.AQUA;
-    public static final DyeColor OBSERVERS_DYE_COLOR = Color.ofChat(OBSERVERS_COLOR).toDye();
+    public static final ChatColor OBSERVERS_CHAT_COLOR = ChatColor.AQUA;
+    public static final DyeColor OBSERVERS_DYE_COLOR = Color.ofChat(OBSERVERS_CHAT_COLOR).toDye();
     public static final String OBSERVERS_KEY = "@";
     public static final String OBSERVERS_NAME = "Observers";
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;

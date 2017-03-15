@@ -175,7 +175,7 @@ public class TeamsModule extends Module<TeamsGame> {
 
             if (context.hasFlag("xml")) {
                 message += " " + this.teamsKeyValue("id", team.getId()) + ", " +
-                        this.teamsKeyValue("color", team.getColor()) + ", " +
+                        this.teamsKeyValue("chat-color", team.getChatColor()) + ", " +
                         this.teamsKeyValue("dye-color", team.getDyeColor()) + ", " +
                         this.teamsKeyValue("friendly-fire", team.isFriendlyFire()) + ", " +
                         this.teamsKeyValue("slots", team.getSlots()) + ", " +

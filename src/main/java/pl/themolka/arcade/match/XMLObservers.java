@@ -13,7 +13,7 @@ public class XMLObservers extends XMLTeam {
         if (xml != null) {
             ChatColor color = parseColor(xml);
             if (color != null) {
-                observers.setColor(color);
+                observers.setChatColor(color);
             }
 
             DyeColor dyeColor = parseDyeColor(xml);

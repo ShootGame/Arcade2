@@ -1,5 +1,6 @@
 package pl.themolka.arcade.goal;
 
+import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface GoalHolder extends StringId {
 
         return true;
     }
+
+    Color getColor();
 
     List<Goal> getGoals();
 

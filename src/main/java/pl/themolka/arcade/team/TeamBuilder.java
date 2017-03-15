@@ -25,7 +25,7 @@ public class TeamBuilder implements Builder<Team> {
     @Override
     public Team build() {
         Team team = new Team(this.plugin, this.id());
-        team.setColor(this.color());
+        team.setChatColor(this.color());
         team.setDyeColor(this.dyeColor());
         team.setFriendlyFire(this.friendlyFire());
         team.setMaxPlayers(this.maxPlayers());

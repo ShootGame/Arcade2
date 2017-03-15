@@ -6,6 +6,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.Color;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +52,11 @@ public class DrawMatchWinner implements MatchWinner {
     }
 
     @Override
+    public Color getColor() {
+        return Color.YELLOW;
+    }
+
+    @Override
     public List<Goal> getGoals() {
         return Collections.emptyList();
     }
@@ -72,7 +78,7 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public String getTitle() {
-        return ChatColor.GREEN + ChatColor.BOLD.toString() + this.getName() + ChatColor.RESET;
+        return this.getColor().toChat() + ChatColor.BOLD.toString() + this.getName() + ChatColor.RESET;
     }
 
     @Override

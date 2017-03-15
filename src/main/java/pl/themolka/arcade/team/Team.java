@@ -15,6 +15,7 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class Team implements MatchWinner {
 
     private org.bukkit.scoreboard.Team bukkit;
     private final TeamChannel channel;
-    private ChatColor color;
+    private ChatColor chatColor;
     private DyeColor dyeColor;
     private boolean friendlyFire;
     private final List<Goal> goals = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Team implements MatchWinner {
         this(original.plugin, original.getId());
 
         this.setBukkit(original.getBukkit());
-        this.setColor(original.getColor());
+        this.setChatColor(original.getChatColor());
         this.setDyeColor(original.getDyeColor());
         this.setFriendlyFire(original.isFriendlyFire());
         this.setMatch(original.getMatch());
@@ -95,6 +96,11 @@ public class Team implements MatchWinner {
     }
 
     @Override
+    public Color getColor() {
+        return Color.ofChat(this.getChatColor());
+    }
+
+    @Override
     public List<Goal> getGoals() {
         return new ArrayList<>(this.goals);
     }
@@ -107,11 +113,6 @@ public class Team implements MatchWinner {
     @Override
     public String getName() {
         return this.name;
-    }
-
-    @Override
-    public String getTitle() {
-        return this.getPrettyName();
     }
 
     @Override
@@ -175,8 +176,8 @@ public class Team implements MatchWinner {
         return this.channel;
     }
 
-    public ChatColor getColor() {
-        return this.color;
+    public ChatColor getChatColor() {
+        return this.chatColor;
     }
 
     public DyeColor getDyeColor() {
@@ -212,7 +213,7 @@ public class Team implements MatchWinner {
     }
 
     public String getPrettyName() {
-        return this.getColor() + this.getName() + ChatColor.RESET;
+        return this.getTitle();
     }
 
     @Override
@@ -281,11 +282,12 @@ public class Team implements MatchWinner {
         this.onlineMembers.add(player);
 
         player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
-        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
+        player.setChatColor(this.getChatColor());
         player.setCurrentChannel(this.getCurrentChannel());
-        player.setDisplayName(this.getColor() + player.getUsername() + ChatColor.RESET);
+        player.setDisplayName(this.getChatColor() + player.getUsername() + ChatColor.RESET);
+        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
 
-        // handle it AFTER the setParticipating method
+        // handle it AFTER the setParticipating(...) method
         if (this.getMatch().isRunning()) {
             player.reset();
 
@@ -323,8 +325,9 @@ public class Team implements MatchWinner {
         this.onlineMembers.remove(player);
 
         player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
-        player.setParticipating(false);
+        player.setChatColor(null);
         player.setCurrentChannel(null);
+        player.setParticipating(false);
         player.resetDisplayName();
 
         // handle it AFTER the setParticipating method
@@ -361,8 +364,8 @@ public class Team implements MatchWinner {
         this.updateBukkitTeam();
     }
 
-    public void setColor(ChatColor color) {
-        this.color = color;
+    public void setChatColor(ChatColor chatColor) {
+        this.chatColor = chatColor;
     }
 
     public void setDyeColor(DyeColor dyeColor) {
@@ -421,7 +424,7 @@ public class Team implements MatchWinner {
         }
 
         org.bukkit.scoreboard.Team bukkit = board.registerNewTeam(id);
-        bukkit.setPrefix(team.getColor().toString());
+        bukkit.setPrefix(team.getChatColor().toString());
         bukkit.setDisplayName(team.getName());
         bukkit.setSuffix(ChatColor.RESET.toString());
 

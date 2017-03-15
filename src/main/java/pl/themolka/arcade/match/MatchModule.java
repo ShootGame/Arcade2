@@ -51,7 +51,7 @@ public class MatchModule extends Module<MatchGame> {
 
         Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());
         if (observers.getColor() == null) {
-            observers.setColor(Observers.OBSERVERS_COLOR);
+            observers.setChatColor(Observers.OBSERVERS_CHAT_COLOR);
         }
         if (observers.getDyeColor() == null) {
             observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
