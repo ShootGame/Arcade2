@@ -20,7 +20,7 @@ public class WindowListeners implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (!event.getSlotType().equals(InventoryType.SlotType.CONTAINER)) {
             return;
@@ -43,7 +43,7 @@ public class WindowListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
         Window window = this.fetchWindow(event.getInventory());
         if (window == null) {

@@ -20,8 +20,8 @@ public class MatchVisibilityFilter implements PlayerVisibilityFilter {
      * @return <code>true</code> if the <code>player</code> is visible, <code>false</code> otherwise.
      */
     @Override
-    public boolean canSee(GamePlayer viewer, GamePlayer player) {
-        return !this.getMatch().isRunning() || !viewer.isParticipating() || player.isParticipating();
+    public boolean canSee(GamePlayer viewer, GamePlayer target) {
+        return !this.getMatch().isRunning() || !viewer.isParticipating() || target.isParticipating();
     }
 
     public Match getMatch() {

@@ -1,7 +1,6 @@
 package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandException;
@@ -139,6 +138,18 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         for (Team team : this.getTeams()) {
             if (team.getId().toLowerCase().startsWith(query.toLowerCase())) {
+                return team;
+            }
+        }
+
+        for (Team team : this.getTeams()) {
+            if (team.getName() != null && team.getName().equalsIgnoreCase(query)) {
+                return team;
+            }
+        }
+
+        for (Team team : this.getTeams()) {
+            if (team.getName() != null && team.getName().toLowerCase().contains(query.toLowerCase())) {
                 return team;
             }
         }
@@ -550,7 +561,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
                     result = value;
                 }
 
-                colors.append(result).append(value.name().toLowerCase().replace("_", " "))
+                colors.append(result).append(value.name().toLowerCase().replace("_", "-"))
                         .append(ChatColor.RESET).append(ChatColor.RED);
             }
 
@@ -562,8 +573,8 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
         this.callEditEvent(team, oldState, TeamEditEvent.Reason.PAINT);
         sender.sendSuccess(oldState.getName() + " has been painted from " +
-                StringUtils.capitalize(oldState.getChatColor().name().toLowerCase().replace("_", " ")) + " to " +
-                StringUtils.capitalize(team.getChatColor().name().toLowerCase().replace("_", " ")) + ".");
+                oldState.getChatColor().name().toLowerCase().replace("_", "-") + " to " +
+                team.getChatColor().name().toLowerCase().replace("_", "-") + ".");
     }
 
     public void renameCommand(Sender sender, String teamId, String name) {

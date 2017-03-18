@@ -83,12 +83,11 @@ public class CycleCountdown extends PrintableCountdown {
         }
 
         String message = this.getPrintMessage(this.getCycleMessage(nextMap.getName()));
-
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.getPlayer().send(message);
         }
 
-        this.plugin.getLogger().info(message);
+        this.plugin.getLogger().info(ChatColor.stripColor(message));
     }
 
     public void setDefaultDuration() {

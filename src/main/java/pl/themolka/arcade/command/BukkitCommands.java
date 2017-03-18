@@ -10,9 +10,11 @@ import org.bukkit.help.HelpTopic;
 import org.bukkit.help.HelpTopicComparator;
 import org.bukkit.help.IndexHelpTopic;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -56,7 +58,16 @@ public class BukkitCommands extends Commands implements CommandExecutor, TabComp
 
     @Override
     public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        return this.handleCompleter(this.findSender(sender), this.getCommand(label), label, args);
+        List<String> completer = this.handleCompleter(this.findSender(sender), this.getCommand(label), label, args);
+        if (completer == null || completer.isEmpty()) {
+            completer = new ArrayList<>();
+            for (ArcadePlayer online : this.plugin.getPlayers()) {
+                completer.add(online.getUsername());
+            }
+        }
+
+        Collections.sort(completer);
+        return completer;
     }
 
     public Set<HelpTopic> getHelpTopics() {

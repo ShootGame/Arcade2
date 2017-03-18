@@ -71,7 +71,7 @@ public class Liquid {
 
     public int replaceLiquid(Type newType) {
         if (this.getType().equals(newType)) {
-            return -1;
+            return 0;
         }
 
         int index = 0;

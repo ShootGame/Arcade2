@@ -14,7 +14,7 @@ import java.util.logging.Level;
 public class Window extends SimpleWindowListener {
     public static final ItemStack CLOSE_ITEM = new ItemStackBuilder()
             .type(Material.EYE_OF_ENDER)
-            .displayName(ChatColor.DARK_PURPLE + "Close")
+            .displayName(ChatColor.GREEN + ChatColor.UNDERLINE.toString() + "Close")
             .build();
 
     public static final int ROW_LIMIT = 6;

@@ -79,16 +79,16 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     /**
-     * Filters <code>player</code>s visibility by the <code>viewer</code> in this game.
-     * @param viewer Viewer who can or cannot see the <code>player</code>.
-     * @param player Player who can or cannot be viewed by the <code>viewer</code>.
-     * @return <code>true</code> if <code>player</code> is visible, <code>false</code> otherwise.
+     * Filters <code>target</code>s visibility by the <code>viewer</code> in this game.
+     * @param viewer Viewer who can or cannot see the <code>target</code> player.
+     * @param target Player who can or cannot be viewed by the <code>viewer</code>.
+     * @return <code>true</code> if <code>target</code> is visible, <code>false</code> otherwise.
      */
     @Override
-    public boolean canSee(GamePlayer viewer, GamePlayer player) {
-        boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, player);
+    public boolean canSee(GamePlayer viewer, GamePlayer target) {
+        boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, target);
         for (PlayerVisibilityFilter filter : this.visibilityFilters) {
-            boolean value = filter.canSee(viewer, player);
+            boolean value = filter.canSee(viewer, target);
             if (value != def) {
                 return value;
             }
@@ -113,7 +113,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public int addAsyncTask(Task task) {
-        int id = -1;
+        int id = Task.DEFAULT_TASK_ID;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
             id = this.plugin.getTasks().scheduleAsync(task);
             task.setTaskId(id);
@@ -137,7 +137,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     public int addSyncTask(Task task) {
         this.removeTask(task);
 
-        int id = -1;
+        int id = Task.DEFAULT_TASK_ID;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
             id = this.plugin.getTasks().scheduleSync(task);
             task.setTaskId(id);

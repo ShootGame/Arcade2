@@ -1,6 +1,8 @@
 package pl.themolka.arcade.match;
 
 import net.engio.mbassy.listener.Handler;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
 import pl.themolka.arcade.channel.Messageable;
@@ -17,6 +19,7 @@ import pl.themolka.arcade.game.RestartCountdown;
 import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.ArcadeSound;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
@@ -186,7 +189,7 @@ public class MatchGame extends GameModule {
     }
 
     @Handler(priority = Priority.LOWEST)
-    public void onGoalComplete(GoalCompleteEvent event) {
+    public void onGoalCompleteEndMatch(GoalCompleteEvent event) {
         if (!event.isCanceled()) {
             this.getMatch().refreshWinners();
         }
@@ -207,6 +210,43 @@ public class MatchGame extends GameModule {
             MatchStartCountdownEvent countdownEvent = new MatchStartCountdownEvent(this.getPlugin(), this.getMatch(), this.startCountdown);
             if (!countdownEvent.isCanceled()) {
                 this.startCountdown(this.getDefaultStartCountdown());
+            }
+        }
+    }
+
+    @Handler(priority = Priority.HIGHER)
+    public void onGameOverScreenRender(MatchEndedEvent event) {
+        BaseComponent[] defaultComponent = TextComponent.fromLegacyText(
+                ChatColor.AQUA + ChatColor.UNDERLINE.toString() + "Game over!");
+        BaseComponent[] winnerComponent = TextComponent.fromLegacyText(
+                ChatColor.GOLD + ChatColor.UNDERLINE.toString() + "Victory!");
+        BaseComponent[] loserComponent = TextComponent.fromLegacyText(
+                ChatColor.RED + ChatColor.UNDERLINE.toString() + "Defeat!");
+
+        BaseComponent[] resultComponent = null;
+        MatchWinner winner = event.getWinner();
+        if (winner != null) {
+            resultComponent = TextComponent.fromLegacyText(winner.getMessage());
+        }
+
+        for (ArcadePlayer online : event.getPlugin().getPlayers()) {
+            if (online.getGamePlayer() == null) {
+                continue;
+            }
+
+            if (winner == null || this.getObservers().contains(online)) {
+                online.getBukkit().showTitle(defaultComponent);
+                online.play(ArcadeSound.ENEMY_LOST);
+            } else if (winner.contains(online)) {
+                online.getBukkit().showTitle(winnerComponent);
+                online.play(ArcadeSound.ENEMY_LOST);
+            } else {
+                online.getBukkit().showTitle(loserComponent);
+                online.play(ArcadeSound.ENEMY_WON);
+            }
+
+            if (resultComponent != null) {
+                online.getBukkit().setSubtitle(resultComponent);
             }
         }
     }

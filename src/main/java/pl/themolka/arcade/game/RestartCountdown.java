@@ -74,7 +74,7 @@ public class RestartCountdown extends PrintableCountdown {
             player.getPlayer().send(message);
         }
 
-        this.plugin.getLogger().info(message);
+        this.plugin.getLogger().info(ChatColor.stripColor(message));
     }
 
     public void setDefaultDuration() {

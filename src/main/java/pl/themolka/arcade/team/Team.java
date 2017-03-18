@@ -87,7 +87,7 @@ public class Team implements MatchWinner {
 
     @Override
     public boolean contains(ArcadePlayer player) {
-        return this.contains(player.getGamePlayer());
+        return player.getGamePlayer() != null && this.contains(player.getGamePlayer());
     }
 
     @Override

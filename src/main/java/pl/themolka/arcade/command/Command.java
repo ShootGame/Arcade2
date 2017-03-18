@@ -97,7 +97,6 @@ public class Command {
         }
 
         try {
-            this.getCompleter().setAccessible(true);
             Object result = this.getCompleter().invoke(this.getClassObject(), sender, context);
 
             if (result instanceof List) {

@@ -10,12 +10,12 @@ public interface PlayerVisibilityFilter {
     PlayerVisibilityFilter DEFAULT = new DefaultVisibilityFilter();
 
     /**
-     * Check if a <code>viewer</code> can see a <code>player</code>.
-     * @param viewer Viewer who can or cannot see the <code>player</code>.
-     * @param player Player who can or cannot be viewed by the <code>viewer</code>.
-     * @return <code>true</code> if <code>player</code> is visible, <code>false</code> otherwise.
+     * Check if a <code>viewer</code> can see <code>target</code>.
+     * @param viewer Viewer who can or cannot see the <code>target</code> player.
+     * @param target Player who can or cannot be viewed by the <code>viewer</code>.
+     * @return <code>true</code> if <code>target</code> is visible, <code>false</code> otherwise.
      */
-    boolean canSee(GamePlayer viewer, GamePlayer player);
+    boolean canSee(GamePlayer viewer, GamePlayer target);
 
     /**
      * The default implementation of {@link PlayerVisibilityFilter}, which
@@ -24,12 +24,12 @@ public interface PlayerVisibilityFilter {
     final class DefaultVisibilityFilter implements PlayerVisibilityFilter {
         /**
          * The default implementation of {@link PlayerVisibilityFilter#canSee(GamePlayer, GamePlayer)}.
-         * @param viewer Viewer who can or cannot see the <code>player</code>.
-         * @param player Player who can or cannot be viewed by the <code>viewer</code>.
-         * @return always <code>true</code>.
+         * @param viewer Viewer who can or cannot see the <code>target</code> player.
+         * @param target Player who can or cannot be viewed by the <code>viewer</code>.
+         * @return always <code>target</code>.
          */
         @Override
-        public boolean canSee(GamePlayer viewer, GamePlayer player) {
+        public boolean canSee(GamePlayer viewer, GamePlayer target) {
             return true;
         }
     }

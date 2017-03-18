@@ -1,12 +1,15 @@
 package pl.themolka.arcade.match;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.ArcadeSound;
 import pl.themolka.arcade.task.PrintableCountdown;
 
 import java.time.Duration;
@@ -74,13 +77,9 @@ public class MatchStartCountdown extends PrintableCountdown {
             return;
         }
 
-        String message = this.getPrintMessage(this.getStartMessage());
-
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.getPlayer().send(message);
-        }
-
-        this.plugin.getLogger().info(message);
+        this.printMessage();
+        this.printCount();
+        this.playSound();
     }
 
     public int countStart(int seconds) {
@@ -122,5 +121,61 @@ public class MatchStartCountdown extends PrintableCountdown {
             return message + "..";
         }
         return message;
+    }
+
+    private void playSound() {
+        long left = this.getLeftSeconds();
+
+        ArcadeSound sound = null;
+        if (left == 0) {
+            sound = ArcadeSound.STARTED;
+        } else if (left == 1 || left == 2 || left == 3) {
+            sound = ArcadeSound.STARTING;
+        }
+
+        if (sound != null) {
+            for (ArcadePlayer player : this.plugin.getPlayers()) {
+                player.play(sound);
+            }
+        }
+    }
+
+    private void printCount() {
+        long left = this.getLeftSeconds();
+
+        String text = null;
+        if (left == 0) {
+            text = ChatColor.RED + ChatColor.UNDERLINE.toString() + "GO!";
+        } else if (left == 1 || left == 2 || left == 3) {
+            text = ChatColor.YELLOW + Long.toString(left);
+        }
+
+        if (text != null) {
+            BaseComponent[] component = TextComponent.fromLegacyText(text);
+            BaseComponent[] infoComponent = TextComponent.fromLegacyText(
+                    ChatColor.YELLOW + ChatColor.UNDERLINE.toString() + "The match has started.");
+
+            for (ArcadePlayer online : this.plugin.getPlayers()) {
+                GamePlayer player = online.getGamePlayer();
+                if (player == null) {
+                    continue;
+                }
+
+                if (!this.getMatch().getObservers().contains(online)) {
+                    player.getBukkit().showTitle(component);
+                } else if (left == 0) {
+                    player.getBukkit().showTitle(infoComponent);
+                }
+            }
+        }
+    }
+
+    private void printMessage() {
+        String message = this.getPrintMessage(this.getStartMessage());
+        for (ArcadePlayer player : this.plugin.getPlayers()) {
+            player.getPlayer().send(message);
+        }
+
+        this.plugin.getLogger().info(ChatColor.stripColor(message));
     }
 }

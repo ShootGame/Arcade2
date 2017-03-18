@@ -25,7 +25,7 @@ public enum Color {
     GRAY(ChatColor.GRAY, DyeColor.SILVER),
     DARK_GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY),
     BLUE(ChatColor.BLUE, DyeColor.LIGHT_BLUE),
-    GREEN(ChatColor.GRAY, DyeColor.LIME),
+    GREEN(ChatColor.GREEN, DyeColor.LIME),
     AQUA(ChatColor.AQUA, DyeColor.LIGHT_BLUE),
     RED(ChatColor.RED, DyeColor.RED),
     LIGHT_PURPLE(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA),

@@ -21,11 +21,13 @@ public class SimpleTaskManager implements TaskManager, Tickable {
     @Override
     public void onTick(long tick) {
         for (TaskExecutor task : this.getTasks()) {
-            try {
-                task.run();
-            } catch (Throwable th) {
-                if (task.getId() != Task.DEFAULT_TASK_ID) {
-                    this.plugin.getLogger().log(Level.SEVERE, "Could not run task executor #" + task.getId(), th);
+            if (!task.isAsync()) {
+                try {
+                    task.run();
+                } catch (Throwable th) {
+                    if (task.getId() != Task.DEFAULT_TASK_ID) {
+                        this.plugin.getLogger().log(Level.SEVERE, "Could not run task executor #" + task.getId(), th);
+                    }
                 }
             }
         }
