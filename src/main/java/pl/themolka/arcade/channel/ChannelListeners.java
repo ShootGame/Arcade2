@@ -56,7 +56,7 @@ public class ChannelListeners implements Listener {
         int mentioned = 0;
         for (String split : event.getMessage().split(" ")) {
             if (mentioned >= CHANNEL_MENTION_LIMIT || !split.startsWith(CHANNEL_MENTION_KEY)) {
-                continue;
+                break;
             }
 
             String username = split.substring(1);
