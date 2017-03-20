@@ -1,5 +1,9 @@
 package pl.themolka.arcade.goal;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.util.StringId;
 
@@ -18,6 +22,16 @@ public interface GoalHolder extends StringId {
         return true;
     }
 
+    boolean contains(Player bukkit);
+
+    default boolean contains(ArcadePlayer player) {
+        return player.getBukkit() != null && this.contains(player.getBukkit());
+    }
+
+    default boolean contains(GamePlayer player) {
+        return player.getPlayer() != null && this.contains(player.getPlayer());
+    }
+
     Color getColor();
 
     List<Goal> getGoals();
@@ -26,7 +40,9 @@ public interface GoalHolder extends StringId {
         return this.getId();
     }
 
-    String getTitle();
+    default String getTitle() {
+        return this.getColor().toChat() + this.getName() + ChatColor.RESET;
+    }
 
     boolean hasGoal(Goal goal);
 

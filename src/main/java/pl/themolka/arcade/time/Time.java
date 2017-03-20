@@ -16,6 +16,9 @@ public class Time {
     public static final char UNIT_MINUTES = 'm';
     public static final char UNIT_HOURS = 'h';
     public static final char UNIT_DAYS = 'd';
+    public static final char UNIT_WEEKS = 'w';
+    public static final char UNIT_MONTHS = 'o';
+    public static final char UNIT_YEARS = 'y';
 
     private final long time;
 
@@ -73,6 +76,18 @@ public class Time {
         return Time.ofDays(this.toDays() - days);
     }
 
+    public Time minusWeeks(long weeks) {
+        return Time.ofWeeks(this.toWeeks() - weeks);
+    }
+
+    public Time minusMonths(long months) {
+        return Time.ofMonths(this.toMonths() - months);
+    }
+
+    public Time minusYears(long years) {
+        return Time.ofYears(this.toYears() - years);
+    }
+
     //
     // Addition
     //
@@ -103,6 +118,18 @@ public class Time {
 
     public Time plusDays(long days) {
         return Time.ofDays(this.toDays() + days);
+    }
+
+    public Time plusWeeks(long weeks) {
+        return Time.ofWeeks(this.toWeeks() + weeks);
+    }
+
+    public Time plusMonths(long months) {
+        return Time.ofMonths(this.toMonths() + months);
+    }
+
+    public Time plusYears(long years) {
+        return Time.ofYears(this.toYears() + years);
     }
 
     //
@@ -145,6 +172,18 @@ public class Time {
         return this.toHours() / 24L;
     }
 
+    public long toWeeks() {
+        return this.toDays() / 7L;
+    }
+
+    public long toMonths() {
+        return this.toWeeks() / 31L;
+    }
+
+    public long toYears() {
+        return this.toMonths() / 365L;
+    }
+
     //
     // Instancing
     //
@@ -181,6 +220,9 @@ public class Time {
             case UNIT_MINUTES: return ofMinutes(time);
             case UNIT_HOURS: return ofHours(time);
             case UNIT_DAYS: return ofDays(time);
+            case UNIT_WEEKS: return ofWeeks(time);
+            case UNIT_MONTHS: return ofMonths(time);
+            case UNIT_YEARS: return ofYears(time);
             default: return def;
         }
     }
@@ -207,6 +249,18 @@ public class Time {
 
     public static Time ofDays(long days) {
         return ofHours(days * 24L);
+    }
+
+    public static Time ofWeeks(long weeks) {
+        return ofDays(weeks * 7L);
+    }
+
+    public static Time ofMonths(long months) {
+        return ofWeeks(months * 31L);
+    }
+
+    public static Time ofYears(long years) {
+        return ofMonths(years * 365L);
     }
 
     //
@@ -237,9 +291,8 @@ public class Time {
         try {
             return of(unit, Long.parseLong(time.substring(0, time.length() - 1)), def);
         } catch (NumberFormatException ignored) {
+            return def;
         }
-
-        return def;
     }
 
     public static Time valueOf(String string) {

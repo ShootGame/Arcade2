@@ -11,10 +11,16 @@ public class GamePlayerSnapshot implements Snapshot<GamePlayer> {
     private final UUID uuid;
 
     public GamePlayerSnapshot(GamePlayer source) {
-        this(source.getDisplayName(), source.isParticipating(), source.getUsername(), source.getUuid());
+        this(source.getDisplayName(),
+                source.isParticipating(),
+                source.getUsername(),
+                source.getUuid());
     }
 
-    public GamePlayerSnapshot(String displayName, boolean participating, String username, UUID uuid) {
+    public GamePlayerSnapshot(String displayName,
+                              boolean participating,
+                              String username,
+                              UUID uuid) {
         this.displayName = displayName;
         this.participating = participating;
         this.username = username;

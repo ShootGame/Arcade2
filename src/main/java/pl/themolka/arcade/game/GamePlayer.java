@@ -57,6 +57,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
+    public boolean contains(Player bukkit) {
+        return bukkit != null && this.getBukkit() != null && this.getBukkit().equals(bukkit);
+    }
+
+    @Override
     public Color getColor() {
         return Color.ofChat(this.getChatColor());
     }
