@@ -39,6 +39,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     private final ArcadeMap map;
     private final MetadataContainer metadata = new MetadataContainer();
     private final GameModuleContainer modules = new GameModuleContainer();
+    private final List<GamePlayerListener> playerListeners = new ArrayList<>();
     private final Map<UUID, GamePlayer> players = new HashMap<>();
     private final ScoreboardContext scoreboard;
     private Instant startTime;
@@ -131,7 +132,19 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public void addPlayer(GamePlayer player) {
+        for (GamePlayerListener notify : this.playerListeners) {
+            notify.notifyRegister();
+        }
+
         this.players.put(player.getUuid(), player);
+
+        for (GamePlayerListener notify : this.playerListeners) {
+            notify.notifyRegistered();
+        }
+    }
+
+    public boolean addPlayerListener(GamePlayerListener listener) {
+        return this.playerListeners.add(listener);
     }
 
     public int addSyncTask(Task task) {
@@ -388,7 +401,21 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public void removePlayer(UUID uuid) {
-        this.players.remove(uuid);
+        if (this.players.containsKey(uuid)) {
+            for (GamePlayerListener notify : this.playerListeners) {
+                notify.notifyUnregister();
+            }
+
+            this.players.remove(uuid);
+
+            for (GamePlayerListener notify : this.playerListeners) {
+                notify.notifyUnregistered();
+            }
+        }
+    }
+
+    public boolean removePlayerListener(GamePlayerListener listener) {
+        return this.playerListeners.remove(listener);
     }
 
     public boolean removeTask(Task task) {

@@ -4,7 +4,10 @@ import org.bukkit.ChatColor;
 
 import java.time.Duration;
 
-public class TimeUtils {
+public final class TimeUtils {
+    private TimeUtils() {
+    }
+
     public static String prettyDuration(Duration duration) {
         return prettyTime(Time.of(duration));
     }

@@ -2,8 +2,11 @@ package pl.themolka.arcade.command;
 
 import org.bukkit.ChatColor;
 
-public class CommandUtils {
+public final class CommandUtils {
     public static final int CHAT_LINE_LENGTH = 50;
+
+    private CommandUtils() {
+    }
 
     public static String createLine(int length) {
         return createLine(length, ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "-");
