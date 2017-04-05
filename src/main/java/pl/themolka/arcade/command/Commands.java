@@ -66,7 +66,7 @@ public class Commands {
             if (context.getCommand().isClientOnly() && sender instanceof ConsoleSender) {
                 throw new CommandConsoleException();
             } else if (context.getCommand().hasPermission() && !sender.hasPermission(context.getCommand().getPermission())) {
-                throw new CommandPermissionException(context.getCommand().getPermission());
+                throw new CommandPermissionException();
             } else if (context.getCommand().getMin() > context.getParamsLength()) {
                 throw new CommandUsageException("Zbyt malo argumentow.");
             } else {

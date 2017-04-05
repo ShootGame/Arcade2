@@ -10,10 +10,12 @@ import java.util.List;
 public class GlobalChatChannel extends ChatChannel {
     public static final String GLOBAL_CHANNEL_ID = "_global";
     public static final String GLOBAL_CHANNEL_KEY = "!";
-    public static final String GLOBAL_FORMAT = ChatColor.DARK_GRAY + "[" + ChatColor.GOLD +
-            ChatColor.BOLD + "G" + ChatColor.RESET + ChatColor.DARK_GRAY + "] " + ChatColor.YELLOW +
-            "%s" + ChatColor.DARK_GRAY + ": " +  ChatColor.WHITE + "%s";
-    public static final String GLOBAL_PERMISSION_NODE = getPermissionNode("global");
+    public static final String GLOBAL_FORMAT = ChatColor.DARK_GRAY + "[" +
+            ChatColor.GOLD + ChatColor.BOLD + "G" + ChatColor.RESET +
+            ChatColor.DARK_GRAY + "] " + ChatColor.YELLOW + "%s" +
+            ChatColor.DARK_GRAY + ": " +  ChatColor.WHITE + "%s";
+    public static final String GLOBAL_PERMISSION_NODE =
+            getPermissionNode("global");
 
     private final ArcadePlugin plugin;
 

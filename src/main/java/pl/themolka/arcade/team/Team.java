@@ -87,7 +87,8 @@ public class Team implements MatchWinner {
 
     @Override
     public boolean contains(ArcadePlayer player) {
-        return player.getGamePlayer() != null && this.contains(player.getGamePlayer());
+        return player.getGamePlayer() != null &&
+                this.contains(player.getGamePlayer());
     }
 
     @Override
@@ -127,7 +128,8 @@ public class Team implements MatchWinner {
 
     @Override
     public void sendGoalMessage(String message) {
-        this.plugin.getLogger().info("[" + this.getName() + "] (Goal) " + ChatColor.stripColor(message));
+        this.plugin.getLogger().info("[" + this.getName() + "] (Goal) " +
+                ChatColor.stripColor(message));
         this.getChannel().send(ChatColor.YELLOW + message);
         this.getChannel().sendAction(ChatColor.YELLOW + message);
     }

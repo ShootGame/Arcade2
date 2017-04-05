@@ -41,14 +41,9 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         this.loaded = true;
         this.plugin = plugin;
 
-        Annotation infoAnnotation = this.getClass().getAnnotation(ModuleInfo.class);
-        if (infoAnnotation == null) {
-            throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
-        }
-
-        ModuleInfo info = (ModuleInfo) infoAnnotation;
-        if (info.id() == null || info.id().isEmpty()) {
-            throw new RuntimeException("Module must be @ModuleInfo(id = ?) decorated");
+        ModuleInfo info = this.getClass().getAnnotation(ModuleInfo.class);
+        if (info == null || info.id() == null || info.id().isEmpty()) {
+            throw new RuntimeException("Module must be @ModuleInfo decorated");
         }
 
         this.id = info.id().toLowerCase();

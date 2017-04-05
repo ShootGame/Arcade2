@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,10 +16,14 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.weather.ThunderChangeEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.PlayerMoveEvent;
@@ -26,24 +31,31 @@ import pl.themolka.arcade.session.PlayerMoveEvent;
 /**
  * <strong>General plugin listeners.</strong>
  *
- * Arrows Stuck:  There is a bug in Minecraft which doesn't remove
- *                arrows from the player when he respawns. We need
- *                to fix it manually.
- * Ender Chests:  We need to disable ender chests on the whole
- *                server due to the plugin logic incompatibility.
- *                Our multi-world system doesn't work with the
- *                global ender chests. In the future, we could
- *                add a fix which could override ender chests to
- *                be per-world compatible.
- * Portals:       Other dimensions like Nether or The End are not
- *                supported. Players should only play on the world
- *                loaded from their XML files.
- * Custom Events: We have some custom events. This is the best
- *                place to handle them.
+ * Arrows Stuck:    There is a bug in Minecraft which doesn't remove arrows from
+ *                  the player when he respawns. We need to fix it manually.
+ * Ender Chests:    We need to disable ender chests on the whole server due to
+ *                  the plugin logic incompatibility. Our multi-world system
+ *                  doesn't work with the global ender chests. In the future, we
+ *                  could add a fix which could override ender chests to be
+ *                  per-world compatible.
+ * Portals:         Other dimensions like Nether or The End are not supported.
+ *                  Players should only play on the world loaded from their XML
+ *                  files.
+ * Commands:        Some commands are not supported and should never be used.
+ * Weather:         We are not supporting weather changed dynamically by the
+ *                  server itself. Modules are responsible for what and when
+ *                  should be handled in the game world.
+ * Custom Events:   We have some custom events. This is the best place to handle
+ *                  them.
  */
 public class GeneralListeners implements Listener {
-    public static final String ENDER_CHEST_MESSAGE = ChatColor.RED + "You may not %s Ender Chests on this server.";
-    public static final String PORTAL_MESSAGE = ChatColor.RED + "You may not %s dimension portals on this server.";
+    public static final String COMMAND_MESSAGE = ChatColor.RED +
+            "You may not execute %s command on this server.";
+    public static final String[] DISABLED_COMMANDS = {"stop"};
+    public static final String ENDER_CHEST_MESSAGE = ChatColor.RED +
+            "You may not %s Ender Chests on this server.";
+    public static final String PORTAL_MESSAGE = ChatColor.RED +
+            "You may not %s dimension portals on this server.";
 
     private final ArcadePlugin plugin;
 
@@ -52,7 +64,7 @@ public class GeneralListeners implements Listener {
     }
 
     //
-    // Arrows Stuck
+    // Fix Arrows Stuck
     //
 
     @EventHandler
@@ -66,9 +78,11 @@ public class GeneralListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEnderChestCraft(CraftItemEvent event) {
-        if (event.getInventory().getResult() != null && event.getInventory().getResult().getType().equals(Material.ENDER_CHEST)) {
+        if (event.getInventory().getResult() != null && event.getInventory()
+                .getResult().getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "craft"));
+            event.getActor().sendMessage(String.format(
+                    ENDER_CHEST_MESSAGE, "craft"));
         }
     }
 
@@ -76,7 +90,8 @@ public class GeneralListeners implements Listener {
     public void onEnderChestOpen(InventoryOpenEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "open"));
+            event.getActor().sendMessage(String.format(
+                    ENDER_CHEST_MESSAGE, "open"));
         }
     }
 
@@ -84,7 +99,8 @@ public class GeneralListeners implements Listener {
     public void onEnderChestPlace(BlockPlaceEvent event) {
         if (event.getBlock().getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(String.format(ENDER_CHEST_MESSAGE, "place"));
+            event.getPlayer().sendMessage(String.format(
+                    ENDER_CHEST_MESSAGE, "place"));
         }
     }
 
@@ -92,7 +108,8 @@ public class GeneralListeners implements Listener {
     public void onEnderChestUse(InventoryClickEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getWhoClicked().sendMessage(String.format(ENDER_CHEST_MESSAGE, "use"));
+            event.getWhoClicked().sendMessage(String.format(
+                    ENDER_CHEST_MESSAGE, "use"));
         }
     }
 
@@ -113,6 +130,59 @@ public class GeneralListeners implements Listener {
         if (creator instanceof Player) {
             creator.sendMessage(String.format(PORTAL_MESSAGE, "use"));
         }
+    }
+
+    //
+    // Disable /stop command
+    //
+
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        String prefix = BukkitCommands.BUKKIT_COMMAND_PREFIX.toLowerCase();
+        String message = event.getMessage();
+        if (!message.startsWith(prefix)) {
+            return;
+        }
+
+        String query = message.substring(1);
+        if (query.isEmpty()) {
+            return;
+        }
+
+        String label = message.split(" ", 2)[0].toLowerCase();
+        if (label.isEmpty()) {
+            return;
+        }
+
+        Command command = this.plugin.getServer().getPluginCommand(label);
+        if (command == null) {
+            return;
+        }
+
+        for (String disabled : DISABLED_COMMANDS) {
+            for (String alias : command.getAliases()) {
+                if (alias.toLowerCase().equalsIgnoreCase(disabled)) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(String.format(
+                            COMMAND_MESSAGE, prefix + command.getName()));
+                    return;
+                }
+            }
+        }
+    }
+
+    //
+    // Disable weather and thunder cycle
+    //
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onWeatherChange(WeatherChangeEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onThunderChange(ThunderChangeEvent event) {
+        event.setCancelled(true);
     }
 
     //

@@ -9,7 +9,9 @@ import java.util.logging.Level;
 
 public class ConsoleSender implements Sender {
     public static final String CONSOLE_NAME = "Console";
-    public static final UUID CONSOLE_UUID = UUID.nameUUIDFromBytes(("Internal:" + CONSOLE_NAME).getBytes());
+    public static final String CONSOLE_UUID_NAME = "Internal:" + CONSOLE_NAME;
+    public static final UUID CONSOLE_UUID = UUID
+            .nameUUIDFromBytes(CONSOLE_UUID_NAME.getBytes());
 
     private final ArcadePlugin plugin;
 
@@ -19,7 +21,7 @@ public class ConsoleSender implements Sender {
 
     @Override
     public ArcadePlayer getPlayer() {
-        throw new UnsupportedOperationException("Not supported by the console.");
+        throw new UnsupportedOperationException("Not supported by the console");
     }
 
     @Override
@@ -62,6 +64,7 @@ public class ConsoleSender implements Sender {
     }
 
     public static String getConsoleColoredName() {
-        return ChatColor.DARK_RED + ChatColor.BOLD.toString() + ChatColor.ITALIC + getConsoleName() + ChatColor.RESET;
+        return ChatColor.DARK_RED + ChatColor.BOLD.toString() +
+                ChatColor.ITALIC + getConsoleName() + ChatColor.RESET;
     }
 }
