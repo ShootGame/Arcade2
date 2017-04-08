@@ -10,7 +10,11 @@ public class ChannelChatEvent extends ChannelEvent implements Cancelable {
     private boolean cancel;
     private String message;
 
-    public ChannelChatEvent(ArcadePlugin plugin, Channel channel, Sender author, String authorName, String message) {
+    public ChannelChatEvent(ArcadePlugin plugin,
+                            Channel channel,
+                            Sender author,
+                            String authorName,
+                            String message) {
         super(plugin, channel);
 
         this.author = author;

@@ -11,7 +11,8 @@ import java.util.List;
 
 public class ChatChannel extends AbstractChannel {
     public static final String EMPTY_MESSAGE = "No message specified.";
-    public static final String PERMISSION_ERROR = "You don't have permission to write to this channel.";
+    public static final String PERMISSION_ERROR =
+            "You don't have permission to write to this channel.";
     public static final String PERMISSION_NODE = "arcade.channel";
 
     private final ArcadePlugin plugin;
@@ -51,7 +52,8 @@ public class ChatChannel extends AbstractChannel {
 
     @Override
     public void sendChat(Sender author, String message) {
-        if (this.getPermission() != null && !author.hasPermission(this.getPermission())) {
+        if (this.getPermission() != null &&
+                !author.hasPermission(this.getPermission())) {
             author.sendError(PERMISSION_ERROR);
             return;
         } else if (message.isEmpty()) {
@@ -70,7 +72,8 @@ public class ChatChannel extends AbstractChannel {
         }
 
         // event
-        ChannelChatEvent event = new ChannelChatEvent(this.plugin, this, author, name, message);
+        ChannelChatEvent event = new ChannelChatEvent(
+                this.plugin, this, author, name, message);
         this.plugin.getEventBus().publish(event);
 
         if (!event.isCanceled()) {
@@ -87,7 +90,8 @@ public class ChatChannel extends AbstractChannel {
     }
 
     public void sendMessage(String author, String message) {
-        this.plugin.getLogger().info(String.format("[Chat '%s'] %s: %s", this.getId(), ChatColor.stripColor(author), message));
+        this.plugin.getLogger().info(String.format("[Chat '%s'] %s: %s",
+                this.getId(), ChatColor.stripColor(author), message));
         this.sendChat(this.formatMessage(author, message));
     }
 
