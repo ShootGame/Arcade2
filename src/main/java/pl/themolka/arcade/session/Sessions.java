@@ -41,18 +41,21 @@ public class Sessions implements Listener {
         }
 
         if (i > 0) {
-            event.getPlugin().getLogger().info("Registered " + i + " online player(s).");
+            event.getPlugin().getLogger().info(
+                    "Registered " + i + " online player(s).");
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        ArcadePlayer player = this.plugin.getPlayer(event.getPlayer().getUniqueId());
+        ArcadePlayer player = this.plugin.getPlayer(
+                event.getPlayer().getUniqueId());
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
             pl.themolka.arcade.respawn.PlayerRespawnEvent respawnEvent =
-                    new pl.themolka.arcade.respawn.PlayerRespawnEvent(this.plugin, player);
+                    new pl.themolka.arcade.respawn.PlayerRespawnEvent(
+                            this.plugin, player);
             respawnEvent.setRespawnPosition(game.getMap().getSpawn());
 
             this.postEvent(respawnEvent);
@@ -98,11 +101,13 @@ public class Sessions implements Listener {
     }
 
     public void insertSession(ArcadePlayer player) {
-        this.postEvent(new pl.themolka.arcade.session.PlayerJoinEvent(this.plugin, player));
+        this.postEvent(new pl.themolka.arcade.session
+                .PlayerJoinEvent(this.plugin, player));
     }
 
     public void removeSession(ArcadePlayer player) {
-        this.postEvent(new pl.themolka.arcade.session.PlayerQuitEvent(this.plugin, player));
+        this.postEvent(new pl.themolka.arcade.session
+                .PlayerQuitEvent(this.plugin, player));
     }
 
     private void postEvent(Event event) {

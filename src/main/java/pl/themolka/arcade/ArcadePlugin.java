@@ -436,7 +436,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public Collection<ArcadePlayer> getPlayers() {
-        return this.players.values();
+        return new ArrayList<>(this.players.values());
     }
 
     public Object getProperty(String key) {

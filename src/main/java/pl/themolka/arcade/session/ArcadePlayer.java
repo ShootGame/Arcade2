@@ -43,6 +43,10 @@ public class ArcadePlayer implements Metadata, Sender {
         this.permissions = new PermissionContext(plugin, this);
     }
 
+    //
+    // Inherited stuff
+    //
+
     @Override
     public GamePlayer getGamePlayer() {
         return this.gamePlayer;
@@ -118,6 +122,10 @@ public class ArcadePlayer implements Metadata, Sender {
     public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
     }
+
+    //
+    // Methods
+    //
 
     public void clearInventory() {
         this.clearInventory(true);
