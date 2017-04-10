@@ -100,7 +100,8 @@ public class Commands {
             }
 
             if (ex.getCause() != null) {
-                sender.sendError(ex.getCause().getClass().getSimpleName() + ": " + ex.getMessage());
+                Throwable cause = ex.getCause();
+                sender.sendError(cause.getClass().getSimpleName() + ": " + cause.getMessage());
             }
         } catch (NumberFormatException ex) {
             sender.sendError("Musisz podac liczbe, nie ciag znakow!");

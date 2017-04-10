@@ -48,7 +48,7 @@ public class ChannelListeners implements Listener {
     }
 
     @Handler(priority = Priority.LOW)
-    public void onChannelMention(ChannelChatEvent event) {
+    public void onChannelMention(ChannelMessageEvent event) {
         if (event.isCanceled()) {
             return;
         }
@@ -85,7 +85,7 @@ public class ChannelListeners implements Listener {
     }
 
     @Handler(priority = Priority.LAST)
-    public void onChannelSpy(ChannelChatEvent event) {
+    public void onChannelSpy(ChannelMessageEvent event) {
         if (event.isCanceled() || event.getChannel() instanceof GlobalChatChannel) {
             return;
         }

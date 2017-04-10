@@ -4,17 +4,17 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Cancelable;
 
-public class ChannelChatEvent extends ChannelEvent implements Cancelable {
+public class ChannelMessageEvent extends ChannelEvent implements Cancelable {
     private final Sender author;
     private String authorName;
     private boolean cancel;
     private String message;
 
-    public ChannelChatEvent(ArcadePlugin plugin,
-                            Channel channel,
-                            Sender author,
-                            String authorName,
-                            String message) {
+    public ChannelMessageEvent(ArcadePlugin plugin,
+                               Channel channel,
+                               Sender author,
+                               String authorName,
+                               String message) {
         super(plugin, channel);
 
         this.author = author;

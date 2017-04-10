@@ -76,7 +76,8 @@ public class Team implements MatchWinner {
             return false;
         }
 
-        this.plugin.getEventBus().publish(new GoalCreateEvent(this.plugin, goal));
+        this.plugin.getEventBus().publish(
+                new GoalCreateEvent(this.plugin, goal));
         return this.goals.add(goal);
     }
 
@@ -268,26 +269,34 @@ public class Team implements MatchWinner {
     }
 
     public boolean join(GamePlayer player, boolean message) {
+        return this.join(player, message, false);
+    }
+
+    public boolean join(GamePlayer player, boolean message, boolean force) {
         if (!player.isOnline() || this.isFull() || this.hasPlayer(player)) {
             return false;
         }
 
-        PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(this.plugin, player, this);
+        PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(
+                this.plugin, player, this);
         this.plugin.getEventBus().publish(event);
 
-        if (event.isCanceled()) {
+        if (!force && event.isCanceled()) {
             return false;
         }
 
         // handle
         this.members.add(player);
         this.onlineMembers.add(player);
+        this.getBukkit().addPlayer(player.getBukkit());
 
         player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
         player.setChatColor(this.getChatColor());
         player.setCurrentChannel(this.getCurrentChannel());
-        player.setDisplayName(this.getChatColor() + player.getUsername() + ChatColor.RESET);
-        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
+        player.setDisplayName(this.getChatColor() +
+                player.getUsername() + ChatColor.RESET);
+        player.setParticipating(this.getMatch().isRunning() &&
+                this.isParticipating());
 
         // handle it AFTER the setParticipating(...) method
         if (this.getMatch().isRunning()) {
@@ -297,34 +306,43 @@ public class Team implements MatchWinner {
             player.getPlayer().getPermissions().refresh();
         }
 
-        this.plugin.getLogger().info(player.getUsername() + " joined team '" + this.getName() + "' (" + this.getId() + ")");
+        this.plugin.getLogger().info(player.getUsername() + " joined team '" +
+                this.getName() + "' (" + this.getId() + ")");
         if (message) {
-            player.getPlayer().sendSuccess("You joined " + this.getPrettyName() + ChatColor.GREEN + ".");
+            player.getPlayer().sendSuccess("You joined " +
+                    this.getPrettyName() + ChatColor.GREEN + ".");
         }
 
-        this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(this.plugin, player, this));
+        this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(
+                this.plugin, player, this));
         return true;
     }
 
-    public boolean joinForce(GamePlayer player) {
-        return this.join(player, true);
+    public void joinForce(GamePlayer player) {
+        this.join(player, true, true);
     }
 
     public boolean leave(GamePlayer player) {
+        return this.leave(player, false);
+    }
+
+    public boolean leave(GamePlayer player, boolean force) {
         if (!player.isOnline() || !this.hasPlayer(player)) {
             return false;
         }
 
-        PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(this.plugin, player, this);
+        PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(
+                this.plugin, player, this);
         this.plugin.getEventBus().publish(event);
 
-        if (event.isCanceled()) {
+        if (!force && event.isCanceled()) {
             return false;
         }
 
         // handle
         this.members.remove(player);
         this.onlineMembers.remove(player);
+        this.getBukkit().removePlayer(player.getBukkit());
 
         player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
         player.setChatColor(null);
@@ -340,18 +358,24 @@ public class Team implements MatchWinner {
             player.getPlayer().getPermissions().refresh();
         }
 
-        this.plugin.getLogger().info(player.getUsername() + " left team '" + this.getName() + "' (" + this.getId() + ")");
+        this.plugin.getLogger().info(player.getUsername() + " left team '" +
+                this.getName() + "' (" + this.getId() + ")");
 
-        this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(this.plugin, player, this));
+        this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(
+                this.plugin, player, this));
         return true;
     }
 
-    public boolean leaveForce(GamePlayer player) {
-        return this.leave(player);
+    public void leaveForce(GamePlayer player) {
+        this.leave(player, true);
     }
 
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
+
+        if (player.getBukkit() != null) {
+            this.getBukkit().removePlayer(player.getBukkit());
+        }
     }
 
     public void send(String message) {
@@ -392,7 +416,8 @@ public class Team implements MatchWinner {
 
     public void setName(String name) {
         if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("Name too long (" + name.length() + " > " + NAME_MAX_LENGTH + ")");
+            throw new IllegalArgumentException("Name too long (" +
+                    name.length() + " > " + NAME_MAX_LENGTH + ")");
         }
 
         this.name = name;
@@ -413,19 +438,21 @@ public class Team implements MatchWinner {
     private void updateBukkitTeam() {
         if (this.getBukkit() != null) {
             this.getBukkit().setAllowFriendlyFire(this.isFriendlyFire());
+            this.getBukkit().setCanSeeFriendlyInvisibles(true);
             this.getBukkit().setOption(
                     org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
                     org.bukkit.scoreboard.Team.OptionStatus.NEVER);
         }
     }
 
-    public static org.bukkit.scoreboard.Team createBukkitTeam(Scoreboard board, Team team) {
+    public static org.bukkit.scoreboard.Team createBukkitTeam(
+            Scoreboard scoreboard, Team team) {
         String id = team.getId();
         if (id.length() > ScoreboardContext.TEAM_MAX_LENGTH) {
             id = id.substring(0, ScoreboardContext.TEAM_MAX_LENGTH);
         }
 
-        org.bukkit.scoreboard.Team bukkit = board.registerNewTeam(id);
+        org.bukkit.scoreboard.Team bukkit = scoreboard.registerNewTeam(id);
         bukkit.setPrefix(team.getChatColor().toString());
         bukkit.setDisplayName(team.getName());
         bukkit.setSuffix(ChatColor.RESET.toString());

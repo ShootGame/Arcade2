@@ -72,7 +72,7 @@ public class ChatChannel extends AbstractChannel {
         }
 
         // event
-        ChannelChatEvent event = new ChannelChatEvent(
+        ChannelMessageEvent event = new ChannelMessageEvent(
                 this.plugin, this, author, name, message);
         this.plugin.getEventBus().publish(event);
 
