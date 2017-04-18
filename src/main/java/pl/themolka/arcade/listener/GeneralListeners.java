@@ -51,7 +51,7 @@ import pl.themolka.arcade.session.PlayerMoveEvent;
 public class GeneralListeners implements Listener {
     public static final String COMMAND_MESSAGE = ChatColor.RED +
             "You may not execute %s command on this server.";
-    public static final String[] DISABLED_COMMANDS = {"stop"};
+    public static final String[] DISABLED_COMMANDS = {"reload", "stop"};
     public static final String ENDER_CHEST_MESSAGE = ChatColor.RED +
             "You may not %s Ender Chests on this server.";
     public static final String PORTAL_MESSAGE = ChatColor.RED +
@@ -133,10 +133,10 @@ public class GeneralListeners implements Listener {
     }
 
     //
-    // Disable /stop command
+    // Disable some commands
     //
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String prefix = BukkitCommands.BUKKIT_COMMAND_PREFIX.toLowerCase();
         String message = event.getMessage();
@@ -149,19 +149,21 @@ public class GeneralListeners implements Listener {
             return;
         }
 
-        String label = message.split(" ", 2)[0].toLowerCase();
+        String label = query.split(" ", 2)[0].toLowerCase();
         if (label.isEmpty()) {
             return;
         }
 
-        Command command = this.plugin.getServer().getPluginCommand(label);
+        Command command = this.plugin.getServer()
+                .getCommandMap().getCommand(label);
         if (command == null) {
             return;
         }
 
         for (String disabled : DISABLED_COMMANDS) {
             for (String alias : command.getAliases()) {
-                if (alias.toLowerCase().equalsIgnoreCase(disabled)) {
+                if (command.getName().equalsIgnoreCase(disabled) ||
+                        alias.equalsIgnoreCase(disabled)) {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(String.format(
                             COMMAND_MESSAGE, prefix + command.getName()));
@@ -190,8 +192,9 @@ public class GeneralListeners implements Listener {
     //
 
     /**
-     * Bukkit's {@link PlayerMoveEvent} is not what we need. We can simply cancel the last
-     * player movement using the setCanceled(...) method in {@link PlayerMoveEvent}.
+     * Bukkit's {@link PlayerMoveEvent} is not what we need. We can simply
+     * cancel the last player movement using the setCanceled(...) method in
+     * {@link PlayerMoveEvent}.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(org.bukkit.event.player.PlayerMoveEvent event) {
@@ -205,7 +208,9 @@ public class GeneralListeners implements Listener {
             return;
         }
 
-        PlayerMoveEvent wrapper = new PlayerMoveEvent(this.plugin, player, event);
+        PlayerMoveEvent wrapper = new PlayerMoveEvent(this.plugin,
+                                                      player,
+                                                      event);
         this.plugin.getEventBus().publish(wrapper);
 
         if (wrapper.isCanceled()) {
