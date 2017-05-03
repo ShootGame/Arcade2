@@ -35,6 +35,7 @@ public class ChannelsModule extends Module<ChannelsGame> {
             sender = this.getPlugin().getConsole();
         }
 
-        this.getGameModule().getGlobalChannel().sendChat(sender, context.getParams(0));
+        this.getGameModule().getGlobalChannel()
+                .sendChatMessage(sender, context.getParams(0));
     }
 }

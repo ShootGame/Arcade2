@@ -43,8 +43,8 @@ public class ChannelListeners implements Listener {
             message = message.substring(1);
         }
 
-        channel.sendChat(player, message.trim());
-        event.setCancelled(true);
+        channel.sendChatMessage(player, message.trim());
+        event.setCancelled(true); // this breaks other plugins :/
     }
 
     @Handler(priority = Priority.LOW)
@@ -55,7 +55,8 @@ public class ChannelListeners implements Listener {
 
         int mentioned = 0;
         for (String split : event.getMessage().split(" ")) {
-            if (mentioned >= CHANNEL_MENTION_LIMIT || !split.startsWith(CHANNEL_MENTION_KEY)) {
+            if (mentioned >= CHANNEL_MENTION_LIMIT ||
+                    !split.startsWith(CHANNEL_MENTION_KEY)) {
                 break;
             }
 
@@ -70,14 +71,17 @@ public class ChannelListeners implements Listener {
             if (player == null) {
                 continue;
             } else if (!event.getChannel().hasMember(player)) {
-                event.getAuthor().sendError("Player " + player.getFullName() + ChatColor.RED + " is not a member of this channel.");
+                event.getAuthor().sendError("Player " + player.getFullName() +
+                        ChatColor.RED + " is not a member of this channel.");
                 continue;
             }
 
-            event.setMessage(event.getMessage().replace(split, player.getFullName()));
+            event.setMessage(event.getMessage()
+                    .replace(split, player.getFullName()));
 
             // notify
-            player.sendInfo("You have been mentioned by " + event.getAuthorName());
+            player.sendInfo("You have been mentioned by " +
+                    event.getAuthorName());
             player.getPlayer().play(ArcadeSound.CHAT_MENTION);
 
             mentioned++;
@@ -86,19 +90,23 @@ public class ChannelListeners implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void onChannelSpy(ChannelMessageEvent event) {
-        if (event.isCanceled() || event.getChannel() instanceof GlobalChatChannel) {
+        if (event.isCanceled() ||
+                event.getChannel() instanceof GlobalChatChannel) {
             return;
         }
 
-        String message = ChatColor.DARK_AQUA + ChatColor.ITALIC.toString() + "[Spy]" + ChatColor.RESET + " " +
-                ChatColor.GRAY + event.getAuthorName() + ChatColor.RESET + ChatColor.GRAY + ": " + event.getMessage();
+        String message = ChatColor.DARK_AQUA + ChatColor.ITALIC.toString() +
+                "[Spy]" + ChatColor.RESET + " " + ChatColor.GRAY +
+                event.getAuthorName() + ChatColor.RESET +
+                ChatColor.GRAY + ": " + event.getMessage();
         for (ArcadePlayer online : this.game.getPlugin().getPlayers()) {
             GamePlayer player = online.getGamePlayer();
             if (player == null || event.getChannel().hasMember(player)) {
                 continue;
             }
 
-            if (!player.isParticipating() && player.hasPermission(CHANNEL_SPY_PERMISSION)) {
+            if (player.hasPermission(CHANNEL_SPY_PERMISSION) &&
+                    !player.isParticipating()) {
                 player.sendChat(message);
             }
         }

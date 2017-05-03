@@ -99,7 +99,7 @@ public class MapCommands {
     }
 
     private void mapInfoDescribe(Sender sender, OfflineMap map) {
-        CommandUtils.sendTitleMessage(sender, map.getName(), map.getVersion().toString());
+        CommandUtils.sendTitleMessage(sender, map.getName(), "v" + map.getVersion().toString());
         if (map.hasDescription() && !map.getDescription().isEmpty()) {
             sender.send(ChatColor.GOLD + map.getDescription());
         }

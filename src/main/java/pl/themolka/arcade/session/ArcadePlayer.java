@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.PacketPlayInClientCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -63,7 +64,8 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     @Override
-    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
+    public Object getMetadata(Class<? extends Module<?>> owner,
+                              String key, Object def) {
         return this.metadata.getMetadata(owner, key, def);
     }
 
@@ -89,7 +91,8 @@ public class ArcadePlayer implements Metadata, Sender {
 
     @Override
     public boolean hasPermission(String permission) {
-        return this.getBukkit().isOp() || this.getBukkit().hasPermission(permission);
+        return this.getBukkit().isOp() ||
+                this.getBukkit().hasPermission(permission);
     }
 
     @Override
@@ -119,7 +122,8 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     @Override
-    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
+    public void setMetadata(Class<? extends Module<?>> owner,
+                            String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
     }
 
@@ -148,20 +152,25 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public ChatState getChatState() {
-        EntityPlayer mojang = ((CraftPlayer) this.getBukkit()).getHandle();
-        return ChatState.ofMojang(mojang.getChatFlags());
+        return ChatState.ofMojang(this.getMojang().getChatFlags());
     }
 
     public String getDisplayName() {
-        if (this.bukkit.getDisplayName() != null) {
-            return this.bukkit.getDisplayName();
+        String display = this.bukkit.getDisplayName();
+        if (display != null) {
+            return display;
         }
 
         return this.getUsername();
     }
 
     public String getFullName() {
-        return this.getPermissions().getPrefixes() + this.getDisplayName() + ChatColor.RESET;
+        return this.getPermissions().getPrefixes() +
+                this.getDisplayName() + ChatColor.RESET;
+    }
+
+    public EntityPlayer getMojang() {
+        return ((CraftPlayer) this.getBukkit()).getHandle();
     }
 
     public Time getLastPlayedSound() {
@@ -188,26 +197,28 @@ public class ArcadePlayer implements Metadata, Sender {
         this.play(sound, position, ArcadeSound.DEFAULT_VOLUME);
     }
 
-    public void play(ArcadeSound sound, Location position, float volume) {
+    public void play(ArcadeSound sound, Location position,
+                     float volume) {
         this.play(sound.getSound(), position, volume);
     }
 
-    public void play(Sound sound, Location position, float volume) {
+    public void play(Sound sound, Location position,
+                     float volume) {
         this.play(sound, position, volume, ArcadeSound.DEFAULT_PITCH);
     }
 
-    public void play(ArcadeSound sound, Location position, float volume, float pitch) {
+    public void play(ArcadeSound sound, Location position,
+                     float volume, float pitch) {
         this.play(sound.getSound(), position, volume, pitch);
     }
 
-    public void play(Sound sound, Location position, float volume, float pitch) {
+    public void play(Sound sound, Location position,
+                     float volume, float pitch) {
         Time now = Time.now();
-        if (now.minus(this.getLastPlayedSound()).toMillis() < SOUND_INTERVAL) {
-            return;
+        if (now.minus(this.getLastPlayedSound()).toMillis() >= SOUND_INTERVAL) {
+            this.bukkit.playSound(position, sound, volume, pitch);
+            this.lastPlayedSound = now;
         }
-
-        this.bukkit.playSound(position, sound, volume, pitch);
-        this.lastPlayedSound = now;
     }
 
     public void refresh() {
@@ -218,6 +229,12 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public void resetDisplayName() {
         this.setDisplayName(null);
+    }
+
+    public void respawn() {
+        PacketPlayInClientCommand packet = new PacketPlayInClientCommand(
+                PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN);
+        this.getMojang().playerConnection.a(packet);
     }
 
     public void setDisplayName(String displayName) {

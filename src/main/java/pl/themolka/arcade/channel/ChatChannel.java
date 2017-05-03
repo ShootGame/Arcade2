@@ -51,14 +51,15 @@ public class ChatChannel extends AbstractChannel {
     }
 
     @Override
-    public void sendChat(Sender author, String message) {
+    public int sendChatMessage(Sender author, String message) {
+        int empty = 0;
         if (this.getPermission() != null &&
                 !author.hasPermission(this.getPermission())) {
             author.sendError(PERMISSION_ERROR);
-            return;
+            return empty;
         } else if (message.isEmpty()) {
             author.sendError(EMPTY_MESSAGE);
-            return;
+            return empty;
         }
 
         String name = author.getUsername();
@@ -77,8 +78,10 @@ public class ChatChannel extends AbstractChannel {
         this.plugin.getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            this.sendMessage(event.getAuthorName(), event.getMessage());
+            return this.sendMessage(event.getAuthorName(), event.getMessage());
         }
+
+        return empty;
     }
 
     public String formatMessage(String author, String message) {
@@ -89,10 +92,10 @@ public class ChatChannel extends AbstractChannel {
         return this.format;
     }
 
-    public void sendMessage(String author, String message) {
+    public int sendMessage(String author, String message) {
         this.plugin.getLogger().info(String.format("[Chat '%s'] %s: %s",
                 this.getId(), ChatColor.stripColor(author), message));
-        this.sendChat(this.formatMessage(author, message));
+        return this.sendChatMessage(this.formatMessage(author, message));
     }
 
     public void setFormat(String format) {

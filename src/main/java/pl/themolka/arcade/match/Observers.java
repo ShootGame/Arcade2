@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class Observers extends Team {
     public static final ChatColor OBSERVERS_CHAT_COLOR = ChatColor.AQUA;
-    public static final DyeColor OBSERVERS_DYE_COLOR = Color.ofChat(OBSERVERS_CHAT_COLOR).toDye();
+    public static final DyeColor OBSERVERS_DYE_COLOR =
+            Color.ofChat(OBSERVERS_CHAT_COLOR).toDye();
     public static final String OBSERVERS_KEY = "@";
     public static final String OBSERVERS_NAME = "Observers";
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;
@@ -101,7 +102,8 @@ public class Observers extends Team {
             player.setParticipating(false);
             player.getBukkit().setAllowFlight(true);
 
-            this.plugin.getEventBus().publish(new ObserversJoinEvent(this.plugin, player, this));
+            this.plugin.getEventBus().publish(
+                    new ObserversJoinEvent(this.plugin, player, this));
         }
 
         return result;
@@ -111,7 +113,8 @@ public class Observers extends Team {
     public boolean leave(GamePlayer player) {
         boolean result = super.leave(player);
         if (result) {
-            this.plugin.getEventBus().publish(new ObserversLeaveEvent(this.plugin, player, this));
+            this.plugin.getEventBus().publish(
+                    new ObserversLeaveEvent(this.plugin, player, this));
         }
 
         return result;

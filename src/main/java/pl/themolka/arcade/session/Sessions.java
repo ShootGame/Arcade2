@@ -1,10 +1,12 @@
 package pl.themolka.arcade.session;
 
 import net.engio.mbassy.listener.Handler;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -22,14 +24,22 @@ public class Sessions implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerInitialSpawn(PlayerInitialSpawnEvent event) {
+        event.setSpawnLocation(this.fetchSpawn());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         this.insertSession(this.createSession(event.getPlayer()));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        this.removeSession(this.destroySession(event.getPlayer()));
+        ArcadePlayer player = this.destroySession(event.getPlayer());
+        if (player != null) {
+            this.removeSession(player);
+        }
     }
 
     @Handler(priority = Priority.FIRST)
@@ -81,8 +91,6 @@ public class Sessions implements Listener {
 
             gamePlayer.setParticipating(false); // I don't know ;d
             gamePlayer.reset();
-
-            player.getBukkit().teleport(game.getMap().getSpawn());
         }
 
         this.plugin.addPlayer(player);
@@ -91,12 +99,19 @@ public class Sessions implements Listener {
 
     public ArcadePlayer destroySession(Player bukkit) {
         ArcadePlayer player = this.plugin.getPlayer(bukkit.getUniqueId());
-
-        if (player.getGamePlayer() != null) {
-            player.getGamePlayer().setPlayer(null); // make offline
+        if (player == null) {
+            return null;
         }
 
+        // make GamePlayers offline
+        GamePlayer game = player.getGamePlayer();
+        if (game != null) {
+            game.setPlayer(null); // remove the pointer
+        }
+
+        // unregister from online players
         this.plugin.removePlayer(player);
+
         return player;
     }
 
@@ -108,6 +123,15 @@ public class Sessions implements Listener {
     public void removeSession(ArcadePlayer player) {
         this.postEvent(new pl.themolka.arcade.session
                 .PlayerQuitEvent(this.plugin, player));
+    }
+
+    private Location fetchSpawn() {
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            return game.getMap().getSpawn();
+        }
+
+        return null;
     }
 
     private void postEvent(Event event) {

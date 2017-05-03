@@ -97,7 +97,7 @@ public class TeamsModule extends Module<TeamsGame> {
             throw new CommandException("You are not in a team.");
         }
 
-        team.getChannel().sendChat(sender, context.getParams(0));
+        team.getChannel().sendChatMessage(sender, context.getParams(0));
     }
 
     @CommandInfo(name = {"teams", "teamlist"},

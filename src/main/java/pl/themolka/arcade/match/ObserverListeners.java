@@ -44,10 +44,16 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
+/**
+ * Listeners related to manipulate observers. Observers are the unique players
+ * on the server which cannot interact with the map, gameplay and other players.
+ * Observers are defined with a {@link Observers} class instance.
+ */
 public class ObserverListeners implements Listener {
     public static final int BORDER_Y = 32;
     public static final String PLAY_COMMAND = "join";
-    public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE = PlayerTeleportEvent.TeleportCause.SPECTATE;
+    public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE =
+            PlayerTeleportEvent.TeleportCause.SPECTATE;
 
     private final MatchGame game;
 
@@ -62,10 +68,13 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockInventorySpy(PlayerInteractEvent event) {
-        if (this.isObserving(event.getPlayer()) && event.getClickedBlock() != null && !event.getPlayer().isSneaking()) {
+        if (this.isObserving(event.getPlayer()) &&
+                event.getClickedBlock() != null &&
+                !event.getPlayer().isSneaking()) {
             this.handleInventorySpy(event.getPlayer(), event.getClickedBlock());
+            event.setCancelled(true);
         }
     }
 
@@ -85,7 +94,8 @@ public class ObserverListeners implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (this.isObserving(event.getDamager()) || this.isObserving(event.getEntity())) {
+        if (this.isObserving(event.getDamager()) ||
+                this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
@@ -141,7 +151,9 @@ public class ObserverListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventorySpy(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked() instanceof Player && this.isObserving(event.getPlayer()) && !event.getPlayer().isSneaking()) {
+        if (event.getRightClicked() instanceof Player &&
+                this.isObserving(event.getPlayer()) &&
+                !event.getPlayer().isSneaking()) {
             Player player = (Player) event.getRightClicked();
 
             if (!this.isObserving(player)) {
@@ -152,7 +164,8 @@ public class ObserverListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onMatchWindowOpen(PlayerInteractEvent event) {
-        if (event.getItem() != null && event.getItem().equals(ObserversKit.PLAY)) {
+        if (event.getItem() != null &&
+                event.getItem().equals(ObserversKit.PLAY)) {
             GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
             if (player == null) {
                 return;
@@ -169,11 +182,13 @@ public class ObserverListeners implements Listener {
             Command command = commands.getCommand(PLAY_COMMAND);
 
             if (command != null) {
-                commands.handleCommand(player, command, command.getCommand(), null);
+                commands.handleCommand(player, command,
+                                       command.getCommand(), null);
                 return;
             }
 
-            player.sendError("Could not join the match right now. Did you defined a format module?");
+            player.sendError("Could not join the match right now. " +
+                             "Did you defined format module?");
         }
     }
 
@@ -208,21 +223,25 @@ public class ObserverListeners implements Listener {
     @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinedObservers(ObserversJoinEvent event) {
         if (event.getGamePlayer().isOnline()) {
-            this.game.getMatch().getObserversKit().apply(event.getGamePlayer()); // apply kits
+            this.game.getMatch().getObserversKit().apply(event.getGamePlayer());
+            // ^ apply kits
 
             Player bukkit = event.getPlayer().getBukkit();
             if (this.game.getMatch().isRunning()) {
                 bukkit.setHealth(0.0D);
             }
 
-            event.getGamePlayer().refreshVisibility(this.game.getPlugin().getPlayers());
+            event.getGamePlayer().refreshVisibility(
+                    this.game.getPlugin().getPlayers());
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeaveObservers(ObserversLeaveEvent event) {
-        if (event.getGamePlayer().isOnline() && this.game.getMatch().isRunning()) {
-            event.getGamePlayer().refreshVisibility(this.game.getPlugin().getPlayers());
+        if (event.getGamePlayer().isOnline() &&
+                this.game.getMatch().isRunning()) {
+            event.getGamePlayer().refreshVisibility(
+                    this.game.getPlugin().getPlayers());
         }
     }
 
@@ -254,8 +273,10 @@ public class ObserverListeners implements Listener {
             int y = event.getTo().getBlockY();
 
             // teleport observers when they are in the void
-            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
-                event.getPlayer().getBukkit().teleport(map.getSpawn(), TELEPORT_CAUSE);
+            if (y < 0 - BORDER_Y || y > map.getWorld()
+                    .getMaxHeight() + BORDER_Y) {
+                event.getPlayer().getBukkit().teleport(
+                        map.getSpawn(), TELEPORT_CAUSE);
             }
         }
     }
@@ -313,7 +334,8 @@ public class ObserverListeners implements Listener {
 
     private void handleInventorySpy(Player observer, Block block) {
         if (block.getState() instanceof InventoryHolder) {
-            observer.openInventory(((InventoryHolder) block.getState()).getInventory());
+            InventoryHolder holder = (InventoryHolder) block.getState();
+            observer.openInventory(holder.getInventory());
         }
     }
 
@@ -331,6 +353,7 @@ public class ObserverListeners implements Listener {
     }
 
     private boolean isObserving(Player player) {
-        return this.game.getMatch().isObserving(this.game.getGame().getPlayer(player));
+        return this.game.getMatch().isObserving(
+                this.game.getGame().getPlayer(player));
     }
 }

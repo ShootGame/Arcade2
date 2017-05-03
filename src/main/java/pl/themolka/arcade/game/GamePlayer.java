@@ -58,7 +58,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public boolean contains(Player bukkit) {
-        return bukkit != null && this.getBukkit() != null && this.getBukkit().equals(bukkit);
+        return bukkit != null && this.getBukkit() != null &&
+                this.getBukkit().equals(bukkit);
     }
 
     @Override
@@ -86,7 +87,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
-    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
+    public Object getMetadata(Class<? extends Module<?>> owner,
+                              String key, Object def) {
         return this.metadata.getMetadata(owner, key, def);
     }
 
@@ -162,12 +164,15 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
-    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
+    public void setMetadata(Class<? extends Module<?>> owner,
+                            String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
     }
 
     public boolean canSee(GamePlayer player) {
-        return this.isOnline() && player.isOnline() && this.getGame() != null && this.getGame().canSee(this, player);
+        return this.isOnline() && player.isOnline() &&
+                this.getGame() != null &&
+                this.getGame().canSee(this, player);
     }
 
     public Player getBukkit() {
@@ -221,7 +226,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public boolean hasDisplayName() {
-        return this.isOnline() && (this.displayName != null || this.getPlayer().getDisplayName() != null);
+        return this.isOnline() && (this.displayName != null ||
+                this.getPlayer().getDisplayName() != null);
     }
 
     public boolean isOnline() {

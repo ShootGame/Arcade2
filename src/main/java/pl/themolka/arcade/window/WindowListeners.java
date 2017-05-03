@@ -7,7 +7,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
@@ -22,10 +21,6 @@ public class WindowListeners implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getSlotType().equals(InventoryType.SlotType.CONTAINER)) {
-            return;
-        }
-
         Window window = this.fetchWindow(event.getInventory());
         if (window == null) {
             return;

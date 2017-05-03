@@ -16,5 +16,19 @@ public interface Channel extends Messageable, StringId {
 
     boolean removeMember(Sender member);
 
-    void sendChat(Sender author, String chat);
+    int sendMessage(String message);
+
+    int sendActionMessage(String action);
+
+    int sendChatMessage(String chat);
+
+    int sendChatMessage(Sender author, String chat);
+
+    int sendErrorMessage(String error);
+
+    int sendInfoMessage(String info);
+
+    int sendSuccessMessage(String success);
+
+    int sendTipMessage(String tip);
 }

@@ -40,8 +40,28 @@ public class Time {
         return Objects.hash(this.time);
     }
 
+    public boolean isAfter(Time target) {
+        return this.getTime() > target.getTime();
+    }
+
+    public boolean isBefore(Time target) {
+        return this.getTime() < target.getTime();
+    }
+
     public boolean isForever() {
         return this.equals(FOREVER);
+    }
+
+    public boolean isNegative() {
+        return this.getTime() < ZERO.getTime();
+    }
+
+    public boolean isPositive() {
+        return this.getTime() > ZERO.getTime();
+    }
+
+    public boolean isZero() {
+        return ZERO.equals(this);
     }
 
     //
