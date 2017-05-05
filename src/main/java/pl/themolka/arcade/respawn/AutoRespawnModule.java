@@ -5,6 +5,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.time.Time;
 
 @ModuleInfo(id = "Auto-Respawn")
 public class AutoRespawnModule extends Module<AutoRespawnGame> {
@@ -17,6 +18,7 @@ public class AutoRespawnModule extends Module<AutoRespawnGame> {
     }
 
     private long parseSeconds(int seconds) {
-        return Math.max(seconds, 20L);
+        long ticks = Time.ofSeconds(1).toTicks();
+        return Math.max(seconds * ticks, ticks);
     }
 }

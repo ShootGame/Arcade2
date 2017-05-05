@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -30,7 +29,6 @@ import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.PluginStartEvent;
-import pl.themolka.arcade.game.DescriptionTickable;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.SimpleGameManager;
@@ -38,7 +36,6 @@ import pl.themolka.arcade.generator.GeneratorType;
 import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
-import pl.themolka.arcade.listener.ServerPingListener;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
@@ -113,7 +110,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private final Map<String, Object> properties = new HashMap<>();
     private boolean running;
-    private String serverDescription;
     private String serverName = DEFAULT_SERVER_NAME;
     private ServerSessionFile serverSession;
     private Settings settings;
@@ -447,14 +443,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.properties.getOrDefault(key, def);
     }
 
-    public String getServerDescription() {
-        if (this.serverDescription != null) {
-            return this.serverDescription;
-        }
-
-        return "[Initializing]...";
-    }
-
     public String getServerName() {
         return this.serverName;
     }
@@ -580,10 +568,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.properties.put(key, value);
     }
 
-    public void setServerDescription(String serverDescription) {
-        this.serverDescription = serverDescription;
-    }
-
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
@@ -625,10 +609,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.games.setGameId(this.getServerSession().getContent().getLastGameId());
 
         this.games.fillDefaultQueue();
-
-        if (!((CraftServer) this.getServer()).bungee) {
-            this.addTickable(new DescriptionTickable(this));
-        }
     }
 
     private void loadMaps() {
@@ -742,7 +722,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
-        this.registerListenerObject(new ServerPingListener(this));
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));

@@ -26,10 +26,10 @@ public class ProtectionListeners implements Listener {
     }
 
     /**
-     * Call a {@link PlayerDeathEvent} and handle this logout as a
-     * escape from death by the enemy. If the player wasn't escaped
-     * the {@link Player#getKiller()} returns null. This method is
-     * used to drop the players items on the ground.
+     * Call a {@link PlayerDeathEvent} and handle this logout as a escape from
+     * death by the enemy. If the player wasn't escaped the
+     * {@link Player#getKiller()} returns null. This method is used to drop the
+     * players items on the ground.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void antiLogout(PlayerQuitEvent event) {
@@ -48,10 +48,10 @@ public class ProtectionListeners implements Listener {
     }
 
     /**
-     * People destroyed a {@link Material#WORKBENCH} closes all viewers
-     * craft window and drops their items on the ground. This is the
-     * major reason why we need to disable this and open a fake workbench
-     * window instead of the real.
+     * People destroying a {@link Material#WORKBENCH} closes all viewers of this
+     * craft window and drops their items on the ground. This is the major
+     * reason why we need to disable this and open a fake workbench window
+     * instead of the real one.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void safeWorkbenches(PlayerInteractEvent event) {

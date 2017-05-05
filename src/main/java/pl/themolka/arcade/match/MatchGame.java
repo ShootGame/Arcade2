@@ -16,7 +16,6 @@ import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.RestartCountdown;
-import pl.themolka.arcade.game.ServerDescriptionEvent;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.ArcadeSound;
@@ -293,54 +292,5 @@ public class MatchGame extends GameModule {
         }
 
         event.getSender().send(ChatColor.GREEN + "Time: " + ChatColor.DARK_AQUA + TimeUtils.prettyTime(time));
-    }
-
-    @Handler(priority = Priority.NORMAL)
-    public void onServerDescription(ServerDescriptionEvent event) {
-        String map = ChatColor.GREEN + ChatColor.BOLD.toString() + this.getGame().getMap().getMapInfo().getName() + ChatColor.RESET;
-        String cycle = ChatColor.GREEN + ChatColor.BOLD.toString() + this.getPlugin().getGames().getQueue().getNextMap() + ChatColor.RESET;
-
-        String result = null;
-        switch (this.getMatch().getState()) {
-            case STARTING:
-                if (!this.getStartCountdown().isTaskRunning()) {
-                    result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " soon...";
-                    break;
-                }
-
-                long startLeft = this.getStartCountdown().getLeftSeconds();
-                result = ChatColor.GREEN + "Starting " + map + ChatColor.GREEN + " in " + startLeft + " second(s)...";
-                break;
-            case RUNNING:
-                if (this.getMatch().getStartTime() == null) {
-                    break;
-                }
-
-                result = ChatColor.LIGHT_PURPLE + "Playing " + map + ChatColor.LIGHT_PURPLE + " for " +
-                        TimeUtils.prettyTime(Time.now().minus(Time.of(this.getMatch().getStartTime()))) + ChatColor.LIGHT_PURPLE + "...";
-                break;
-            case CYCLING:
-                if (this.getPlugin().getGames().isNextRestart()) {
-                    if (!this.getPlugin().getGames().getRestartCountdown().isTaskRunning()) {
-                        result = ChatColor.RED + "Restarting soon...";
-                        break;
-                    }
-
-                    long restartLeft = this.getPlugin().getGames().getRestartCountdown().getLeftSeconds();
-                    result = ChatColor.RED + "Restarting in " + ChatColor.BOLD + restartLeft + ChatColor.RESET + ChatColor.RED + " second(s)...";
-                    break;
-                } else if (!this.getPlugin().getGames().getCycleCountdown().isTaskRunning()) {
-                    result = ChatColor.AQUA + "Cycling to " + cycle + ChatColor.AQUA + " soon...";
-                    break;
-                }
-
-                long cycleLeft = this.getPlugin().getGames().getCycleCountdown().getLeftSeconds();
-                result = ChatColor.AQUA + "Cycling to " + cycle + ChatColor.AQUA + " in " + cycleLeft + " second(s)...";
-                break;
-        }
-
-        if (result != null) {
-            event.setDescription(result);
-        }
     }
 }

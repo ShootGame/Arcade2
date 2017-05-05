@@ -22,7 +22,8 @@ public interface Goal {
 
     /**
      * Owner of this {@link Goal}.
-     * @return owner of this {@link Goal} or `null` if it doesn't contain an owner.
+     * @return owner of this {@link Goal} or `null` if it doesn't contain an
+     * owner.
      */
     default GoalHolder getOwner() {
         return null;
@@ -44,7 +45,8 @@ public interface Goal {
     /**
      * Check if this `Goal` can be completed by the given `GoalHolder`.
      * @param holder `GoalHolder` to check.
-     * @return `true` if the given `GoalHolder` can complete this goal, otherwise `false`.
+     * @return `true` if the given `GoalHolder` can complete this goal,
+     * otherwise `false`.
      */
     boolean isCompletableBy(GoalHolder holder);
 
@@ -67,7 +69,8 @@ public interface Goal {
     }
 
     /**
-     * Check if this `Goal` is or was touched. Touched means that `Goal` was interacted, but not completed.
+     * Check if this `Goal` is or was touched. Touched means that `Goal` was
+     * interacted, but not completed.
      * @return `true` if his `Goal` is or was touched, otherwise `false`.
      */
     default boolean isTouched() {
@@ -75,7 +78,8 @@ public interface Goal {
     }
 
     /**
-     * Check if this `Goal` is untouched. Untouched means that `Goal` wasn't ever interacted.
+     * Check if this `Goal` is untouched. Untouched means that `Goal` wasn't
+     * ever interacted.
      * @return `true` if this `Goal` is untouched, otherwise `false`.
      */
     default boolean isUntouched() {
@@ -83,8 +87,17 @@ public interface Goal {
     }
 
     /**
+     * Check if this `Goal` is visible to user on ex. the scoreboard.
+     * @return `true` if this `Goal` is visible, otherwise `false`.
+     */
+    default boolean isVisible() {
+        return true;
+    }
+
+    /**
      * Reset this `Goal` state to the default value.
-     * @return `true` if reset is supported and was successfully executed, otherwise `false`.
+     * @return `true` if reset is supported and was successfully executed,
+     * otherwise `false`.
      */
     default boolean reset() {
         return false;

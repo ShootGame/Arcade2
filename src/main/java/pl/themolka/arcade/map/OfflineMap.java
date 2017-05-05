@@ -23,7 +23,8 @@ public class OfflineMap implements Paginationable {
     private File directory;
     private File settings;
 
-    public OfflineMap(String name, MapVersion version, String description, List<Author> authors, List<Changelog> changelogs) {
+    public OfflineMap(String name, MapVersion version, String description,
+                      List<Author> authors, List<Changelog> changelogs) {
         this.name = name;
         this.version = version;
         this.description = description;
@@ -43,7 +44,8 @@ public class OfflineMap implements Paginationable {
     @Override
     public int compareTo(Paginationable object) {
         if (object instanceof OfflineMap) {
-            return this.getName().compareToIgnoreCase(((OfflineMap) object).getName());
+            return this.getName().compareToIgnoreCase(
+                    ((OfflineMap) object).getName());
         }
 
         return this.toString().compareToIgnoreCase(object.toString());
@@ -56,8 +58,10 @@ public class OfflineMap implements Paginationable {
             authorsString = ChatColor.GRAY + " by " + this.getAuthorsPretty();
         }
 
-        return ChatColor.GRAY + "#" + index + " " + ChatColor.AQUA + ChatColor.BOLD + this.getName() + ChatColor.RESET +
-                ChatColor.GRAY + " v" + ChatColor.AQUA + this.getVersion() + authorsString;
+        return ChatColor.GRAY + "#" + index + " " + ChatColor.AQUA +
+                ChatColor.BOLD + this.getName() + ChatColor.RESET +
+                ChatColor.GRAY + " v" + ChatColor.AQUA +
+                this.getVersion() + authorsString;
     }
 
     public boolean addChangelog(Changelog changelog) {
@@ -86,11 +90,15 @@ public class OfflineMap implements Paginationable {
     }
 
     public String getAuthorsPretty() {
+        return this.getAuthorsPretty(ChatColor.AQUA, ChatColor.GRAY);
+    }
+
+    public String getAuthorsPretty(ChatColor primary, ChatColor secondary) {
         if (this.hasAuthors()) {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < this.getAuthors().size(); i++) {
                 if (i != 0) {
-                    builder.append(ChatColor.GRAY);
+                    builder.append(secondary);
                     if (this.getAuthors().size() == (i + 1)) {
                         builder.append(" and ");
                     } else {
@@ -98,13 +106,14 @@ public class OfflineMap implements Paginationable {
                     }
                 }
 
-                builder.append(ChatColor.AQUA).append(this.getAuthors().get(i).getUsername());
+                Author author = this.getAuthors().get(i);
+                builder.append(primary).append(author.getUsername());
             }
 
             return builder.toString();
         }
 
-        return ChatColor.AQUA + ChatColor.ITALIC.toString() + "(unknown)";
+        return primary + ChatColor.ITALIC.toString() + "(unknown)";
     }
 
     public Changelog getChangelog() {
