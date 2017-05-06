@@ -51,12 +51,17 @@ public class BlockTransformListeners implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        this.post(event, event.getBlock().getState(), this.applyAir(event.getBlock()), event.getPlayer());
+        this.post(event,
+                  event.getBlock().getState(),
+                  this.applyAir(event.getBlock()),
+                  event.getPlayer());
     }
 
     @EventHandler
     public void onBlockBurn(BlockBurnEvent event) {
-        this.post(event, event.getBlock().getState(), this.applyAir(event.getBlock()));
+        this.post(event,
+                  event.getBlock().getState(),
+                  this.applyAir(event.getBlock()));
     }
 
     @EventHandler
@@ -65,27 +70,36 @@ public class BlockTransformListeners implements Listener {
             return;
         }
 
-        Block target = event.getVelocity().toLocation(event.getWorld()).getBlock();
+        Block target = event.getVelocity().toLocation(
+                event.getWorld()).getBlock();
         Material content = this.getBucketContent(event.getItem().getType());
 
         if (!content.equals(Material.AIR)) {
-            this.post(event, target.getState(), this.applyState(target, content));
+            this.post(event,
+                      target.getState(),
+                      this.applyState(target, content));
         }
     }
 
     @EventHandler
     public void onBlockFade(BlockFadeEvent event) {
-        this.post(event, event.getBlock().getState(), event.getNewState());
+        this.post(event,
+                  event.getBlock().getState(),
+                  event.getNewState());
     }
 
     @EventHandler
     public void onBlockFall(BlockFallEvent event) {
-        this.post(event, event.getBlock().getState(), this.applyAir(event.getBlock()));
+        this.post(event,
+                  event.getBlock().getState(),
+                  this.applyAir(event.getBlock()));
     }
 
     @EventHandler
     public void onBlockForm(BlockFormEvent event) {
-        this.post(event, event.getBlock().getState(), event.getNewState());
+        this.post(event,
+                  event.getBlock().getState(),
+                  event.getNewState());
     }
 
     @EventHandler
@@ -94,39 +108,57 @@ public class BlockTransformListeners implements Listener {
             return;
         }
 
-        this.post(event, event.getToBlock().getState(), event.getBlock().getState());
+        this.post(event,
+                  event.getToBlock().getState(),
+                  event.getBlock().getState());
     }
 
     @EventHandler
     public void onBlockGrow(BlockGrowEvent event) {
-        this.post(event, event.getBlock().getState(), event.getNewState());
+        this.post(event,
+                  event.getBlock().getState(),
+                  event.getNewState());
     }
 
     @EventHandler
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getCause().equals(BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL)) {
+        BlockIgniteEvent.IgniteCause cause =
+                BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL;
+        if (event.getCause().equals(cause)) {
             return;
         }
 
         BlockState newState = this.applyState(event.getBlock(), Material.FIRE);
-        this.post(event, event.getBlock().getState(), newState, event.getPlayer());
+        this.post(event,
+                  event.getBlock().getState(),
+                  newState,
+                  event.getPlayer());
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event instanceof BlockMultiPlaceEvent) {
-            for (BlockState state : ((BlockMultiPlaceEvent) event).getReplacedBlockStates()) {
-                this.post(event, state, state.getBlock().getState(), event.getPlayer());
+            BlockMultiPlaceEvent multi = (BlockMultiPlaceEvent) event;
+            for (BlockState state : multi.getReplacedBlockStates()) {
+                this.post(event,
+                          state,
+                          state.getBlock().getState(),
+                          event.getPlayer());
             }
         } else {
-            this.post(event, event.getBlockReplacedState(), event.getBlock().getState(), event.getPlayer());
+            this.post(event,
+                      event.getBlockReplacedState(),
+                      event.getBlock().getState(),
+                      event.getPlayer());
         }
     }
 
     @EventHandler
     public void onBlockSpread(BlockSpreadEvent event) {
         if (!event.getNewState().getType().equals(Material.FIRE)) {
-            this.post(event, event.getBlock().getState(), event.getNewState());
+            this.post(event,
+                      event.getBlock().getState(),
+                      event.getNewState());
         }
     }
 
@@ -135,11 +167,14 @@ public class BlockTransformListeners implements Listener {
         Block block = event.getBlock();
 
         boolean arrow = event.getEntity() instanceof Arrow;
-        if (arrow && event.getTo().equals(Material.AIR) && block.getType().equals(Material.TNT)) {
+        if (arrow && event.getTo().equals(Material.AIR) &&
+                block.getType().equals(Material.TNT)) {
             return;
         }
 
-        this.post(event, block.getState(), this.applyState(block, event.getTo(), event.getData()));
+        this.post(event,
+                  block.getState(),
+                  this.applyState(block, event.getTo(), event.getData()));
     }
 
     @EventHandler
@@ -149,7 +184,13 @@ public class BlockTransformListeners implements Listener {
                 continue;
             }
 
-            boolean cancel = this.post(event, block, block.getState(), this.applyAir(block), null, false);
+            boolean cancel = this.post(event,
+                                       block,
+                                       block.getState(),
+                                       this.applyAir(block),
+                                       null,
+                                       false);
+
             if (cancel) {
                 event.blockList().remove(block);
             }
@@ -166,13 +207,18 @@ public class BlockTransformListeners implements Listener {
 
             Player player = null;
             if (event instanceof ExplosionPrimeByEntityEvent) {
-                Entity entity = ((ExplosionPrimeByEntityEvent) event).getPrimer();
+                ExplosionPrimeByEntityEvent primeByEntity =
+                        (ExplosionPrimeByEntityEvent) event;
+                Entity entity = primeByEntity.getPrimer();
+
                 if (entity instanceof Player) {
                     player = (Player) entity;
                 }
             }
 
-            this.post(event, block.getState(), this.applyAir(block), player);
+            this.post(event,
+                      block.getState(),
+                      this.applyAir(block), player);
         }
     }
 
@@ -192,14 +238,20 @@ public class BlockTransformListeners implements Listener {
         Material inside = this.getBucketContent(block.getType());
 
         if (inside != null) {
-            this.post(event, block.getState(), this.applyState(block, inside), event.getPlayer());
+            this.post(event,
+                      block.getState(),
+                      this.applyState(block, inside),
+                      event.getPlayer());
         }
     }
 
     @EventHandler
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Block block = event.getBlockClicked().getRelative(event.getBlockFace());
-        this.post(event, block.getState(), this.applyAir(block), event.getPlayer());
+        this.post(event,
+                  block.getState(),
+                  this.applyAir(block),
+                  event.getPlayer());
     }
 
     @EventHandler
@@ -210,7 +262,10 @@ public class BlockTransformListeners implements Listener {
 
         Block block = event.getClickedBlock();
         if (block != null && block.getType().equals(Material.SOIL)) {
-            this.post(event, block.getState(), this.applyState(block, Material.DIRT), event.getPlayer());
+            this.post(event,
+                      block.getState(),
+                      this.applyState(block, Material.DIRT),
+                      event.getPlayer());
         }
     }
 
@@ -266,20 +321,28 @@ public class BlockTransformListeners implements Listener {
     // Posting
     //
 
-    private boolean post(Event cause, BlockState oldState, BlockState newState) {
-        return this.post(cause, oldState.getBlock(), oldState, newState);
+    private boolean post(Event cause, BlockState oldState,
+                         BlockState newState) {
+        return this.post(cause, oldState.getBlock(), oldState,
+                         newState);
     }
 
-    private boolean post(Event cause, BlockState oldState, BlockState newState, Player bukkit) {
-        return this.post(cause, oldState.getBlock(), oldState, newState, bukkit);
+    private boolean post(Event cause, BlockState oldState,
+                         BlockState newState, Player bukkit) {
+        return this.post(cause, oldState.getBlock(), oldState,
+                         newState, bukkit);
     }
 
-    private boolean post(Event cause, Block block, BlockState oldState, BlockState newState) {
-        return this.post(cause, block, oldState, newState, null);
+    private boolean post(Event cause, Block block, BlockState oldState,
+                         BlockState newState) {
+        return this.post(cause, block, oldState,
+                         newState, null);
     }
 
-    public boolean post(Event cause, Block block, BlockState oldState, BlockState newState, Player bukkit) {
-        return this.post(cause, block, oldState, newState, bukkit, true);
+    public boolean post(Event cause, Block block, BlockState oldState,
+                        BlockState newState, Player bukkit) {
+        return this.post(cause, block, oldState,
+                         newState, bukkit, true);
     }
 
     private boolean post(Event cause, Block block, BlockState oldState,
@@ -289,10 +352,12 @@ public class BlockTransformListeners implements Listener {
             player = this.plugin.getPlayer(bukkit);
         }
 
-        BlockTransformEvent event = new BlockTransformEvent(this.plugin, block, cause, newState, oldState, player);
+        BlockTransformEvent event = new BlockTransformEvent(
+                this.plugin, block, cause, newState, oldState, player);
         this.plugin.getEventBus().publish(event);
 
-        boolean canceled = cancel && event.isCanceled() && cause instanceof Cancellable;
+        boolean canceled = cancel && event.isCanceled() &&
+                cause instanceof Cancellable;
         if (canceled) {
             ((Cancellable) cause).setCancelled(true);
         }

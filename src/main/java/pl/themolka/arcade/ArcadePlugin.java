@@ -188,25 +188,22 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getEventBus().publish(new PluginReadyEvent(this));
 
         // begin the plugin logic
-        this.getServer().getScheduler().runTaskLater(this, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Location spawn = XMLLocation.parse(ArcadePlugin.this.getSettings().getData().getChild("spawn"));
+        this.getServer().getScheduler().runTaskLater(this, () -> {
+            try {
+                Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
 
-                    World defaultWorld = ArcadePlugin.this.getServer().getWorlds().get(0);
-                    defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
-                } catch (DataConversionException ignored) {
-                }
-
-                if (ArcadePlugin.this.beginLogic()) {
-                    getLogger().info(getName() + " is fresh and ready to use.");
-                } else {
-                    getLogger().severe("Could not start - see logs above. Shutting down the server...");
-                    getServer().shutdown();
-                }
+                World defaultWorld = this.getServer().getWorlds().get(0);
+                defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
+            } catch (DataConversionException ignored) {
             }
-        }, 1L);
+
+            if (this.beginLogic()) {
+                this.getLogger().info(getName() + " is fresh and ready to use.");
+            } else {
+                this.getLogger().severe("Could not start - see logs above. Shutting down the server...");
+                this.getServer().shutdown();
+            }
+        }, Time.ofTicks(1).toTicks());
     }
 
     //

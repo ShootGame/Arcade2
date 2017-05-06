@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 public interface Sender extends Messageable {
-    Locale DEFAULT_LOCALE = new Locale("en", "us");
+    Locale DEFAULT_LOCALE = Locale.US;
 
     default GamePlayer getGamePlayer() {
         if (this.isConsole()) {

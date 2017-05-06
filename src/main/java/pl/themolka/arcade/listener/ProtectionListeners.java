@@ -36,14 +36,17 @@ public class ProtectionListeners implements Listener {
         Player player = event.getPlayer();
 
         ArcadePlayer arcade = this.plugin.getPlayer(player);
-        if (arcade != null && arcade.getGamePlayer() != null && arcade.getGamePlayer().isParticipating()) {
-            // call the fake event
-            this.plugin.getServer().getPluginManager().callEvent(new PlayerDeathEvent(
+        if (arcade != null && arcade.getGamePlayer() != null &&
+                arcade.getGamePlayer().isParticipating()) {
+            PlayerDeathEvent death = new PlayerDeathEvent(
                     player,
                     Arrays.asList(player.getInventory().getContents()),
                     player.getTotalExperience(),
                     null
-            ));
+            );
+
+            // call the fake event
+            this.plugin.getServer().getPluginManager().callEvent(death);
         }
     }
 
@@ -55,15 +58,15 @@ public class ProtectionListeners implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void safeWorkbenches(PlayerInteractEvent event) {
-        if (event.isCancelled() || event.getPlayer().isSneaking()) {
-            return;
-        }
+        if (!event.isCancelled() || event.hasBlock() ||
+                !event.getPlayer().isSneaking()) {
+            if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                Block block = event.getClickedBlock();
 
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && event.hasBlock()) {
-            Block block = event.getClickedBlock();
-            if (block.getType().equals(Material.WORKBENCH)) {
-                event.setCancelled(true);
-                event.getPlayer().openWorkbench(null, true);
+                if (block.getType().equals(Material.WORKBENCH)) {
+                    event.setCancelled(true);
+                    event.getPlayer().openWorkbench(null, true);
+                }
             }
         }
     }
