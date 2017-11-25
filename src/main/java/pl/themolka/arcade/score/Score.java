@@ -92,7 +92,7 @@ public class Score implements Goal {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            this.game.getPlugin().getEventBus().publish(new GoalResetEvent(this.game.getPlugin(), this));
+            GoalResetEvent.call(this.game.getPlugin(), this);
 
             this.completed = false;
             this.scoreTouched = false;
@@ -155,7 +155,7 @@ public class Score implements Goal {
         this.scoreTouched = true;
         this.score += event.getPoints();
 
-        this.game.getPlugin().getEventBus().publish(new GoalProgressEvent(this.game.getPlugin(), this, oldProgress));
+        GoalProgressEvent.call(this.game.getPlugin(), this, oldProgress);
 
         if (this.isCompleted()) {
             this.handleGoalComplete();
@@ -191,7 +191,7 @@ public class Score implements Goal {
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop
             // all `GoalHolder`s (like players or teams) to find the winner.
-            this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
+            GoalCompleteEvent.call(this.game.getPlugin(), this);
         }
     }
 }

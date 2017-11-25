@@ -18,4 +18,8 @@ public class GoalProgressEvent extends GoalEvent {
     public double getNewProgress() {
         return this.getGoal().getProgress();
     }
+
+    public static GoalProgressEvent call(ArcadePlugin plugin, Goal goal, double oldProgress) {
+        return plugin.getEventBus().postEvent(new GoalProgressEvent(plugin, goal, oldProgress));
+    }
 }

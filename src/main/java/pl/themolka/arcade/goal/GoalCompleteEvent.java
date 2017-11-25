@@ -22,4 +22,8 @@ public class GoalCompleteEvent extends GoalEvent implements Cancelable {
     public void setCanceled(boolean cancel) {
         this.cancel = cancel;
     }
+
+    public static GoalCompleteEvent call(ArcadePlugin plugin, Goal goal) {
+        return plugin.getEventBus().postEvent(new GoalCompleteEvent(plugin, goal));
+    }
 }

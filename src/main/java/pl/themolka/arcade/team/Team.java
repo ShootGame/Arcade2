@@ -76,8 +76,7 @@ public class Team implements MatchWinner {
             return false;
         }
 
-        this.plugin.getEventBus().publish(
-                new GoalCreateEvent(this.plugin, goal));
+        GoalCreateEvent.call(this.plugin, goal);
         return this.goals.add(goal);
     }
 
@@ -219,6 +218,14 @@ public class Team implements MatchWinner {
         return this.getTitle();
     }
 
+    public int getSlots() {
+        if (this.slots <= this.maxPlayers) {
+            return this.slots;
+        }
+
+        return this.maxPlayers;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(this.getId());
@@ -254,14 +261,6 @@ public class Team implements MatchWinner {
 
     public boolean isPlaying() {
         return this.getMatch().isRunning();
-    }
-
-    public int getSlots() {
-        if (this.slots <= this.maxPlayers) {
-            return this.slots;
-        }
-
-        return this.maxPlayers;
     }
 
     public boolean join(GamePlayer player) {

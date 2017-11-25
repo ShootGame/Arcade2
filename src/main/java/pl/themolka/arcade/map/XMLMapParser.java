@@ -184,7 +184,7 @@ public class XMLMapParser implements MapParser {
             description = contribution.trim();
         }
 
-        return new Author(uuid, username, description);
+        return Author.of(uuid, username, description);
     }
 
     private List<Changelog> parseChangelog(Element parent) {

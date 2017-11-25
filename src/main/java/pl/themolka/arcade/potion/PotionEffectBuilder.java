@@ -6,11 +6,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PotionEffectBuilder implements Builder<PotionEffect> {
-    private boolean ambient;
+    private boolean ambient = true;
     private int amplifier;
     private Color color;
     private int duration;
-    private boolean particles;
+    private boolean particles = true;
     private PotionEffectType type;
 
     @Override
@@ -76,5 +76,14 @@ public class PotionEffectBuilder implements Builder<PotionEffect> {
     public PotionEffectBuilder type(PotionEffectType type) {
         this.type = type;
         return this;
+    }
+
+    public static PotionEffect clone(PotionEffect original) {
+        return new PotionEffect(original.getType(),
+                                original.getDuration(),
+                                original.getAmplifier(),
+                                original.isAmbient(),
+                                original.hasParticles(),
+                                original.getColor());
     }
 }

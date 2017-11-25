@@ -10,19 +10,7 @@ public class Author implements Comparable<Author> {
     private final String username;
     private final String description;
 
-    public Author(String username) {
-        this((UUID) null, username);
-    }
-
-    public Author(String username, String description) {
-        this(null, username, description);
-    }
-
-    public Author(UUID uuid, String username) {
-        this(uuid, username, null);
-    }
-
-    public Author(UUID uuid, String username, String description) {
+    private Author(UUID uuid, String username, String description) {
         this.uuid = uuid;
         this.offlineUuid = this.newOfflineUuid(username);
         this.username = username;
@@ -69,12 +57,14 @@ public class Author implements Comparable<Author> {
     @Override
     public String toString() {
         if (this.hasUsername()) {
-            String author = ChatColor.GOLD + this.getUsername() + ChatColor.RESET;
+            String author = ChatColor.GOLD +
+                    this.getUsername() + ChatColor.RESET;
             if (!this.hasDescription()) {
                 return author;
             }
 
-            return author + ChatColor.GRAY + " - " + ChatColor.ITALIC + this.getDescription() + ChatColor.RESET;
+            return author + ChatColor.GRAY + " - " + ChatColor.ITALIC +
+                    this.getDescription() + ChatColor.RESET;
         }
 
         return null;
@@ -86,5 +76,33 @@ public class Author implements Comparable<Author> {
         }
 
         return null;
+    }
+
+    //
+    // Instancing
+    //
+
+    public static Author of(String username) {
+        return of(username, null);
+    }
+
+    public static Author of(String username, String description) {
+        return of(null, username, description);
+    }
+
+    public static Author of(UUID uuid, String username) {
+        return of(uuid, username, null);
+    }
+
+    public static Author of(UUID uuid, String username, String description) {
+        return new Author(uuid, username, description);
+    }
+
+    public static Author plain(String uuid, String username) {
+        return plain(uuid, username, null);
+    }
+
+    public static Author plain(String uuid, String username, String description) {
+        return of(UUID.fromString(uuid), username, description);
     }
 }

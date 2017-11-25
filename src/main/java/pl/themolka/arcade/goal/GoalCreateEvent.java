@@ -9,4 +9,8 @@ public class GoalCreateEvent extends GoalEvent {
     public GoalCreateEvent(ArcadePlugin plugin, Goal goal) {
         super(plugin, goal);
     }
+
+    public static GoalCreateEvent call(ArcadePlugin plugin, Goal goal) {
+        return plugin.getEventBus().postEvent(new GoalCreateEvent(plugin, goal));
+    }
 }

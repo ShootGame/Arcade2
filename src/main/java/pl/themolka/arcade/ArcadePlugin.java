@@ -91,7 +91,7 @@ import java.util.logging.Level;
  */
 public final class ArcadePlugin extends JavaPlugin implements Runnable {
     public static final Author[] COPYRIGHTS = {
-            new Author(UUID.fromString("2b5f34f6-fb05-4852-a86c-2e03bccbdf89"), "TheMolkaPL")
+            Author.plain("2b5f34f6-fb05-4852-a86c-2e03bccbdf89", "TheMolkaPL")
     };
 
     public static final String DEFAULT_SERVER_NAME = "The server";
@@ -102,7 +102,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
-    private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder().serializeNulls()
+                                               .setPrettyPrinting()
+                                               .create();
     private final ManifestFile manifest = new ManifestFile();
     private MapManager maps;
     private final ModuleContainer modules = new ModuleContainer();

@@ -101,7 +101,7 @@ public class Leakable implements InteractableGoal, StringId {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            this.game.getPlugin().getEventBus().publish(new GoalResetEvent(this.game.getPlugin(), this));
+            GoalResetEvent.call(this.game.getPlugin(), this);
 
             this.completed = false;
             this.breaked.clear();
@@ -150,7 +150,7 @@ public class Leakable implements InteractableGoal, StringId {
 
         breaker.sendGoalMessage(this.getGoalInteractMessage(interactMessage));
 
-        this.game.getPlugin().getEventBus().publish(new GoalProgressEvent(this.game.getPlugin(), this, oldProgress));
+        GoalProgressEvent.call(this.game.getPlugin(), this, oldProgress);
         return true;
     }
 
@@ -295,7 +295,7 @@ public class Leakable implements InteractableGoal, StringId {
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop
             // all `GameHolder`s (like players or teams) to find the winner.
-            this.game.getPlugin().getEventBus().publish(new GoalCompleteEvent(this.game.getPlugin(), this));
+            GoalCompleteEvent.call(this.game.getPlugin(), this);
         }
     }
 }
