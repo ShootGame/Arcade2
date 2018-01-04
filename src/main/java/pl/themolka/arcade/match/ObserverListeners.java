@@ -61,7 +61,7 @@ public class ObserverListeners implements Listener {
         this.game = game;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
@@ -78,21 +78,21 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (this.isObserving(event.getDamager()) ||
                 this.isObserving(event.getEntity())) {
@@ -100,56 +100,56 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityTarget(EntityTargetEvent event) {
         if (this.isObserving(event.getTarget())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onHangingBreak(HangingBreakByEntityEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (this.isObserving(event.getWhoClicked())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventorySpy(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Player &&
                 this.isObserving(event.getPlayer()) &&
@@ -162,7 +162,7 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onMatchWindowOpen(PlayerInteractEvent event) {
         if (event.getItem() != null &&
                 event.getItem().equals(ObserversKit.PLAY)) {
@@ -192,28 +192,28 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
@@ -245,21 +245,21 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupArrow(PlayerPickupArrowEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupExperience(PlayerPickupExperienceEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (this.isObserving(event.getPlayer())) {
             event.setCancelled(true);
@@ -281,28 +281,28 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPotionEffectAdd(PotionEffectAddEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPotionEffectExtend(PotionEffectExtendEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPotionEffectRemove(PotionEffectRemoveEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event) {
         for (LivingEntity entity : event.getAffectedEntities()) {
             if (this.isObserving(entity)) {
@@ -311,21 +311,21 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onVehicleDamage(VehicleDamageEvent event) {
         if (this.isObserving(event.getAttacker())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onVehicleEnter(VehicleEnterEvent event) {
         if (this.isObserving(event.getEntered())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);

@@ -1,18 +1,17 @@
-package pl.themolka.arcade.score;
+package pl.themolka.arcade.capture.wool;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
-    private final boolean byLimit;
+public class WoolCapturablePlaceEvent extends WoolCapturableEvent implements Cancelable {
     private boolean cancel;
     private GoalHolder completer;
 
-    public ScoreScoredEvent(ArcadePlugin plugin, Score score, boolean byLimit, GoalHolder completer) {
-        super(plugin, score);
+    public WoolCapturablePlaceEvent(ArcadePlugin plugin, WoolCapturable wool, GoalHolder completer) {
+        super(plugin, wool);
 
-        this.byLimit = byLimit;
+        this.completer = completer;
     }
 
     @Override
@@ -27,14 +26,6 @@ public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
 
     public GoalHolder getCompleter() {
         return this.completer;
-    }
-
-    public boolean hasCompleter() {
-        return this.completer != null;
-    }
-
-    public boolean isByLimit() {
-        return this.byLimit;
     }
 
     public void setCompleter(GoalHolder completer) {

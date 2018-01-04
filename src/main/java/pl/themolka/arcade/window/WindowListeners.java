@@ -38,7 +38,7 @@ public class WindowListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClose(InventoryCloseEvent event) {
         Window window = this.fetchWindow(event.getInventory());
         if (window == null) {

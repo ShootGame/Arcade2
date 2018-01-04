@@ -1,5 +1,8 @@
 package pl.themolka.arcade.goal;
 
+import org.bukkit.ChatColor;
+import pl.themolka.arcade.game.Game;
+
 /**
  * An abstract base class for all goals in games.
  */
@@ -7,22 +10,36 @@ public interface Goal {
     /**
      * This `Goal` is completed in 100%.
      */
-    double PROGRESS_SCORED = 1D;
+    double PROGRESS_SCORED = 1.0D;
 
     /**
      * This `Goal` is completed in 0%.
      */
-    double PROGRESS_UNTOUCHED = 0D;
+    double PROGRESS_UNTOUCHED = 0.0D;
 
     /**
-     * Name of this `Goal` displayed on goal results.
-     * @return the name of this `Goal`.
+     * Colored name of this `Goal` displayed on goal results.
+     * @return the colored name of this `Goal`.
      */
-    String getName();
+    String getColoredName();
+
+    /**
+     * Game which this `Goal` is inside.
+     * @return {@link Game} of this `Goal`.
+     */
+    Game getGame();
+
+    /**
+     * Uncolored name of this `Goal` displayed on goal results.
+     * @return the raw name of this `Goal`.
+     */
+    default String getName() {
+        return ChatColor.stripColor(this.getColoredName());
+    }
 
     /**
      * Owner of this {@link Goal}.
-     * @return owner of this {@link Goal} or `null` if it doesn't contain an
+     * @return owner of this {@link Goal} or `null` if it doesn't have an
      * owner.
      */
     default GoalHolder getOwner() {
@@ -44,11 +61,11 @@ public interface Goal {
 
     /**
      * Check if this `Goal` can be completed by the given `GoalHolder`.
-     * @param holder `GoalHolder` to check.
+     * @param completer `GoalHolder` to check.
      * @return `true` if the given `GoalHolder` can complete this goal,
      * otherwise `false`.
      */
-    boolean isCompletableBy(GoalHolder holder);
+    boolean isCompletableBy(GoalHolder completer);
 
     /**
      * Check if this `Goal` is completed.
@@ -61,11 +78,11 @@ public interface Goal {
 
     /**
      * Check if this `Goal` is completed by the given `GoalHolder`.
-     * @param holder `GoalHolder` to check.
+     * @param completer `GoalHolder` to check.
      * @return `true` if the given `Goal` is completed, otherwise `false`.
      */
-    default boolean isCompleted(GoalHolder holder) {
-        return this.isCompleted() && this.isCompletableBy(holder);
+    default boolean isCompleted(GoalHolder completer) {
+        return this.isCompleted() && this.isCompletableBy(completer);
     }
 
     /**
@@ -105,8 +122,28 @@ public interface Goal {
 
     /**
      * Set completion of this `Goal` to completed or not.
-     * @param holder `GoalHolder` who completed this `Goal`, may be `null`.
+     * @param completer `GoalHolder` who completed this `Goal`, may be `null`.
      * @param completed `true` if this `Goal` is completed, `false` if not.
      */
-    void setCompleted(GoalHolder holder, boolean completed);
+    void setCompleted(GoalHolder completer, boolean completed);
+
+    //
+    // Utilities
+    //
+
+    static boolean isCompletableByPositive(Goal goal, GoalHolder completer) {
+        return isCompletableByPositive(goal.getOwner(), completer);
+    }
+
+    static boolean isCompletableByPositive(GoalHolder owner, GoalHolder completer) {
+        return owner == null || owner.equals(completer);
+    }
+
+    static boolean isCompletableByNegative(Goal goal, GoalHolder completer) {
+        return isCompletableByNegative(goal.getOwner(), completer);
+    }
+
+    static boolean isCompletableByNegative(GoalHolder owner, GoalHolder completer) {
+        return owner == null || !owner.equals(completer);
+    }
 }

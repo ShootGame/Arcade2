@@ -1,4 +1,4 @@
-package pl.themolka.arcade.leak;
+package pl.themolka.arcade.capture;
 
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.goal.Goal;
@@ -9,29 +9,34 @@ import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.InteractableGoal;
 import pl.themolka.arcade.util.StringId;
 
-public abstract class Leakable implements InteractableGoal, StringId {
-    public static final String DEFAULT_GOAL_NAME = "Leakable";
+public abstract class Capturable implements InteractableGoal, StringId {
+    public static final String DEFAULT_GOAL_NAME = "Capturable";
 
-    protected final LeakGame game;
+    protected final CaptureGame game;
 
     private final GoalHolder owner;
+    private boolean captured;
     private final GoalContributionContext contributions;
     private final String id;
-    private boolean leaked;
     private String name;
 
-    public Leakable(LeakGame game, GoalHolder owner, String id) {
+    public Capturable(CaptureGame game, GoalHolder owner, String id) {
         this.game = game;
 
         this.owner = owner;
+        this.captured = false;
         this.contributions = new GoalContributionContext();
         this.id = id;
-        this.leaked = false;
     }
 
     @Override
     public String getColoredName() {
-        return this.owner.getColor().toChat() + this.getName();
+        String color = "";
+        if (this.hasOwner()) {
+            color = this.getOwner().getColor().toChat().toString();
+        }
+
+        return color + this.getName();
     }
 
     @Override
@@ -73,24 +78,24 @@ public abstract class Leakable implements InteractableGoal, StringId {
 
     @Override
     public boolean isCompleted() {
-        return this.isLeaked();
+        return this.isCaptured();
     }
 
     @Override
     public boolean reset() {
-        if (!this.isLeaked()) {
+        if (!this.isCaptured()) {
             return false;
         }
 
-        LeakableResetEvent event = new LeakableResetEvent(this.game.getPlugin(), this);
+        CapturableResetEvent event = new CapturableResetEvent(this.game.getPlugin(), this);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             GoalResetEvent.call(this.game.getPlugin(), this);
 
-            this.leaked = false;
+            this.captured = false;
             this.contributions.clearContributors();
-            this.resetLeakable();
+            this.resetCapturable();
             return true;
         }
 
@@ -106,32 +111,34 @@ public abstract class Leakable implements InteractableGoal, StringId {
         }
     }
 
-    public boolean isLeaked() {
-        return this.leaked;
-    }
+    public abstract void capture(GoalHolder completer);
 
     public boolean hasName() {
         return this.name != null;
     }
 
-    public abstract void leak();
+    public boolean hasOwner() {
+        return this.owner != null;
+    }
+
+    public boolean isCaptured() {
+        return this.captured;
+    }
 
     @Deprecated
-    public abstract void resetLeakable();
+    public abstract void resetCapturable();
 
     public void setName(String name) {
         this.name = name;
     }
 
     private void handleGoalComplete(GoalHolder completer) {
-        if (this.leaked) {
+        if (this.captured) {
             return;
         }
-        this.leaked = true;
+        this.captured = true;
 
-        LeakableLeakEvent event = new LeakableLeakEvent(this.game.getPlugin(), this, completer);
-        this.game.getPlugin().getEventBus().publish(event);
-
+        CapturableCaptureEvent event = new CapturableCaptureEvent(this.game.getPlugin(), this, completer);
         if (!event.isCanceled()) {
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop

@@ -11,7 +11,8 @@ public class PlayerMoveEvent extends GamePlayerEvent implements Cancelable {
     private final Location from;
     private final Location to;
 
-    public PlayerMoveEvent(ArcadePlugin plugin, GamePlayer player, org.bukkit.event.player.PlayerMoveEvent event) {
+    public PlayerMoveEvent(ArcadePlugin plugin, GamePlayer player,
+                           org.bukkit.event.player.PlayerMoveEvent event) {
         super(plugin, player);
 
         this.from = event.getFrom();

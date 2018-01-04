@@ -76,7 +76,7 @@ public class GeneralListeners implements Listener {
     // Disable Ender Chests
     //
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEnderChestCraft(CraftItemEvent event) {
         if (event.getInventory().getResult() != null && event.getInventory()
                 .getResult().getType().equals(Material.ENDER_CHEST)) {
@@ -86,7 +86,7 @@ public class GeneralListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEnderChestOpen(InventoryOpenEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
@@ -95,7 +95,7 @@ public class GeneralListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEnderChestPlace(BlockPlaceEvent event) {
         if (event.getBlock().getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
@@ -104,7 +104,7 @@ public class GeneralListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEnderChestUse(InventoryClickEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
@@ -117,12 +117,12 @@ public class GeneralListeners implements Listener {
     // Disable portals to other worlds/dimensions.
     //
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPortalCreate(PortalCreateEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPortalUse(EntityPortalEvent event) {
         event.setCancelled(true);
 
@@ -136,7 +136,7 @@ public class GeneralListeners implements Listener {
     // Disable some commands
     //
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String prefix = BukkitCommands.BUKKIT_COMMAND_PREFIX.toLowerCase();
         String message = event.getMessage();
@@ -177,12 +177,12 @@ public class GeneralListeners implements Listener {
     // Disable weather and thunder cycle
     //
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onWeatherChange(WeatherChangeEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onThunderChange(ThunderChangeEvent event) {
         event.setCancelled(true);
     }
@@ -196,7 +196,7 @@ public class GeneralListeners implements Listener {
      * cancel the last player movement using the setCanceled(...) method in
      * {@link PlayerMoveEvent}.
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerMove(org.bukkit.event.player.PlayerMoveEvent event) {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game == null) {

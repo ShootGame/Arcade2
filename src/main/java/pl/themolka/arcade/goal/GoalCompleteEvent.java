@@ -8,9 +8,12 @@ import pl.themolka.arcade.event.Cancelable;
  */
 public class GoalCompleteEvent extends GoalEvent implements Cancelable {
     private boolean cancel;
+    private final GoalHolder completer;
 
-    public GoalCompleteEvent(ArcadePlugin plugin, Goal goal) {
+    private GoalCompleteEvent(ArcadePlugin plugin, Goal goal, GoalHolder completer) {
         super(plugin, goal);
+
+        this.completer = completer;
     }
 
     @Override
@@ -23,7 +26,19 @@ public class GoalCompleteEvent extends GoalEvent implements Cancelable {
         this.cancel = cancel;
     }
 
+    public GoalHolder getCompleter() {
+        return this.completer;
+    }
+
+    public boolean hasCompleter() {
+        return this.completer != null;
+    }
+
     public static GoalCompleteEvent call(ArcadePlugin plugin, Goal goal) {
-        return plugin.getEventBus().postEvent(new GoalCompleteEvent(plugin, goal));
+        return call(plugin, goal, null);
+    }
+
+    public static GoalCompleteEvent call(ArcadePlugin plugin, Goal goal, GoalHolder completer) {
+        return plugin.getEventBus().postEvent(new GoalCompleteEvent(plugin, goal, completer));
     }
 }

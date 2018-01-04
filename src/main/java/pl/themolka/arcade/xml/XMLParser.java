@@ -57,6 +57,11 @@ public class XMLParser {
             return def;
         }
 
+        bool = bool.trim();
+        if (bool.isEmpty()) {
+            return def;
+        }
+
         switch (bool.toLowerCase()) {
             case "true":
             case "1":
@@ -80,7 +85,11 @@ public class XMLParser {
     }
 
     public static String parseEnumValue(String key) {
-        return key.toUpperCase().replace(" ", "_").replace("-", "_");
+        if (key != null) {
+            return key.toUpperCase().replace(" ", "_").replace("-", "_");
+        }
+
+        return null;
     }
 
     public static String parseMessage(String message) {

@@ -1,10 +1,10 @@
 package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
-import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.GamePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,22 +19,22 @@ public class TeamLockGame extends GameModule {
     }
 
     @Handler(priority = Priority.HIGHER)
-    public void onJoinCommand(GameCommands.JoinCommandEvent event) {
+    public void onPlayerJoinTeam(PlayerJoinTeamEvent event) {
         if (event.isCanceled()) {
             return;
         }
 
+        GamePlayer player = event.getGamePlayer();
         for (TeamLockRule rule : this.rules) {
-            FilterResult result = rule.getFilter().filter(event.getJoinPlayer(), this.teams, this.teams.getMatch());
+            FilterResult result = rule.getFilter().filter(event.getPlayer(), player, this.teams, this.teams.getMatch());
             if (result.equals(FilterResult.DENY)) {
                 event.setCanceled(true);
-                event.setJoined(false);
 
                 String message = rule.getMessage();
                 if (message != null) {
-                    event.getJoinPlayer().sendError(message);
+                    player.sendError(message);
                 } else {
-                    event.getJoinPlayer().sendError("You can't join this game right now.");
+                    player.sendError("You can't join this game right now.");
                 }
                 break;
             }

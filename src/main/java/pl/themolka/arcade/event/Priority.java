@@ -10,7 +10,7 @@ package pl.themolka.arcade.event;
 public class Priority {
     /**
      * Handled first, should contain <u>major</u> handlers
-     * <b>Should be <u>never</u> canceled!</b>
+     * <b>Should <u>never</u> be canceled!</b>
      */
     public static final int FIRST = Integer.MAX_VALUE;
 
@@ -51,7 +51,7 @@ public class Priority {
 
     /**
      * Handled after {@link #LOWEST}, should contain <u>major handlers</u>
-     * <b>Should be <u>never</u> canceled!</b>
+     * <b>Should <u>never</u> be canceled!</b>
      */
     public static final int LAST = Integer.MIN_VALUE;
 }

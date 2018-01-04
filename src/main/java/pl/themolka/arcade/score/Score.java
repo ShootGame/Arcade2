@@ -1,5 +1,6 @@
 package pl.themolka.arcade.score;
 
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
@@ -9,7 +10,7 @@ import pl.themolka.arcade.goal.GoalResetEvent;
 public class Score implements Goal {
     public static final String DEFAULT_GOAL_NAME = "Score";
 
-    private final ScoreGame game;
+    protected final ScoreGame game;
 
     private final GoalHolder owner;
     private boolean completed;
@@ -27,8 +28,19 @@ public class Score implements Goal {
         this.game = game;
 
         this.owner = owner;
+        this.completed = false;
         this.initScore = initScore;
         this.score = initScore;
+    }
+
+    @Override
+    public String getColoredName() {
+        return this.owner.getColor().toChat() + this.getName();
+    }
+
+    @Override
+    public Game getGame() {
+        return this.game.getGame();
     }
 
     @Override
@@ -68,13 +80,13 @@ public class Score implements Goal {
     }
 
     @Override
-    public boolean isCompletableBy(GoalHolder holder) {
-        return this.getOwner().equals(holder);
+    public boolean isCompletableBy(GoalHolder completer) {
+        return Goal.isCompletableByPositive(this, completer);
     }
 
     @Override
     public boolean isCompleted() {
-        return this.completed || (this.isLimitReached());
+        return this.completed || this.isLimitReached();
     }
 
     @Override
@@ -104,9 +116,9 @@ public class Score implements Goal {
     }
 
     @Override
-    public void setCompleted(GoalHolder holder, boolean completed) {
+    public void setCompleted(GoalHolder completer, boolean completed) {
         if (completed) {
-            this.handleGoalComplete();
+            this.handleGoalComplete(completer);
         } else {
             this.reset();
         }
@@ -142,8 +154,8 @@ public class Score implements Goal {
      *     - ScoreScoredEvent (cancelable)
      *     - GoalCompleteEvent (cancelable)
      */
-    public void incrementScore(int points) {
-        ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, points);
+    public void incrementScore(GoalHolder completer, int points) {
+        ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, completer, points);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (event.isCanceled()) {
@@ -155,10 +167,10 @@ public class Score implements Goal {
         this.scoreTouched = true;
         this.score += event.getPoints();
 
-        GoalProgressEvent.call(this.game.getPlugin(), this, oldProgress);
+        GoalProgressEvent.call(this.game.getPlugin(), this, event.getCompleter(), oldProgress);
 
         if (this.isCompleted()) {
-            this.handleGoalComplete();
+            this.setCompleted(event.getCompleter(), true);
         }
     }
 
@@ -174,24 +186,25 @@ public class Score implements Goal {
         this.name = name;
     }
 
-    private void handleGoalComplete() {
+    private void handleGoalComplete(GoalHolder completer) {
         if (this.completed) {
             return;
         }
         this.completed = true;
 
-        if (this.isLimitReached()) {
+        boolean byLimit = this.isLimitReached();
+        if (byLimit) {
             this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
         }
 
-        ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this);
+        ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop
             // all `GoalHolder`s (like players or teams) to find the winner.
-            GoalCompleteEvent.call(this.game.getPlugin(), this);
+            GoalCompleteEvent.call(this.game.getPlugin(), this, event.getCompleter());
         }
     }
 }

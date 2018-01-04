@@ -49,7 +49,7 @@ public class BlockTransformListeners implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         this.post(event,
                   event.getBlock().getState(),
@@ -57,14 +57,14 @@ public class BlockTransformListeners implements Listener {
                   event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
         this.post(event,
                   event.getBlock().getState(),
                   this.applyAir(event.getBlock()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockDispense(BlockDispenseEvent event) {
         if (!this.isBucket(event.getItem().getType())) {
             return;
@@ -81,28 +81,28 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFade(BlockFadeEvent event) {
         this.post(event,
                   event.getBlock().getState(),
                   event.getNewState());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFall(BlockFallEvent event) {
         this.post(event,
                   event.getBlock().getState(),
                   this.applyAir(event.getBlock()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event) {
         this.post(event,
                   event.getBlock().getState(),
                   event.getNewState());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
         if (event.getBlock().getType().equals(event.getToBlock().getType())) {
             return;
@@ -113,14 +113,14 @@ public class BlockTransformListeners implements Listener {
                   event.getBlock().getState());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockGrow(BlockGrowEvent event) {
         this.post(event,
                   event.getBlock().getState(),
                   event.getNewState());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
         BlockIgniteEvent.IgniteCause cause =
                 BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL;
@@ -135,7 +135,7 @@ public class BlockTransformListeners implements Listener {
                   event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event instanceof BlockMultiPlaceEvent) {
             BlockMultiPlaceEvent multi = (BlockMultiPlaceEvent) event;
@@ -153,7 +153,7 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockSpread(BlockSpreadEvent event) {
         if (!event.getNewState().getType().equals(Material.FIRE)) {
             this.post(event,
@@ -162,7 +162,7 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         Block block = event.getBlock();
 
@@ -177,7 +177,7 @@ public class BlockTransformListeners implements Listener {
                   this.applyState(block, event.getTo(), event.getData()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         for (Block block : new ArrayList<>(event.blockList())) {
             if (block.getType().equals(Material.TNT)) {
@@ -197,7 +197,7 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onExplosionPrime(ExplosionPrimeEvent event) {
         if (event.getEntity() instanceof TNTPrimed) {
             Block block = event.getEntity().getLocation().getBlock();
@@ -222,17 +222,17 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         // TODO
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPistonRetrack(BlockPistonRetractEvent event) {
         // TODO
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
         Block block = event.getBlockClicked().getRelative(event.getBlockFace());
         Material inside = this.getBucketContent(block.getType());
@@ -245,7 +245,7 @@ public class BlockTransformListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         Block block = event.getBlockClicked().getRelative(event.getBlockFace());
         this.post(event,
@@ -254,7 +254,7 @@ public class BlockTransformListeners implements Listener {
                   event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getAction().equals(Action.PHYSICAL)) {
             return;

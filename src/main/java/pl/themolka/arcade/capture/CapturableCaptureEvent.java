@@ -1,19 +1,17 @@
-package pl.themolka.arcade.score;
+package pl.themolka.arcade.capture;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class ScoreIncrementEvent extends ScoreEvent implements Cancelable {
+public class CapturableCaptureEvent extends CapturableEvent implements Cancelable {
     private boolean cancel;
     private GoalHolder completer;
-    private int points;
 
-    public ScoreIncrementEvent(ArcadePlugin plugin, Score score, GoalHolder completer, int points) {
-        super(plugin, score);
+    public CapturableCaptureEvent(ArcadePlugin plugin, Capturable capturable, GoalHolder completer) {
+        super(plugin, capturable);
 
         this.completer = completer;
-        this.points = points;
     }
 
     @Override
@@ -30,23 +28,11 @@ public class ScoreIncrementEvent extends ScoreEvent implements Cancelable {
         return this.completer;
     }
 
-    public int getNewScore() {
-        return this.getScore().getScore() + this.getPoints();
-    }
-
-    public int getPoints() {
-        return this.points;
-    }
-
     public boolean hasCompleter() {
         return this.completer != null;
     }
 
     public void setCompleter(GoalHolder completer) {
         this.completer = completer;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
     }
 }

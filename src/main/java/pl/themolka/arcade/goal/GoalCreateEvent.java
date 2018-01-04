@@ -6,7 +6,7 @@ import pl.themolka.arcade.ArcadePlugin;
  * Called when a `Goal` is being registered.
  */
 public class GoalCreateEvent extends GoalEvent {
-    public GoalCreateEvent(ArcadePlugin plugin, Goal goal) {
+    private GoalCreateEvent(ArcadePlugin plugin, Goal goal) {
         super(plugin, goal);
     }
 

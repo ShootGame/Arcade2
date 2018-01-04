@@ -10,6 +10,6 @@ public interface InteractableGoal extends Goal {
 
     @Override
     default boolean isUntouched() {
-        return this.getContributions().isEmpty();
+        return !this.isCompleted() && this.getContributions().isEmpty();
     }
 }

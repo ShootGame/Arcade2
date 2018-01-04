@@ -1,4 +1,4 @@
-package pl.themolka.arcade.leak;
+package pl.themolka.arcade.leak.core;
 
 import org.bukkit.block.Block;
 import pl.themolka.arcade.ArcadePlugin;
@@ -6,13 +6,13 @@ import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class LeakableBreakEvent extends LeakableEvent implements Cancelable {
+public class CoreLeakableBreakEvent extends CoreLeakableEvent implements Cancelable {
     private Block block;
     private final GoalHolder breaker;
     private boolean cancel;
     private final GamePlayer player;
 
-    public LeakableBreakEvent(ArcadePlugin plugin, Leakable leakable, GoalHolder breaker, Block block, GamePlayer player) {
+    public CoreLeakableBreakEvent(ArcadePlugin plugin, CoreLeakable leakable, GoalHolder breaker, Block block, GamePlayer player) {
         super(plugin, leakable);
 
         this.block = block;

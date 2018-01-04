@@ -3,10 +3,11 @@ package pl.themolka.arcade.score;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.DrawMatchWinner;
 import pl.themolka.arcade.match.DynamicWinnable;
@@ -17,9 +18,13 @@ import pl.themolka.arcade.match.MatchWinner;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ScoreGame extends GameModule implements DynamicWinnable {
+    private final Map<GoalHolder, Score> byOwner = new HashMap<>();
+
     private final int kills;
     private final int limit;
     private final String scoreName;
@@ -39,13 +44,15 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             this.match = ((MatchGame) module).getMatch();
         }
 
-        for (MatchWinner winner : this.getMatch().getWinnerList()) {
-            Score score = new Score(this, winner);
+        for (MatchWinner completableBy : this.getMatch().getWinnerList()) {
+            Score score = new Score(this, completableBy);
             score.setLimit(this.getLimit());
             score.setName(this.getScoreName());
 
-            if (this.getScore(winner) == null) {
-                winner.addGoal(score);
+            // Make sure that Score is only ONE per GoalHolder
+            if (score.isCompletableBy(completableBy) && this.getScore(completableBy) == null) {
+                this.byOwner.put(completableBy, score);
+                completableBy.addGoal(score);
             }
         }
     }
@@ -100,40 +107,42 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.match;
     }
 
-    public Score getScore(MatchWinner winner) {
-        for (Goal goal : winner.getGoals()) {
-            if (goal instanceof Score) {
-                return (Score) goal;
-            }
-        }
-
-        return null;
+    public Score getScore(GoalHolder holder) {
+        return this.byOwner.get(holder);
     }
 
     public String getScoreName() {
         return this.scoreName;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (this.getMatch() == null || event.getEntity().getKiller() == null) {
+        int kills = this.getKills();
+        if (this.getMatch() == null || event.getEntity().getKiller() == null || kills <= 0) {
             return;
         }
 
-        MatchWinner winner = this.getMatch().findWinnerByPlayer(event.getEntity().getKiller());
+        GamePlayer killer = this.getGame().getPlayer(event.getEntity().getKiller());
+        if (killer == null) {
+            return;
+        }
+
+        // team or player registered in the match
+        MatchWinner winner = this.getMatch().findWinnerByPlayer(killer);
         if (winner == null) {
             return;
         }
 
         Score score = this.getScore(winner);
         if (score != null) {
-            score.incrementScore(this.getKills());
+            score.incrementScore(killer, kills);
         }
     }
 
     @Handler(priority = Priority.HIGHER)
     public void onScoreLimitReach(ScoreLimitReachEvent event) {
-        this.getMatch().sendGoalMessage("The score limit of " + event.getLimit() + " points for " +
-                event.getScore().getOwner().getTitle() + ChatColor.RESET + ChatColor.YELLOW + " has been reached.");
+        this.getMatch().sendGoalMessage(ChatColor.YELLOW + "The score limit of " + ChatColor.GOLD + ChatColor.BOLD +
+                event.getLimit() + " points" + ChatColor.RESET + ChatColor.YELLOW + " for " + ChatColor.GOLD +
+                event.getScore().getOwner().getTitle() + ChatColor.YELLOW + " has been reached.");
     }
 }

@@ -25,7 +25,7 @@ public class RegionListeners implements Listener {
         this.regions = regions;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Region region = this.regions.fetch(event.getBlock());
         FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_BREAK, event.getPlayer(), null, event.getBlock());
@@ -41,7 +41,7 @@ public class RegionListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Region region = this.regions.fetch(event.getBlock());
         FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_PHYSICS, null, null, event.getBlock());
@@ -51,7 +51,7 @@ public class RegionListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Region region = this.regions.fetch(event.getBlock());
 
@@ -76,7 +76,7 @@ public class RegionListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null) {

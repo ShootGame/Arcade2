@@ -6,6 +6,7 @@ import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.kit.FlyContent;
 import pl.themolka.arcade.kit.FoodLevelContent;
@@ -53,13 +54,18 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public boolean addGoal(Goal goal) {
+        if (this.hasGoal(goal)) {
+            return false;
+        }
+
+        GoalCreateEvent.call(this.game.getPlugin(), goal);
         return this.goals.add(goal);
     }
 
     @Override
     public boolean contains(Player bukkit) {
-        return bukkit != null && this.getBukkit() != null &&
-                this.getBukkit().equals(bukkit);
+        Player source = this.getBukkit();
+        return bukkit != null && source != null && source.equals(bukkit);
     }
 
     @Override

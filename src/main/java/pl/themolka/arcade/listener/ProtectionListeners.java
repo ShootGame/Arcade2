@@ -56,10 +56,9 @@ public class ProtectionListeners implements Listener {
      * reason why we need to disable this and open a fake workbench window
      * instead of the real one.
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void safeWorkbenches(PlayerInteractEvent event) {
-        if (!event.isCancelled() || event.hasBlock() ||
-                !event.getPlayer().isSneaking()) {
+        if (event.hasBlock() || !event.getPlayer().isSneaking()) {
             if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                 Block block = event.getClickedBlock();
 

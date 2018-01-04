@@ -18,6 +18,16 @@ public class GoalContributor extends GamePlayerSnapshot implements Comparable<Go
         super(displayName, participating, username, uuid);
     }
 
+    @Override
+    public int compareTo(GoalContributor o) {
+        int compare = Integer.compare(this.getTouches(), o.getTouches());
+        if (compare == 0) {
+            return this.getUsername().compareToIgnoreCase(o.getUsername());
+        }
+
+        return compare;
+    }
+
     public Time getLastTouchTime() {
         return this.lastTouch;
     }
@@ -42,15 +52,5 @@ public class GoalContributor extends GamePlayerSnapshot implements Comparable<Go
 
     public void setTouches(int touches) {
         this.touches = touches;
-    }
-
-    @Override
-    public int compareTo(GoalContributor o) {
-        int compare = new Integer(this.getTouches()).compareTo(o.getTouches());
-        if (compare == 0) {
-            return this.getUsername().compareToIgnoreCase(o.getUsername());
-        }
-
-        return compare;
     }
 }
