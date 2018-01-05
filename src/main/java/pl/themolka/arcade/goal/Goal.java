@@ -131,6 +131,10 @@ public interface Goal {
     // Utilities
     //
 
+    static boolean isCompletableByEveryone() {
+        return true;
+    }
+
     static boolean isCompletableByPositive(Goal goal, GoalHolder completer) {
         return isCompletableByPositive(goal.getOwner(), completer);
     }
@@ -145,5 +149,9 @@ public interface Goal {
 
     static boolean isCompletableByNegative(GoalHolder owner, GoalHolder completer) {
         return owner == null || !owner.equals(completer);
+    }
+
+    static boolean isNotCompletable() {
+        return false;
     }
 }

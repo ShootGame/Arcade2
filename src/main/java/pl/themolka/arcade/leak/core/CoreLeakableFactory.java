@@ -17,11 +17,14 @@ import java.util.List;
 
 public class CoreLeakableFactory implements LeakableFactory<CoreLeakable> {
     @Override
-    public CoreLeakable newLeakable(LeakGame game, String id, GoalHolder owner, Element xml) throws JDOMException {
+    public CoreLeakable newLeakable(LeakGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+        return this.parseCoreXml(game, name, xml, new CoreLeakable(game, owner, id));
+    }
+
+    public CoreLeakable parseCoreXml(LeakGame game, String name, Element xml, CoreLeakable core) {
         String paramLiquid = xml.getAttributeValue("liquid");
         String paramMaterial = xml.getAttributeValue("material");
         String paramDetectorLevel = xml.getAttributeValue("detector-level");
-        Element regionElement = xml.getChildren().get(0);
 
         // liquid
         Liquid liquid = CoreLeakable.DEFAULT_LIQUID;
@@ -48,12 +51,12 @@ public class CoreLeakableFactory implements LeakableFactory<CoreLeakable> {
         }
 
         // region
-        Region region = regionElement != null ? XMLRegion.parse(game.getGame().getMap(), regionElement) : null;
+        Region region = XMLRegion.parse(game.getGame().getMap(), xml); // its children are regions
         if (region == null) {
             return null;
         }
 
-        CoreLeakable core = new CoreLeakable(game, owner, id);
+        // setup
         core.setMaterial(material);
         core.build(liquid, region, detectorLevel);
         return core;

@@ -39,7 +39,10 @@ public class LeakGame extends GameModule {
 
     public void addLeakable(Leakable leakable) {
         this.leakablesById.put(leakable.getId(), leakable);
-        this.leakablesByOwner.put(leakable.getOwner(), leakable);
+
+        if (leakable.hasOwner()) {
+            this.leakablesByOwner.put(leakable.getOwner(), leakable);
+        }
     }
 
     public LeakableFactory getFactory(String name) {
@@ -64,7 +67,10 @@ public class LeakGame extends GameModule {
 
     public void removeLeakable(Leakable leakable) {
         this.leakablesById.remove(leakable.getId());
-        this.leakablesByOwner.remove(leakable.getOwner(), leakable);
+
+        if (leakable.hasOwner()) {
+            this.leakablesByOwner.remove(leakable.getOwner(), leakable);
+        }
     }
 
     private void installDefaultFactories() {
@@ -82,39 +88,38 @@ public class LeakGame extends GameModule {
 
                 // id
                 String id = xml.getAttributeValue("id");
-                if (id == null || id.isEmpty()) {
+                if (id == null || id.trim().isEmpty()) {
                     continue;
                 }
 
                 // owner
                 String ownerId = xml.getAttributeValue("owner");
                 GoalHolder owner = null;
-                if (ownerId != null && !ownerId.isEmpty()) {
-                    owner = this.getMatch().findWinnerById(ownerId);
-                }
-                if (owner == null) {
-                    continue;
+                if (ownerId != null && !ownerId.trim().isEmpty()) {
+                    owner = this.getMatch().findWinnerById(ownerId.trim());
                 }
 
                 // name
                 String name = xml.getAttributeValue("name");
-                if (name == null || name.isEmpty()) {
+                if (name == null || name.trim().isEmpty()) {
                     continue;
                 }
 
                 // object
-                Leakable leakable = factory.newLeakable(this, id.trim(), owner, xml);
+                Leakable leakable = factory.newLeakable(this, owner, id.trim(), name.trim(), xml);
                 if (leakable == null) {
                     continue;
                 }
 
-                leakable.setName(name);
+                leakable.setName(name.trim());
                 this.addLeakable(leakable);
 
                 // register
-                for (GoalHolder completableBy : this.match.getWinnerList()) {
-                    if (leakable.isCompletableBy(completableBy)) {
-                        completableBy.addGoal(leakable);
+                if (leakable.registerGoal()) {
+                    for (GoalHolder completableBy : this.match.getWinnerList()) {
+                        if (leakable.isCompletableBy(completableBy)) {
+                            completableBy.addGoal(leakable);
+                        }
                     }
                 }
 

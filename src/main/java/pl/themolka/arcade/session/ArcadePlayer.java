@@ -24,6 +24,12 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * ArcadePlayers are created when player joins the server, and removed then he
+ * quits it. ArcadePlayers should not store any game related data. ArcadePlayers
+ * are not secure to be stored in objects - use {@link GamePlayer} or
+ * {@link UUID} instead.
+ */
 public class ArcadePlayer implements Metadata, Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
     public static final int USERNAME_MIN_LENGTH = 3; // was changed to 4 in beta
@@ -32,7 +38,7 @@ public class ArcadePlayer implements Metadata, Sender {
     private final ArcadePlugin plugin;
 
     private final Player bukkit; // Bukkit
-    private GamePlayer gamePlayer;
+    private GamePlayer gamePlayer; // NEVER null
     private Time lastPlayedSound = Time.now();
     private final MetadataContainer metadata = new MetadataContainer();
     private final PermissionContext permissions;

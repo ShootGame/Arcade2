@@ -1,7 +1,9 @@
 package pl.themolka.arcade.capture.wool;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.engio.mbassy.listener.Handler;
+import org.bukkit.DyeColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.HumanEntity;
@@ -27,28 +29,39 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WoolCapturableListeners implements Listener {
     private final CaptureGame game;
 
-    private final Map<Block, ChestSnapshot> chests = new HashMap<>();
-    private final Multimap<GoalHolder, WoolCapturable> wools;
+    private final Map<Block, ChestImage> chestImages = new HashMap<>();
 
-    public WoolCapturableListeners(CaptureGame game, Multimap<GoalHolder, WoolCapturable> wools) {
+    private final List<WoolCapturable> standaloneWools;
+    private final Multimap<GoalHolder, WoolCapturable> wools;
+    private final Multimap<DyeColor, WoolCapturable> woolsByColor = ArrayListMultimap.create();
+
+    public WoolCapturableListeners(CaptureGame game, List<WoolCapturable> standaloneWools,
+                                   Multimap<GoalHolder, WoolCapturable> wools) {
         this.game = game;
 
+        this.standaloneWools = standaloneWools;
         this.wools = wools;
+
+        for (WoolCapturable wool : wools.values()) {
+            this.woolsByColor.put(wool.getColor(), wool);
+        }
     }
 
     //
     // Chest Protection
     //
 
-    public ChestSnapshot getChest(Block block) {
-        return this.chests.get(block);
+    public ChestImage getChestImage(Block block) {
+        return this.chestImages.get(block);
     }
 
     @Handler(priority = Priority.LOWEST)
@@ -59,8 +72,8 @@ public class WoolCapturableListeners implements Listener {
 
         Block block = event.getBlock();
 
-        ChestSnapshot snapshot = this.getChest(block);
-        if (snapshot != null && snapshot.woolChest) {
+        ChestImage image = this.getChestImage(block);
+        if (image != null && image.woolChest) {
             GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
 
             WoolChestBreakEvent breakEvent = new WoolChestBreakEvent(this.game.getPlugin(), block, player);
@@ -81,7 +94,7 @@ public class WoolCapturableListeners implements Listener {
     public void dontProtectPlacedChests(BlockPlaceEvent event) {
         Block block = event.getBlock();
         if (block.getState() instanceof InventoryHolder) {
-            this.chests.put(block, new ChestSnapshot(false));
+            this.chestImages.put(block, new ChestImage(false));
         }
     }
 
@@ -97,7 +110,7 @@ public class WoolCapturableListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void retraceWoolChests(InventoryCloseEvent event) {
+    public void restoreWoolChests(InventoryCloseEvent event) {
         Inventory inventory = event.getInventory();
 
         HumanEntity human = event.getPlayer();
@@ -117,8 +130,8 @@ public class WoolCapturableListeners implements Listener {
 
         Block block = ((BlockState) inventoryHolder).getBlock();
 
-        ChestSnapshot snapshot = this.getChest(block);
-        if (snapshot == null || !snapshot.woolChest || snapshot.snapshot.isEmpty()) {
+        ChestImage image = this.getChestImage(block);
+        if (image == null || !image.woolChest || image.snapshot.isEmpty()) {
             return;
         }
 
@@ -139,7 +152,7 @@ public class WoolCapturableListeners implements Listener {
             this.game.getPlugin().getEventBus().publish(retraceEvent);
 
             if (!retraceEvent.isCanceled()) {
-                for (Map.Entry<Integer, ItemStack> entry : snapshot.snapshot.entrySet()) {
+                for (Map.Entry<Integer, ItemStack> entry : image.snapshot.entrySet()) {
                     // Copy the item to not edit the snapshot!
                     inventory.setItem(entry.getKey(), entry.getValue().clone());
                 }
@@ -155,14 +168,15 @@ public class WoolCapturableListeners implements Listener {
 
         Block block = ((BlockState) inventoryHolder).getBlock();
 
-        ChestSnapshot snapshot = this.getChest(block);
-        if (snapshot != null) {
+        ChestImage image = this.getChestImage(block);
+        if (image != null) {
             // We have already seen this chest, don't register it.
             return;
         }
 
-        this.chests.put(block, snapshot = new ChestSnapshot(WoolUtils.containsAny(inventory)));
-        if (snapshot.woolChest) {
+        this.chestImages.put(block, image = new ChestImage(WoolUtils.containsAny(inventory)));
+
+        if (image.woolChest) {
             WoolChestRegisterEvent event = new WoolChestRegisterEvent(this.game.getPlugin(), block, inventory);
             this.game.getPlugin().getEventBus().publish(event);
 
@@ -170,22 +184,22 @@ public class WoolCapturableListeners implements Listener {
                 for (int slot = 0; slot < inventory.getSize(); slot++) {
                     ItemStack item = inventory.getItem(slot);
                     if (item != null && WoolUtils.isWool(item)) {
-                        snapshot.snapshot.put(slot, item);
+                        image.snapshot.put(slot, item);
                     }
                 }
             }
         }
     }
 
-    private class ChestSnapshot {
+    private class ChestImage {
         boolean woolChest;
         Map<Integer, ItemStack> snapshot = new HashMap<>();
 
-        ChestSnapshot(boolean woolChest) {
+        ChestImage(boolean woolChest) {
             this.woolChest = woolChest;
         }
 
-        ChestSnapshot(Map<Integer, ItemStack> snapshot) {
+        ChestImage(Map<Integer, ItemStack> snapshot) {
             this(true);
             this.snapshot = snapshot;
         }
@@ -210,20 +224,24 @@ public class WoolCapturableListeners implements Listener {
             return;
         }
 
+        GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(player);
+        if (competitor == null) {
+            return;
+        }
+
         Map.Entry<GoalHolder, Collection<WoolCapturable>> wools = this.findWoolsFor(player);
+        List<WoolCapturable> woolsToLoop = new ArrayList<>(wools.getValue());
+        woolsToLoop.addAll(this.standaloneWools);
 
         WoolCapturable result = null;
-        for (WoolCapturable capturable : wools.getValue()) {
-            if (capturable.getColor().equals(wool.getColor())) {
-                if (!capturable.isCaptured()) {
-                    result = capturable;
-                }
-
+        for (WoolCapturable capturable : this.woolsByColor.get(wool.getColor())) {
+            if (capturable.isCompletableBy(competitor)) {
+                result = capturable;
                 break;
             }
         }
 
-        if (result != null) {
+        if (result != null && !result.isCaptured()) {
             WoolCapturablePickupEvent event = new WoolCapturablePickupEvent(this.game.getPlugin(), result, item, wool);
             this.game.getPlugin().getEventBus().publish(event);
 

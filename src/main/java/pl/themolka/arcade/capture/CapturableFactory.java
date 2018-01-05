@@ -5,5 +5,5 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.goal.GoalHolder;
 
 public interface CapturableFactory<E extends Capturable> {
-    E newCapturable(CaptureGame game, String id, GoalHolder owner, Element xml) throws JDOMException;
+    E newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException;
 }

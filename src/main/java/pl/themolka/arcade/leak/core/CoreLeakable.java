@@ -26,6 +26,7 @@ import java.util.logging.Level;
 
 public class CoreLeakable extends Leakable implements Listener {
     public static final int DEFAULT_DETECTOR_LEVEL = 5;
+    public static final String DEFAULT_GOAL_NAME = "Core";
     public static final Liquid DEFAULT_LIQUID = Liquid.LAVA;
     public static final Material DEFAULT_MATERIAL = Material.OBSIDIAN;
     public static final String DETECTOR_REGION_SUFFIX = "_detector-region";
@@ -37,22 +38,39 @@ public class CoreLeakable extends Leakable implements Listener {
     private Region region;
     private final List<Block> snapshot = new ArrayList<>();
 
+    public CoreLeakable(LeakGame game, String id) {
+        super(game, id);
+    }
+
     public CoreLeakable(LeakGame game, GoalHolder owner, String id) {
         super(game, owner, id);
     }
 
     @Override
+    public String getDefaultName() {
+        return DEFAULT_GOAL_NAME;
+    }
+
+    @Override
     public String getGoalInteractMessage(String interact) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
         return ChatColor.GOLD + interact + ChatColor.YELLOW + " broke a piece of " +
-                ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW +
-                "'s " + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
                 this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 
     @Override
-    public void leak() {
-        String message = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW +
-                "'s " + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+    public void leak(GoalHolder completer) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        String message = owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
                 this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + " has leaked" +
                 this.getContributions().getContributorsPretty() + ChatColor.YELLOW + ".";
 
@@ -254,6 +272,10 @@ public class CoreLeakable extends Leakable implements Listener {
         this.region = region;
     }
 
+    //
+    // Listeners
+    //
+
     @Handler(priority = Priority.NORMAL)
     public void detectBreak(BlockTransformEvent event) {
         if (event.isCanceled()) {
@@ -294,7 +316,7 @@ public class CoreLeakable extends Leakable implements Listener {
         Material newType = event.getBlock().getType();
         if (this.getLiquid().accepts(newType)) {
             // the core has leaked
-            this.leak();
+            this.leak(null);
         }
     }
 

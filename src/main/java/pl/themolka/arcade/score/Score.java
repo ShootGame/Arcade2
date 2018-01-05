@@ -13,12 +13,13 @@ public class Score implements Goal {
     protected final ScoreGame game;
 
     private final GoalHolder owner;
-    private boolean completed;
     private final int initScore;
     private int limit;
     private String name;
     private int score;
-    private boolean scoreTouched;
+    private boolean scored;
+    private GoalHolder scoredBy;
+    private boolean scoreTouched = false;
 
     public Score(ScoreGame game, GoalHolder owner) {
         this(game, owner, 0);
@@ -28,9 +29,9 @@ public class Score implements Goal {
         this.game = game;
 
         this.owner = owner;
-        this.completed = false;
         this.initScore = initScore;
         this.score = initScore;
+        this.scored = false;
     }
 
     @Override
@@ -86,7 +87,12 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompleted() {
-        return this.completed || this.isLimitReached();
+        return this.scored || this.isLimitReached();
+    }
+
+    @Override
+    public boolean isCompleted(GoalHolder completer) {
+        return this.isCompleted() && (this.scoredBy == null || this.scoredBy.equals(completer));
     }
 
     @Override
@@ -106,9 +112,10 @@ public class Score implements Goal {
         if (!event.isCanceled()) {
             GoalResetEvent.call(this.game.getPlugin(), this);
 
-            this.completed = false;
-            this.scoreTouched = false;
             this.score = this.getInitScore();
+            this.scoreTouched = false;
+            this.scored = false;
+            this.scoredBy = null;
             return true;
         }
 
@@ -187,20 +194,23 @@ public class Score implements Goal {
     }
 
     private void handleGoalComplete(GoalHolder completer) {
-        if (this.completed) {
+        if (this.scored) {
             return;
         }
-        this.completed = true;
 
         boolean byLimit = this.isLimitReached();
-        if (byLimit) {
-            this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
-        }
 
         ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
+            this.scored = true;
+            this.scoredBy = completer;
+
+            if (byLimit) {
+                this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
+            }
+
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop
             // all `GoalHolder`s (like players or teams) to find the winner.

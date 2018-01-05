@@ -26,6 +26,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * GamePlayers are secure to be stored when the players are offline. The
+ * GamePlayers are created on every game cycle and when players join the server
+ * (and they didn't played this game yet, since GamePlayer is restored on every
+ * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
+ * secure to store game related data.
+ */
 public class GamePlayer implements GoalHolder, Metadata, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
@@ -36,6 +43,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     private final List<Goal> goals = new ArrayList<>();
     private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
+    // Pointer to the ArcadePlayer instance, or null if the players is offline.
     private ArcadePlayer player;
     private final String username;
     private final UUID uuid;

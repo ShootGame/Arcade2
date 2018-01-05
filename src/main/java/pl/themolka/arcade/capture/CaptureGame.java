@@ -4,6 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.capture.point.Point;
+import pl.themolka.arcade.capture.point.PointFactory;
 import pl.themolka.arcade.capture.wool.WoolCapturable;
 import pl.themolka.arcade.capture.wool.WoolCapturableFactory;
 import pl.themolka.arcade.capture.wool.WoolCapturableListeners;
@@ -13,9 +15,12 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
+import pl.themolka.arcade.task.Task;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CaptureGame extends GameModule {
@@ -33,7 +38,8 @@ public class CaptureGame extends GameModule {
         this.installDefaultFactories();
         this.parseMapXml();
 
-        this.registerWoolListeners();
+        this.enablePoints();
+        this.enableWools();
     }
 
     public void addCapturable(Capturable capturable) {
@@ -77,6 +83,7 @@ public class CaptureGame extends GameModule {
     }
 
     private void installDefaultFactories() {
+        this.addFactory("point", new PointFactory());
         this.addFactory("wool", new WoolCapturableFactory());
     }
 
@@ -91,25 +98,25 @@ public class CaptureGame extends GameModule {
 
                 // id
                 String id = xml.getAttributeValue("id");
-                if (id == null || id.isEmpty()) {
+                if (id == null || id.trim().isEmpty()) {
                     continue;
                 }
 
                 // owner
                 String ownerId = xml.getAttributeValue("owner");
                 GoalHolder owner = null;
-                if (ownerId != null && !ownerId.isEmpty()) {
-                    owner = this.getMatch().findWinnerById(ownerId);
+                if (ownerId != null && !ownerId.trim().isEmpty()) {
+                    owner = this.getMatch().findWinnerById(ownerId.trim());
                 }
 
                 // name
                 String name = xml.getAttributeValue("name");
-                if (name == null || name.isEmpty()) {
+                if (name == null || name.trim().isEmpty()) {
                     continue;
                 }
 
                 // object
-                Capturable capturable = factory.newCapturable(this, id.trim(), owner, xml);
+                Capturable capturable = factory.newCapturable(this, owner, id.trim(), name.trim(), xml);
                 if (capturable == null) {
                     continue;
                 }
@@ -118,9 +125,11 @@ public class CaptureGame extends GameModule {
                 this.addCapturable(capturable);
 
                 // register
-                for (MatchWinner winner : this.getMatch().getWinnerList()) {
-                    if (capturable.isCompletableBy(winner)) {
-                        winner.addGoal(capturable);
+                if (capturable.registerGoal()) {
+                    for (MatchWinner winner : this.getMatch().getWinnerList()) {
+                        if (capturable.isCompletableBy(winner)) {
+                            winner.addGoal(capturable);
+                        }
                     }
                 }
 
@@ -131,18 +140,48 @@ public class CaptureGame extends GameModule {
         }
     }
 
-    private void registerWoolListeners() {
-        // Register wool listeners ONLY when there are any wool goals.
-        Multimap<GoalHolder, WoolCapturable> wools = ArrayListMultimap.create();
-        for (Map.Entry<GoalHolder, Capturable> entry : this.capturablesByOwner.entries()) {
-            Capturable capturable = entry.getValue();
-            if (capturable instanceof WoolCapturable) {
-                wools.put(entry.getKey(), (WoolCapturable) capturable);
+    private void enablePoints() {
+        // Register point classes ONLY when there are any point goals.
+        List<Point> points = new ArrayList<>();
+
+        for (Capturable capturable : this.getCapturables()) {
+            if (capturable instanceof Point) {
+                points.add((Point) capturable);
             }
         }
 
-        if (!wools.isEmpty()) {
-            this.registerListenerObject(new WoolCapturableListeners(this, wools));
+        if (!points.isEmpty()) {
+            this.scheduleSyncTask(new Task(this.getPlugin().getTasks()) {
+                @Override
+                public void onTick(long ticks) {
+                    if (ticks % Point.HEARTBEAT_INTERVAL.toTicks() == 0) {
+                        for (Point point : points) {
+                            point.heartbeat(ticks);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void enableWools() {
+        // Register wool classes ONLY when there are any wool goals.
+        List<WoolCapturable> standaloneWools = new ArrayList<>();
+        Multimap<GoalHolder, WoolCapturable> wools = ArrayListMultimap.create();
+
+        for (Capturable capturable : this.getCapturables()) {
+            if (capturable instanceof WoolCapturable) {
+                GoalHolder owner = capturable.getOwner();
+                if (owner != null) {
+                    wools.put(owner, (WoolCapturable) capturable);
+                } else {
+                    standaloneWools.add((WoolCapturable) capturable);
+                }
+            }
+        }
+
+        if (!standaloneWools.isEmpty() || !wools.isEmpty()) {
+            this.registerListenerObject(new WoolCapturableListeners(this, standaloneWools, wools));
         }
     }
 }

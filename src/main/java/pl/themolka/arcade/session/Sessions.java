@@ -80,6 +80,7 @@ public class Sessions implements Listener {
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
+            // try to restore the GamePlayer first
             GamePlayer gamePlayer = game.getPlayer(bukkit);
             if (gamePlayer == null) {
                 gamePlayer = new GamePlayer(game, player);

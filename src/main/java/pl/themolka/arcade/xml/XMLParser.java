@@ -92,6 +92,18 @@ public class XMLParser {
         return null;
     }
 
+    public static int parseInt(String integer) {
+        return parseInt(integer, 0);
+    }
+
+    public static int parseInt(String integer, int def) {
+        try {
+            return Integer.parseInt(integer);
+        } catch (NumberFormatException ex) {
+            return def;
+        }
+    }
+
     public static String parseMessage(String message) {
         if (message != null) {
             return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);

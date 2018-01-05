@@ -20,9 +20,16 @@ import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.util.Color;
 
 public class WoolCapturable extends Capturable implements Listener {
-    private DyeColor color;
-    private boolean craftable;
+    public static final DyeColor DEFAULT_COLOR = DyeColor.WHITE;
+    public static final String DEFAULT_GOAL_NAME = "Wool";
+
+    private DyeColor color = DEFAULT_COLOR;
+    private boolean craftable = false;
     private Region monument;
+
+    public WoolCapturable(CaptureGame game, String id) {
+        super(game, id);
+    }
 
     public WoolCapturable(CaptureGame game, GoalHolder owner, String id) {
         super(game, owner, id);
@@ -46,7 +53,12 @@ public class WoolCapturable extends Capturable implements Listener {
 
     @Override
     public String getColoredName() {
-        return WoolUtils.coloredName(this.color) + " Wool";
+        return WoolUtils.coloredName(this.color) + " " + this.getDefaultName();
+    }
+
+    @Override
+    public String getDefaultName() {
+        return DEFAULT_GOAL_NAME;
     }
 
     @Override
@@ -63,7 +75,7 @@ public class WoolCapturable extends Capturable implements Listener {
 
     @Override
     public String getName() {
-        return WoolUtils.name(this.color) + " Wool";
+        return WoolUtils.name(this.color) + " " + this.getDefaultName();
     }
 
     @Override
@@ -131,9 +143,6 @@ public class WoolCapturable extends Capturable implements Listener {
         Block block = event.getBlock();
         if (!WoolUtils.isWool(block, this.getColor()) || !this.getMonument().contains(block)) {
             return;
-        } else if (this.isCaptured()) {
-            event.setCanceled(true);
-            return;
         }
 
         GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
@@ -143,19 +152,20 @@ public class WoolCapturable extends Capturable implements Listener {
         }
 
         event.setCanceled(true);
-        if (!this.isCaptured()) {
-            if (this.hasOwner() && this.getOwner().contains(player)) {
-                player.sendError("You may not capture your own " + ChatColor.GOLD +
-                        this.getColoredName() + Messageable.ERROR_COLOR + ".");
-            } else {
-                event.setCanceled(false);
+        if (this.isCaptured()) {
+            player.sendError(ChatColor.GOLD + this.getColoredName() +
+                    Messageable.INFO_COLOR + " has already been captured.");
+        } else if (this.hasOwner() && this.getOwner().contains(player)) {
+            player.sendError("You may not capture your own " + ChatColor.GOLD +
+                    this.getColoredName() + Messageable.ERROR_COLOR + ".");
+        } else {
+            event.setCanceled(false);
 
-                WoolCapturablePlaceEvent placeEvent = new WoolCapturablePlaceEvent(this.game.getPlugin(), this, player);
-                this.game.getPlugin().getEventBus().publish(placeEvent);
+            WoolCapturablePlaceEvent placeEvent = new WoolCapturablePlaceEvent(this.game.getPlugin(), this, player);
+            this.game.getPlugin().getEventBus().publish(placeEvent);
 
-                if (!placeEvent.isCanceled()) {
-                    this.capture(placeEvent.getCompleter());
-                }
+            if (!placeEvent.isCanceled()) {
+                this.capture(placeEvent.getCompleter());
             }
         }
     }

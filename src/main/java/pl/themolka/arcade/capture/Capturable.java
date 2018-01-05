@@ -10,15 +10,18 @@ import pl.themolka.arcade.goal.InteractableGoal;
 import pl.themolka.arcade.util.StringId;
 
 public abstract class Capturable implements InteractableGoal, StringId {
-    public static final String DEFAULT_GOAL_NAME = "Capturable";
-
     protected final CaptureGame game;
 
-    private final GoalHolder owner;
+    private GoalHolder owner;
     private boolean captured;
+    private GoalHolder capturedBy;
     private final GoalContributionContext contributions;
     private final String id;
     private String name;
+
+    public Capturable(CaptureGame game, String id) {
+        this(game, null, id);
+    }
 
     public Capturable(CaptureGame game, GoalHolder owner, String id) {
         this.game = game;
@@ -63,7 +66,7 @@ public abstract class Capturable implements InteractableGoal, StringId {
             return this.name;
         }
 
-        return DEFAULT_GOAL_NAME;
+        return this.getDefaultName();
     }
 
     @Override
@@ -82,6 +85,11 @@ public abstract class Capturable implements InteractableGoal, StringId {
     }
 
     @Override
+    public boolean isCompleted(GoalHolder completer) {
+        return this.isCompleted() && (this.capturedBy == null || this.capturedBy.equals(completer));
+    }
+
+    @Override
     public boolean reset() {
         if (!this.isCaptured()) {
             return false;
@@ -94,6 +102,7 @@ public abstract class Capturable implements InteractableGoal, StringId {
             GoalResetEvent.call(this.game.getPlugin(), this);
 
             this.captured = false;
+            this.capturedBy = null;
             this.contributions.clearContributors();
             this.resetCapturable();
             return true;
@@ -113,16 +122,30 @@ public abstract class Capturable implements InteractableGoal, StringId {
 
     public abstract void capture(GoalHolder completer);
 
+    public GoalHolder getCapturedBy() {
+        return this.capturedBy;
+    }
+
+    public CaptureGame getCaptureGame() {
+        return this.game;
+    }
+
+    public abstract String getDefaultName();
+
     public boolean hasName() {
         return this.name != null;
     }
 
     public boolean hasOwner() {
-        return this.owner != null;
+        return this.getOwner() != null;
     }
 
     public boolean isCaptured() {
         return this.captured;
+    }
+
+    public boolean registerGoal() {
+        return true;
     }
 
     @Deprecated
@@ -132,14 +155,20 @@ public abstract class Capturable implements InteractableGoal, StringId {
         this.name = name;
     }
 
+    public void setOwner(GoalHolder owner) {
+        this.owner = owner;
+    }
+
     private void handleGoalComplete(GoalHolder completer) {
         if (this.captured) {
             return;
         }
-        this.captured = true;
 
         CapturableCaptureEvent event = new CapturableCaptureEvent(this.game.getPlugin(), this, completer);
         if (!event.isCanceled()) {
+            this.captured = true;
+            this.capturedBy = event.getCompleter();
+
             // This game for this `GoalHolder` has been completed - we can tell
             // it to the plugin, so it can end the game. This method will loop
             // all `GameHolder`s (like players or teams) to find the winner.

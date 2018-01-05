@@ -25,11 +25,13 @@ public interface GoalHolder extends StringId {
     boolean contains(Player bukkit);
 
     default boolean contains(ArcadePlayer player) {
-        return player.getBukkit() != null && this.contains(player.getBukkit());
+        GamePlayer gamePlayer = player.getGamePlayer(); // should never be null
+        return gamePlayer != null && this.contains(gamePlayer);
     }
 
     default boolean contains(GamePlayer player) {
-        return player.getPlayer() != null && this.contains(player.getPlayer());
+        Player bukkit = player.getBukkit(); // null if the player if offline
+        return bukkit != null && this.contains(bukkit);
     }
 
     Color getColor();

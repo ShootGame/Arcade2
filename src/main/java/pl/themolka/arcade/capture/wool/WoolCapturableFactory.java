@@ -13,21 +13,25 @@ import pl.themolka.arcade.xml.XMLParser;
 
 public class WoolCapturableFactory implements CapturableFactory<WoolCapturable> {
     @Override
-    public WoolCapturable newCapturable(CaptureGame game, String id, GoalHolder owner, Element xml) throws JDOMException {
+    public WoolCapturable newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+        return this.parseWoolXml(game, name, xml, new WoolCapturable(game, owner, id));
+    }
+
+    public WoolCapturable parseWoolXml(CaptureGame game, String name, Element xml, WoolCapturable wool) {
         String craftable = xml.getAttributeValue("craftable");
-        Element monumentElement = xml.getChildren().get(0);
+        Element monumentElement = xml.getChild("monument");
 
         DyeColor color = XMLDyeColor.parse(xml.getAttributeValue("color"));
         if (color == null) {
             return null;
         }
 
-        Region monument = monumentElement != null ? XMLRegion.parse(game.getGame().getMap(), monumentElement) : null;
+        Region monument = monumentElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), monumentElement) : null;
         if (monument == null) {
             return null;
         }
 
-        WoolCapturable wool = new WoolCapturable(game, owner, id);
+        // setup
         wool.setColor(color);
         wool.setCraftable(craftable != null && XMLParser.parseBoolean(craftable, false));
         wool.setMonument(monument);

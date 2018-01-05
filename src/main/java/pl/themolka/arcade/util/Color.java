@@ -165,7 +165,7 @@ public enum Color {
     }
 
     /**
-     * Convert this color a the string representation
+     * Convert this color to the string representation
      */
     @Override
     public String toString() {
