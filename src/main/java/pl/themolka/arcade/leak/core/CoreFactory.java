@@ -15,19 +15,19 @@ import pl.themolka.arcade.xml.XMLParser;
 import java.util.Collections;
 import java.util.List;
 
-public class CoreLeakableFactory implements LeakableFactory<CoreLeakable> {
+public class CoreFactory implements LeakableFactory<Core> {
     @Override
-    public CoreLeakable newLeakable(LeakGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parseCoreXml(game, name, xml, new CoreLeakable(game, owner, id));
+    public Core newLeakable(LeakGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+        return this.parseCoreXml(game, name, xml, new Core(game, owner, id));
     }
 
-    public CoreLeakable parseCoreXml(LeakGame game, String name, Element xml, CoreLeakable core) {
+    public Core parseCoreXml(LeakGame game, String name, Element xml, Core core) {
         String paramLiquid = xml.getAttributeValue("liquid");
         String paramMaterial = xml.getAttributeValue("material");
         String paramDetectorLevel = xml.getAttributeValue("detector-level");
 
         // liquid
-        Liquid liquid = CoreLeakable.DEFAULT_LIQUID;
+        Liquid liquid = Core.DEFAULT_LIQUID;
         if (paramLiquid != null && !paramLiquid.isEmpty()) {
             Liquid type = Liquid.valueOf(XMLParser.parseEnumValue(paramLiquid));
             if (type != null) {
@@ -36,13 +36,13 @@ public class CoreLeakableFactory implements LeakableFactory<CoreLeakable> {
         }
 
         // material
-        List<Material> material = Collections.singletonList(CoreLeakable.DEFAULT_MATERIAL);
+        List<Material> material = Collections.singletonList(Core.DEFAULT_MATERIAL);
         if (paramMaterial != null) {
-            material = XMLMaterial.parseArray(new Attribute("material", paramMaterial), CoreLeakable.DEFAULT_MATERIAL);
+            material = XMLMaterial.parseArray(new Attribute("material", paramMaterial), Core.DEFAULT_MATERIAL);
         }
 
         // detector
-        int detectorLevel = CoreLeakable.DEFAULT_DETECTOR_LEVEL;
+        int detectorLevel = Core.DEFAULT_DETECTOR_LEVEL;
         if (paramDetectorLevel != null && !paramDetectorLevel.isEmpty()) {
             try {
                 detectorLevel = Integer.parseInt(paramDetectorLevel);

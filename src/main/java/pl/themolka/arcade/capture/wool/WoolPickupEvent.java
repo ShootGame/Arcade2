@@ -1,16 +1,15 @@
 package pl.themolka.arcade.capture.wool;
 
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 
-public class WoolCapturablePickupEvent extends WoolCapturableEvent implements Cancelable {
+public class WoolPickupEvent extends WoolEvent implements Cancelable {
     private boolean cancel;
     private final ItemStack item;
-    private final Wool woolItem;
+    private final org.bukkit.material.Wool woolItem;
 
-    public WoolCapturablePickupEvent(ArcadePlugin plugin, WoolCapturable wool, ItemStack item, Wool woolItem) {
+    public WoolPickupEvent(ArcadePlugin plugin, Wool wool, ItemStack item, org.bukkit.material.Wool woolItem) {
         super(plugin, wool);
 
         this.item = item;
@@ -31,7 +30,7 @@ public class WoolCapturablePickupEvent extends WoolCapturableEvent implements Ca
         return this.item;
     }
 
-    public Wool getWoolItem() {
+    public org.bukkit.material.Wool getWoolItem() {
         return this.woolItem;
     }
 }

@@ -59,7 +59,7 @@ public class Point extends Capturable {
 
     private Region captureRegion;
     private Time captureTime = DEFAULT_CAPTURE_TIME;
-    private boolean capturingCaptured; // false if the point should be neutral to be captured.
+    private boolean capturingCapturedEnabled; // false if the point should be neutral to be captured.
     private Time loseTime = DEFAULT_LOSE_TIME;
     private boolean permanent = false;
     private final Set<GamePlayer> players = new HashSet<>();
@@ -266,8 +266,8 @@ public class Point extends Capturable {
         }
     }
 
-    public boolean isCapturingCaptured() {
-        return this.capturingCaptured;
+    public boolean isCapturingCapturedEnabled() {
+        return this.capturingCapturedEnabled;
     }
 
     public boolean isNeutral() {
@@ -299,8 +299,8 @@ public class Point extends Capturable {
         this.captureTime = captureTime;
     }
 
-    public void setCapturingCaptured(boolean capturingCaptured) {
-        this.capturingCaptured = capturingCaptured;
+    public void setCapturingCapturedEnabled(boolean capturingCapturedEnabled) {
+        this.capturingCapturedEnabled = capturingCapturedEnabled;
     }
 
     public void setLoseTime(Time loseTime) {

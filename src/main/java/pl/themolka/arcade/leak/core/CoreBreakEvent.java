@@ -6,14 +6,14 @@ import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class CoreLeakableBreakEvent extends CoreLeakableEvent implements Cancelable {
+public class CoreBreakEvent extends CoreEvent implements Cancelable {
     private Block block;
     private final GoalHolder breaker;
     private boolean cancel;
     private final GamePlayer player;
 
-    public CoreLeakableBreakEvent(ArcadePlugin plugin, CoreLeakable leakable, GoalHolder breaker, Block block, GamePlayer player) {
-        super(plugin, leakable);
+    public CoreBreakEvent(ArcadePlugin plugin, Core core, GoalHolder breaker, Block block, GamePlayer player) {
+        super(plugin, core);
 
         this.block = block;
         this.breaker = breaker;

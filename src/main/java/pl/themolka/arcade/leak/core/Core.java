@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class CoreLeakable extends Leakable implements Listener {
+public class Core extends Leakable implements Listener {
     public static final int DEFAULT_DETECTOR_LEVEL = 5;
     public static final String DEFAULT_GOAL_NAME = "Core";
     public static final Liquid DEFAULT_LIQUID = Liquid.LAVA;
@@ -38,11 +38,11 @@ public class CoreLeakable extends Leakable implements Listener {
     private Region region;
     private final List<Block> snapshot = new ArrayList<>();
 
-    public CoreLeakable(LeakGame game, String id) {
-        super(game, id);
+    public Core(LeakGame game, String id) {
+        this(game, null, id);
     }
 
-    public CoreLeakable(LeakGame game, GoalHolder owner, String id) {
+    public Core(LeakGame game, GoalHolder owner, String id) {
         super(game, owner, id);
     }
 
@@ -109,7 +109,7 @@ public class CoreLeakable extends Leakable implements Listener {
             interactMessage = player.getDisplayName();
         }
 
-        CoreLeakableBreakEvent event = new CoreLeakableBreakEvent(this.game.getPlugin(), this, breaker, block, player);
+        CoreBreakEvent event = new CoreBreakEvent(this.game.getPlugin(), this, breaker, block, player);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (event.isCanceled()) {

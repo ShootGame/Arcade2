@@ -52,7 +52,7 @@ public class LosingState extends PointState.Progress {
 
         if (ownerDominating) {
             // The owner is dominating the point - bring it back to him.
-            if (this.point.isCapturingCaptured()) {
+            if (this.point.isCapturingCapturedEnabled()) {
                 this.point.startCapturingCaptured(owner, this.getProgress());
             } else {
                 this.point.startCapturing(owner, this.getProgress());

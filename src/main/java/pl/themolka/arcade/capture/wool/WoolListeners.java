@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
@@ -35,23 +34,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WoolCapturableListeners implements Listener {
+public class WoolListeners implements Listener {
     private final CaptureGame game;
 
     private final Map<Block, ChestImage> chestImages = new HashMap<>();
 
-    private final List<WoolCapturable> standaloneWools;
-    private final Multimap<GoalHolder, WoolCapturable> wools;
-    private final Multimap<DyeColor, WoolCapturable> woolsByColor = ArrayListMultimap.create();
+    private final List<Wool> standaloneWools;
+    private final Multimap<GoalHolder, Wool> wools;
+    private final Multimap<DyeColor, Wool> woolsByColor = ArrayListMultimap.create();
 
-    public WoolCapturableListeners(CaptureGame game, List<WoolCapturable> standaloneWools,
-                                   Multimap<GoalHolder, WoolCapturable> wools) {
+    public WoolListeners(CaptureGame game, List<Wool> standaloneWools,
+                                   Multimap<GoalHolder, Wool> wools) {
         this.game = game;
 
         this.standaloneWools = standaloneWools;
         this.wools = wools;
 
-        for (WoolCapturable wool : wools.values()) {
+        for (Wool wool : wools.values()) {
             this.woolsByColor.put(wool.getColor(), wool);
         }
     }
@@ -209,8 +208,8 @@ public class WoolCapturableListeners implements Listener {
     // Wool Pickups
     //
 
-    public Map.Entry<GoalHolder, Collection<WoolCapturable>> findWoolsFor(GamePlayer player) {
-        for (Map.Entry<GoalHolder, Collection<WoolCapturable>> entry : this.wools.asMap().entrySet()) {
+    public Map.Entry<GoalHolder, Collection<Wool>> findWoolsFor(GamePlayer player) {
+        for (Map.Entry<GoalHolder, Collection<Wool>> entry : this.wools.asMap().entrySet()) {
             if (entry.getKey().contains(player)) {
                 return entry;
             }
@@ -219,7 +218,7 @@ public class WoolCapturableListeners implements Listener {
         return null;
     }
 
-    public void pickupWool(GamePlayer player, ItemStack item, Wool wool) {
+    public void pickupWool(GamePlayer player, ItemStack item, org.bukkit.material.Wool wool) {
         if (wool == null) {
             return;
         }
@@ -229,12 +228,12 @@ public class WoolCapturableListeners implements Listener {
             return;
         }
 
-        Map.Entry<GoalHolder, Collection<WoolCapturable>> wools = this.findWoolsFor(player);
-        List<WoolCapturable> woolsToLoop = new ArrayList<>(wools.getValue());
+        Map.Entry<GoalHolder, Collection<Wool>> wools = this.findWoolsFor(player);
+        List<Wool> woolsToLoop = new ArrayList<>(wools.getValue());
         woolsToLoop.addAll(this.standaloneWools);
 
-        WoolCapturable result = null;
-        for (WoolCapturable capturable : this.woolsByColor.get(wool.getColor())) {
+        Wool result = null;
+        for (Wool capturable : this.woolsByColor.get(wool.getColor())) {
             if (capturable.isCompletableBy(competitor)) {
                 result = capturable;
                 break;
@@ -242,7 +241,7 @@ public class WoolCapturableListeners implements Listener {
         }
 
         if (result != null && !result.isCaptured()) {
-            WoolCapturablePickupEvent event = new WoolCapturablePickupEvent(this.game.getPlugin(), result, item, wool);
+            WoolPickupEvent event = new WoolPickupEvent(this.game.getPlugin(), result, item, wool);
             this.game.getPlugin().getEventBus().publish(event);
 
             if (!event.isCanceled()) {

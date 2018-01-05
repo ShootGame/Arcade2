@@ -64,7 +64,7 @@ public class CapturedState extends PointState.Permanent {
                 enemy = enemies.get(0);
             }
 
-            if (this.point.isCapturingCaptured() && enemy != null) {
+            if (this.point.isCapturingCapturedEnabled() && enemy != null) {
                 this.point.startCapturingCaptured(enemy, Progress.ZERO);
             } else {
                 this.point.startLosing(owner, Progress.DONE);

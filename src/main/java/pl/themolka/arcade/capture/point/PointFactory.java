@@ -34,7 +34,7 @@ public class PointFactory implements CapturableFactory<Point> {
         // setup
         point.setCaptureRegion(captureRegion);
         point.setCaptureTime(XMLTime.parse(xml.getAttributeValue("capture-time"), Point.DEFAULT_CAPTURE_TIME));
-        point.setCapturingCaptured(XMLParser.parseBoolean(xml.getAttributeValue("capturing-captured"), true));
+        point.setCapturingCapturedEnabled(XMLParser.parseBoolean(xml.getAttributeValue("capturing-captured"), true));
         point.setLoseTime(XMLTime.parse(xml.getAttributeValue("lose-time"), Point.DEFAULT_LOSE_TIME));
         point.setPermanent(XMLParser.parseBoolean(xml.getAttributeValue("permanent"), false));
         point.setPointReward(XMLParser.parseInt(xml.getAttributeValue("point-reward"), 0));

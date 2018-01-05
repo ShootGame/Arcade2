@@ -4,11 +4,11 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class WoolCapturablePlaceEvent extends WoolCapturableEvent implements Cancelable {
+public class WoolPlaceEvent extends WoolEvent implements Cancelable {
     private boolean cancel;
     private GoalHolder completer;
 
-    public WoolCapturablePlaceEvent(ArcadePlugin plugin, WoolCapturable wool, GoalHolder completer) {
+    public WoolPlaceEvent(ArcadePlugin plugin, Wool wool, GoalHolder completer) {
         super(plugin, wool);
 
         this.completer = completer;

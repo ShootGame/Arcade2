@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Wool;
 import pl.themolka.arcade.util.Color;
 
 public class WoolUtils {
@@ -17,11 +16,11 @@ public class WoolUtils {
     private WoolUtils() {
     }
 
-    public static ChatColor chatColor(Wool wool) {
+    public static ChatColor chatColor(org.bukkit.material.Wool wool) {
         return color(wool).toChat();
     }
 
-    public static Color color(Wool wool) {
+    public static Color color(org.bukkit.material.Wool wool) {
         return Color.ofDye(wool.getColor());
     }
 
@@ -29,7 +28,7 @@ public class WoolUtils {
         return Color.ofDye(color).toChat() + name(color);
     }
 
-    public static String coloredName(Wool wool) {
+    public static String coloredName(org.bukkit.material.Wool wool) {
         return coloredName(wool.getColor());
     }
 
@@ -41,11 +40,11 @@ public class WoolUtils {
         return count(inventory, color) > 0;
     }
 
-    public static boolean containsAny(Inventory inventory, Wool wool) {
+    public static boolean containsAny(Inventory inventory, org.bukkit.material.Wool wool) {
         return containsAny(inventory, wool.getColor());
     }
 
-    public static boolean containsAny(Inventory inventory, WoolCapturable wool) {
+    public static boolean containsAny(Inventory inventory, Wool wool) {
         return containsAny(inventory, wool.getColor());
     }
 
@@ -71,16 +70,16 @@ public class WoolUtils {
         return count;
     }
 
+    public static int count(Inventory inventory, org.bukkit.material.Wool wool) {
+        return count(inventory, wool.getColor());
+    }
+
     public static int count(Inventory inventory, Wool wool) {
         return count(inventory, wool.getColor());
     }
 
-    public static int count(Inventory inventory, WoolCapturable wool) {
-        return count(inventory, wool.getColor());
-    }
-
-    public static Wool fromItem(ItemStack item) {
-        return item != null && isWool(item) ? ((Wool) item.getData()) : null;
+    public static org.bukkit.material.Wool fromItem(ItemStack item) {
+        return item != null && isWool(item) ? ((org.bukkit.material.Wool) item.getData()) : null;
     }
 
     public static boolean isWool(Block block) {
@@ -127,7 +126,7 @@ public class WoolUtils {
         return StringUtils.join(name, ' ');
     }
 
-    public static String name(Wool wool) {
+    public static String name(org.bukkit.material.Wool wool) {
         return name(wool.getColor());
     }
 }

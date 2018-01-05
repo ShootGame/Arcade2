@@ -6,7 +6,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.GoalHolder;
-import pl.themolka.arcade.leak.core.CoreLeakableFactory;
+import pl.themolka.arcade.leak.core.CoreFactory;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -74,7 +74,7 @@ public class LeakGame extends GameModule {
     }
 
     private void installDefaultFactories() {
-        this.addFactory("core", new CoreLeakableFactory());
+        this.addFactory("core", new CoreFactory());
     }
 
     private void parseMapXml() {

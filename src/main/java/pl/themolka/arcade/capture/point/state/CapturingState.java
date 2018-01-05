@@ -41,7 +41,7 @@ public class CapturingState extends PointState.Progress {
 
             if (!this.capturer.equals(dominator)) {
                 // The dominator has changed.
-                if (this.point.isCapturingCaptured()) {
+                if (this.point.isCapturingCapturedEnabled()) {
                     this.point.startCapturingCaptured(dominator, this.getProgress());
                 } else {
                     this.point.startLosing(this.capturer, this.getProgress());

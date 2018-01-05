@@ -6,9 +6,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointFactory;
-import pl.themolka.arcade.capture.wool.WoolCapturable;
-import pl.themolka.arcade.capture.wool.WoolCapturableFactory;
-import pl.themolka.arcade.capture.wool.WoolCapturableListeners;
+import pl.themolka.arcade.capture.wool.Wool;
+import pl.themolka.arcade.capture.wool.WoolFactory;
+import pl.themolka.arcade.capture.wool.WoolListeners;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
@@ -84,7 +84,7 @@ public class CaptureGame extends GameModule {
 
     private void installDefaultFactories() {
         this.addFactory("point", new PointFactory());
-        this.addFactory("wool", new WoolCapturableFactory());
+        this.addFactory("wool", new WoolFactory());
     }
 
     private void parseMapXml() {
@@ -166,22 +166,22 @@ public class CaptureGame extends GameModule {
 
     private void enableWools() {
         // Register wool classes ONLY when there are any wool goals.
-        List<WoolCapturable> standaloneWools = new ArrayList<>();
-        Multimap<GoalHolder, WoolCapturable> wools = ArrayListMultimap.create();
+        List<Wool> standaloneWools = new ArrayList<>();
+        Multimap<GoalHolder, Wool> wools = ArrayListMultimap.create();
 
         for (Capturable capturable : this.getCapturables()) {
-            if (capturable instanceof WoolCapturable) {
+            if (capturable instanceof Wool) {
                 GoalHolder owner = capturable.getOwner();
                 if (owner != null) {
-                    wools.put(owner, (WoolCapturable) capturable);
+                    wools.put(owner, (Wool) capturable);
                 } else {
-                    standaloneWools.add((WoolCapturable) capturable);
+                    standaloneWools.add((Wool) capturable);
                 }
             }
         }
 
         if (!standaloneWools.isEmpty() || !wools.isEmpty()) {
-            this.registerListenerObject(new WoolCapturableListeners(this, standaloneWools, wools));
+            this.registerListenerObject(new WoolListeners(this, standaloneWools, wools));
         }
     }
 }

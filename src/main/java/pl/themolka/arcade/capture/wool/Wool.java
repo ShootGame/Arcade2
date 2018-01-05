@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Wool;
 import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.channel.Messageable;
@@ -19,7 +18,7 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.util.Color;
 
-public class WoolCapturable extends Capturable implements Listener {
+public class Wool extends Capturable implements Listener {
     public static final DyeColor DEFAULT_COLOR = DyeColor.WHITE;
     public static final String DEFAULT_GOAL_NAME = "Wool";
 
@@ -27,11 +26,11 @@ public class WoolCapturable extends Capturable implements Listener {
     private boolean craftable = false;
     private Region monument;
 
-    public WoolCapturable(CaptureGame game, String id) {
-        super(game, id);
+    public Wool(CaptureGame game, String id) {
+        this(game, null, id);
     }
 
-    public WoolCapturable(CaptureGame game, GoalHolder owner, String id) {
+    public Wool(CaptureGame game, GoalHolder owner, String id) {
         super(game, owner, id);
     }
 
@@ -82,8 +81,8 @@ public class WoolCapturable extends Capturable implements Listener {
     public void resetCapturable() {
     }
 
-    public Wool createWool() {
-        return new Wool(this.getColor());
+    public org.bukkit.material.Wool createBukkitWool() {
+        return new org.bukkit.material.Wool(this.getColor());
     }
 
     public ChatColor getChatColor() {
@@ -161,7 +160,7 @@ public class WoolCapturable extends Capturable implements Listener {
         } else {
             event.setCanceled(false);
 
-            WoolCapturablePlaceEvent placeEvent = new WoolCapturablePlaceEvent(this.game.getPlugin(), this, player);
+            WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, player);
             this.game.getPlugin().getEventBus().publish(placeEvent);
 
             if (!placeEvent.isCanceled()) {

@@ -11,13 +11,13 @@ import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class WoolCapturableFactory implements CapturableFactory<WoolCapturable> {
+public class WoolFactory implements CapturableFactory<Wool> {
     @Override
-    public WoolCapturable newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parseWoolXml(game, name, xml, new WoolCapturable(game, owner, id));
+    public Wool newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+        return this.parseWoolXml(game, name, xml, new Wool(game, owner, id));
     }
 
-    public WoolCapturable parseWoolXml(CaptureGame game, String name, Element xml, WoolCapturable wool) {
+    public Wool parseWoolXml(CaptureGame game, String name, Element xml, Wool wool) {
         String craftable = xml.getAttributeValue("craftable");
         Element monumentElement = xml.getChild("monument");
 
