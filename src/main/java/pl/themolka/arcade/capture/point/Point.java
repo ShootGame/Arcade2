@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,8 +40,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Point extends Capturable {
     public static final Time DEFAULT_CAPTURE_TIME = Time.ofSeconds(10);
@@ -50,12 +47,6 @@ public class Point extends Capturable {
     public static final Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
 
     public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(5); // 1/4 of a second
-
-    public static final Set<Material> POINT_MATERIALS = Stream.of(Material.CARPET,
-                                                                  Material.STAINED_CLAY,
-                                                                  Material.STAINED_GLASS,
-                                                                  Material.STAINED_GLASS_PANE,
-                                                                  Material.WOOL).collect(Collectors.toSet());
 
     private Region captureRegion;
     private Time captureTime = DEFAULT_CAPTURE_TIME;

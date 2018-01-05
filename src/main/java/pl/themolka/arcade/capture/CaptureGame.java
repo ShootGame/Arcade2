@@ -6,6 +6,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointFactory;
+import pl.themolka.arcade.capture.point.PointRenderListeners;
 import pl.themolka.arcade.capture.wool.Wool;
 import pl.themolka.arcade.capture.wool.WoolFactory;
 import pl.themolka.arcade.capture.wool.WoolListeners;
@@ -161,6 +162,8 @@ public class CaptureGame extends GameModule {
                     }
                 }
             });
+
+            this.registerListenerObject(new PointRenderListeners(this));
         }
     }
 
