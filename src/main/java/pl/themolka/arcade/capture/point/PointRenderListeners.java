@@ -4,7 +4,9 @@ import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.capture.CaptureGame;
@@ -14,7 +16,6 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.goal.GoalHolder;
-import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
@@ -61,6 +62,16 @@ public class PointRenderListeners implements Listener {
         return data != null && this.isRenderable(data.getItemType());
     }
 
+    public void renderBanner(Banner banner, DyeColor color) {
+        banner.setBaseColor(color);
+    }
+
+    public void renderBanner(BlockState blockState, DyeColor color) {
+        if (blockState instanceof Banner) {
+            this.renderBanner((Banner) blockState, color);
+        }
+    }
+
     public void renderBlocks(Point point, ChatColor color) {
         this.renderBlocks(point, Color.ofChat(color));
     }
@@ -70,10 +81,12 @@ public class PointRenderListeners implements Listener {
     }
 
     public void renderBlocks(Point point, DyeColor color) {
-        Region region = point.getStateRegion();
-        for (Block block : region.getBlocks()) {
+        for (Block block : point.getStateRegion().getBlocks()) {
             if (this.isRenderable(block)) {
                 block.setData(color.getWoolData());
+            } else if (block.getType().equals(Material.STANDING_BANNER)
+                    || block.getType().equals(Material.WALL_BANNER)) {
+                this.renderBanner(block.getState(), color);
             }
         }
     }

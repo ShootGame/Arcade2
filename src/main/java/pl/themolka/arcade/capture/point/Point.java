@@ -98,7 +98,7 @@ public class Point extends Capturable {
 
     @Override
     public String getGoalInteractMessage(String interact) {
-        if (this.isNeutral() || !this.hasOwner()) {
+        if (this.isNeutral()) {
             // Neutral points are not announced.
             return null;
         }
@@ -270,12 +270,12 @@ public class Point extends Capturable {
     }
 
     public void lose(GoalHolder loser) {
-        this.setOwner(null);
-
         String message = this.getGoalInteractMessage(loser.getTitle());
         if (message != null) {
             this.game.getMatch().sendGoalMessage(message);
         }
+
+        this.setOwner(null);
     }
 
     public boolean removePlayer(GamePlayer player) {
