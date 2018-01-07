@@ -7,6 +7,7 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.team.TeamsModule;
+import pl.themolka.arcade.xml.XMLParser;
 
 @ModuleInfo(id = "Score",
         dependency = {
@@ -14,37 +15,18 @@ import pl.themolka.arcade.team.TeamsModule;
         loadBefore = {
                 TeamsModule.class})
 public class ScoreModule extends Module<ScoreGame> {
-    public static final int LIMIT_NULL = Integer.MAX_VALUE;
+    public static final double LIMIT_NULL = Score.MAX;
 
     @Override
     public ScoreGame buildGameModule(Element xml, Game game) throws JDOMException {
-        int kills = 1;
-        Element killsElement = xml.getChild("kills");
-        if (killsElement != null) {
-            try {
-                int value = Integer.parseInt(killsElement.getTextNormalize());
-                if (value >= 0) {
-                    kills = value;
-                }
-            } catch (NumberFormatException ignored) {
-            }
+        String name = xml.getAttributeValue("name");
+        if (name != null) {
+            name = name.trim();
         }
 
-        int limit = LIMIT_NULL;
-        Element limitElement = xml.getChild("limit");
-        if (limitElement != null) {
-            try {
-                limit = Integer.parseInt(limitElement.getTextNormalize());
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        String name = null;
-        Element nameElement = xml.getChild("name");
-        if (nameElement != null) {
-            name = nameElement.getTextNormalize();
-        }
-
-        return new ScoreGame(kills, limit, name);
+        ScoreGame module = new ScoreGame(XMLParser.parseDouble(xml.getAttributeValue("limit"), LIMIT_NULL), name);
+        module.setDeathLoss(XMLParser.parseDouble(xml.getAttributeValue("death-loss"), Score.ZERO));
+        module.setKillReward(XMLParser.parseDouble(xml.getAttributeValue("kill-reward"), Score.ZERO));
+        return module;
     }
 }

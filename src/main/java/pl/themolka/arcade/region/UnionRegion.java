@@ -1,5 +1,6 @@
 package pl.themolka.arcade.region;
 
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
@@ -126,15 +127,22 @@ public class UnionRegion extends AbstractRegion {
             if (max == null) {
                 max = memberMax;
             }
-            if (max.getX() > memberMax.getX()) {
+            if (max.getX() < memberMax.getX()) {
                 max.setX(memberMax.getX());
             }
-            if (max.getY() > memberMax.getY()) {
+            if (max.getY() < memberMax.getY()) {
                 max.setY(memberMax.getY());
             }
-            if (max.getZ() > memberMax.getZ()) {
+            if (max.getZ() < memberMax.getZ()) {
                 max.setZ(memberMax.getZ());
             }
+        }
+
+        if (min == null) {
+            min = new BlockVector(0, 0, 0);
+        }
+        if (max == null) {
+            max = new BlockVector(0, 0, 0);
         }
 
         return new RegionBounds(this, min, max);

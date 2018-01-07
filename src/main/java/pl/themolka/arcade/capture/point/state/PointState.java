@@ -2,25 +2,29 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.bukkit.ChatColor;
-import pl.themolka.arcade.capture.CaptureGame;
+import pl.themolka.arcade.capture.CapturableState;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
-public abstract class PointState {
-    protected final CaptureGame game;
+public abstract class PointState extends CapturableState<Point, PointState> {
     protected final Point point;
 
     public PointState(Point point) {
-        this.game = point.getCaptureGame();
+        super(point.getCaptureGame(), point);
+
         this.point = point;
     }
 
+    @Override
+    public abstract PointState copy();
+
     public ChatColor getColor() {
-        return null;
+        return NeutralState.NEUTRAL_COLOR;
     }
 
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
@@ -31,7 +35,10 @@ public abstract class PointState {
         return Goal.PROGRESS_UNTOUCHED;
     }
 
-    public static class Permanent extends PointState {
+    @Override
+    public abstract String toString();
+
+    public abstract static class Permanent extends PointState {
         public Permanent(Point point) {
             super(point);
         }
@@ -74,7 +81,10 @@ public abstract class PointState {
                 progressPerHeartbeat = progressPerHeartbeat * -1;
             }
 
-            this.setProgress(this.getProgress() + progressPerHeartbeat);
+            double oldProgress = this.getProgress();
+            GoalProgressEvent.call(this.game.getPlugin(), this.point, oldProgress);
+
+            this.setProgress(oldProgress + progressPerHeartbeat);
         }
 
         public void setProgress(double progress) {

@@ -7,6 +7,7 @@ import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
+import pl.themolka.arcade.score.Score;
 import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.xml.XMLParser;
 
@@ -18,14 +19,14 @@ public class PointFactory implements CapturableFactory<Point> {
 
     public Point parsePointXml(CaptureGame game, String name, Element xml, Point point) {
         // capture region
-        Element captureRegionElement = xml.getChild("capture-region");
+        Element captureRegionElement = xml.getChild("capture");
         Region captureRegion = captureRegionElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), captureRegionElement) : null;
         if (captureRegion == null) {
             return null;
         }
 
         // state region
-        Element stateRegionElement = xml.getChild("state-region");
+        Element stateRegionElement = xml.getChild("state");
         Region stateRegion = stateRegionElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), stateRegionElement) : null;
         if (stateRegion == null) {
             stateRegion = captureRegion; // set state region to the capture region (if it is not set)
@@ -36,8 +37,9 @@ public class PointFactory implements CapturableFactory<Point> {
         point.setCaptureTime(XMLTime.parse(xml.getAttributeValue("capture-time"), Point.DEFAULT_CAPTURE_TIME));
         point.setCapturingCapturedEnabled(XMLParser.parseBoolean(xml.getAttributeValue("capturing-captured"), true));
         point.setLoseTime(XMLTime.parse(xml.getAttributeValue("lose-time"), Point.DEFAULT_LOSE_TIME));
+        point.setObjective(XMLParser.parseBoolean(xml.getAttributeValue("objective"), false));
         point.setPermanent(XMLParser.parseBoolean(xml.getAttributeValue("permanent"), false));
-        point.setPointReward(XMLParser.parseInt(xml.getAttributeValue("point-reward"), 0));
+        point.setPointReward(XMLParser.parseDouble(xml.getAttributeValue("point-reward"), Score.ZERO));
         point.setStateRegion(stateRegion);
         return point;
     }

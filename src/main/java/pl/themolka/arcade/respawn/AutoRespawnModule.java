@@ -18,7 +18,7 @@ public class AutoRespawnModule extends Module<AutoRespawnGame> {
     }
 
     private long parseSeconds(int seconds) {
-        long ticks = Time.ofSeconds(1).toTicks();
+        long ticks = Time.SECOND.toTicks();
         return Math.max(seconds * ticks, ticks);
     }
 }

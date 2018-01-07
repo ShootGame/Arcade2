@@ -2,6 +2,7 @@ package pl.themolka.arcade.score;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -25,14 +26,15 @@ import java.util.Map;
 public class ScoreGame extends GameModule implements DynamicWinnable {
     private final Map<GoalHolder, Score> byOwner = new HashMap<>();
 
-    private final int kills;
-    private final int limit;
+    private final double limit;
     private final String scoreName;
+
+    private double deathLoss;
+    private double killReward;
 
     private Match match;
 
-    public ScoreGame(int kills, int limit, String scoreName) {
-        this.kills = kills;
+    public ScoreGame(double limit, String scoreName) {
         this.limit = limit;
         this.scoreName = scoreName;
     }
@@ -64,7 +66,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
 
     @Override
     public List<MatchWinner> getDynamicWinners() {
-        int highestScore = 0;
+        double highestScore = Score.ZERO;
 
         List<MatchWinner> results = new ArrayList<>();
         for (MatchWinner winner : this.getMatch().getWinners()) {
@@ -88,18 +90,22 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             }
         }
 
-        if (highestScore != 0 || results.isEmpty()) {
+        if (highestScore != Score.ZERO || results.isEmpty()) {
             return results;
         }
 
         return null;
     }
 
-    public int getKills() {
-        return this.kills;
+    public double getDeathLoss() {
+        return this.deathLoss;
     }
 
-    public int getLimit() {
+    public double getKillReward() {
+        return this.killReward;
+    }
+
+    public double getLimit() {
         return this.limit;
     }
 
@@ -115,34 +121,59 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.scoreName;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    public void setDeathLoss(double deathLoss) {
+        this.deathLoss = deathLoss;
+    }
+
+    public void setKillReward(double killReward) {
+        this.killReward = killReward;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        int kills = this.getKills();
-        if (this.getMatch() == null || event.getEntity().getKiller() == null || kills <= 0) {
-            return;
-        }
+        Match match = this.getMatch();
 
-        GamePlayer killer = this.getGame().getPlayer(event.getEntity().getKiller());
-        if (killer == null) {
-            return;
-        }
+        if (match != null) {
+            Player victim = event.getEntity();
+            Player killer = victim.getKiller();
 
-        // team or player registered in the match
-        MatchWinner winner = this.getMatch().findWinnerByPlayer(killer);
-        if (winner == null) {
-            return;
-        }
+            // kill registration
+            boolean wasKill = this.registerPoints(match, killer, this.getKillReward());
 
-        Score score = this.getScore(winner);
-        if (score != null) {
-            score.incrementScore(killer, kills);
+            // death registration
+            if (!wasKill) {
+                this.registerPoints(match, victim, -this.getDeathLoss());
+            }
         }
     }
 
     @Handler(priority = Priority.HIGHER)
     public void onScoreLimitReach(ScoreLimitReachEvent event) {
         this.getMatch().sendGoalMessage(ChatColor.YELLOW + "The score limit of " + ChatColor.GOLD + ChatColor.BOLD +
-                event.getLimit() + " points" + ChatColor.RESET + ChatColor.YELLOW + " for " + ChatColor.GOLD +
+                Math.round(event.getLimit()) + " points" + ChatColor.RESET + ChatColor.YELLOW + " for " + ChatColor.GOLD +
                 event.getScore().getOwner().getTitle() + ChatColor.YELLOW + " has been reached.");
+    }
+
+    private boolean registerPoints(Match match, Player bukkit, double points) {
+        if (bukkit == null || points == Score.ZERO) {
+            return false;
+        }
+
+        GamePlayer player = match.getGame().getPlayer(bukkit);
+        if (player == null) {
+            return false;
+        }
+
+        GoalHolder competitor = match.findWinnerByPlayer(player);
+        if (competitor != null) {
+            Score score = this.getScore(competitor);
+
+            if (score != null) {
+                score.incrementScore(player, points);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

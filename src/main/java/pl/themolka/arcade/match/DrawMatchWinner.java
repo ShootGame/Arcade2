@@ -38,17 +38,18 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public boolean contains(Player bukkit) {
-        return true;
+        return bukkit != null && this.contains(this.plugin.getPlayer(bukkit));
     }
 
     @Override
     public boolean contains(ArcadePlayer player) {
-        return this.contains(player.getGamePlayer());
+        GamePlayer gamePlayer = player.getGamePlayer();
+        return gamePlayer != null && this.contains(gamePlayer);
     }
 
     @Override
     public boolean contains(GamePlayer player) {
-        return player.isParticipating();
+        return player != null && player.isParticipating();
     }
 
     @Override

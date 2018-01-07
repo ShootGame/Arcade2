@@ -1,5 +1,7 @@
 package pl.themolka.arcade.team;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -28,6 +30,8 @@ import java.util.Objects;
  */
 public class Team implements MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
+
+    private static ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
     private final ArcadePlugin plugin;
 
@@ -424,6 +428,13 @@ public class Team implements MatchWinner {
 
     public void setSlots(int slots) {
         this.slots = slots;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, toStringStyle)
+                .append("id", this.getId())
+                .build();
     }
 
     private ChatChannel getCurrentChannel() {

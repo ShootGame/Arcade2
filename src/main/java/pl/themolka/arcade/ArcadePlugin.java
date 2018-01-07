@@ -205,7 +205,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 this.getLogger().severe("Could not start - see logs above. Shutting down the server...");
                 this.getServer().shutdown();
             }
-        }, Time.ofTicks(1).toTicks());
+        }, Time.TICK.toTicks());
     }
 
     //
@@ -405,7 +405,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public ArcadePlayer getPlayer(HumanEntity human) {
-        if (human instanceof Player) {
+        if (human != null && human instanceof Player) {
             return this.getPlayer((Player) human);
         }
 
@@ -413,13 +413,19 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public ArcadePlayer getPlayer(Player bukkit) {
-        return this.getPlayer(bukkit.getUniqueId());
+        if (bukkit != null) {
+            return this.getPlayer(bukkit.getUniqueId());
+        }
+
+        return null;
     }
 
     public ArcadePlayer getPlayer(String username) {
-        for (ArcadePlayer player : this.getPlayers()) {
-            if (player.getUsername().equalsIgnoreCase(username)) {
-                return player;
+        if (username != null) {
+            for (ArcadePlayer player : this.getPlayers()) {
+                if (player.getUsername().equalsIgnoreCase(username)) {
+                    return player;
+                }
             }
         }
 
@@ -427,7 +433,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     public ArcadePlayer getPlayer(UUID uuid) {
-        return this.players.get(uuid);
+        if (uuid != null) {
+            return this.players.get(uuid);
+        }
+
+        return null;
     }
 
     public Collection<ArcadePlayer> getPlayers() {

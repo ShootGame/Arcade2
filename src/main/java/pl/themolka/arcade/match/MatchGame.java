@@ -187,11 +187,9 @@ public class MatchGame extends GameModule {
         }
     }
 
-    @Handler(priority = Priority.LOWEST)
+    @Handler(priority = Priority.LAST)
     public void onGoalCompleteEndMatch(GoalCompleteEvent event) {
-        if (!event.isCanceled()) {
-            this.getMatch().refreshWinners();
-        }
+        this.getMatch().refreshWinners();
     }
 
     @Handler(priority = Priority.HIGHEST)
@@ -213,8 +211,12 @@ public class MatchGame extends GameModule {
         }
     }
 
-    @Handler(priority = Priority.HIGHER)
-    public void onGameOverScreenRender(MatchEndedEvent event) {
+    @Handler(priority = Priority.LAST)
+    public void onGameOverScreenRender(MatchEndEvent event) {
+        if (event.isCanceled()) {
+            return;
+        }
+
         BaseComponent[] defaultComponent = TextComponent.fromLegacyText(
                 ChatColor.AQUA + ChatColor.UNDERLINE.toString() + "Game over!");
         BaseComponent[] winnerComponent = TextComponent.fromLegacyText(

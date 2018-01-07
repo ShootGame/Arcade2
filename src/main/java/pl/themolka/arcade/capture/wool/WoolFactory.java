@@ -18,14 +18,12 @@ public class WoolFactory implements CapturableFactory<Wool> {
     }
 
     public Wool parseWoolXml(CaptureGame game, String name, Element xml, Wool wool) {
-        String craftable = xml.getAttributeValue("craftable");
-        Element monumentElement = xml.getChild("monument");
-
         DyeColor color = XMLDyeColor.parse(xml.getAttributeValue("color"));
         if (color == null) {
             return null;
         }
 
+        Element monumentElement = xml.getChild("monument");
         Region monument = monumentElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), monumentElement) : null;
         if (monument == null) {
             return null;
@@ -33,7 +31,7 @@ public class WoolFactory implements CapturableFactory<Wool> {
 
         // setup
         wool.setColor(color);
-        wool.setCraftable(craftable != null && XMLParser.parseBoolean(craftable, false));
+        wool.setCraftable(XMLParser.parseBoolean(xml.getAttributeValue("craftable"), false));
         wool.setMonument(monument);
         return wool;
     }

@@ -84,6 +84,21 @@ public class XMLParser {
         }
     }
 
+    public static double parseDouble(String doublee) {
+        return parseDouble(doublee, 0.0D);
+    }
+
+    public static double parseDouble(String doublee, double def) {
+        if (doublee != null) {
+            try {
+                return Double.parseDouble(doublee);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return def;
+    }
+
     public static String parseEnumValue(String key) {
         if (key != null) {
             return key.toUpperCase().replace(" ", "_").replace("-", "_");
@@ -97,11 +112,14 @@ public class XMLParser {
     }
 
     public static int parseInt(String integer, int def) {
-        try {
-            return Integer.parseInt(integer);
-        } catch (NumberFormatException ex) {
-            return def;
+        if (integer != null) {
+            try {
+                return Integer.parseInt(integer);
+            } catch (NumberFormatException ignored) {
+            }
         }
+
+        return def;
     }
 
     public static String parseMessage(String message) {

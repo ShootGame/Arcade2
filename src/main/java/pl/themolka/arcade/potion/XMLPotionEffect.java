@@ -48,7 +48,7 @@ public class XMLPotionEffect extends XMLParser {
     private static int parseDuration(Element xml) {
         Attribute attribute = xml.getAttribute("duration");
         if (attribute != null) {
-            Time time = XMLTime.parse(attribute, Time.ofSeconds(1));
+            Time time = XMLTime.parse(attribute, Time.SECOND);
 
             if (!time.isForever()) {
                 try {

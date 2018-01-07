@@ -7,7 +7,7 @@ public class ScoreLimitReachEvent extends ScoreEvent {
         super(plugin, score);
     }
 
-    public int getLimit() {
+    public double getLimit() {
         return this.getScore().getLimit();
     }
 }

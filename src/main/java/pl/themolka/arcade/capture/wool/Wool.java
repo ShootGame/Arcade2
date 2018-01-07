@@ -1,8 +1,10 @@
 package pl.themolka.arcade.capture.wool;
 
 import net.engio.mbassy.listener.Handler;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,7 +37,7 @@ public class Wool extends Capturable implements Listener {
     }
 
     @Override
-    public void capture(GoalHolder completer) {
+    public void capture(GoalHolder completer, GamePlayer player) {
         String owner = "";
         if (this.hasOwner()) {
             owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
@@ -44,7 +46,7 @@ public class Wool extends Capturable implements Listener {
         String message = owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
                 this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
                 " has been captured by " + ChatColor.GOLD + ChatColor.BOLD +
-                completer.getTitle() + ChatColor.RESET + ChatColor.YELLOW + ".";
+                player.getDisplayName() + ChatColor.RESET + ChatColor.YELLOW + ".";
 
         this.game.getMatch().sendGoalMessage(message);
         this.setCompleted(completer, true);
@@ -52,6 +54,10 @@ public class Wool extends Capturable implements Listener {
 
     @Override
     public String getColoredName() {
+        if (this.hasName()) {
+            return this.getName();
+        }
+
         return WoolUtils.coloredName(this.color) + " " + this.getDefaultName();
     }
 
@@ -74,6 +80,10 @@ public class Wool extends Capturable implements Listener {
 
     @Override
     public String getName() {
+        if (this.hasName()) {
+            super.getName();
+        }
+
         return WoolUtils.name(this.color) + " " + this.getDefaultName();
     }
 
@@ -113,6 +123,19 @@ public class Wool extends Capturable implements Listener {
         this.monument = monument;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("owner", this.getOwner())
+                .append("captured", this.isCaptured())
+                .append("capturedBy", this.getCapturedBy())
+                .append("id", this.getId())
+                .append("name", this.getName())
+                .append("color", this.color)
+                .append("craftable", this.craftable)
+                .build();
+    }
+
     //
     // Listeners
     //
@@ -140,7 +163,7 @@ public class Wool extends Capturable implements Listener {
     @Handler(priority = Priority.HIGHER)
     public void onWoolPlace(BlockTransformEvent event) {
         Block block = event.getBlock();
-        if (!WoolUtils.isWool(block, this.getColor()) || !this.getMonument().contains(block)) {
+        if (!WoolUtils.isWool(block) || !this.getMonument().contains(block)) {
             return;
         }
 
@@ -150,22 +173,57 @@ public class Wool extends Capturable implements Listener {
             return;
         }
 
+        if (!WoolUtils.isWool(block, this.getColor())) {
+            // We need to prevent "Only X may be placed here" message if it is a
+            // correct wool. The wool should be handled by the correct listener
+            // in the correct Wool instance.
+
+            for (Capturable otherCapturable : this.game.getCapturables()) {
+                if (otherCapturable instanceof Wool) {
+                    Wool otherWool = (Wool) otherCapturable;
+
+                    if (WoolUtils.isWool(block, otherWool.getColor()) &&
+                            otherWool.getMonument().contains(block)) {
+                        // This will be handled in its correct listener, return.
+                        return;
+                    }
+                }
+            }
+
+            event.setCanceled(true);
+            player.sendError("Only " + this.getColoredName() +
+                    Messageable.ERROR_COLOR + " may be placed here!");
+            return;
+        }
+
         event.setCanceled(true);
         if (this.isCaptured()) {
             player.sendError(ChatColor.GOLD + this.getColoredName() +
-                    Messageable.INFO_COLOR + " has already been captured.");
+                    Messageable.ERROR_COLOR + " has already been captured!");
         } else if (this.hasOwner() && this.getOwner().contains(player)) {
             player.sendError("You may not capture your own " + ChatColor.GOLD +
-                    this.getColoredName() + Messageable.ERROR_COLOR + ".");
+                    this.getColoredName() + Messageable.ERROR_COLOR + "!");
         } else {
+            GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(player);
+            if (competitor == null) {
+                return;
+            }
+
             event.setCanceled(false);
 
-            WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, player);
+            WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, competitor);
             this.game.getPlugin().getEventBus().publish(placeEvent);
 
-            if (!placeEvent.isCanceled()) {
-                this.capture(placeEvent.getCompleter());
+            if (placeEvent.isCanceled()) {
+                return;
             }
+
+            // The wool won't be placed because the player's inventory will
+            // be cleared and the wool item in the hand will be removed.
+
+            block.setType(Material.WOOL);
+            block.setData(this.getColor().getWoolData());
+            this.capture(placeEvent.getCompleter(), player);
         }
     }
 }

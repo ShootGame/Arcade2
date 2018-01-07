@@ -12,10 +12,6 @@ public class ScoreEvent extends GameEvent {
         this.score = score;
     }
 
-    public int getPoints() {
-        return this.getScore().getScore();
-    }
-
     public Score getScore() {
         return this.score;
     }

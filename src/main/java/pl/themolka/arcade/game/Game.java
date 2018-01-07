@@ -261,15 +261,27 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public GamePlayer getPlayer(ArcadePlayer player) {
-        return this.getPlayer(player.getUuid());
+        if (player != null) {
+            return this.getPlayer(player.getUuid());
+        }
+
+        return null;
     }
 
     public GamePlayer getPlayer(GamePlayerSnapshot snapshot) {
-        return this.getPlayer(snapshot.getUuid());
+        if (snapshot != null) {
+            return this.getPlayer(snapshot.getUuid());
+        }
+
+        return null;
     }
 
     public GamePlayer getPlayer(Player bukkit) {
-        return this.getPlayer(bukkit.getUniqueId());
+        if (bukkit != null) {
+            return this.getPlayer(bukkit.getUniqueId());
+        }
+
+        return null;
     }
 
     public GamePlayer getPlayer(String username) {
@@ -282,7 +294,11 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public GamePlayer getPlayer(UUID uuid) {
-        return this.players.get(uuid);
+        if (uuid != null) {
+            return this.players.get(uuid);
+        }
+
+        return null;
     }
 
     /**

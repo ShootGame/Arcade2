@@ -81,9 +81,12 @@ public abstract class AbstractRegion implements Region {
             return results;
         }
 
-        for (int x = bounds.getMin().getBlockX(); x < bounds.getMax().getBlockX(); x++) {
-            for (int y = bounds.getMin().getBlockY(); y < bounds.getMax().getBlockY(); y++) {
-                for (int z = bounds.getMin().getBlockZ(); z < bounds.getMax().getBlockZ(); z++) {
+        Vector min = bounds.getMin();
+        Vector max = bounds.getMax();
+
+        for (int x = min.getBlockX(); x < max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y < max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z < max.getBlockZ(); z++) {
                     Block block = this.getWorld().getBlockAt(x, y, z);
 
                     if (this.contains(block)) {

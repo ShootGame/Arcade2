@@ -16,21 +16,25 @@ import java.util.Set;
 public enum Color {
     /* colors */
     BLACK(ChatColor.BLACK, DyeColor.BLACK),
-    DARK_BLUE(ChatColor.DARK_BLUE, DyeColor.BLUE),
+    DARK_BLUE(ChatColor.DARK_BLUE, DyeColor.BLUE), // A duplicate (dye)
     DARK_GREEN(ChatColor.DARK_GREEN, DyeColor.GREEN),
     DARK_AQUA(ChatColor.DARK_AQUA, DyeColor.CYAN),
-    DARK_RED(ChatColor.DARK_RED, DyeColor.RED),
+    DARK_RED(ChatColor.DARK_RED, DyeColor.RED), // B duplicate (dye)
     DARK_PURPLE(ChatColor.DARK_PURPLE, DyeColor.PURPLE),
     GOLD(ChatColor.GOLD, DyeColor.ORANGE),
     GRAY(ChatColor.GRAY, DyeColor.SILVER),
-    DARK_GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY),
-    BLUE(ChatColor.BLUE, DyeColor.LIGHT_BLUE),
+    DARK_GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY), // C duplicate (chat)
+    BLUE(ChatColor.BLUE, DyeColor.BLUE), // A duplicate
     GREEN(ChatColor.GREEN, DyeColor.LIME),
     AQUA(ChatColor.AQUA, DyeColor.LIGHT_BLUE),
-    RED(ChatColor.RED, DyeColor.RED),
-    LIGHT_PURPLE(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA),
+    RED(ChatColor.RED, DyeColor.RED), // B duplicate
+    LIGHT_PURPLE(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA), // D duplicate (chat)
     YELLOW(ChatColor.YELLOW, DyeColor.YELLOW),
     WHITE(ChatColor.WHITE, DyeColor.WHITE),
+
+    /* dye colors */
+    BROWN(ChatColor.DARK_GRAY, DyeColor.BROWN), // C duplicate
+    PINK(ChatColor.LIGHT_PURPLE, DyeColor.PINK), // D duplicate
 
     /* formatting */
     MAGIC(ChatColor.MAGIC),
@@ -44,6 +48,8 @@ public enum Color {
 
     /** Indexed by {@link ChatColor}. */
     private static final Map<ChatColor, Color> byChat = new HashMap<>();
+    /** Indexed by component {@link net.md_5.bungee.api.ChatColor}. */
+    private static final Map<net.md_5.bungee.api.ChatColor, Color> byComponent = new HashMap<>();
     /** Indexed by {@link DyeColor} */
     private static final Map<DyeColor, Color> byDye = new HashMap<>();
 
@@ -53,17 +59,27 @@ public enum Color {
     static {
         for (Color value : values()) {
             // chat
-            if (value.toChat() != null) {
-                byChat.put(value.toChat(), value);
+            ChatColor chat = value.toChat();
+            if (chat != null && !byChat.containsKey(chat)) {
+                byChat.put(chat, value);
+            }
+
+            // component
+            net.md_5.bungee.api.ChatColor component = value.toComponent();
+            if (component != null && !byComponent.containsKey(component)) {
+                byComponent.put(component, value);
             }
 
             // dye
-            if (value.toDye() != null) {
-                byDye.put(value.toDye(), value);
+            DyeColor dye = value.toDye();
+            if (dye != null && !byDye.containsKey(dye)) {
+                byDye.put(dye, value);
             }
         }
     }
 
+    /** Component {@link net.md_5.bungee.api.ChatColor} representation */
+    private final net.md_5.bungee.api.ChatColor component;
     /** {@link ChatColor} representation */
     private final ChatColor chat;
     /** {@link DyeColor} representation */
@@ -74,6 +90,7 @@ public enum Color {
     }
 
     Color(ChatColor chat, DyeColor dye) {
+        this.component = net.md_5.bungee.api.ChatColor.getByChar(chat.getChar());
         this.chat = chat;
         this.dye = dye;
     }
@@ -158,6 +175,13 @@ public enum Color {
     }
 
     /**
+     * Convert this color to a component {@link net.md_5.bungee.api.ChatColor}
+     */
+    public net.md_5.bungee.api.ChatColor toComponent() {
+        return this.component;
+    }
+
+    /**
      * Convert this color to a {@link DyeColor}
      */
     public DyeColor toDye() {
@@ -182,6 +206,14 @@ public enum Color {
      */
     public static Color ofChat(ChatColor chat) {
         return byChat.get(chat);
+    }
+
+    /**
+     * Convert a component {@link net.md_5.bungee.api.ChatColor} to a color
+     * @param component Component {@link net.md_5.bungee.api.ChatColor} representation of a color
+     */
+    public static Color ofComponent(net.md_5.bungee.api.ChatColor component) {
+        return byComponent.get(component);
     }
 
     /**
@@ -216,6 +248,14 @@ public enum Color {
     }
 
     /**
+     * Generate a random component {@link net.minecraft.server.ChatClickable} value
+     */
+    public static net.md_5.bungee.api.ChatColor randomComponent() {
+        net.md_5.bungee.api.ChatColor[] values = componentValues();
+        return values[random.nextInt(values.length)];
+    }
+
+    /**
      * Generate a random {@link DyeColor} value
      */
     public static DyeColor randomDye() {
@@ -229,7 +269,7 @@ public enum Color {
 
     /**
      * Parse a {@link ChatColor} from the given query
-     * @param chat Query to searach
+     * @param chat Query to search
      */
     public static ChatColor parseChat(String chat) {
         return parseChat(chat, null);
@@ -242,6 +282,24 @@ public enum Color {
      */
     public static ChatColor parseChat(String chat, ChatColor def) {
         return XMLChatColor.parse(chat, def);
+    }
+
+    /**
+     * Parse a component {@link net.md_5.bungee.api.ChatColor} from the given query
+     * @param component Query to search
+     */
+    public static net.md_5.bungee.api.ChatColor parseComponent(String component) {
+        return parseComponent(component, null);
+    }
+
+    /**
+     * Parse a component {@link net.md_5.bungee.api.ChatColor} from the given query
+     * @param component Query to search
+     * @param def Default component {@link net.md_5.bungee.api.ChatColor} value, if the result gives <code>null</code>
+     */
+    public static net.md_5.bungee.api.ChatColor parseComponent(String component, net.md_5.bungee.api.ChatColor def) {
+        ChatColor chat = XMLChatColor.parse(component, ofComponent(def).toChat());
+        return chat != null ? ofChat(chat).toComponent() : null;
     }
 
     /**
@@ -271,6 +329,14 @@ public enum Color {
     public static ChatColor[] chatValues() {
         Set<ChatColor> values = byChat.keySet();
         return values.toArray(new ChatColor[values.size()]);
+    }
+
+    /**
+     * Return values of all component {@link net.md_5.bungee.api.ChatColor}s of this enum
+     */
+    public static net.md_5.bungee.api.ChatColor[] componentValues() {
+        Set<net.md_5.bungee.api.ChatColor> values = byComponent.keySet();
+        return values.toArray(new net.md_5.bungee.api.ChatColor[values.size()]);
     }
 
     /**

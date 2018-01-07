@@ -1,5 +1,8 @@
 package pl.themolka.arcade.time;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -10,6 +13,16 @@ public class Time {
     public static final String FOREVER_KEY = "oo";
     public static final Time ZERO = new Time(0L);
 
+    public static final Time MILLISECOND = Time.ofMillis(1);
+    public static final Time TICK = Time.ofTicks(1);
+    public static final Time SECOND = Time.ofSeconds(1);
+    public static final Time MINUTE = Time.ofMinutes(1);
+    public static final Time HOUR = Time.ofHours(1);
+    public static final Time DAY = Time.ofDays(1);
+    public static final Time WEEK = Time.ofWeeks(1);
+    public static final Time MONTH = Time.ofMonths(1);
+    public static final Time YEAR = Time.ofYears(1);
+
     public static final char UNIT_MILLIS = 'x';
     public static final char UNIT_TICKS = 't';
     public static final char UNIT_SECONDS = 's';
@@ -19,6 +32,8 @@ public class Time {
     public static final char UNIT_WEEKS = 'w';
     public static final char UNIT_MONTHS = 'o';
     public static final char UNIT_YEARS = 'y';
+
+    private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
     private final long time;
 
@@ -202,6 +217,13 @@ public class Time {
 
     public long toYears() {
         return this.toMonths() / 365L;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, toStringStyle)
+                .append("time", this.time)
+                .build();
     }
 
     //

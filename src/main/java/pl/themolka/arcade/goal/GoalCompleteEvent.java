@@ -1,29 +1,17 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.Cancelable;
 
 /**
  * Called when a `Goal` is being completed.
  */
-public class GoalCompleteEvent extends GoalEvent implements Cancelable {
-    private boolean cancel;
+public class GoalCompleteEvent extends GoalEvent {
     private final GoalHolder completer;
 
     private GoalCompleteEvent(ArcadePlugin plugin, Goal goal, GoalHolder completer) {
         super(plugin, goal);
 
         this.completer = completer;
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return this.cancel;
-    }
-
-    @Override
-    public void setCanceled(boolean cancel) {
-        this.cancel = cancel;
     }
 
     public GoalHolder getCompleter() {

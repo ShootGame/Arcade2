@@ -5,7 +5,7 @@ import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.IncrementalId;
 
 public class TaskExecutor implements Comparable<TaskExecutor>, IncrementalId,  Runnable {
-    public static final long TICK_SLEEP = Time.ofSeconds(1).toTicks();
+    public static final long TICK_SLEEP = Time.SECOND.toTicks();
 
     private final ArcadePlugin plugin;
 

@@ -6,10 +6,10 @@ import pl.themolka.arcade.score.Score;
 
 public class PointPointsEvent extends PointScoreEvent implements Cancelable {
     private boolean cancel;
-    private final int oldScore;
-    private int points;
+    private final double oldScore;
+    private double points;
 
-    public PointPointsEvent(ArcadePlugin plugin, Point point, Score score, int points) {
+    public PointPointsEvent(ArcadePlugin plugin, Point point, Score score, double points) {
         super(plugin, point, score);
 
         this.oldScore = score.getScore();
@@ -26,19 +26,19 @@ public class PointPointsEvent extends PointScoreEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public int getOldScore() {
+    public double getOldScore() {
         return this.oldScore;
     }
 
-    public int getNewScore() {
+    public double getNewScore() {
         return this.getOldScore() + this.getPoints();
     }
 
-    public int getPoints() {
+    public double getPoints() {
         return this.points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(double points) {
         this.points = points;
     }
 }

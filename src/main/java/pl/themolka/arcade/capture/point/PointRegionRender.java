@@ -7,24 +7,28 @@ import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.point.state.CapturedState;
 import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalCreateEvent;
+import pl.themolka.arcade.game.GameStartEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PointRenderListeners implements Listener {
+public class PointRegionRender implements Listener {
+    public static final PatternType BANNER_PATTERN_TYPE = PatternType.BASE;
     public static final Set<Material> DEFAULT_POINT_MATERIALS = Stream.of(
             Material.CARPET,
             Material.STAINED_CLAY,
@@ -36,11 +40,11 @@ public class PointRenderListeners implements Listener {
 
     private final Set<Material> pointMaterials;
 
-    public PointRenderListeners(CaptureGame game) {
+    public PointRegionRender(CaptureGame game) {
         this(game, DEFAULT_POINT_MATERIALS);
     }
 
-    public PointRenderListeners(CaptureGame game, Set<Material> pointMaterials) {
+    public PointRegionRender(CaptureGame game, Set<Material> pointMaterials) {
         this.game = game;
 
         this.pointMaterials = pointMaterials;
@@ -64,6 +68,7 @@ public class PointRenderListeners implements Listener {
 
     public void renderBanner(Banner banner, DyeColor color) {
         banner.setBaseColor(color);
+        banner.setPatterns(Collections.singletonList(new Pattern(color, BANNER_PATTERN_TYPE)));
     }
 
     public void renderBanner(BlockState blockState, DyeColor color) {
@@ -82,32 +87,31 @@ public class PointRenderListeners implements Listener {
 
     public void renderBlocks(Point point, DyeColor color) {
         for (Block block : point.getStateRegion().getBlocks()) {
+            Material type = block.getType();
+
             if (this.isRenderable(block)) {
                 block.setData(color.getWoolData());
-            } else if (block.getType().equals(Material.STANDING_BANNER)
-                    || block.getType().equals(Material.WALL_BANNER)) {
+            } else if (type.equals(Material.STANDING_BANNER)
+                    || type.equals(Material.WALL_BANNER)) {
                 this.renderBanner(block.getState(), color);
             }
         }
     }
 
     @Handler(priority = Priority.LAST)
-    public void initialRender(GoalCreateEvent event) {
-        Goal goal = event.getGoal();
-        if (goal instanceof Point) {
-            Point point = (Point) goal;
-            GoalHolder owner = point.getOwner();
+    public void initialRender(GameStartEvent event) {
+        for (Capturable capturable : this.game.getCapturables()) {
+            if (capturable instanceof Point) {
+                Point point = (Point) capturable;
+                GoalHolder owner = point.getOwner();
 
-            ChatColor color = NeutralState.NEUTRAL_COLOR;
-            if (owner != null) {
-                Color ownerColor = owner.getColor();
-
-                if (ownerColor != null) {
-                    color = ownerColor.toChat();
+                Color color = Color.ofChat(NeutralState.NEUTRAL_COLOR);
+                if (owner != null) {
+                    color = owner.getColor();
                 }
-            }
 
-            this.renderBlocks(point, color);
+                this.renderBlocks(point, color);
+            }
         }
     }
 

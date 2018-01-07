@@ -4,9 +4,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.capture.flag.FlagFactory;
 import pl.themolka.arcade.capture.point.Point;
+import pl.themolka.arcade.capture.point.PointBossBarRender;
 import pl.themolka.arcade.capture.point.PointFactory;
-import pl.themolka.arcade.capture.point.PointRenderListeners;
+import pl.themolka.arcade.capture.point.PointRegionRender;
 import pl.themolka.arcade.capture.wool.Wool;
 import pl.themolka.arcade.capture.wool.WoolFactory;
 import pl.themolka.arcade.capture.wool.WoolListeners;
@@ -39,6 +41,7 @@ public class CaptureGame extends GameModule {
         this.installDefaultFactories();
         this.parseMapXml();
 
+        this.enableFlags();
         this.enablePoints();
         this.enableWools();
     }
@@ -84,6 +87,7 @@ public class CaptureGame extends GameModule {
     }
 
     private void installDefaultFactories() {
+        this.addFactory("flag", new FlagFactory());
         this.addFactory("point", new PointFactory());
         this.addFactory("wool", new WoolFactory());
     }
@@ -112,17 +116,17 @@ public class CaptureGame extends GameModule {
 
                 // name
                 String name = xml.getAttributeValue("name");
-                if (name == null || name.trim().isEmpty()) {
-                    continue;
+                if (name != null) {
+                    name = name.trim();
                 }
 
                 // object
-                Capturable capturable = factory.newCapturable(this, owner, id.trim(), name.trim(), xml);
+                Capturable capturable = factory.newCapturable(this, owner, id.trim(), name, xml);
                 if (capturable == null) {
                     continue;
                 }
 
-                capturable.setName(name.trim());
+                capturable.setName(name);
                 this.addCapturable(capturable);
 
                 // register
@@ -141,6 +145,13 @@ public class CaptureGame extends GameModule {
         }
     }
 
+    //
+    // Enabling Capturables
+    //
+
+    private void enableFlags() {
+    }
+
     private void enablePoints() {
         // Register point classes ONLY when there are any point goals.
         List<Point> points = new ArrayList<>();
@@ -155,7 +166,7 @@ public class CaptureGame extends GameModule {
             this.scheduleSyncTask(new Task(this.getPlugin().getTasks()) {
                 @Override
                 public void onTick(long ticks) {
-                    if (ticks % Point.HEARTBEAT_INTERVAL.toTicks() == 0) {
+                    if (getMatch().isRunning() && ticks % Point.HEARTBEAT_INTERVAL.toTicks() == 0) {
                         for (Point point : points) {
                             point.heartbeat(ticks);
                         }
@@ -163,7 +174,8 @@ public class CaptureGame extends GameModule {
                 }
             });
 
-            this.registerListenerObject(new PointRenderListeners(this));
+            this.registerListenerObject(new PointBossBarRender(this));
+            this.registerListenerObject(new PointRegionRender(this));
         }
     }
 

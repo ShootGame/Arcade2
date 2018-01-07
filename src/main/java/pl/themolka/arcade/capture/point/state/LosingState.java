@@ -1,6 +1,7 @@
 package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointLostEvent;
@@ -10,14 +11,16 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
 public class LosingState extends PointState.Progress {
-    private final GoalHolder loser;
+    public static final double LOST = Progress.ZERO;
+
+    private final GoalHolder loser; // not null
 
     public LosingState(CapturedState captured, GoalHolder loser) {
         this(captured.point, loser);
     }
 
-    public LosingState(CapturingState capturing, GoalHolder loser) {
-        this(capturing.point, loser);
+    public LosingState(CapturingState capturing) {
+        this(capturing.point, capturing.getCapturer());
     }
 
     public LosingState(Point point, GoalHolder loser) {
@@ -27,14 +30,13 @@ public class LosingState extends PointState.Progress {
     }
 
     @Override
-    public ChatColor getColor() {
-        GoalHolder owner = this.getOwner();
-        if (owner != null) {
-            return owner.getColor().toChat();
-        }
+    public PointState copy() {
+        return new LosingState(this.point, this.loser);
+    }
 
-        // this should never happen
-        return NeutralState.NEUTRAL_COLOR;
+    @Override
+    public ChatColor getColor() {
+        return this.loser.getColor().toChat();
     }
 
     @Override
@@ -42,21 +44,19 @@ public class LosingState extends PointState.Progress {
                           Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
         boolean ownerDominating = false;
 
-        for (GoalHolder competitor : dominators.keySet()) {
-            if (owner.equals(competitor)) {
-                // current owner
-                ownerDominating = true;
-                break;
+        if (owner != null) {
+            for (GoalHolder competitor : dominators.keySet()) {
+                if (owner.equals(competitor)) {
+                    // current owner
+                    ownerDominating = true;
+                    break;
+                }
             }
         }
 
         if (ownerDominating) {
             // The owner is dominating the point - bring it back to him.
-            if (this.point.isCapturingCapturedEnabled()) {
-                this.point.startCapturingCaptured(owner, this.getProgress());
-            } else {
-                this.point.startCapturing(owner, this.getProgress());
-            }
+            this.startCapturing(this.point, this.loser, this.getProgress());
             return;
         }
 
@@ -65,8 +65,8 @@ public class LosingState extends PointState.Progress {
             this.progress();
         }
 
-        if (this.getProgress() <= ZERO) { // the point is lost at 0%
-            NeutralState neutralState = this.point.createNeutralState(this);
+        if (this.getProgress() <= LOST) { // The point is lost at 0%.
+            NeutralState neutralState = this.point.createNeutralState();
 
             PointLostEvent event = new PointLostEvent(this.game.getPlugin(), this.point, this, neutralState, this.loser);
             this.game.getPlugin().getEventBus().publish(event);
@@ -76,11 +76,11 @@ public class LosingState extends PointState.Progress {
             }
 
             PointState newState = event.getNewState();
-            this.point.setState(newState);
-
-            if (newState instanceof NeutralState) {
-                this.point.lose(event.getLoser());
+            if (newState instanceof NeutralState && owner != null) {
+                this.point.lose(owner);
             }
+
+            this.point.setState(newState);
         }
     }
 
@@ -100,5 +100,18 @@ public class LosingState extends PointState.Progress {
 
     public GoalHolder getOwner() {
         return this.point.getOwner();
+    }
+
+    public PointState startCapturing(Point point, GoalHolder capturer, double progress) {
+        return point.startCapturing(capturer, progress);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("point", this.point)
+                .append("progress", this.getProgress())
+                .append("loser", this.loser)
+                .build();
     }
 }

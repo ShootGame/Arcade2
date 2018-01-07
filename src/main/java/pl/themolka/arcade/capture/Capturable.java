@@ -1,6 +1,8 @@
 package pl.themolka.arcade.capture;
 
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalContributionContext;
@@ -10,11 +12,14 @@ import pl.themolka.arcade.goal.InteractableGoal;
 import pl.themolka.arcade.util.StringId;
 
 public abstract class Capturable implements InteractableGoal, StringId {
+    // The "ToStringStyle.SHORT_PREFIX_STYLE" strings are long and unreadable here.
+    public static final ToStringStyle TO_STRING_STYLE = ToStringStyle.MULTI_LINE_STYLE;
+
     protected final CaptureGame game;
 
     private GoalHolder owner;
-    private boolean captured;
-    private GoalHolder capturedBy;
+    protected boolean captured;
+    protected GoalHolder capturedBy;
     private final GoalContributionContext contributions;
     private final String id;
     private String name;
@@ -120,7 +125,7 @@ public abstract class Capturable implements InteractableGoal, StringId {
         }
     }
 
-    public abstract void capture(GoalHolder completer);
+    public abstract void capture(GoalHolder completer, GamePlayer player);
 
     public GoalHolder getCapturedBy() {
         return this.capturedBy;
@@ -158,6 +163,9 @@ public abstract class Capturable implements InteractableGoal, StringId {
     public void setOwner(GoalHolder owner) {
         this.owner = owner;
     }
+
+    @Override
+    public abstract String toString();
 
     private void handleGoalComplete(GoalHolder completer) {
         if (this.captured) {

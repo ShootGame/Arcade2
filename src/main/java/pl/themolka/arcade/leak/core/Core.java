@@ -1,6 +1,7 @@
 package pl.themolka.arcade.leak.core;
 
 import net.engio.mbassy.listener.Handler;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -64,7 +65,7 @@ public class Core extends Leakable implements Listener {
     }
 
     @Override
-    public void leak(GoalHolder completer) {
+    public void leak(GoalHolder completer /* null */, GamePlayer player /* null */) {
         String owner = "";
         if (this.hasOwner()) {
             owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
@@ -272,6 +273,17 @@ public class Core extends Leakable implements Listener {
         this.region = region;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("owner", this.getOwner())
+                .append("id", this.getId())
+                .append("leaked", this.isLeaked())
+                .append("leakedBy", this.getLeakedBy())
+                .append("name", this.getName())
+                .build();
+    }
+
     //
     // Listeners
     //
@@ -316,7 +328,8 @@ public class Core extends Leakable implements Listener {
         Material newType = event.getBlock().getType();
         if (this.getLiquid().accepts(newType)) {
             // the core has leaked
-            this.leak(null);
+            this.leak(null, // We don't know the competitor
+                      null); // We don't know the player
         }
     }
 

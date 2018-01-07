@@ -101,17 +101,17 @@ public class LeakGame extends GameModule {
 
                 // name
                 String name = xml.getAttributeValue("name");
-                if (name == null || name.trim().isEmpty()) {
-                    continue;
+                if (name != null) {
+                    name = name.trim();
                 }
 
                 // object
-                Leakable leakable = factory.newLeakable(this, owner, id.trim(), name.trim(), xml);
+                Leakable leakable = factory.newLeakable(this, owner, id.trim(), name, xml);
                 if (leakable == null) {
                     continue;
                 }
 
-                leakable.setName(name.trim());
+                leakable.setName(name);
                 this.addLeakable(leakable);
 
                 // register

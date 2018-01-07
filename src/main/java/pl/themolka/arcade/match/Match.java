@@ -247,6 +247,12 @@ public class Match {
     }
 
     public boolean isObserving(GamePlayer player) {
+        if (player == null) {
+            // This should never happen, but if it did - the players is
+            // observing the game.
+            return true;
+        }
+
         IObserverHandler handler = this.getObserverHandler();
         boolean observing = this.getObservers().hasPlayer(player) ||
                 handler == null || handler.isPlayerObserving(player);

@@ -9,23 +9,25 @@ import pl.themolka.arcade.goal.GoalResetEvent;
 
 public class Score implements Goal {
     public static final String DEFAULT_GOAL_NAME = "Score";
+    public static final double ZERO = 0.0D;
+    public static final double MAX = Double.MAX_VALUE - 1.0D;
 
     protected final ScoreGame game;
 
     private final GoalHolder owner;
-    private final int initScore;
-    private int limit;
+    private final double initScore;
+    private double limit;
     private String name;
-    private int score;
+    private double score;
     private boolean scored;
     private GoalHolder scoredBy;
     private boolean scoreTouched = false;
 
     public Score(ScoreGame game, GoalHolder owner) {
-        this(game, owner, 0);
+        this(game, owner, ZERO);
     }
 
-    public Score(ScoreGame game, GoalHolder owner, int initScore) {
+    public Score(ScoreGame game, GoalHolder owner, double initScore) {
         this.game = game;
 
         this.owner = owner;
@@ -131,15 +133,15 @@ public class Score implements Goal {
         }
     }
 
-    public int getInitScore() {
+    public double getInitScore() {
         return this.initScore;
     }
 
-    public int getLimit() {
+    public double getLimit() {
         return this.limit;
     }
 
-    public int getScore() {
+    public double getScore() {
         return this.score;
     }
 
@@ -161,7 +163,7 @@ public class Score implements Goal {
      *     - ScoreScoredEvent (cancelable)
      *     - GoalCompleteEvent (cancelable)
      */
-    public void incrementScore(GoalHolder completer, int points) {
+    public void incrementScore(GoalHolder completer, double points) {
         ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, completer, points);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -185,7 +187,7 @@ public class Score implements Goal {
         return this.hasLimit() && this.getScore() >= this.getLimit();
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(double limit) {
         this.limit = limit;
     }
 

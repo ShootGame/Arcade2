@@ -3,6 +3,7 @@ package pl.themolka.arcade.capture.point;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.engio.mbassy.listener.Handler;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -24,6 +25,7 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.goal.GoalLoseEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.score.Score;
@@ -46,15 +48,17 @@ public class Point extends Capturable {
     public static final String DEFAULT_GOAL_NAME = "Point";
     public static final Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
 
-    public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(5); // 1/4 of a second
+    public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(1);
 
     private Region captureRegion;
     private Time captureTime = DEFAULT_CAPTURE_TIME;
     private boolean capturingCapturedEnabled; // false if the point should be neutral to be captured.
+    private final PointState initialState;
     private Time loseTime = DEFAULT_LOSE_TIME;
+    private boolean objective;
     private boolean permanent = false;
     private final Set<GamePlayer> players = new HashSet<>();
-    private int pointReward;
+    private double pointReward;
     private boolean pointTouched = false;
     private PointState state;
     private Region stateRegion;
@@ -67,14 +71,17 @@ public class Point extends Capturable {
         super(game, owner, id);
 
         if (owner != null) {
-            this.state = this.createCapturedState();
+            this.initialState = this.createCapturedState();
         } else {
-            this.state = this.createNeutralState();
+            this.initialState = this.createNeutralState();
         }
+
+        // Set the current state to a copy the initial state.
+        this.state = this.getInitialState().copy();
     }
 
     @Override
-    public void capture(GoalHolder completer) {
+    public void capture(GoalHolder completer, GamePlayer player /* null */) {
         this.setOwner(completer);
 
         String message = ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.ITALIC +
@@ -103,7 +110,7 @@ public class Point extends Capturable {
             return null;
         }
 
-        return ChatColor.GOLD + interact + ChatColor.YELLOW + " lost " +
+        return ChatColor.GOLD + interact + ChatColor.YELLOW + " has lost " +
                 ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
                 this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
@@ -123,16 +130,16 @@ public class Point extends Capturable {
         return !this.pointTouched;
     }
 
-    @Override
+    @Override // Register goals only when it is an map objective.
     public boolean registerGoal() {
-        return false;
+        return this.isObjective();
     }
 
     @Override
     public void resetCapturable() {
         this.players.clear();
         this.pointTouched = false;
-        this.state = this.createNeutralState();
+        this.state = this.getInitialState().copy();
     }
 
     public boolean addPlayer(GamePlayer player) {
@@ -151,16 +158,16 @@ public class Point extends Capturable {
         return new NeutralState(this);
     }
 
-    public NeutralState createNeutralState(LosingState losing) {
-        return new NeutralState(losing);
-    }
-
     public Region getCaptureRegion() {
         return this.captureRegion;
     }
 
     public Time getCaptureTime() {
         return this.captureTime;
+    }
+
+    public PointState getInitialState() {
+        return this.initialState;
     }
 
     public Time getLoseTime() {
@@ -171,7 +178,7 @@ public class Point extends Capturable {
         return new ArrayList<>(this.players);
     }
 
-    public int getPointReward() {
+    public double getPointReward() {
         return this.pointReward;
     }
 
@@ -187,7 +194,7 @@ public class Point extends Capturable {
         return this.players.contains(player);
     }
 
-    // This method is executed synchronously every 5 ticks.
+    // This method is executed synchronously every 4 ticks.
     public void heartbeat(long ticks) {
         if (this.isPermanent() && this.isCaptured()) {
             return;
@@ -197,7 +204,7 @@ public class Point extends Capturable {
 
         Multimap<GoalHolder, GamePlayer> competitors = ArrayListMultimap.create();
         for (GamePlayer player : this.getPlayers()) {
-            if (!this.isCompletableBy(player)) {
+            if (!player.isParticipating() || !this.isCompletableBy(player)) {
                 continue;
             }
 
@@ -235,23 +242,25 @@ public class Point extends Capturable {
         GoalHolder owner = this.getOwner();
         this.getState().heartbeat(ticks, match, competitors, dominators, owner);
 
-        if (owner != null && ticks % Time.ofSeconds(1).toTicks() == 0) {
+        double pointReward = this.getPointReward();
+        if (owner != null && pointReward != Score.ZERO) {
             // Give reward points for owning the point.
-            this.heartbeatReward(owner, this.getPointReward());
+            this.heartbeatReward(ticks, owner, pointReward);
         }
     }
 
-    public void heartbeatReward(GoalHolder competitor, int points) {
-        if (competitor != null && points != 0) {
+    public void heartbeatReward(long ticks, GoalHolder competitor, double pointReward /* this is per second */) {
+        if (competitor != null && pointReward != Score.ZERO) {
             Score score = this.getScore(competitor);
+            double toGive = (HEARTBEAT_INTERVAL.toTicks() / Time.SECOND.toTicks()) * pointReward;
 
-            if (score != null) {
-                PointPointsEvent event = new PointPointsEvent(this.game.getPlugin(), this, score, points);
+            if (score != null && toGive != Score.ZERO) {
+                PointPointsEvent event = new PointPointsEvent(this.game.getPlugin(), this, score, toGive);
                 this.game.getPlugin().getEventBus().publish(event);
 
-                int toGive = event.getPoints();
-                if (toGive != 0 && !event.isCanceled()) {
-                    score.incrementScore(competitor, toGive);
+                double newToGive = event.getPoints();
+                if (newToGive != Score.ZERO && !event.isCanceled()) {
+                    score.incrementScore(competitor, newToGive);
                 }
             }
         }
@@ -265,6 +274,10 @@ public class Point extends Capturable {
         return this.state instanceof NeutralState;
     }
 
+    public boolean isObjective() {
+        return this.objective;
+    }
+
     public boolean isPermanent() {
         return this.permanent;
     }
@@ -275,7 +288,34 @@ public class Point extends Capturable {
             this.game.getMatch().sendGoalMessage(message);
         }
 
+        this.captured = false;
+        this.capturedBy = null;
+        this.getContributions().clearContributors();
         this.setOwner(null);
+
+        GoalLoseEvent.call(this.game.getPlugin(), this, loser);
+    }
+
+    public boolean playerEnter(GamePlayer player) {
+        if (this.players.contains(player)) {
+            return false;
+        }
+
+        PointPlayerEnterEvent event = new PointPlayerEnterEvent(this.game.getPlugin(), this, player);
+        this.game.getPlugin().getEventBus().publish(event);
+
+        return this.addPlayer(event.getPlayer());
+    }
+
+    public boolean playerLeave(GamePlayer player) {
+        if (!this.players.contains(player)) {
+            return false;
+        }
+
+        PointPlayerLeaveEvent event = new PointPlayerLeaveEvent(this.game.getPlugin(), this, player);
+        this.game.getPlugin().getEventBus().publish(event);
+
+        return this.removePlayer(event.getPlayer());
     }
 
     public boolean removePlayer(GamePlayer player) {
@@ -298,11 +338,15 @@ public class Point extends Capturable {
         this.loseTime = loseTime;
     }
 
+    public void setObjective(boolean objective) {
+        this.objective = objective;
+    }
+
     public void setPermanent(boolean permanent) {
         this.permanent = permanent;
     }
 
-    public void setPointReward(int pointReward) {
+    public void setPointReward(double pointReward) {
         this.pointReward = pointReward;
     }
 
@@ -314,15 +358,15 @@ public class Point extends Capturable {
         this.stateRegion = stateRegion;
     }
 
-    public PointState startCapturing(GoalHolder capturing, double oldProgress) {
-        CapturingState capturingState = new CapturingState(this, capturing);
+    public PointState startCapturing(GoalHolder capturer, double oldProgress) {
+        CapturingState capturingState = new CapturingState(this, capturer);
         capturingState.setProgress(oldProgress); // ZERO?
 
         return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), capturingState));
     }
 
-    public PointState startCapturingCaptured(GoalHolder capturing, double oldProgress) {
-        CapturingCapturedState capturingState = new CapturingCapturedState(this, capturing);
+    public PointState startCapturingCaptured(GoalHolder capturer, double oldProgress) {
+        CapturingCapturedState capturingState = new CapturingCapturedState(this, capturer);
         capturingState.setProgress(oldProgress); // ZERO?
 
         return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), capturingState));
@@ -333,6 +377,23 @@ public class Point extends Capturable {
         losingState.setProgress(oldProgress); // DONE?
 
         return this.startState(new PointLosingEvent(this.game.getPlugin(), this, this.getState(), losingState));
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("owner", this.getOwner())
+                .append("captured", this.isCaptured())
+                .append("capturedBy", this.getCapturedBy())
+                .append("id", this.getId())
+                .append("name", this.getName())
+                .append("captureTime", this.captureTime)
+                .append("capturingCapturedEnabled", this.capturingCapturedEnabled)
+                .append("loseTime", this.loseTime)
+                .append("permanent", this.permanent)
+                .append("pointReward", this.pointReward)
+                .append("pointTouched", this.pointTouched)
+                .build();
     }
 
     private Score getScore(GoalHolder holder) {
@@ -363,7 +424,7 @@ public class Point extends Capturable {
     public void onPlayerDeath(PlayerDeathEvent event) {
         GamePlayer player = this.fetchPlayer(event.getEntity());
         if (player != null) {
-            this.removePlayer(player);
+            this.playerLeave(player);
         }
     }
 
@@ -373,7 +434,7 @@ public class Point extends Capturable {
     public void onPlayerInitialSpawn(PlayerJoinEvent event) {
         GamePlayer player = event.getGamePlayer();
         if (this.shouldTrack(player, event.getBukkitPlayer().getLocation())) {
-            this.addPlayer(player);
+            this.playerEnter(player);
         }
     }
 
@@ -384,7 +445,7 @@ public class Point extends Capturable {
 
     @Handler(priority = Priority.LAST)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        this.removePlayer(event.getGamePlayer());
+        this.playerLeave(event.getGamePlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -399,16 +460,15 @@ public class Point extends Capturable {
     private void onPlayerMove(GamePlayer player, Location to) {
         if (player != null) {
             if (this.shouldTrack(player, to)) {
-                this.addPlayer(player);
-                return;
+                this.playerEnter(player);
+            } else {
+                this.playerLeave(player);
             }
-
-            this.removePlayer(player);
         }
     }
 
     private boolean shouldTrack(GamePlayer player, Location at) {
-        if (player != null && player.isParticipating() && this.getCaptureRegion().contains(at)) {
+        if (player != null && this.getCaptureRegion().contains(at)) {
             Player bukkit = player.getBukkit();
             return bukkit != null && !bukkit.isDead();
         }

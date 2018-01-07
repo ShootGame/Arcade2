@@ -1,6 +1,8 @@
 package pl.themolka.arcade.leak;
 
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalContributionContext;
@@ -10,13 +12,16 @@ import pl.themolka.arcade.goal.InteractableGoal;
 import pl.themolka.arcade.util.StringId;
 
 public abstract class Leakable implements InteractableGoal, StringId {
+    // The "ToStringStyle.SHORT_PREFIX_STYLE" strings are long and unreadable here.
+    public static final ToStringStyle TO_STRING_STYLE = ToStringStyle.MULTI_LINE_STYLE;
+
     protected final LeakGame game;
 
     private GoalHolder owner;
     private final GoalContributionContext contributions;
     private final String id;
-    private boolean leaked;
-    private GoalHolder leakedBy;
+    protected boolean leaked;
+    protected GoalHolder leakedBy;
     private String name;
 
     public Leakable(LeakGame game, String id) {
@@ -142,7 +147,7 @@ public abstract class Leakable implements InteractableGoal, StringId {
         return this.leaked;
     }
 
-    public abstract void leak(GoalHolder completer);
+    public abstract void leak(GoalHolder completer, GamePlayer player);
 
     public boolean registerGoal() {
         return true;
@@ -158,6 +163,9 @@ public abstract class Leakable implements InteractableGoal, StringId {
     public void setOwner(GoalHolder owner) {
         this.owner = owner;
     }
+
+    @Override
+    public abstract String toString();
 
     private void handleGoalComplete(GoalHolder completer) {
         if (this.leaked) {

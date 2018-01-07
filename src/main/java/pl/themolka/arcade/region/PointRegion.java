@@ -34,7 +34,10 @@ public class PointRegion extends AbstractRegion {
 
     @Override
     public boolean contains(Vector vector) {
-        return false;
+        Vector point = this.getPoint();
+        return vector.getBlockX() == point.getBlockX() &&
+               vector.getBlockY() == point.getBlockY() &&
+               vector.getBlockZ() == point.getBlockZ();
     }
 
     @Override
@@ -67,12 +70,8 @@ public class PointRegion extends AbstractRegion {
     }
 
     private List<Block> createBlocks() {
-        return Collections.singletonList(new Location(
-                this.getWorld(),
-                this.getPoint().getX(),
-                this.getPoint().getY(),
-                this.getPoint().getZ()
-        ).getBlock());
+        Location location = this.getPoint().toLocation(this.getWorld());
+        return Collections.singletonList(location.getBlock());
     }
 
     private RegionBounds createBounds() {
