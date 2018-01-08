@@ -19,6 +19,14 @@ public enum FilterResult {
         }
     }
 
+    public boolean isNotDenied() {
+        switch (this){
+            case ALLOW: return true;
+            case DENY: return false;
+            default: return true;
+        }
+    }
+
     public boolean toBoolean() {
         return this.value;
     }

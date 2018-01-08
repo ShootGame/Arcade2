@@ -235,6 +235,11 @@ public class MatchGame extends GameModule {
                 continue;
             }
 
+            if (resultComponent != null) {
+                // The subtitle must be set as first.
+                online.getBukkit().setSubtitle(resultComponent);
+            }
+
             if (winner == null || this.getObservers().contains(online)) {
                 online.getBukkit().showTitle(defaultComponent);
                 online.play(ArcadeSound.ENEMY_LOST);
@@ -244,10 +249,6 @@ public class MatchGame extends GameModule {
             } else {
                 online.getBukkit().showTitle(loserComponent);
                 online.play(ArcadeSound.ENEMY_WON);
-            }
-
-            if (resultComponent != null) {
-                online.getBukkit().setSubtitle(resultComponent);
             }
         }
     }

@@ -3,6 +3,7 @@ package pl.themolka.arcade.region;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
@@ -45,6 +46,11 @@ public class BlockRegion extends AbstractRegion {
     @Override
     public boolean contains(Block block) {
         return this.blocks.contains(block);
+    }
+
+    @Override
+    public boolean contains(BlockVector vector) {
+        return this.containsZero(vector);
     }
 
     @Override

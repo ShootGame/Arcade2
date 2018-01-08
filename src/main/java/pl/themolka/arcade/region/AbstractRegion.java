@@ -38,11 +38,6 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    public boolean contains(BlockVector vector) {
-        return this.contains(new Location(this.getWorld(), vector.getX() + 0.5, vector.getY() + 0.5, vector.getZ() + 0.5));
-    }
-
-    @Override
     public boolean contains(Entity entity) {
         return this.contains(entity.getLocation());
     }
@@ -54,12 +49,12 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public boolean contains(double x, double z) {
-        return this.contains(x, 0, z);
+        return this.contains(x, 0D, z);
     }
 
     @Override
     public boolean contains(double x, double y, double z) {
-        return this.contains(new Location(this.getWorld(), x, y, z));
+        return this.contains(new Vector(x, y, z));
     }
 
     @Override
@@ -84,9 +79,9 @@ public abstract class AbstractRegion implements Region {
         Vector min = bounds.getMin();
         Vector max = bounds.getMax();
 
-        for (int x = min.getBlockX(); x < max.getBlockX(); x++) {
-            for (int y = min.getBlockY(); y < max.getBlockY(); y++) {
-                for (int z = min.getBlockZ(); z < max.getBlockZ(); z++) {
+        for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+                for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Block block = this.getWorld().getBlockAt(x, y, z);
 
                     if (this.contains(block)) {

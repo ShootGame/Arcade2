@@ -2,12 +2,12 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +27,14 @@ public class CapturedState extends PointState.Permanent {
     }
 
     @Override
-    public ChatColor getColor() {
+    public Color getColor() {
         GoalHolder owner = this.getOwner();
         if (owner != null) {
-            return owner.getColor().toChat();
+            return owner.getColor();
         }
 
         // this should never happen
-        return NeutralState.NEUTRAL_COLOR;
+        return this.point.getNeutralColor();
     }
 
     @Override
@@ -44,28 +44,24 @@ public class CapturedState extends PointState.Permanent {
 
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
         if (dominators.isEmpty()) {
             // nobody on the point
             return;
         }
 
-        List<GoalHolder> enemies = new ArrayList<>();
-        boolean ownerDominating = true;
-
-        for (GoalHolder competitor : dominators.keySet()) {
-            if (!owner.equals(competitor)) { // owner should NEVER be null
-                // not current owner
-                enemies.add(competitor);
-                ownerDominating = false;
-            }
-        }
-
-        if (!ownerDominating) {
+        if (!canCapture.contains(owner)) {
             // The owner is not dominating the point, begin losing it, or
             // start capturing if the capturing captured mode is enabled.
             // If there are more than one enemies on the point and
             // capturing captured mode is enabled - start losing it.
+
+            List<GoalHolder> enemies = new ArrayList<>();
+            for (GoalHolder enemy : canCapture) {
+                if (!enemy.equals(owner)) {
+                    enemies.add(enemy);
+                }
+            }
 
             GoalHolder enemy = null;
             if (enemies.size() == 1) {

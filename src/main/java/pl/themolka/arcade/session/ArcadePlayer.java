@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.Packet;
 import net.minecraft.server.PacketPlayInClientCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -253,6 +254,10 @@ public class ArcadePlayer implements Metadata, Sender {
 
     private void sendMessage(ChatMessageType type, String message) {
         this.bukkit.sendMessage(type, TextComponent.fromLegacyText(message));
+    }
+
+    public void sendPacket(Object packet) {
+        this.getMojang().playerConnection.sendPacket((Packet<?>) packet);
     }
 
     /**

@@ -27,25 +27,7 @@ public class MessageContent implements KitContent<String> {
 
     @Override
     public void apply(GamePlayer player) {
-        ArcadePlayer to = player.getPlayer();
-
-        switch (this.getType()) {
-            case ERROR:
-                to.sendError(this.getResult());
-                break;
-            case INFO:
-                to.sendInfo(this.getResult());
-                break;
-            case NORMAL:
-                to.send(this.getResult());
-                break;
-            case SUCCESS:
-                to.sendSuccess(this.getResult());
-                break;
-            case TIP:
-                to.sendTip(this.getResult());
-                break;
-        }
+        this.getType().sendMessage(player, this.getResult());
     }
 
     @Override
@@ -74,6 +56,62 @@ public class MessageContent implements KitContent<String> {
     }
 
     public enum Type {
-        ERROR, INFO, NORMAL, SUCCESS, TIP
+        ACTION_BAR {
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendAction(message);
+            }
+        },
+
+        CHAT { // may be hidden
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendChat(message);
+            }
+        },
+
+        ERROR {
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendError(message);
+            }
+        },
+
+        INFO {
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendInfo(message);
+            }
+        },
+
+        NORMAL { // shown
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.send(message);
+            }
+        },
+
+        SUCCESS {
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendSuccess(message);
+            }
+        },
+
+        TIP {
+            @Override
+            public void sendMessage(ArcadePlayer player, String message) {
+                player.sendTip(message);
+            }
+        },
+        ;
+
+        public abstract void sendMessage(ArcadePlayer player, String message);
+
+        public void sendMessage(GamePlayer player, String message) {
+            if (player != null && player.isOnline()) {
+                this.sendMessage(player.getGamePlayer(), message);
+            }
+        }
     }
 }

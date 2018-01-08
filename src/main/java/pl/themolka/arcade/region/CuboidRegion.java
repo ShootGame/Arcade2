@@ -1,5 +1,6 @@
 package pl.themolka.arcade.region;
 
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
@@ -29,6 +30,11 @@ public class CuboidRegion extends AbstractRegion {
     }
 
     @Override
+    public boolean contains(BlockVector vector) {
+        return this.containsZero(vector);
+    }
+
+    @Override
     public boolean contains(Region region) {
         return false;
     }
@@ -43,7 +49,9 @@ public class CuboidRegion extends AbstractRegion {
             max.setY(MAX_HEIGHT);
         }
 
-        return vector.isInAABB(min, max);
+        return  min.getX() <= vector.getX() && max.getX() >= vector.getX() &&
+                min.getY() <= vector.getY() && max.getY() >= vector.getY() &&
+                min.getZ() <= vector.getZ() && max.getZ() >= vector.getZ();
     }
 
     @Override
@@ -66,10 +74,9 @@ public class CuboidRegion extends AbstractRegion {
         Vector min = this.getMin();
         Vector max = this.getMax();
 
-        return new Vector(
-                this.nextCoordinate(random, min.getX(), max.getX()),
-                this.nextCoordinate(random, min.getY(), max.getY()),
-                this.nextCoordinate(random, min.getZ(), max.getZ()));
+        return new Vector(this.nextCoordinate(random, min.getX(), max.getX()),
+                          this.nextCoordinate(random, min.getY(), max.getY()),
+                          this.nextCoordinate(random, min.getZ(), max.getZ()));
     }
 
     public Vector getMax() {

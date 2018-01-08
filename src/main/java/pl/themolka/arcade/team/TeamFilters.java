@@ -24,8 +24,10 @@ public class TeamFilters {
         }
 
         Element xml = event.getXml();
-        switch (event.getName()) {
+        switch (event.getName().toLowerCase()) {
             case "player-team":
+                event.setResult(new PlayerTeamFilter(xml));
+                break;
         }
     }
 
@@ -33,10 +35,7 @@ public class TeamFilters {
         private Team team;
 
         public PlayerTeamFilter(Element xml) {
-            String teamAttribute = xml.getAttributeValue("member");
-            if (teamAttribute != null) {
-                this.team = teams.getTeam(teamAttribute);
-            }
+            this.team = teams.getTeam(xml.getTextTrim());
         }
 
         @Override

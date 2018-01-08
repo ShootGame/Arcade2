@@ -1,6 +1,7 @@
 package pl.themolka.arcade.region;
 
 import org.bukkit.block.Block;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -12,6 +13,11 @@ public class RegionBounds extends CuboidRegion {
         super("_" + region.getId() + "-bounds", region.getMap(), min, max);
 
         this.region = region;
+    }
+
+    @Override
+    public boolean contains(BlockVector vector) {
+        return this.getRegion().contains(vector);
     }
 
     @Override

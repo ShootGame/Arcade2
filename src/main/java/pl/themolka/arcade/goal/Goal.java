@@ -131,27 +131,27 @@ public interface Goal {
     // Utilities
     //
 
-    static boolean isCompletableByEveryone() {
+    static boolean completableByEveryone() {
         return true;
     }
 
-    static boolean isCompletableByPositive(Goal goal, GoalHolder completer) {
-        return isCompletableByPositive(goal.getOwner(), completer);
+    static boolean completableByPositive(Goal goal, GoalHolder completer) {
+        return completableByPositive(goal.getOwner(), completer);
     }
 
-    static boolean isCompletableByPositive(GoalHolder owner, GoalHolder completer) {
+    static boolean completableByPositive(GoalHolder owner, GoalHolder completer) {
         return owner == null || owner.equals(completer);
     }
 
-    static boolean isCompletableByNegative(Goal goal, GoalHolder completer) {
-        return isCompletableByNegative(goal.getOwner(), completer);
+    static boolean completableByNegative(Goal goal, GoalHolder completer) {
+        return completableByNegative(goal.getOwner(), completer);
     }
 
-    static boolean isCompletableByNegative(GoalHolder owner, GoalHolder completer) {
+    static boolean completableByNegative(GoalHolder owner, GoalHolder completer) {
         return owner == null || !owner.equals(completer);
     }
 
-    static boolean isNotCompletable() {
+    static boolean notCompletable() {
         return false;
     }
 }

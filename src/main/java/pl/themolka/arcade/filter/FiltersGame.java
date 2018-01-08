@@ -1,22 +1,16 @@
 package pl.themolka.arcade.filter;
 
-import net.engio.mbassy.listener.Handler;
-import org.jdom2.Element;
-import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.game.GameStartEvent;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class FiltersGame extends GameModule {
-    private final Map<String, FilterSet> filters = new HashMap<>();
+    private final Map<String, FilterSet> filters;
 
-    @Handler(priority = Priority.HIGHER)
-    public void onGameStart(GameStartEvent event) {
-        this.parseFilters();
+    public FiltersGame(Map<String, FilterSet> filters) {
+        this.filters = filters;
     }
 
     public void addFilter(FilterSet filter) {
@@ -45,26 +39,5 @@ public class FiltersGame extends GameModule {
 
     public void removeFilter(String id) {
         this.filters.remove(id);
-    }
-
-    private void parseFilters() {
-        for (Element baseElement : this.getSettings().getChildren("filter")) {
-            String id = baseElement.getAttributeValue("id");
-            if (id == null) {
-                continue;
-            }
-
-            FilterSet set = new FilterSet(id);
-            for (Element filterElement : baseElement.getChildren()) {
-                Filter filter = XMLFilter.parse(this.getPlugin(), filterElement);
-                if (filter != null) {
-                    set.addFilter(filter);
-                }
-            }
-
-            if (!set.isEmpty()) {
-                this.addFilter(set);
-            }
-        }
     }
 }

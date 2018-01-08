@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import net.minecraft.server.EntityPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -235,6 +236,14 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         return this.game;
     }
 
+    public EntityPlayer getMojang() {
+        if (this.isOnline()) {
+            return this.getPlayer().getMojang();
+        } else {
+            return null;
+        }
+    }
+
     public boolean hasChatColor() {
         return this.chatColor != null;
     }
@@ -340,6 +349,15 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     public void resetDisplayName() {
         this.setDisplayName(null);
+    }
+
+    public boolean sendPacket(Object packet) {
+        boolean isOnline = this.isOnline();
+        if (isOnline) {
+            this.getPlayer().sendPacket(packet);
+        }
+
+        return isOnline;
     }
 
     public void setChatColor(ChatColor chatColor) {

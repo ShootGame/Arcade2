@@ -2,18 +2,16 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.util.Color;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class NeutralState extends PointState.Permanent {
-    public static final ChatColor NEUTRAL_COLOR = ChatColor.GOLD; // WHITE is awful
-
     public NeutralState(LosingState losing) {
         this(losing.point);
     }
@@ -28,8 +26,8 @@ public class NeutralState extends PointState.Permanent {
     }
 
     @Override
-    public ChatColor getColor() {
-        return NEUTRAL_COLOR;
+    public Color getColor() {
+        return this.point.getNeutralColor();
     }
 
     @Override
@@ -39,10 +37,10 @@ public class NeutralState extends PointState.Permanent {
 
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
-        // The neutral state can only be captured by one dominator.
-        if (dominators.size() == 1) {
-            GoalHolder dominator = new ArrayList<>(dominators.keySet()).get(0);
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+        // The neutral state can only be captured by one dominator who can capture the point.
+        if (canCapture.size() == 1) {
+            GoalHolder dominator = canCapture.get(0);
 
             if (dominator != null) {
                 this.startCapturing(this.point, dominator, Progress.ZERO);

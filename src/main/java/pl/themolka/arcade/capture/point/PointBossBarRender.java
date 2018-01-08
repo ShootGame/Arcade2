@@ -4,7 +4,6 @@ import net.engio.mbassy.listener.Handler;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
@@ -12,10 +11,10 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import pl.themolka.arcade.capture.CaptureGame;
-import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GameStopEvent;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.util.BossBarUtils;
@@ -25,12 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PointBossBarRender implements Listener {
+    public static final BarColor BAR_COLOR = BossBarUtils.color(Point.DEFAULT_NEUTRAL_COLOR);
     public static final BarFlag[] BAR_FLAGS = {};
     public static final BarStyle BAR_STYLE = BarStyle.SOLID;
     public static final BaseComponent BAR_TEXT = new TextComponent();
-
-    public static final ChatColor DEFAULT_COLOR = NeutralState.NEUTRAL_COLOR;
-    public static final BarColor DEFAULT_BAR_COLOR = BossBarUtils.color(DEFAULT_COLOR);
 
     private final CaptureGame game;
 
@@ -41,7 +38,7 @@ public class PointBossBarRender implements Listener {
     }
 
     public BossBar createBossBar() {
-        return this.game.getServer().createBossBar(BAR_TEXT, DEFAULT_BAR_COLOR, BAR_STYLE, BAR_FLAGS);
+        return this.game.getServer().createBossBar(BAR_TEXT, BAR_COLOR, BAR_STYLE, BAR_FLAGS);
     }
 
     //
@@ -56,11 +53,11 @@ public class PointBossBarRender implements Listener {
         return this.renderBossBar(point, state.getColor(), state.getProgress());
     }
 
-    public BossBar renderBossBar(Point point, ChatColor pointColor, double progress) {
-        return this.renderBossBar(point, pointColor, progress, DEFAULT_COLOR);
+    public BossBar renderBossBar(Point point, Color pointColor, double progress) {
+        return this.renderBossBar(point, pointColor, progress, point.getNeutralColor());
     }
 
-    public BossBar renderBossBar(Point point, ChatColor pointColor, double progress, ChatColor progressColor) {
+    public BossBar renderBossBar(Point point, Color pointColor, double progress, Color progressColor) {
         BossBar bossBar = this.bossBars.get(point);
         if (bossBar == null) {
             this.bossBars.put(point, bossBar = this.createBossBar());
@@ -81,11 +78,11 @@ public class PointBossBarRender implements Listener {
         return this.renderBossBar(point, state.getColor(), state.getProgress(), bukkit);
     }
 
-    public BossBar renderBossBar(Point point, ChatColor pointColor, double progress, Player bukkit) {
-        return this.renderBossBar(point, pointColor, progress, DEFAULT_COLOR, bukkit);
+    public BossBar renderBossBar(Point point, Color pointColor, double progress, Player bukkit) {
+        return this.renderBossBar(point, pointColor, progress, point.getNeutralColor(), bukkit);
     }
 
-    public BossBar renderBossBar(Point point, ChatColor pointColor, double progress, ChatColor progressColor, Player bukkit) {
+    public BossBar renderBossBar(Point point, Color pointColor, double progress, Color progressColor, Player bukkit) {
         if (bukkit != null) {
             BossBar bossBar = this.renderBossBar(point, pointColor, progress, progressColor);
             if (bossBar != null) {
@@ -118,6 +115,25 @@ public class PointBossBarRender implements Listener {
     //
 
     @Handler(priority = Priority.LAST)
+    public void gameOver(GameStopEvent event) {
+        // There might be issues with this event. GameStopEvent is called AFTER
+        // a new game actually starts and calls GameStartEvent. The Minecraft
+        // client might have limit of displayed boss bars and boss bars rendered
+        // in a new game (which would be called in GameStartEvent) might not be
+        // displayed.
+        // NOTE: We won't use ServerCycleEvent since this event is not
+        //       representing the stopping game.
+
+        for (BossBar bossBar : this.bossBars.values()) {
+            // We need need to send the "REMOVE" packet to all members
+            // of this boss bar to remove it from the client view.
+            bossBar.removeAll();
+        }
+
+        this.bossBars.clear();
+    }
+
+    @Handler(priority = Priority.LAST)
     public void playerEnter(PointPlayerEnterEvent event) {
         this.renderBossBar(event.getPoint(), event.getPlayer().getBukkit());
     }
@@ -129,7 +145,7 @@ public class PointBossBarRender implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void stateChange(PointCapturedEvent event) {
-        this.renderBossBar(event.getPoint(), event.getNewOwner().getColor().toChat(), event.getNewState().getProgress());
+        this.renderBossBar(event.getPoint(), event.getNewOwner().getColor(), event.getNewState().getProgress());
     }
 
     @Handler(priority = Priority.LAST)
@@ -160,20 +176,20 @@ public class PointBossBarRender implements Listener {
     // Helper Methods
     //
 
-    private BarColor getBarColor(ChatColor color) {
+    private BarColor getBarColor(Color color) {
         BarColor barColor = BossBarUtils.color(color);
         if (barColor != null) {
             return barColor;
         }
 
-        return DEFAULT_BAR_COLOR;
+        return BAR_COLOR;
     }
 
-    private BaseComponent getBarTitle(String pointName, ChatColor pointColor, double progress, ChatColor progressColor) {
+    private BaseComponent getBarTitle(String pointName, Color pointColor, double progress, Color progressColor) {
         String progressPretty = Math.round(progress * 100D) + "%";
 
-        net.md_5.bungee.api.ChatColor realPointColor = Color.ofChat(pointColor).toComponent();
-        net.md_5.bungee.api.ChatColor realDefaultColor = Color.ofChat(progressColor).toComponent();
+        net.md_5.bungee.api.ChatColor realPointColor = pointColor.toComponent();
+        net.md_5.bungee.api.ChatColor realDefaultColor = progressColor.toComponent();
 
         // Create spaces to TRY to center pointName on the boss bar.
         String prefix = CommandUtils.createLine((int) Math.round(progressPretty.length() * 1.5D), " ");

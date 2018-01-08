@@ -20,6 +20,8 @@ public interface Region extends StringId {
 
     boolean contains(Block block);
 
+    // The implementation should choose between "containsRound(vector)"
+    // and "containsZero(vector)" methods.
     boolean contains(BlockVector vector);
 
     boolean contains(Entity entity);
@@ -67,4 +69,34 @@ public interface Region extends StringId {
     void removeFilter(RegionEventType event);
 
     void setFilter(RegionEventType event, FilterSet filter);
+
+    //
+    // BlockVector Comparison
+    //
+
+    /*
+     * There are two methods of comparing block vectors in the game. First of
+     * all we need to understand how blocks and locations are represented. The
+     * Minecraft coordinate net is based on double numbers.
+     *
+     * - Entities utilizes doubles as their location coordinates. This provides
+     * opportunity to place entities EXACTLY at the given coordinates
+     * independently from the net.
+     * - Blocks utilizes integers as their location coordinates. Blocks can only
+     * be placed at the static coordinate location.
+     *
+     * We have to methods of comparing block vectors:
+     * - Rounding method for comparison of coordinates NOT HOOK into the block
+     * location net.
+     * - Zeroing method for comparison of the coordinates HOOKED into the block
+     * location net.
+     */
+
+    default boolean containsRound(BlockVector vector) {
+        return this.contains(new Vector(vector.getX() + 0.5D, vector.getY() + 0.5D, vector.getZ() + 0.5D));
+    }
+
+    default boolean containsZero(BlockVector vector) {
+        return this.contains(new Vector(vector.getX(), vector.getY(), vector.getZ()));
+    }
 }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.region;
 
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
@@ -23,6 +24,11 @@ public class CylinderRegion extends AbstractRegion {
 
     public CylinderRegion(CylinderRegion original) {
         this(original.getId(), original.getMap(), original.getCenter(), original.getHeight(), original.getRadius());
+    }
+
+    @Override
+    public boolean contains(BlockVector vector) {
+        return this.containsRound(vector);
     }
 
     @Override

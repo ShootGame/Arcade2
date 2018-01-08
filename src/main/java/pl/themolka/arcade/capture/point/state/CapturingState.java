@@ -2,16 +2,15 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointCapturedEvent;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.Color;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 public class CapturingState extends PointState.Progress {
     public static final double CAPTURED = Progress.DONE;
@@ -38,28 +37,22 @@ public class CapturingState extends PointState.Progress {
     }
 
     @Override
-    public ChatColor getColor() {
-        return this.capturer.getColor().toChat();
+    public Color getColor() {
+        return this.capturer.getColor();
     }
 
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
-        boolean startLosing = !dominators.isEmpty(); // true if there are any dominators on the point.
-        for (Map.Entry<GoalHolder, Collection<GamePlayer>> dominator : dominators.asMap().entrySet()) {
-            if (dominator.getKey().equals(this.capturer)) {
-                startLosing = false;
-                break;
-            }
-        }
-
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
         if (!dominators.isEmpty()) {
-            if (startLosing) {
+            if (!canCapture.contains(this.capturer)) {
                 // The dominator has changed.
                 this.startLosing(this.point, this.capturer, dominators, this.getProgress());
                 return;
-            } else if (dominators.size() == 1) {
-                // Progress the state if there is only one dominator on the point.
+            }
+
+            if (canCapture.size() == 1) {
+                // Progress the state if there is only one dominator who can dominate the point.
                 this.progress();
             }
         }

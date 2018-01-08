@@ -2,13 +2,15 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointLostEvent;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.Color;
+
+import java.util.List;
 
 public class LosingState extends PointState.Progress {
     public static final double LOST = Progress.ZERO;
@@ -35,26 +37,14 @@ public class LosingState extends PointState.Progress {
     }
 
     @Override
-    public ChatColor getColor() {
-        return this.loser.getColor().toChat();
+    public Color getColor() {
+        return this.loser.getColor();
     }
 
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
-        boolean ownerDominating = false;
-
-        if (owner != null) {
-            for (GoalHolder competitor : dominators.keySet()) {
-                if (owner.equals(competitor)) {
-                    // current owner
-                    ownerDominating = true;
-                    break;
-                }
-            }
-        }
-
-        if (ownerDominating) {
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+        if (owner != null && canCapture.contains(owner)) {
             // The owner is dominating the point - bring it back to him.
             this.startCapturing(this.point, this.loser, this.getProgress());
             return;

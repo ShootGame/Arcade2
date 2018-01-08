@@ -1,14 +1,11 @@
 package pl.themolka.arcade.capture.point;
 
 import net.engio.mbassy.listener.Handler;
-import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.capture.Capturable;
@@ -18,18 +15,15 @@ import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameStartEvent;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.util.Color;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PointRegionRender implements Listener {
-    public static final PatternType BANNER_PATTERN_TYPE = PatternType.BASE;
-    public static final Set<Material> DEFAULT_POINT_MATERIALS = Stream.of(
+    public static final Set<Material> RENDERABLE_MATERIALS = Stream.of(
             Material.CARPET,
             Material.STAINED_CLAY,
             Material.STAINED_GLASS,
@@ -38,20 +32,8 @@ public class PointRegionRender implements Listener {
 
     private final CaptureGame game;
 
-    private final Set<Material> pointMaterials;
-
     public PointRegionRender(CaptureGame game) {
-        this(game, DEFAULT_POINT_MATERIALS);
-    }
-
-    public PointRegionRender(CaptureGame game, Set<Material> pointMaterials) {
         this.game = game;
-
-        this.pointMaterials = pointMaterials;
-    }
-
-    public List<Material> getPointMaterials() {
-        return new ArrayList<>(this.pointMaterials);
     }
 
     public boolean isRenderable(Block block) {
@@ -59,43 +41,53 @@ public class PointRegionRender implements Listener {
     }
 
     public boolean isRenderable(Material material) {
-        return material != null && this.pointMaterials.contains(material);
+        return material != null && RENDERABLE_MATERIALS.contains(material);
     }
 
     public boolean isRenderable(MaterialData data) {
         return data != null && this.isRenderable(data.getItemType());
     }
 
-    public void renderBanner(Banner banner, DyeColor color) {
+    public boolean renderBanner(Banner banner, DyeColor color) {
         banner.setBaseColor(color);
-        banner.setPatterns(Collections.singletonList(new Pattern(color, BANNER_PATTERN_TYPE)));
+        return banner.update(false, false);
     }
 
-    public void renderBanner(BlockState blockState, DyeColor color) {
-        if (blockState instanceof Banner) {
-            this.renderBanner((Banner) blockState, color);
+    public boolean renderBanner(BlockState blockState, DyeColor color) {
+        return blockState instanceof Banner && this.renderBanner((Banner) blockState, color);
+    }
+
+    public boolean renderBlock(Block block, DyeColor color) {
+        Material material = block.getType();
+
+        if (this.isRenderable(material)) {
+            block.setData(color.getWoolData());
+            return true;
+        } else if (material.equals(Material.STANDING_BANNER)
+                || material.equals(Material.WALL_BANNER)) {
+            this.renderBanner(block.getState(), color);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void renderBlocks(Iterable<Block> blocks, DyeColor color) {
+        for (Block block : blocks) {
+            this.renderBlock(block, color);
         }
     }
 
-    public void renderBlocks(Point point, ChatColor color) {
-        this.renderBlocks(point, Color.ofChat(color));
+    public void renderPoint(Point point, Color color) {
+        this.renderPoint(point, color.toDye());
     }
 
-    public void renderBlocks(Point point, Color color) {
-        this.renderBlocks(point, color.toDye());
+    public void renderPoint(Point point, DyeColor color) {
+        this.renderRegion(point.getStateRegion(), color);
     }
 
-    public void renderBlocks(Point point, DyeColor color) {
-        for (Block block : point.getStateRegion().getBlocks()) {
-            Material type = block.getType();
-
-            if (this.isRenderable(block)) {
-                block.setData(color.getWoolData());
-            } else if (type.equals(Material.STANDING_BANNER)
-                    || type.equals(Material.WALL_BANNER)) {
-                this.renderBanner(block.getState(), color);
-            }
-        }
+    public void renderRegion(Region region, DyeColor color) {
+        this.renderBlocks(region.getBlocks(), color);
     }
 
     @Handler(priority = Priority.LAST)
@@ -103,14 +95,11 @@ public class PointRegionRender implements Listener {
         for (Capturable capturable : this.game.getCapturables()) {
             if (capturable instanceof Point) {
                 Point point = (Point) capturable;
+
                 GoalHolder owner = point.getOwner();
+                Color color = owner != null ? owner.getColor() : null;
 
-                Color color = Color.ofChat(NeutralState.NEUTRAL_COLOR);
-                if (owner != null) {
-                    color = owner.getColor();
-                }
-
-                this.renderBlocks(point, color);
+                this.renderPoint(point, color != null ? color : point.getNeutralColor());
             }
         }
     }
@@ -118,14 +107,15 @@ public class PointRegionRender implements Listener {
     @Handler(priority = Priority.LAST)
     public void renderCaptured(PointCapturedEvent event) {
         if (!event.isCanceled() && event.getNewState() instanceof CapturedState) {
-            this.renderBlocks(event.getPoint(), event.getNewOwner().getColor());
+            this.renderPoint(event.getPoint(), event.getNewOwner().getColor());
         }
     }
 
     @Handler(priority = Priority.LAST)
     public void renderNeutral(PointLostEvent event) {
         if (!event.isCanceled() && event.getNewState() instanceof NeutralState) {
-            this.renderBlocks(event.getPoint(), NeutralState.NEUTRAL_COLOR);
+            Point point = event.getPoint();
+            this.renderPoint(point, point.getNeutralColor());
         }
     }
 }

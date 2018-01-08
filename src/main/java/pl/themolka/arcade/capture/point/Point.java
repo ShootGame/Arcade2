@@ -21,6 +21,8 @@ import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.filter.Filter;
+import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
@@ -28,6 +30,7 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalLoseEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.region.Region;
+import pl.themolka.arcade.region.RegionFinder;
 import pl.themolka.arcade.score.Score;
 import pl.themolka.arcade.score.ScoreGame;
 import pl.themolka.arcade.score.ScoreModule;
@@ -35,6 +38,7 @@ import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,17 +48,23 @@ import java.util.Map;
 import java.util.Set;
 
 public class Point extends Capturable {
+    public static final RegionFinder DEFAULT_CAPTURE_REGION_FINDER = RegionFinder.EXACT;
     public static final Time DEFAULT_CAPTURE_TIME = Time.ofSeconds(10);
     public static final String DEFAULT_GOAL_NAME = "Point";
     public static final Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
+    public static final Color DEFAULT_NEUTRAL_COLOR = Color.GOLD;
 
     public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(1);
 
+    private Filter captureFilter = Filters.undefined();
     private Region captureRegion;
+    private RegionFinder captureRegionFinder = DEFAULT_CAPTURE_REGION_FINDER;
     private Time captureTime = DEFAULT_CAPTURE_TIME;
     private boolean capturingCapturedEnabled; // false if the point should be neutral to be captured.
+    private Filter dominateFilter = Filters.undefined();
     private final PointState initialState;
     private Time loseTime = DEFAULT_LOSE_TIME;
+    private Color neutralColor = DEFAULT_NEUTRAL_COLOR;
     private boolean objective;
     private boolean permanent = false;
     private final Set<GamePlayer> players = new HashSet<>();
@@ -122,7 +132,7 @@ public class Point extends Capturable {
 
     @Override
     public boolean isCompletableBy(GoalHolder completer) {
-        return Goal.isCompletableByEveryone();
+        return Goal.completableByEveryone();
     }
 
     @Override
@@ -146,6 +156,16 @@ public class Point extends Capturable {
         return this.players.add(player);
     }
 
+    public boolean canCapture(GoalHolder competitor) {
+        return competitor != null && this.isCompletableBy(competitor) &&
+                this.getCaptureFilter().filter(competitor).isNotDenied();
+    }
+
+    public boolean canDominate(GamePlayer player) {
+        return player != null && player.isParticipating() && this.isCompletableBy(player) &&
+                this.getDominateFilter().filter(player).isNotDenied();
+    }
+
     public CapturedState createCapturedState() {
         return new CapturedState(this);
     }
@@ -158,12 +178,24 @@ public class Point extends Capturable {
         return new NeutralState(this);
     }
 
+    public Filter getCaptureFilter() {
+        return this.captureFilter;
+    }
+
     public Region getCaptureRegion() {
         return this.captureRegion;
     }
 
+    public RegionFinder getCaptureRegionFinder() {
+        return this.captureRegionFinder;
+    }
+
     public Time getCaptureTime() {
         return this.captureTime;
+    }
+
+    public Filter getDominateFilter() {
+        return this.dominateFilter;
     }
 
     public PointState getInitialState() {
@@ -172,6 +204,10 @@ public class Point extends Capturable {
 
     public Time getLoseTime() {
         return this.loseTime;
+    }
+
+    public Color getNeutralColor() {
+        return this.neutralColor;
     }
 
     public List<GamePlayer> getPlayers() {
@@ -194,7 +230,6 @@ public class Point extends Capturable {
         return this.players.contains(player);
     }
 
-    // This method is executed synchronously every 4 ticks.
     public void heartbeat(long ticks) {
         if (this.isPermanent() && this.isCaptured()) {
             return;
@@ -204,13 +239,13 @@ public class Point extends Capturable {
 
         Multimap<GoalHolder, GamePlayer> competitors = ArrayListMultimap.create();
         for (GamePlayer player : this.getPlayers()) {
-            if (!player.isParticipating() || !this.isCompletableBy(player)) {
-                continue;
-            }
+            if (this.canDominate(player)) {
+                GoalHolder competitor = match.findWinnerByPlayer(player);
+                // ^ This is not the best way to find registered GoalHolders every server tick.
 
-            GoalHolder competitor = match.findWinnerByPlayer(player); // This is not the best way to find registered GoalHolders.
-            if (competitor != null && (competitor.equals(player) || this.isCompletableBy(competitor))) {
-                competitors.put(competitor, player);
+                if (competitor != null && (competitor.equals(player) || this.isCompletableBy(competitor))) {
+                    competitors.put(competitor, player);
+                }
             }
         }
 
@@ -238,18 +273,25 @@ public class Point extends Capturable {
             dominators.putAll(competitor, players);
         }
 
+        List<GoalHolder> canCapture = new ArrayList<>();
+        for (GoalHolder competitor : dominators.keySet()) {
+            if (this.canCapture(competitor)) {
+                canCapture.add(competitor);
+            }
+        }
+
         // Heartbeat the current state.
         GoalHolder owner = this.getOwner();
-        this.getState().heartbeat(ticks, match, competitors, dominators, owner);
+        this.getState().heartbeat(ticks, match, competitors, dominators, canCapture, owner);
 
         double pointReward = this.getPointReward();
         if (owner != null && pointReward != Score.ZERO) {
             // Give reward points for owning the point.
-            this.heartbeatReward(ticks, owner, pointReward);
+            this.heartbeatReward(owner, pointReward);
         }
     }
 
-    public void heartbeatReward(long ticks, GoalHolder competitor, double pointReward /* this is per second */) {
+    public void heartbeatReward(GoalHolder competitor, double pointReward /* this is per second */) {
         if (competitor != null && pointReward != Score.ZERO) {
             Score score = this.getScore(competitor);
             double toGive = (HEARTBEAT_INTERVAL.toTicks() / Time.SECOND.toTicks()) * pointReward;
@@ -322,8 +364,16 @@ public class Point extends Capturable {
         return this.players.remove(player);
     }
 
+    public void setCaptureFilter(Filter captureFilter) {
+        this.captureFilter = captureFilter;
+    }
+
     public void setCaptureRegion(Region captureRegion) {
         this.captureRegion = captureRegion;
+    }
+
+    public void setCaptureRegionFinder(RegionFinder captureRegionFinder) {
+        this.captureRegionFinder = captureRegionFinder;
     }
 
     public void setCaptureTime(Time captureTime) {
@@ -334,8 +384,16 @@ public class Point extends Capturable {
         this.capturingCapturedEnabled = capturingCapturedEnabled;
     }
 
+    public void setDominateFilter(Filter dominateFilter) {
+        this.dominateFilter = dominateFilter;
+    }
+
     public void setLoseTime(Time loseTime) {
         this.loseTime = loseTime;
+    }
+
+    public void setNeutralColor(Color color) {
+        this.neutralColor = color;
     }
 
     public void setObjective(boolean objective) {
@@ -387,6 +445,7 @@ public class Point extends Capturable {
                 .append("capturedBy", this.getCapturedBy())
                 .append("id", this.getId())
                 .append("name", this.getName())
+                .append("captureRegionFinder", this.captureRegionFinder)
                 .append("captureTime", this.captureTime)
                 .append("capturingCapturedEnabled", this.capturingCapturedEnabled)
                 .append("loseTime", this.loseTime)
@@ -468,7 +527,11 @@ public class Point extends Capturable {
     }
 
     private boolean shouldTrack(GamePlayer player, Location at) {
-        if (player != null && this.getCaptureRegion().contains(at)) {
+        if (player == null || at == null) {
+            return false;
+        }
+
+        if (this.getCaptureRegionFinder().regionContains(this.getCaptureRegion(), at)) {
             Player bukkit = player.getBukkit();
             return bukkit != null && !bukkit.isDead();
         }

@@ -1,7 +1,6 @@
 package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.CapturableState;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
@@ -10,6 +9,9 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.Color;
+
+import java.util.List;
 
 public abstract class PointState extends CapturableState<Point, PointState> {
     protected final Point point;
@@ -23,12 +25,12 @@ public abstract class PointState extends CapturableState<Point, PointState> {
     @Override
     public abstract PointState copy();
 
-    public ChatColor getColor() {
-        return NeutralState.NEUTRAL_COLOR;
+    public Color getColor() {
+        return this.point.getNeutralColor();
     }
 
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
     }
 
     public double getProgress() {

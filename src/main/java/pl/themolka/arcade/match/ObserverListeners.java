@@ -3,9 +3,11 @@ package pl.themolka.arcade.match;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -61,96 +63,21 @@ public class ObserverListeners implements Listener {
         this.game = game;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
+    //
+    // Inventory Spy
+    //
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockInventorySpy(PlayerInteractEvent event) {
         if (this.isObserving(event.getPlayer()) &&
                 event.getClickedBlock() != null &&
                 !event.getPlayer().isSneaking()) {
             this.handleInventorySpy(event.getPlayer(), event.getClickedBlock());
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (this.isObserving(event.getDamager()) ||
-                this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityShootBow(EntityShootBowEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityTarget(EntityTargetEvent event) {
-        if (this.isObserving(event.getTarget())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onHangingBreak(HangingBreakByEntityEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onHangingPlace(HangingPlaceEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (this.isObserving(event.getWhoClicked())) {
-            event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onInventorySpy(PlayerInteractEntityEvent event) {
+    public void onPlayerInventorySpy(PlayerInteractEntityEvent event) {
         if (event.getRightClicked() instanceof Player &&
                 this.isObserving(event.getPlayer()) &&
                 !event.getPlayer().isSneaking()) {
@@ -162,63 +89,25 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onMatchWindowOpen(PlayerInteractEvent event) {
-        if (event.getItem() != null &&
-                event.getItem().equals(ObserversKit.PLAY)) {
-            GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
-            if (player == null) {
-                return;
-            }
-
-            PlayMatchWindow window = this.game.getMatch().getPlayWindow();
-            if (window != null && window.open(player)) {
-                return;
-            }
-
-            // The PlayerMatchWindow is not set. As we cannot handle the window
-            // join the given player to match with the '/join' command instead.
-            Commands commands = this.game.getPlugin().getCommands();
-            Command command = commands.getCommand(PLAY_COMMAND);
-
-            if (command != null) {
-                commands.handleCommand(player, command,
-                                       command.getCommand(), null);
-                return;
-            }
-
-            player.sendError("Could not join the match right now. " +
-                             "Did you defined format module?");
+    private void handleInventorySpy(Player observer, Block block) {
+        BlockState state = block.getState();
+        if (state instanceof InventoryHolder) {
+            observer.openInventory(((InventoryHolder) state).getInventory());
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
+    private void handleInventorySpy(Player observer, Player player) {
+        int size = player.getInventory().getSize();
+        String title = player.getDisplayName() + ChatColor.GRAY + "'s inventory";
+
+        Inventory spy = this.game.getServer().createInventory(null, size, title);
+        spy.setContents(player.getInventory().getContents());
+        observer.openInventory(spy);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
+    //
+    // Kit and Visibility Filtering
+    //
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinedObservers(ObserversJoinEvent event) {
@@ -245,30 +134,44 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupArrow(PlayerPickupArrowEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
+    //
+    // Miscellaneous
+    //
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupExperience(PlayerPickupExperienceEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onMatchWindowOpen(PlayerInteractEvent event) {
+        if (event.getItem() != null &&
+                event.getItem().equals(ObserversKit.PLAY)) {
+            GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
+            if (player == null) {
+                return;
+            }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (this.isObserving(event.getPlayer())) {
-            event.setCancelled(true);
+            PlayMatchWindow window = this.game.getMatch().getPlayWindow();
+            if (window != null && window.open(player)) {
+                return;
+            }
+
+            // The PlayerMatchWindow is not set. As we cannot handle the window
+            // join the given player to match with the '/join' command instead.
+            Commands commands = this.game.getPlugin().getCommands();
+            Command command = commands.getCommand(PLAY_COMMAND);
+
+            if (command != null) {
+                commands.handleCommand(player, command,
+                        command.getCommand(), null);
+                return;
+            }
+
+            player.sendError("Could not join the match right now. " +
+                    "Did you defined format module?");
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerVoidTeleport(PlayerMoveEvent event) {
-        if (this.isObserving(event.getPlayer().getBukkit())) {
+        if (!event.isCanceled() &&
+                this.isObserving(event.getPlayer().getBukkit())) {
             ArcadeMap map = this.game.getGame().getMap();
             int y = event.getTo().getBlockY();
 
@@ -281,28 +184,162 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    //
+    // Blocking
+    //
+
+    // These listeners are in the LOW event priority. The LOWEST is reserved
+    // for internal features for observer, eg. opening spy inventories.
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (this.isObserving(event.getDamager()) ||
+                this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+        if (this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityShootBow(EntityShootBowEvent event) {
+        if (this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onEntityTarget(EntityTargetEvent event) {
+        if (this.isObserving(event.getTarget())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if (this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onHangingBreak(HangingBreakByEntityEvent event) {
+        if (this.isObserving(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onHangingPlace(HangingPlaceEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (this.isObserving(event.getWhoClicked())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setUseInteractedBlock(Event.Result.DENY);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerPickupArrow(PlayerPickupArrowEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerPickupExperience(PlayerPickupExperienceEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (this.isObserving(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionEffectAdd(PotionEffectAddEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionEffectExtend(PotionEffectExtendEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionEffectRemove(PotionEffectRemoveEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event) {
         for (LivingEntity entity : event.getAffectedEntities()) {
             if (this.isObserving(entity)) {
@@ -311,41 +348,25 @@ public class ObserverListeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onVehicleDamage(VehicleDamageEvent event) {
         if (this.isObserving(event.getAttacker())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onVehicleEnter(VehicleEnterEvent event) {
         if (this.isObserving(event.getEntered())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onVehicleEntityCollision(VehicleEntityCollisionEvent event) {
         if (this.isObserving(event.getEntity())) {
             event.setCancelled(true);
         }
-    }
-
-    private void handleInventorySpy(Player observer, Block block) {
-        if (block.getState() instanceof InventoryHolder) {
-            InventoryHolder holder = (InventoryHolder) block.getState();
-            observer.openInventory(holder.getInventory());
-        }
-    }
-
-    private void handleInventorySpy(Player observer, Player player) {
-        int size = player.getInventory().getSize();
-        String title = player.getDisplayName() + ChatColor.GRAY + "'s inventory";
-
-        Inventory spy = this.game.getServer().createInventory(null, size, title);
-        spy.setContents(player.getInventory().getContents());
-        observer.openInventory(spy);
     }
 
     private boolean isObserving(Entity entity) {

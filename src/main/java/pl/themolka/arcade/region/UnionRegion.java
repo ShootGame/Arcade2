@@ -29,6 +29,17 @@ public class UnionRegion extends AbstractRegion {
     }
 
     @Override
+    public boolean contains(BlockVector vector) {
+        for (Region region : this.getRegions()) {
+            if (region.contains(vector)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean contains(Region region) {
         for (Region member : this.getRegions()) {
             if (member.contains(region)) {
@@ -57,7 +68,12 @@ public class UnionRegion extends AbstractRegion {
 
     @Override
     public Vector getCenter() {
-        return this.getBounds().getCenter();
+        RegionBounds bounds = this.getBounds();
+        if (bounds != null) {
+            return bounds.getCenter();
+        }
+
+        return null;
     }
 
     @Override
@@ -108,8 +124,13 @@ public class UnionRegion extends AbstractRegion {
         Vector max = null;
 
         for (Region member : this.getRegions()) {
-            Vector memberMin = member.getBounds().getMin();
-            Vector memberMax = member.getBounds().getMax();
+            RegionBounds bounds = member.getBounds();
+            if (bounds == null) {
+                continue;
+            }
+
+            Vector memberMin = bounds.getMin();
+            Vector memberMax = bounds.getMax();
 
             if (min == null) {
                 min = memberMin;

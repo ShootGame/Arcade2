@@ -1,5 +1,6 @@
 package pl.themolka.arcade.region;
 
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -11,6 +12,11 @@ public class NegativeRegion extends AbstractRegion {
         super(region.getId(), region.getMap());
 
         this.region = region;
+    }
+
+    @Override
+    public boolean contains(BlockVector vector) {
+        return !this.getRegion().contains(vector);
     }
 
     @Override

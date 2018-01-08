@@ -1,37 +1,39 @@
-package pl.themolka.arcade.filter;
+package pl.themolka.arcade.filter.matcher;
 
 import org.bukkit.Locatable;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.filter.FilterResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaterialFilter extends AbstractFilter {
+@MatcherId("material")
+public class MaterialMatcher extends Matcher {
     public static final byte DATA_NULL = (byte) 0;
 
     private final List<MaterialData> container = new ArrayList<>();
 
-    public MaterialFilter(List<MaterialData> container) {
+    public MaterialMatcher(List<MaterialData> container) {
         this.container.addAll(container);
     }
 
     @Override
-    public FilterResult filter(Object object) {
+    public FilterResult matches(Object object) {
         if (object instanceof Byte) {
-            return FilterResult.of(this.matches((Byte) object));
+            return this.of(this.matches((byte) object));
         } else if (object instanceof ItemStack) {
-            return FilterResult.of(this.matches((ItemStack) object));
+            return this.of(this.matches((ItemStack) object));
         } else if (object instanceof Locatable) {
-            return FilterResult.of(this.matches((Locatable) object));
+            return this.of(this.matches((Locatable) object));
         } else if (object instanceof Material) {
-            return FilterResult.of(this.matches((Material) object));
+            return this.of(this.matches((Material) object));
         } else if (object instanceof MaterialData) {
-            return FilterResult.of(this.matches((MaterialData) object));
-        } else {
-            return FilterResult.ABSTAIN;
+            return this.of(this.matches((MaterialData) object));
         }
+
+        return this.abstain();
     }
 
     public boolean matches(byte data) {

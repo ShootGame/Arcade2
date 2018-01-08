@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -266,6 +267,45 @@ public enum Color {
     //
     // Parsing
     //
+
+    /**
+     * Parse a {@link Color} from the given query
+     * @param color Query to search
+     */
+    public static Color parse(String color) {
+        return parse(color, null);
+    }
+
+    /**
+     * Parse a {@link Color} from the given query
+     * @param color Query to search
+     * @param def Default {@link Color} value, if the result gives <code>null</code>
+     */
+    public static Color parse(String color, Color def) {
+        if (color != null) {
+            Color value = valueOf(XMLParser.parseEnumValue(color));
+            if (value != null) {
+                return value;
+            }
+
+            ChatColor chat = parseChat(color);
+            if (chat != null) {
+                return ofChat(chat);
+            }
+
+            net.md_5.bungee.api.ChatColor component = parseComponent(color);
+            if (component != null) {
+                return ofComponent(component);
+            }
+
+            DyeColor dye = parseDye(color);
+            if (dye != null) {
+                return ofDye(dye);
+            }
+        }
+
+        return def;
+    }
 
     /**
      * Parse a {@link ChatColor} from the given query

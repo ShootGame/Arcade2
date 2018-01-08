@@ -81,7 +81,7 @@ public abstract class Capturable implements InteractableGoal, StringId {
 
     @Override
     public boolean isCompletableBy(GoalHolder completer) {
-        return Goal.isCompletableByNegative(this, completer);
+        return Goal.completableByNegative(this, completer);
     }
 
     @Override

@@ -101,7 +101,7 @@ public class XMLParser {
 
     public static String parseEnumValue(String key) {
         if (key != null) {
-            return key.toUpperCase().replace(" ", "_").replace("-", "_");
+            return key.toUpperCase().trim().replace(" ", "_").replace("-", "_");
         }
 
         return null;
@@ -124,7 +124,7 @@ public class XMLParser {
 
     public static String parseMessage(String message) {
         if (message != null) {
-            return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message);
+            return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message) + ChatColor.RESET;
         }
 
         return null;

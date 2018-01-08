@@ -84,7 +84,7 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompletableBy(GoalHolder completer) {
-        return Goal.isCompletableByPositive(this, completer);
+        return Goal.completableByPositive(this, completer);
     }
 
     @Override

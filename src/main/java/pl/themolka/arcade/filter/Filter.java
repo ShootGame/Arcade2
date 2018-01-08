@@ -1,5 +1,7 @@
 package pl.themolka.arcade.filter;
 
 public interface Filter {
-    FilterResult filter(Object... objects);
+    default FilterResult filter(Object... objects) {
+        return FilterResult.ABSTAIN;
+    }
 }

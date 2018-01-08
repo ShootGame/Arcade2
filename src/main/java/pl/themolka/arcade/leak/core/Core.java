@@ -144,6 +144,11 @@ public class Core extends Leakable implements Listener {
         int distance = detectorLevel * 4;
 
         RegionBounds bounds = region.getBounds();
+        if (bounds == null) {
+            this.game.getLogger().log(Level.SEVERE, "Invalid region in core " + this.getName() + ".");
+            return;
+        }
+
         Vector min = bounds.getMin().clone().subtract(distance, 0, distance).setY(Region.MIN_HEIGHT);
         Vector max = bounds.getMax().clone().add(distance, 0, distance).setY(bounds.getMax().getY() -
                 (bounds.getMax().getY() - bounds.getMin().getY()) - detectorLevel);
@@ -155,6 +160,7 @@ public class Core extends Leakable implements Listener {
         }
         if (liquid == null) {
             this.game.getLogger().log(Level.SEVERE, "No liquid found in core " + this.getName() + ".");
+            return;
         }
 
         this.setLiquid(liquid);

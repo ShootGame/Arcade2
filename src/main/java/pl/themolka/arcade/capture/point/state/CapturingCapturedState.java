@@ -2,14 +2,15 @@ package pl.themolka.arcade.capture.point.state;
 
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CapturingCapturedState extends CapturingState {
     private final LosingState losingState; // never null
@@ -30,7 +31,7 @@ public class CapturingCapturedState extends CapturingState {
     }
 
     @Override
-    public ChatColor getColor() {
+    public Color getColor() {
         PointState.Progress dominating = this.getDominatingState();
         if (dominating instanceof CapturingCapturedState) {
             return super.getColor();
@@ -46,10 +47,10 @@ public class CapturingCapturedState extends CapturingState {
 
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, GoalHolder owner) {
+                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
         // The point must be first lost to be captured
-        this.losingState.heartbeat(ticks, match, competitors, dominators, owner); // losing state
-        super.heartbeat(ticks, match, competitors, dominators, owner); // capturing state
+        this.losingState.heartbeat(ticks, match, competitors, dominators, canCapture, owner); // losing state
+        super.heartbeat(ticks, match, competitors, dominators, canCapture, owner); // capturing state
     }
 
     @Override

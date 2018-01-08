@@ -2,6 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.map.ArcadeMap;
 
@@ -28,6 +29,11 @@ public class PointRegion extends AbstractRegion {
     }
 
     @Override
+    public boolean contains(BlockVector vector) {
+        return this.containsZero(vector);
+    }
+
+    @Override
     public boolean contains(Region region) {
         return false;
     }
@@ -35,9 +41,9 @@ public class PointRegion extends AbstractRegion {
     @Override
     public boolean contains(Vector vector) {
         Vector point = this.getPoint();
-        return vector.getBlockX() == point.getBlockX() &&
-               vector.getBlockY() == point.getBlockY() &&
-               vector.getBlockZ() == point.getBlockZ();
+        return  vector.getBlockX() == point.getBlockX() &&
+                vector.getBlockY() == point.getBlockY() &&
+                vector.getBlockZ() == point.getBlockZ();
     }
 
     @Override
