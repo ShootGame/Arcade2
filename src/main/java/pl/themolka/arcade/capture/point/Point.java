@@ -240,7 +240,7 @@ public class Point extends Capturable {
 
         Multimap<GoalHolder, GamePlayer> dominators = this.getDominatorStrategy().getDominators(competitors);
         if (dominators == null) {
-            dominators = ArrayListMultimap.create();
+            dominators = DominatorStrategy.EMPTY_DOMINATORS;
         }
 
         List<GoalHolder> canCapture = new ArrayList<>();

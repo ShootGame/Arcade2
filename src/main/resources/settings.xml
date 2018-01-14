@@ -41,6 +41,8 @@
             <directory>./archive</directory>
         </archive>
 
+        <fireworks core-leak="yes" point-capture="yes" wool-place="yes" />
+
         <map-loader>
             <directory path="./maps">
                 <exclude>_ignored</exclude>

@@ -2,6 +2,7 @@ package pl.themolka.arcade.capture.point;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 
@@ -15,7 +16,8 @@ public abstract class DominatorStrategy {
     public static final DominatorStrategy MAJORITY = new MajorityStrategy();
     public static final DominatorStrategy NOBODY = new NobodyStrategy();
 
-    public static final Multimap<GoalHolder, GamePlayer> EMPTY_DOMINATORS = ArrayListMultimap.create();
+    public static final Multimap<GoalHolder, GamePlayer> EMPTY_DOMINATORS =
+            Multimaps.unmodifiableMultimap(ArrayListMultimap.create());
 
     public abstract Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors);
 }

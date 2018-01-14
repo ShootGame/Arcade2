@@ -331,11 +331,16 @@ public class Core extends Leakable implements Listener {
             return;
         }
 
-        Material newType = event.getBlock().getType();
+        Material newType = event.getToBlock().getType();
         if (this.getLiquid().accepts(newType)) {
-            // the core has leaked
-            this.leak(null, // We don't know the competitor
-                      null); // We don't know the player
+            CoreLeakEvent leakEvent = new CoreLeakEvent(this.game.getPlugin(), this);
+            this.game.getPlugin().getEventBus().publish(leakEvent);
+
+            if (!leakEvent.isCanceled()) {
+                // the core has leaked
+                this.leak(null, // We don't know the competitor
+                          null); // We don't know the player
+            }
         }
     }
 

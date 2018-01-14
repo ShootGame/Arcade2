@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.flag.state.FlagState;
-import pl.themolka.arcade.capture.flag.state.NeutralState;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 
@@ -22,7 +21,7 @@ public class Flag extends Capturable {
     public Flag(CaptureGame game, GoalHolder owner, String id) {
         super(game, owner, id);
 
-        this.initialState = new NeutralState(this);
+        this.initialState = null; // TODO: write this
 
         // Set the current state to a copy the initial state.
         this.state = this.getInitialState().copy();

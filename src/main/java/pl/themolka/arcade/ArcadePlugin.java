@@ -753,7 +753,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.addTickable((Tickable) this.getTasks());
 
         this.getTasks().scheduleAsync(new SimpleTaskListener() {
-            boolean done;
+            boolean done = false;
 
             @Override
             public void onDay(long days) {

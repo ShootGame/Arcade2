@@ -5,6 +5,7 @@
     <module class="pl.themolka.arcade.channel.ChannelsModule" />
     <module class="pl.themolka.arcade.example.ExampleModule" />
     <module class="pl.themolka.arcade.filter.FiltersModule" />
+    <module class="pl.themolka.arcade.firework.FireworksModule" />
     <module class="pl.themolka.arcade.gamerule.GameRulesModule" />
     <module class="pl.themolka.arcade.kit.KitsModule" />
     <module class="pl.themolka.arcade.leak.LeakModule" />

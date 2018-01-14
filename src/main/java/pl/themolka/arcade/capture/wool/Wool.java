@@ -180,6 +180,7 @@ public class Wool extends Capturable implements Listener {
 
         GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
         if (player == null) {
+            // Endermans, TNTs and other entities are not permitted to place wools.
             event.setCanceled(true);
             return;
         }
@@ -222,7 +223,7 @@ public class Wool extends Capturable implements Listener {
 
             event.setCanceled(false);
 
-            WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, competitor);
+            WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, competitor, player);
             this.game.getPlugin().getEventBus().publish(placeEvent);
 
             if (placeEvent.isCanceled()) {

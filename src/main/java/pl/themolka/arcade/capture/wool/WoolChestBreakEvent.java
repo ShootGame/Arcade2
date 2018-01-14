@@ -5,6 +5,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 
+// NOTE: This event is canceled by default!
 public class WoolChestBreakEvent extends WoolChestEvent implements Cancelable {
     private boolean cancel;
     private final GamePlayer player;

@@ -1,6 +1,7 @@
 package pl.themolka.arcade.capture.wool;
 
 import net.engio.mbassy.listener.Handler;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
@@ -46,6 +47,14 @@ public class WoolChestTracker implements Listener {
         }
 
         Block block = event.getBlock();
+        if (!block.getType().equals(Material.CHEST)) {
+            return;
+        }
+
+        if (block.getState() instanceof InventoryHolder) {
+            // Register the wool chest is we haven't seen it yet.
+            this.registerWoolChest((InventoryHolder) block.getState());
+        }
 
         ChestImage image = this.getChestImage(block);
         if (image != null && image.woolChest) {
