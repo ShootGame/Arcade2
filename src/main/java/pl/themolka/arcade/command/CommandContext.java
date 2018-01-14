@@ -1,6 +1,7 @@
 package pl.themolka.arcade.command;
 
 import org.apache.commons.lang3.StringUtils;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.List;
 import java.util.Map;
@@ -152,24 +153,7 @@ public class CommandContext {
     }
 
     protected Boolean parseBoolean(String bool, Boolean def) {
-        switch (bool.toLowerCase()) {
-            case "true":
-            case "1":
-            case "yes":
-            case "on":
-            case "enable":
-            case "enabled":
-                return Boolean.TRUE;
-            case "false":
-            case "0":
-            case "no":
-            case "off":
-            case "disable":
-            case "disabled:":
-                return Boolean.FALSE;
-            default:
-                return def;
-        }
+        return XMLParser.parseBoolean(bool, def);
     }
 
     public static CommandContext parse(Command command, String label, String[] args) {

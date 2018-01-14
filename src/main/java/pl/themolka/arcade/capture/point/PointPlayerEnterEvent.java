@@ -3,11 +3,11 @@ package pl.themolka.arcade.capture.point;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 
-public class PointPlayerEnterEvent extends PointEvent {
+public class PointPlayerEnterEvent extends PointCaptureEvent {
     private final GamePlayer player;
 
-    public PointPlayerEnterEvent(ArcadePlugin plugin, Point point, GamePlayer player) {
-        super(plugin, point);
+    public PointPlayerEnterEvent(ArcadePlugin plugin, PointCapture capture, GamePlayer player) {
+        super(plugin, capture);
 
         this.player = player;
     }

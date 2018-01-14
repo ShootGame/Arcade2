@@ -14,10 +14,10 @@ import pl.themolka.arcade.xml.XMLParser;
 public class WoolFactory implements CapturableFactory<Wool> {
     @Override
     public Wool newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parseWoolXml(game, name, xml, new Wool(game, owner, id));
+        return this.parseWoolXml(game, xml, new Wool(game, owner, id));
     }
 
-    public Wool parseWoolXml(CaptureGame game, String name, Element xml, Wool wool) {
+    public Wool parseWoolXml(CaptureGame game, Element xml, Wool wool) {
         DyeColor color = XMLDyeColor.parse(xml.getAttributeValue("color"));
         if (color == null) {
             return null;

@@ -128,7 +128,7 @@ public interface Goal {
     void setCompleted(GoalHolder completer, boolean completed);
 
     //
-    // Utilities
+    // "isCompleted(...)" Execution Methods
     //
 
     static boolean completableByEveryone() {

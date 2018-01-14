@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -39,6 +40,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.command.Command;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
@@ -138,10 +140,16 @@ public class ObserverListeners implements Listener {
     // Miscellaneous
     //
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onMatchWindowOpen(PlayerInteractEvent event) {
-        if (event.getItem() != null &&
-                event.getItem().equals(ObserversKit.PLAY)) {
+        Action action = event.getAction();
+        if (!(action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK))) {
+            // Deny all actions which are not right clicks.
+            return;
+        }
+
+        ItemStack item = event.getItem();
+        if (item != null && item.equals(ObserversKit.PLAY)) {
             GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
             if (player == null) {
                 return;

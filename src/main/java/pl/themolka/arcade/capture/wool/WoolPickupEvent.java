@@ -4,22 +4,25 @@ import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.goal.GoalHolder;
 
 public class WoolPickupEvent extends WoolEvent implements Cancelable {
     private boolean cancel;
+    private final GoalHolder competitor;
     private final boolean firstPickup;
+    private final boolean firstCompetitorPickup;
     private final ItemStack item;
     private final GamePlayer picker;
-    private final org.bukkit.material.Wool woolItem;
 
-    public WoolPickupEvent(ArcadePlugin plugin, Wool wool, boolean firstPickup, ItemStack item,
-                           GamePlayer picker, org.bukkit.material.Wool woolItem) {
+    public WoolPickupEvent(ArcadePlugin plugin, Wool wool, GoalHolder competitor, boolean firstPickup,
+                           boolean firstCompetitorPickup, ItemStack item, GamePlayer picker) {
         super(plugin, wool);
 
+        this.competitor = competitor;
         this.firstPickup = firstPickup;
+        this.firstCompetitorPickup = firstCompetitorPickup;
         this.item = item;
         this.picker = picker;
-        this.woolItem = woolItem;
     }
 
     @Override
@@ -32,6 +35,10 @@ public class WoolPickupEvent extends WoolEvent implements Cancelable {
         this.cancel = cancel;
     }
 
+    public GoalHolder getCompetitor() {
+        return this.competitor;
+    }
+
     public ItemStack getItem() {
         return this.item;
     }
@@ -40,11 +47,11 @@ public class WoolPickupEvent extends WoolEvent implements Cancelable {
         return this.picker;
     }
 
-    public org.bukkit.material.Wool getWoolItem() {
-        return this.woolItem;
-    }
-
     public boolean isFirstPickup() {
         return this.firstPickup;
+    }
+
+    public boolean isFirstCompetitorPickup() {
+        return this.firstCompetitorPickup;
     }
 }

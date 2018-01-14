@@ -2,15 +2,8 @@ package pl.themolka.arcade.capture.point;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import net.engio.mbassy.listener.Handler;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.point.state.CapturedState;
@@ -20,7 +13,6 @@ import pl.themolka.arcade.capture.point.state.LosingState;
 import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GameModule;
@@ -30,44 +22,37 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalLoseEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.RegionFinder;
 import pl.themolka.arcade.score.Score;
 import pl.themolka.arcade.score.ScoreGame;
 import pl.themolka.arcade.score.ScoreModule;
-import pl.themolka.arcade.session.PlayerJoinEvent;
-import pl.themolka.arcade.session.PlayerMoveEvent;
-import pl.themolka.arcade.session.PlayerQuitEvent;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Point extends Capturable {
-    public static final RegionFinder DEFAULT_CAPTURE_REGION_FINDER = RegionFinder.EXACT;
     public static final Time DEFAULT_CAPTURE_TIME = Time.ofSeconds(10);
+    public static final Filter DEFAULT_DOMINATE_FILTER = Filters.undefined();
+    public static final DominatorStrategy DEFAULT_DOMINATOR_STRATEGY = DominatorStrategy.LEAD;
     public static final String DEFAULT_GOAL_NAME = "Point";
     public static final Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
     public static final Color DEFAULT_NEUTRAL_COLOR = Color.GOLD;
 
     public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(1);
 
-    private Filter captureFilter = Filters.undefined();
-    private Region captureRegion;
-    private RegionFinder captureRegionFinder = DEFAULT_CAPTURE_REGION_FINDER;
+    private PointCapture capture;
     private Time captureTime = DEFAULT_CAPTURE_TIME;
-    private boolean capturingCapturedEnabled; // false if the point should be neutral to be captured.
-    private Filter dominateFilter = Filters.undefined();
+    private boolean capturingCapturedEnabled = false; // false if the point should be neutral to be captured.
+    private Filter dominateFilter = DEFAULT_DOMINATE_FILTER;
+    private DominatorStrategy dominatorStrategy;
     private final PointState initialState;
     private Time loseTime = DEFAULT_LOSE_TIME;
     private Color neutralColor = DEFAULT_NEUTRAL_COLOR;
     private boolean objective;
     private boolean permanent = false;
-    private final Set<GamePlayer> players = new HashSet<>();
     private double pointReward;
     private boolean pointTouched = false;
     private PointState state;
@@ -114,6 +99,11 @@ public class Point extends Capturable {
     }
 
     @Override
+    public List<Object> getEventListeners() {
+        return Collections.singletonList(this.getCapture()); // Register player tracking
+    }
+
+    @Override
     public String getGoalInteractMessage(String interact) {
         if (this.isNeutral()) {
             // Neutral points are not announced.
@@ -147,18 +137,20 @@ public class Point extends Capturable {
 
     @Override
     public void resetCapturable() {
-        this.players.clear();
+        PointCapture capture = this.capture;
+        if (capture != null) {
+            capture.clearPlayers();
+        }
+
         this.pointTouched = false;
         this.state = this.getInitialState().copy();
     }
 
-    public boolean addPlayer(GamePlayer player) {
-        return this.players.add(player);
-    }
-
     public boolean canCapture(GoalHolder competitor) {
+        // Rebuild this if we will support many PointCapture objects.
         return competitor != null && this.isCompletableBy(competitor) &&
-                this.getCaptureFilter().filter(competitor).isNotDenied();
+                this.getCapture().canCapture(competitor);
+
     }
 
     public boolean canDominate(GamePlayer player) {
@@ -178,16 +170,8 @@ public class Point extends Capturable {
         return new NeutralState(this);
     }
 
-    public Filter getCaptureFilter() {
-        return this.captureFilter;
-    }
-
-    public Region getCaptureRegion() {
-        return this.captureRegion;
-    }
-
-    public RegionFinder getCaptureRegionFinder() {
-        return this.captureRegionFinder;
+    public PointCapture getCapture() {
+        return this.capture;
     }
 
     public Time getCaptureTime() {
@@ -196,6 +180,10 @@ public class Point extends Capturable {
 
     public Filter getDominateFilter() {
         return this.dominateFilter;
+    }
+
+    public DominatorStrategy getDominatorStrategy() {
+        return this.dominatorStrategy;
     }
 
     public PointState getInitialState() {
@@ -210,8 +198,13 @@ public class Point extends Capturable {
         return this.neutralColor;
     }
 
-    public List<GamePlayer> getPlayers() {
-        return new ArrayList<>(this.players);
+    public Set<GamePlayer> getPlayers() {
+        PointCapture capture = this.getCapture();
+        if (capture != null) {
+            return capture.getPlayers();
+        }
+
+        return Collections.emptySet();
     }
 
     public double getPointReward() {
@@ -224,10 +217,6 @@ public class Point extends Capturable {
 
     public Region getStateRegion() {
         return this.stateRegion;
-    }
-
-    public boolean hasPlayer(GamePlayer player) {
-        return this.players.contains(player);
     }
 
     public void heartbeat(long ticks) {
@@ -249,28 +238,9 @@ public class Point extends Capturable {
             }
         }
 
-        Multimap<GoalHolder, GamePlayer> dominators = ArrayListMultimap.create();
-        for (Map.Entry<GoalHolder, Collection<GamePlayer>> entry : competitors.asMap().entrySet()) {
-            GoalHolder competitor = entry.getKey();
-            Collection<GamePlayer> players = entry.getValue();
-
-            int playerCount = players.size();
-            int dominatorCount = 0;
-
-            for (Map.Entry<GoalHolder, Collection<GamePlayer>> dominator : dominators.asMap().entrySet()) {
-                // All competitors have same player counts - break the loop.
-                dominatorCount = dominator.getValue().size();
-                break;
-            }
-
-            if (playerCount < dominatorCount) {
-                continue;
-            } else if (playerCount > dominatorCount) {
-                // Do not clear the map when player counts are equal.
-                dominators.clear();
-            }
-
-            dominators.putAll(competitor, players);
+        Multimap<GoalHolder, GamePlayer> dominators = this.getDominatorStrategy().getDominators(competitors);
+        if (dominators == null) {
+            dominators = ArrayListMultimap.create();
         }
 
         List<GoalHolder> canCapture = new ArrayList<>();
@@ -338,42 +308,8 @@ public class Point extends Capturable {
         GoalLoseEvent.call(this.game.getPlugin(), this, loser);
     }
 
-    public boolean playerEnter(GamePlayer player) {
-        if (this.players.contains(player)) {
-            return false;
-        }
-
-        PointPlayerEnterEvent event = new PointPlayerEnterEvent(this.game.getPlugin(), this, player);
-        this.game.getPlugin().getEventBus().publish(event);
-
-        return this.addPlayer(event.getPlayer());
-    }
-
-    public boolean playerLeave(GamePlayer player) {
-        if (!this.players.contains(player)) {
-            return false;
-        }
-
-        PointPlayerLeaveEvent event = new PointPlayerLeaveEvent(this.game.getPlugin(), this, player);
-        this.game.getPlugin().getEventBus().publish(event);
-
-        return this.removePlayer(event.getPlayer());
-    }
-
-    public boolean removePlayer(GamePlayer player) {
-        return this.players.remove(player);
-    }
-
-    public void setCaptureFilter(Filter captureFilter) {
-        this.captureFilter = captureFilter;
-    }
-
-    public void setCaptureRegion(Region captureRegion) {
-        this.captureRegion = captureRegion;
-    }
-
-    public void setCaptureRegionFinder(RegionFinder captureRegionFinder) {
-        this.captureRegionFinder = captureRegionFinder;
+    public void setCapture(PointCapture capture) {
+        this.capture = capture;
     }
 
     public void setCaptureTime(Time captureTime) {
@@ -385,7 +321,11 @@ public class Point extends Capturable {
     }
 
     public void setDominateFilter(Filter dominateFilter) {
-        this.dominateFilter = dominateFilter;
+        this.dominateFilter = dominateFilter != null ? dominateFilter : DEFAULT_DOMINATE_FILTER;
+    }
+
+    public void setDominatorStrategy(DominatorStrategy dominatorStrategy) {
+        this.dominatorStrategy = dominatorStrategy != null ? dominatorStrategy : DEFAULT_DOMINATOR_STRATEGY;
     }
 
     public void setLoseTime(Time loseTime) {
@@ -416,27 +356,6 @@ public class Point extends Capturable {
         this.stateRegion = stateRegion;
     }
 
-    public PointState startCapturing(GoalHolder capturer, double oldProgress) {
-        CapturingState capturingState = new CapturingState(this, capturer);
-        capturingState.setProgress(oldProgress); // ZERO?
-
-        return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), capturingState));
-    }
-
-    public PointState startCapturingCaptured(GoalHolder capturer, double oldProgress) {
-        CapturingCapturedState capturingState = new CapturingCapturedState(this, capturer);
-        capturingState.setProgress(oldProgress); // ZERO?
-
-        return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), capturingState));
-    }
-
-    public PointState startLosing(GoalHolder loser, double oldProgress) {
-        LosingState losingState = new LosingState(this, loser);
-        losingState.setProgress(oldProgress); // DONE?
-
-        return this.startState(new PointLosingEvent(this.game.getPlugin(), this, this.getState(), losingState));
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
@@ -445,9 +364,9 @@ public class Point extends Capturable {
                 .append("capturedBy", this.getCapturedBy())
                 .append("id", this.getId())
                 .append("name", this.getName())
-                .append("captureRegionFinder", this.captureRegionFinder)
-                .append("captureTime", this.captureTime)
+                .append("capture", this.capture)
                 .append("capturingCapturedEnabled", this.capturingCapturedEnabled)
+                .append("dominatorStrategy", this.dominatorStrategy)
                 .append("loseTime", this.loseTime)
                 .append("permanent", this.permanent)
                 .append("pointReward", this.pointReward)
@@ -464,6 +383,37 @@ public class Point extends Capturable {
         return null;
     }
 
+    //
+    // Starting New States
+    //
+
+    public PointState startCapturing(CapturingState state, double oldProgress) {
+        state.setProgress(oldProgress); // ZERO?
+        return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), state));
+    }
+
+    public PointState startCapturing(GoalHolder capturer, double oldProgress) {
+        return this.startCapturing(new CapturingState(this, capturer), oldProgress);
+    }
+
+    public PointState startCapturingCaptured(CapturingCapturedState state, double oldProgress) {
+        state.setProgress(oldProgress); // ZERO?
+        return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), state));
+    }
+
+    public PointState startCapturingCaptured(GoalHolder capturer, double oldProgress) {
+        return this.startCapturingCaptured(new CapturingCapturedState(this, capturer), oldProgress);
+    }
+
+    public PointState startLosing(LosingState state, double oldProgress) {
+        state.setProgress(oldProgress); // DONE?
+        return this.startState(new PointLosingEvent(this.game.getPlugin(), this, this.getState(), state));
+    }
+
+    public PointState startLosing(GoalHolder loser, double oldProgress) {
+        return this.startLosing(new LosingState(this, loser), oldProgress);
+    }
+
     private PointState startState(PointStateEvent event) {
         this.game.getPlugin().getEventBus().publish(event);
         if (event instanceof Cancelable && ((Cancelable) event).isCanceled()) {
@@ -473,69 +423,5 @@ public class Point extends Capturable {
         PointState newState = event.getNewState();
         this.setState(newState);
         return newState;
-    }
-
-    //
-    // Track Players
-    //
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        GamePlayer player = this.fetchPlayer(event.getEntity());
-        if (player != null) {
-            this.playerLeave(player);
-        }
-    }
-
-    // We are unable to use PlayerInitialSpawnEvent because our player sessions
-    // are created or restored in the PlayerJoinEvent.
-    @Handler(priority = Priority.LAST)
-    public void onPlayerInitialSpawn(PlayerJoinEvent event) {
-        GamePlayer player = event.getGamePlayer();
-        if (this.shouldTrack(player, event.getBukkitPlayer().getLocation())) {
-            this.playerEnter(player);
-        }
-    }
-
-    @Handler(priority = Priority.LAST)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        this.onPlayerMove(event.getGamePlayer(), event.getTo());
-    }
-
-    @Handler(priority = Priority.LAST)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        this.playerLeave(event.getGamePlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        this.onPlayerMove(this.fetchPlayer(event.getPlayer()), event.getTo());
-    }
-
-    private GamePlayer fetchPlayer(Player bukkit) {
-        return bukkit != null ? this.game.getGame().getPlayer(bukkit) : null;
-    }
-
-    private void onPlayerMove(GamePlayer player, Location to) {
-        if (player != null) {
-            if (this.shouldTrack(player, to)) {
-                this.playerEnter(player);
-            } else {
-                this.playerLeave(player);
-            }
-        }
-    }
-
-    private boolean shouldTrack(GamePlayer player, Location at) {
-        if (player == null || at == null) {
-            return false;
-        }
-
-        if (this.getCaptureRegionFinder().regionContains(this.getCaptureRegion(), at)) {
-            Player bukkit = player.getBukkit();
-            return bukkit != null && !bukkit.isDead();
-        }
-
-        return false;
     }
 }

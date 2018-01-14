@@ -10,8 +10,6 @@ import pl.themolka.arcade.leak.core.CoreFactory;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
-import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.XMLRegion;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +29,8 @@ public class LeakGame extends GameModule {
 
         this.installDefaultFactories();
         this.parseMapXml();
+
+        this.enableCores();
     }
 
     public void addFactory(String name, LeakableFactory factory) {
@@ -123,18 +123,17 @@ public class LeakGame extends GameModule {
                     }
                 }
 
-                this.registerListenerObject(leakable); // register listeners
+                leakable.registerEventListeners(this, true); // register listeners
             } catch (JDOMException ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    private Region parseRegion(Element xml) {
-        if (xml != null && !xml.getChildren().isEmpty()) {
-            return XMLRegion.parse(this.getGame().getMap(), xml.getChildren().get(0));
-        }
+    //
+    // Enabling Leakables
+    //
 
-        return null;
+    private void enableCores() {
     }
 }

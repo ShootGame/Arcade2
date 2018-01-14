@@ -22,6 +22,7 @@ import pl.themolka.arcade.util.Color;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class PointBossBarRender implements Listener {
     public static final BarColor BAR_COLOR = BossBarUtils.color(Point.DEFAULT_NEUTRAL_COLOR);
@@ -31,7 +32,7 @@ public class PointBossBarRender implements Listener {
 
     private final CaptureGame game;
 
-    private final Map<Point, BossBar> bossBars = new HashMap<>();
+    private final Map<Point, BossBar> bossBars = new WeakHashMap<>();
 
     public PointBossBarRender(CaptureGame game) {
         this.game = game;
@@ -126,7 +127,7 @@ public class PointBossBarRender implements Listener {
 
         for (BossBar bossBar : this.bossBars.values()) {
             // We need need to send the "REMOVE" packet to all members
-            // of this boss bar to remove it from the client view.
+            // of this boss bar to remove it from their views.
             bossBar.removeAll();
         }
 

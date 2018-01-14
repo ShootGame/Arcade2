@@ -745,7 +745,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new Sessions(this));
 
         // windows
-        this.registerCommandObject(new WindowListeners(this));
+        this.registerListenerObject(new WindowListeners(this));
     }
 
     private void loadTasks() {
@@ -753,10 +753,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.addTickable((Tickable) this.getTasks());
 
         this.getTasks().scheduleAsync(new SimpleTaskListener() {
+            boolean done;
+
             @Override
             public void onDay(long days) {
-                getLogger().info("Server ran now for 24 hours. Will be restarting soon...");
-                getGames().setNextRestart(true);
+                if (!this.done) {
+                    getLogger().info("Server ran now for 24 hours. Will be restarting soon...");
+                    getGames().setNextRestart(true);
+                    this.done = true;
+                }
             }
         });
     }

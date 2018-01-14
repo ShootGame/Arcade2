@@ -18,10 +18,10 @@ import java.util.List;
 public class CoreFactory implements LeakableFactory<Core> {
     @Override
     public Core newLeakable(LeakGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parseCoreXml(game, name, xml, new Core(game, owner, id));
+        return this.parseCoreXml(game, xml, new Core(game, owner, id));
     }
 
-    public Core parseCoreXml(LeakGame game, String name, Element xml, Core core) {
+    public Core parseCoreXml(LeakGame game, Element xml, Core core) {
         String paramLiquid = xml.getAttributeValue("liquid");
         String paramMaterial = xml.getAttributeValue("material");
         String paramDetectorLevel = xml.getAttributeValue("detector-level");

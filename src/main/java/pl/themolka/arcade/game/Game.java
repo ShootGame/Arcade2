@@ -467,6 +467,8 @@ public class Game implements Metadata, PlayerVisibilityFilter {
             task.cancelTask();
         }
 
+        this.getWindowRegistry().removeAll();
+
         this.plugin.getLogger().info("Game #" + (this.getGameId() + 1) + " has ended.");
     }
 

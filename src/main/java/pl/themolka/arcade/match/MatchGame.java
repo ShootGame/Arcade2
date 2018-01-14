@@ -224,32 +224,40 @@ public class MatchGame extends GameModule {
         BaseComponent[] loserComponent = TextComponent.fromLegacyText(
                 ChatColor.RED + ChatColor.UNDERLINE.toString() + "Defeat!");
 
-        BaseComponent[] resultComponent = null;
+        BaseComponent[] resultComponent;
         MatchWinner winner = event.getWinner();
+
         if (winner != null) {
             resultComponent = TextComponent.fromLegacyText(winner.getMessage());
+        } else {
+            resultComponent = TextComponent.fromLegacyText(""); // empty
         }
+
+        int fadeIn = (int) Time.ofTicks(10).toTicks();
+        int stay = (int) Time.ofSeconds(3).toTicks();
+        int fadeOut = (int) Time.ofTicks(30).toTicks();
 
         for (ArcadePlayer online : event.getPlugin().getPlayers()) {
             if (online.getGamePlayer() == null) {
                 continue;
             }
 
-            if (resultComponent != null) {
-                // The subtitle must be set as first.
-                online.getBukkit().setSubtitle(resultComponent);
-            }
+            BaseComponent[] title;
+            ArcadeSound sound;
 
             if (winner == null || this.getObservers().contains(online)) {
-                online.getBukkit().showTitle(defaultComponent);
-                online.play(ArcadeSound.ENEMY_LOST);
+                title = defaultComponent;
+                sound = ArcadeSound.ENEMY_LOST;
             } else if (winner.contains(online)) {
-                online.getBukkit().showTitle(winnerComponent);
-                online.play(ArcadeSound.ENEMY_LOST);
+                title = winnerComponent;
+                sound = ArcadeSound.ENEMY_LOST;
             } else {
-                online.getBukkit().showTitle(loserComponent);
-                online.play(ArcadeSound.ENEMY_WON);
+                title = loserComponent;
+                sound = ArcadeSound.ENEMY_WON;
             }
+
+            online.getBukkit().showTitle(title, resultComponent, fadeIn, stay, fadeOut);
+            online.play(sound);
         }
     }
 

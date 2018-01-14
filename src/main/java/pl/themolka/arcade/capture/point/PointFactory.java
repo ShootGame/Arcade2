@@ -5,7 +5,6 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.capture.CapturableFactory;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
@@ -22,14 +21,18 @@ import pl.themolka.arcade.xml.XMLParser;
 public class PointFactory implements CapturableFactory<Point> {
     @Override
     public Point newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parsePointXml(game, name, xml, new Point(game, owner, id));
+        return this.parsePointXml(game, xml, new Point(game, owner, id));
     }
 
-    public Point parsePointXml(CaptureGame game, String name, Element xml, Point point) {
+    public Point parsePointXml(CaptureGame game, Element xml, Point point) {
         // capture region
         Element captureElement = xml.getChild("capture");
-        Region captureRegion = captureElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), captureElement) : null;
-        if (captureRegion == null) {
+        if (captureElement == null) {
+            return null;
+        }
+
+        PointCapture capture = this.parsePointCapture(game, captureElement, new PointCapture(game, point));
+        if (capture == null) {
             return null;
         }
 
@@ -37,16 +40,16 @@ public class PointFactory implements CapturableFactory<Point> {
         Element stateElement = xml.getChild("state");
         Region stateRegion = stateElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), stateElement) : null;
         if (stateRegion == null) {
-            stateRegion = captureRegion; // set state region to the capture region (if it is not set)
+            stateRegion = capture.getRegion(); // Set state region to the capture region (if it is not set).
         }
 
         // setup
-        point.setCaptureFilter(this.findFilter(game.getGame(), captureElement.getAttributeValue("filter")));
-        point.setCaptureRegion(captureRegion);
-        point.setCaptureRegionFinder(this.findRegionFinder(captureElement, Point.DEFAULT_CAPTURE_REGION_FINDER));
-        point.setCaptureTime(XMLTime.parse(captureElement.getAttributeValue("time"), Point.DEFAULT_CAPTURE_TIME));
-        point.setCapturingCapturedEnabled(XMLParser.parseBoolean(captureElement.getAttributeValue("capturing-captured"), true));
-        point.setDominateFilter(this.findFilter(game.getGame(), xml.getAttributeValue("dominate-filter")));
+        point.setCapture(capture);
+        point.setCaptureTime(XMLTime.parse(xml.getAttributeValue("capture-time"), Point.DEFAULT_CAPTURE_TIME));
+        point.setCapturingCapturedEnabled(XMLParser.parseBoolean(xml.getAttributeValue("capturing-captured"), false));
+        point.setDominatorStrategy(this.findDominatorStrategy(xml, Point.DEFAULT_DOMINATOR_STRATEGY));
+        point.setDominateFilter(this.findFilter(game.getGame(), xml.getAttributeValue("dominate-filter"),
+                                                Point.DEFAULT_DOMINATE_FILTER));
         point.setLoseTime(XMLTime.parse(xml.getAttributeValue("lose-time"), Point.DEFAULT_LOSE_TIME));
         point.setNeutralColor(Color.parse(xml.getAttributeValue("color"), Point.DEFAULT_NEUTRAL_COLOR));
         point.setObjective(XMLParser.parseBoolean(xml.getAttributeValue("objective"), false));
@@ -56,7 +59,23 @@ public class PointFactory implements CapturableFactory<Point> {
         return point;
     }
 
-    private Filter findFilter(Game game, String id) {
+    public PointCapture parsePointCapture(CaptureGame game, Element xml, PointCapture capture) {
+        Region region = XMLRegion.parseUnion(game.getGame().getMap(), xml);
+        if (region == null) {
+            return null;
+        }
+
+        capture.setFilter(this.findFilter(game.getGame(), xml.getAttributeValue("filter"), PointCapture.DEFAULT_FILTER));
+        capture.setRegion(region);
+        capture.setRegionFinder(this.findRegionFinder(xml, PointCapture.DEFAULT_REGION_FINDER));
+        return capture;
+    }
+
+    private DominatorStrategy findDominatorStrategy(Element xml, DominatorStrategy def) {
+        return xml != null ? DominatorStrategyValues.of(xml.getAttributeValue("dominator"), def) : def;
+    }
+
+    private Filter findFilter(Game game, String id, Filter def) {
         if (id != null && !id.trim().isEmpty()) {
             GameModule gameModule = game.getModule(FiltersModule.class);
 
@@ -68,33 +87,62 @@ public class PointFactory implements CapturableFactory<Point> {
             }
         }
 
-        return Filters.undefined();
-    }
-
-    private RegionFinder findRegionFinder(Element xml, RegionFinder def) {
-        if (xml != null) {
-            try {
-                String key = XMLParser.parseEnumValue(xml.getAttributeValue("find-mode"));
-                return RegionFinderValues.valueOf(key).finder;
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-
         return def;
     }
 
+    private RegionFinder findRegionFinder(Element xml, RegionFinder def) {
+        return xml != null ? RegionFinderValues.of(xml.getAttributeValue("find-mode"), def) : def;
+    }
+
     private enum RegionFinderValues {
-        EVERYWHERE(RegionFinder.EVERYWHERE),
-        EXACT(RegionFinder.EXACT),
-        NET(RegionFinder.NET),
-        NET_ROUND(RegionFinder.NET_ROUND),
-        NOWHERE(RegionFinder.NOWHERE)
+        EVERYWHERE(RegionFinder.EVERYWHERE), // everywhere
+        EXACT(RegionFinder.EXACT), // compare exact (double) locations
+        NET(RegionFinder.NET), // compare block (int) locations
+        NET_ROUND(RegionFinder.NET_ROUND), // compare center block locations
+        NOWHERE(RegionFinder.NOWHERE), // nowhere
         ;
 
         final RegionFinder finder;
 
         RegionFinderValues(RegionFinder finder) {
             this.finder = finder;
+        }
+
+        static RegionFinder of(String value, RegionFinder def) {
+            if (value != null) {
+                try {
+                    return valueOf(XMLParser.parseEnumValue(value)).finder;
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            return def;
+        }
+    }
+
+    private enum DominatorStrategyValues {
+        EVERYBODY(DominatorStrategy.EVERYBODY), // all competitors on the point
+        EXCLUSIVE(DominatorStrategy.EXCLUSIVE), // the only competitor on the point
+        LEAD(DominatorStrategy.LEAD), // most players on the point
+        MAJORITY(DominatorStrategy.MAJORITY), // most players compared to all enemies on the point
+        NOBODY(DominatorStrategy.NOBODY), // no competitors
+        ;
+
+        final DominatorStrategy strategy;
+
+        DominatorStrategyValues(DominatorStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        static DominatorStrategy of(String value, DominatorStrategy def) {
+            if (value != null) {
+                try {
+                    return valueOf(XMLParser.parseEnumValue(value)).strategy;
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            return def;
         }
     }
 }

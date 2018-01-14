@@ -9,13 +9,13 @@ import pl.themolka.arcade.game.GamePlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WoolChestRetraceEvent extends WoolChestEvent implements Cancelable {
+public class WoolChestRestoreEvent extends WoolChestEvent implements Cancelable {
     private boolean cancel;
     private final Inventory content;
     private final GamePlayer player;
     private final List<GamePlayer> viewers;
 
-    public WoolChestRetraceEvent(ArcadePlugin plugin, Block chestBlock, Inventory content, GamePlayer player, List<GamePlayer> viewers) {
+    public WoolChestRestoreEvent(ArcadePlugin plugin, Block chestBlock, Inventory content, GamePlayer player, List<GamePlayer> viewers) {
         super(plugin, chestBlock);
 
         this.content = content;

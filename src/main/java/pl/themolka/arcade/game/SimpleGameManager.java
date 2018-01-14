@@ -20,6 +20,7 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.XMLTime;
+import pl.themolka.arcade.util.Tickable;
 
 import java.io.File;
 import java.io.IOException;
@@ -181,7 +182,15 @@ public class SimpleGameManager implements GameManager {
                 online.kickPlayer(reason);
             }
 
-            this.plugin.getServer().shutdown();
+            // We need to shutdown the server in the next tick because of a
+            // strange "handleDisconnection() called twice" log from the server.
+            this.plugin.addTickable(new Tickable() {
+                @Override
+                public void onTick(long tick) {
+                    plugin.removeTickable(this); // Don't tick again.
+                    plugin.getServer().shutdown();
+                }
+            });
         }
     }
 

@@ -9,10 +9,10 @@ import pl.themolka.arcade.goal.GoalHolder;
 public class FlagFactory implements CapturableFactory<Flag> {
     @Override
     public Flag newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
-        return this.parseFlagXml(game, name, xml, new Flag(game, owner, id));
+        return this.parseFlagXml(game, xml, new Flag(game, owner, id));
     }
 
-    public Flag parseFlagXml(CaptureGame game, String name, Element xml, Flag flag) {
+    public Flag parseFlagXml(CaptureGame game, Element xml, Flag flag) {
         return flag;
     }
 }

@@ -1,6 +1,7 @@
 package pl.themolka.arcade.capture;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
+import pl.themolka.arcade.event.EventListenerComponent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
@@ -11,7 +12,9 @@ import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.InteractableGoal;
 import pl.themolka.arcade.util.StringId;
 
-public abstract class Capturable implements InteractableGoal, StringId {
+public abstract class Capturable implements EventListenerComponent,
+                                            InteractableGoal,
+                                            StringId {
     // The "ToStringStyle.SHORT_PREFIX_STYLE" strings are long and unreadable here.
     public static final ToStringStyle TO_STRING_STYLE = ToStringStyle.MULTI_LINE_STYLE;
 

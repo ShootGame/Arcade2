@@ -44,8 +44,8 @@ public class LosingState extends PointState.Progress {
     @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
                           Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
-        if (owner != null && canCapture.contains(owner)) {
-            // The owner is dominating the point - bring it back to him.
+        if (dominators.containsKey(this.loser)) {
+            // The loser is dominating the point - bring it back to him.
             this.startCapturing(this.point, this.loser, this.getProgress());
             return;
         }
@@ -93,7 +93,11 @@ public class LosingState extends PointState.Progress {
     }
 
     public PointState startCapturing(Point point, GoalHolder capturer, double progress) {
-        return point.startCapturing(capturer, progress);
+        if (point.isCapturingCapturedEnabled()) {
+            return point.startCapturingCaptured(capturer, progress);
+        } else {
+            return point.startCapturing(capturer, progress);
+        }
     }
 
     @Override

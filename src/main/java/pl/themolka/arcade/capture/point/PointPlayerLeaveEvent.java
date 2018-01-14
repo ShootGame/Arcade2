@@ -6,8 +6,8 @@ import pl.themolka.arcade.game.GamePlayer;
 public class PointPlayerLeaveEvent extends PointEvent {
     private final GamePlayer player;
 
-    public PointPlayerLeaveEvent(ArcadePlugin plugin, Point point, GamePlayer player) {
-        super(plugin, point);
+    public PointPlayerLeaveEvent(ArcadePlugin plugin, PointCapture capture, GamePlayer player) {
+        super(plugin, capture.getPoint());
 
         this.player = player;
     }

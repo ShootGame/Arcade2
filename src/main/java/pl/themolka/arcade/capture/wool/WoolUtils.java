@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.util.Color;
 
-public class WoolUtils {
+public final class WoolUtils {
     public static final Material WOOL_MATERIAL = Material.WOOL;
 
     private WoolUtils() {
@@ -100,8 +100,14 @@ public class WoolUtils {
     }
 
     public static boolean isWool(ItemStack item, DyeColor color) {
-        return item != null && color != null &&
-                fromItem(item).getColor().equals(color);
+        if (item != null && color != null) {
+            org.bukkit.material.Wool wool = fromItem(item);
+            if (wool != null) {
+                return wool.getColor().equals(color);
+            }
+        }
+
+        return false;
     }
 
     public static boolean isWool(Material material) {

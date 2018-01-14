@@ -10,8 +10,8 @@ import pl.themolka.arcade.capture.point.PointBossBarRender;
 import pl.themolka.arcade.capture.point.PointFactory;
 import pl.themolka.arcade.capture.point.PointRegionRender;
 import pl.themolka.arcade.capture.wool.Wool;
+import pl.themolka.arcade.capture.wool.WoolChestTracker;
 import pl.themolka.arcade.capture.wool.WoolFactory;
-import pl.themolka.arcade.capture.wool.WoolListeners;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
@@ -138,7 +138,7 @@ public class CaptureGame extends GameModule {
                     }
                 }
 
-                this.registerListenerObject(capturable); // register listeners
+                capturable.registerEventListeners(this, true); // register listeners
             } catch (JDOMException ex) {
                 ex.printStackTrace();
             }
@@ -181,22 +181,15 @@ public class CaptureGame extends GameModule {
 
     private void enableWools() {
         // Register wool classes ONLY when there are any wool goals.
-        List<Wool> standaloneWools = new ArrayList<>();
-        Multimap<GoalHolder, Wool> wools = ArrayListMultimap.create();
-
+        int wools = 0;
         for (Capturable capturable : this.getCapturables()) {
             if (capturable instanceof Wool) {
-                GoalHolder owner = capturable.getOwner();
-                if (owner != null) {
-                    wools.put(owner, (Wool) capturable);
-                } else {
-                    standaloneWools.add((Wool) capturable);
-                }
+                wools++;
             }
         }
 
-        if (!standaloneWools.isEmpty() || !wools.isEmpty()) {
-            this.registerListenerObject(new WoolListeners(this, standaloneWools, wools));
+        if (wools > 0) {
+            this.registerListenerObject(new WoolChestTracker(this));
         }
     }
 }

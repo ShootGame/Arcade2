@@ -18,7 +18,9 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.util.Color;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Wool extends Capturable implements Listener {
     public static final DyeColor DEFAULT_COLOR = DyeColor.WHITE;
@@ -27,6 +29,7 @@ public class Wool extends Capturable implements Listener {
     private DyeColor color = DEFAULT_COLOR;
     private boolean craftable = false;
     private Region monument;
+    private final WoolPickupTracker pickupTracker;
 
     public Wool(CaptureGame game, String id) {
         this(game, null, id);
@@ -34,6 +37,8 @@ public class Wool extends Capturable implements Listener {
 
     public Wool(CaptureGame game, GoalHolder owner, String id) {
         super(game, owner, id);
+
+        this.pickupTracker = new WoolPickupTracker(game, this);
     }
 
     @Override
@@ -67,6 +72,11 @@ public class Wool extends Capturable implements Listener {
     }
 
     @Override
+    public List<Object> getEventListeners() {
+        return Collections.singletonList(this.getPickupTracker());
+    }
+
+    @Override
     public String getGoalInteractMessage(String interact) {
         String owner = "";
         if (this.hasOwner()) {
@@ -89,14 +99,11 @@ public class Wool extends Capturable implements Listener {
 
     @Override
     public void resetCapturable() {
+        this.pickupTracker.resetAllPickups();
     }
 
     public org.bukkit.material.Wool createBukkitWool() {
         return new org.bukkit.material.Wool(this.getColor());
-    }
-
-    public ChatColor getChatColor() {
-        return Color.ofDye(this.color).toChat();
     }
 
     public DyeColor getColor() {
@@ -105,6 +112,10 @@ public class Wool extends Capturable implements Listener {
 
     public Region getMonument() {
         return this.monument;
+    }
+
+    public WoolPickupTracker getPickupTracker() {
+        return this.pickupTracker;
     }
 
     public boolean isCraftable() {

@@ -115,7 +115,6 @@ public class PointRegionRender implements Listener {
     public void renderNeutral(PointLostEvent event) {
         if (!event.isCanceled() && event.getNewState() instanceof NeutralState) {
             Point point = event.getPoint();
-            this.renderPoint(point, point.getNeutralColor());
         }
     }
 }

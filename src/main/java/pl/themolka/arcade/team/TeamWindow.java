@@ -4,7 +4,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
+import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.match.PlayMatchWindow;
@@ -67,12 +69,12 @@ public class TeamWindow extends PlayMatchWindow {
             try {
                 if (slot == 0) {
                     // auto
-                    this.game.autoJoinTeam(player);
+                    this.join(player, null);
                 } else if (slot != this.getContainer().getSize() - 1) {
                     // team
                     Team team = this.teams.get(slot);
                     if (team != null) {
-                        this.game.joinTeam(player, team);
+                        this.join(player, team);
                     }
                 }
 
@@ -96,6 +98,25 @@ public class TeamWindow extends PlayMatchWindow {
         }
 
         super.onCreate();
+    }
+
+    public void join(GamePlayer player, Team team) {
+        String[] args = new String[0];
+        if (team != null) {
+            args = new String[] {team.getName()};
+        }
+
+        GameCommands.JoinCommandEvent event = new GameCommands.JoinCommandEvent(
+                this.game.getPlugin(), player, CommandContext.parse(null, null, args), team == null);
+        this.game.getPlugin().getEventBus().publish(event);
+
+        if (!event.isCanceled() && !event.hasJoined()) {
+            if (event.isAuto()) {
+                this.game.autoJoinTeam(player);
+            } else {
+                this.game.joinTeam(player, args[0]);
+            }
+        }
     }
 
     private ItemStack buildTeamItem(Team team) {

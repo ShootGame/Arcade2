@@ -35,19 +35,29 @@ public class Window extends SimpleWindowListener {
     }
 
     public final boolean click(GamePlayer player, ClickType click, int slot) {
-        try {
-            return this.onClick(player, click, slot, this.getContainer().getItem(slot));
-        } catch (Throwable th) {
-            this.plugin.getLogger().log(Level.SEVERE, "Could not click window.", th);
+        Inventory container = this.getContainer();
+        if (slot >= 0 && slot < container.getSize()) {
+            try {
+                return this.onClick(player, click, slot, container.getItem(slot));
+            } catch (Throwable th) {
+                this.plugin.getLogger().log(Level.SEVERE, "Could not click window.", th);
+            }
         }
 
         return false;
     }
 
     public final boolean close(GamePlayer player) {
+        return this.close(player, true);
+    }
+
+    public final boolean close(GamePlayer player, boolean realClose) {
         try {
             if (this.onClose(player)) {
-                player.getBukkit().closeInventory();
+                if (realClose) {
+                    player.getBukkit().closeInventory();
+                }
+
                 return true;
             }
         } catch (Throwable th) {

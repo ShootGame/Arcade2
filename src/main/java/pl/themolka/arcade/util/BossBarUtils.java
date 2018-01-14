@@ -5,7 +5,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
 import pl.themolka.arcade.goal.GoalHolder;
 
-public class BossBarUtils {
+public final class BossBarUtils {
     private BossBarUtils() {
     }
 

@@ -50,7 +50,7 @@ public class WindowListeners implements Listener {
             return;
         }
 
-        boolean close = window.close(player);
+        boolean close = window.close(player, false);
         if (!close) {
             // don't use the open(...) method in Window, because
             // it will handle the onOpen(...) event.
