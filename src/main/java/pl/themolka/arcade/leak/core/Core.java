@@ -316,7 +316,7 @@ public class Core extends Leakable implements Listener {
         if (this.getOwner().equals(winner)) {
             event.setCanceled(true);
             player.sendError("You may not damage your own " + ChatColor.GOLD +
-                    this.getColoredName() + Messageable.INFO_COLOR + ".");
+                    this.getColoredName() + Messageable.ERROR_COLOR + ".");
             return;
         }
 
@@ -331,7 +331,7 @@ public class Core extends Leakable implements Listener {
             return;
         }
 
-        Material newType = event.getToBlock().getType();
+        Material newType = event.getBlock().getType();
         if (this.getLiquid().accepts(newType)) {
             CoreLeakEvent leakEvent = new CoreLeakEvent(this.game.getPlugin(), this);
             this.game.getPlugin().getEventBus().publish(leakEvent);

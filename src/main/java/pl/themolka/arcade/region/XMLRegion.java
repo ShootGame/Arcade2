@@ -79,11 +79,13 @@ public class XMLRegion extends XMLParser {
 
     public static UnionRegion parseUnion(ArcadeMap map, Element xml) throws NumberFormatException {
         List<Region> regions = new ArrayList<>();
-        for (Element child : xml.getChildren()) {
-            Region region = parse(map, child);
+        if (xml != null) {
+            for (Element child : xml.getChildren()) {
+                Region region = parse(map, child);
 
-            if (region != null) {
-                regions.add(region);
+                if (region != null) {
+                    regions.add(region);
+                }
             }
         }
 
