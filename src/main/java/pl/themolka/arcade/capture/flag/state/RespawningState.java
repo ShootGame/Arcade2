@@ -1,22 +1,31 @@
 package pl.themolka.arcade.capture.flag.state;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
+import pl.themolka.arcade.capture.flag.FlagRespawnedEvent;
+import pl.themolka.arcade.capture.flag.FlagSpawn;
+import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
 public class RespawningState extends FlagState.Progress implements FlagState.VirtualFlag {
-    private final Location target; // Region?
+    public static final double RESPAWNED = Progress.DONE;
 
-    public RespawningState(Flag flag, Location target) {
+    private final FlagSpawn target;
+    private final Time time;
+
+    public RespawningState(Flag flag, FlagSpawn target, Time time) {
         super(flag);
 
         this.target = target;
+        this.time = time;
     }
 
     @Override
     public FlagState copy() {
-        return new RespawningState(this.flag, this.target);
+        return new RespawningState(this.flag, this.target, this.time);
     }
 
     @Override
@@ -25,12 +34,52 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
     }
 
     @Override
+    public void heartbeat(long ticks, Match match, GoalHolder owner) {
+        this.progress();
+
+        if (this.getProgress() >= RESPAWNED) {
+            Location location = this.target.nextLocationOrDefault(100);
+            if (location == null) {
+                // Try in the next heartbeat then.
+                return;
+            }
+
+            SpawnedState spawnedState = this.flag.createSpawnedState(location, this.target);
+
+            FlagRespawnedEvent event = new FlagRespawnedEvent(this.game.getPlugin(), this.flag, this, spawnedState);
+            this.game.getPlugin().getEventBus().publish(event);
+
+            if (event.isCanceled()) {
+                return;
+            }
+
+            this.game.getMatch().sendGoalMessage(this.getRespawnMessage(owner));
+            this.flag.setState(event.getNewState());
+        }
+    }
+
+    @Override
     public boolean isProgressPositive() {
         return true;
     }
 
-    public Location getTarget() {
+    public String getRespawnMessage(GoalHolder ownerCompetitor) {
+        String owner = null;
+        if (ownerCompetitor != null) {
+            owner = ChatColor.GOLD + ownerCompetitor.getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.flag.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
+                " has respawned.";
+    }
+
+    public FlagSpawn getTarget() {
         return this.target;
+    }
+
+    public Time getTime() {
+        return this.time;
     }
 
     @Override
@@ -38,6 +87,7 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("flag", this.flag)
                 .append("target", this.target)
+                .append("time", this.time)
                 .build();
     }
 }

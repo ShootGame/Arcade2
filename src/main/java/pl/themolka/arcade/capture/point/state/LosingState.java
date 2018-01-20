@@ -42,6 +42,11 @@ public class LosingState extends PointState.Progress {
     }
 
     @Override
+    public Time getProgressTime() {
+        return this.point.getLoseTime();
+    }
+
+    @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
                           Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
         if (dominators.containsKey(this.loser)) {
@@ -72,11 +77,6 @@ public class LosingState extends PointState.Progress {
 
             this.point.setState(newState);
         }
-    }
-
-    @Override
-    public Time getProgressTime() {
-        return this.point.getLoseTime();
     }
 
     @Override

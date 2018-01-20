@@ -6,6 +6,8 @@ import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
 import net.minecraft.server.PacketPlayInClientCommand;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -35,6 +37,8 @@ public class ArcadePlayer implements Metadata, Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
     public static final int USERNAME_MIN_LENGTH = 3; // was changed to 4 in beta
     public static final int USERNAME_MAX_LENGTH = 16;
+
+    private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
     private final ArcadePlugin plugin;
 
@@ -258,6 +262,14 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public void sendPacket(Object packet) {
         this.getMojang().playerConnection.sendPacket((Packet<?>) packet);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, toStringStyle)
+                .append("uuid", this.bukkit.getUniqueId())
+                .append("username", this.bukkit.getName())
+                .build();
     }
 
     /**

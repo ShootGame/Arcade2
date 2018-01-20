@@ -1,5 +1,6 @@
 package pl.themolka.arcade.listener;
 
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -9,9 +10,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.session.PlayerQuitEvent;
 
 import java.util.Arrays;
 
@@ -31,17 +33,16 @@ public class ProtectionListeners implements Listener {
      * {@link Player#getKiller()} returns null. This method is used to drop the
      * players items on the ground.
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @Handler(priority = Priority.LAST)
     public void antiLogout(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
+        GamePlayer player = event.getGamePlayer();
+        Player bukkit = event.getBukkitPlayer();
 
-        ArcadePlayer arcade = this.plugin.getPlayer(player);
-        if (arcade != null && arcade.getGamePlayer() != null &&
-                arcade.getGamePlayer().isParticipating()) {
+        if (player != null && bukkit != null && player.isParticipating()) {
             PlayerDeathEvent death = new PlayerDeathEvent(
-                    player,
-                    Arrays.asList(player.getInventory().getContents()),
-                    player.getTotalExperience(),
+                    bukkit,
+                    Arrays.asList(bukkit.getInventory().getContents()),
+                    bukkit.getTotalExperience(),
                     null
             );
 

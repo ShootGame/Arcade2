@@ -113,17 +113,16 @@ public class ObserverListeners implements Listener {
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerJoinedObservers(ObserversJoinEvent event) {
-        if (event.getGamePlayer().isOnline()) {
-            this.game.getMatch().getObserversKit().apply(event.getGamePlayer());
-            // ^ apply kits
-
-            Player bukkit = event.getPlayer().getBukkit();
+        GamePlayer player = event.getGamePlayer();
+        if (player.isOnline()) {
             if (this.game.getMatch().isRunning()) {
-                bukkit.setHealth(0.0D);
+                player.kill();
             }
 
-            event.getGamePlayer().refreshVisibility(
-                    this.game.getPlugin().getPlayers());
+            this.game.getMatch().getObserversKit().apply(player);
+            // ^ apply kits
+
+            player.refreshVisibility(this.game.getPlugin().getPlayers());
         }
     }
 

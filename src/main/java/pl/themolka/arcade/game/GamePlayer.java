@@ -1,6 +1,8 @@
 package pl.themolka.arcade.game;
 
 import net.minecraft.server.EntityPlayer;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -36,6 +38,8 @@ import java.util.UUID;
  */
 public class GamePlayer implements GoalHolder, Metadata, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
+
+    private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
     private ChatChannel channel;
     private ChatColor chatColor;
@@ -175,7 +179,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     @Override
     public void sendGoalMessage(String message) {
-        this.sendAction(message);
+        this.send(ChatColor.YELLOW + message);
+        this.sendAction(ChatColor.YELLOW + message);
     }
 
     @Override
@@ -253,12 +258,22 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
                 this.getPlayer().getDisplayName() != null);
     }
 
+    public boolean isDead() {
+        return this.isOnline() && this.getBukkit().isDead();
+    }
+
     public boolean isOnline() {
         return this.player != null;
     }
 
     public boolean isParticipating() {
         return this.isOnline() && this.participating;
+    }
+
+    public void kill() {
+        if (this.isOnline()) {
+            this.getBukkit().setHealth(0.0D);
+        }
     }
 
     public void refresh() {
@@ -386,5 +401,14 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     public void setPlayer(ArcadePlayer player) {
         this.player = player;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, toStringStyle)
+                .append("uuid", this.uuid)
+                .append("online", this.isOnline())
+                .append("username", this.username)
+                .build();
     }
 }

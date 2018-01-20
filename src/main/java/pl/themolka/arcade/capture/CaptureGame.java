@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagFactory;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointBossBarRender;
@@ -150,6 +151,27 @@ public class CaptureGame extends GameModule {
     //
 
     private void enableFlags() {
+        // Register flag classes ONLY when there are any flag goals.
+        List<Flag> flags = new ArrayList<>();
+
+        for (Capturable capturable : this.getCapturables()) {
+            if (capturable instanceof Flag) {
+                flags.add((Flag) capturable);
+            }
+        }
+
+        if (!flags.isEmpty()) {
+            this.scheduleSyncTask(new Task(this.getPlugin().getTasks()) {
+                @Override
+                public void onTick(long ticks) {
+                    if (getMatch().isRunning() && ticks % Flag.HEARTBEAT_INTERVAL.toTicks() == 0) {
+                        for (Flag flag : flags) {
+                            flag.heartbeat(ticks);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void enablePoints() {

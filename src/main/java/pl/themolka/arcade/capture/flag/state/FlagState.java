@@ -70,6 +70,10 @@ public abstract class FlagState extends CapturableState<Flag, FlagState> {
 
             this.progress = progress;
         }
+
+        public void progress() {
+            this.progress(Flag.HEARTBEAT_INTERVAL);
+        }
     }
 
     /**

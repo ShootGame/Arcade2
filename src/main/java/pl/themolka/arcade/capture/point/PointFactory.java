@@ -11,7 +11,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.RegionFinder;
+import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.score.Score;
 import pl.themolka.arcade.time.XMLTime;
@@ -65,9 +65,9 @@ public class PointFactory implements CapturableFactory<Point> {
             return null;
         }
 
+        capture.setFieldStrategy(this.findRegionFieldStrategy(xml, PointCapture.DEFAULT_FIELD_STRATEGY));
         capture.setFilter(this.findFilter(game.getGame(), xml.getAttributeValue("filter"), PointCapture.DEFAULT_FILTER));
         capture.setRegion(region);
-        capture.setRegionFinder(this.findRegionFinder(xml, PointCapture.DEFAULT_REGION_FINDER));
         return capture;
     }
 
@@ -90,28 +90,28 @@ public class PointFactory implements CapturableFactory<Point> {
         return def;
     }
 
-    private RegionFinder findRegionFinder(Element xml, RegionFinder def) {
-        return xml != null ? RegionFinderValues.of(xml.getAttributeValue("find-mode"), def) : def;
+    private RegionFieldStrategy findRegionFieldStrategy(Element xml, RegionFieldStrategy def) {
+        return xml != null ? RegionFieldStrategyValues.of(xml.getAttributeValue("field"), def) : def;
     }
 
-    private enum RegionFinderValues {
-        EVERYWHERE(RegionFinder.EVERYWHERE), // everywhere
-        EXACT(RegionFinder.EXACT), // compare exact (double) locations
-        NET(RegionFinder.NET), // compare block (int) locations
-        NET_ROUND(RegionFinder.NET_ROUND), // compare center block locations
-        NOWHERE(RegionFinder.NOWHERE), // nowhere
+    private enum RegionFieldStrategyValues {
+        EVERYWHERE(RegionFieldStrategy.EVERYWHERE), // everywhere
+        EXACT(RegionFieldStrategy.EXACT), // compare exact (double) locations
+        NET(RegionFieldStrategy.NET), // compare block (int) locations
+        NET_ROUND(RegionFieldStrategy.NET_ROUND), // compare center block locations
+        NOWHERE(RegionFieldStrategy.NOWHERE), // nowhere
         ;
 
-        final RegionFinder finder;
+        final RegionFieldStrategy strategy;
 
-        RegionFinderValues(RegionFinder finder) {
-            this.finder = finder;
+        RegionFieldStrategyValues(RegionFieldStrategy strategy) {
+            this.strategy = strategy;
         }
 
-        static RegionFinder of(String value, RegionFinder def) {
+        static RegionFieldStrategy of(String value, RegionFieldStrategy def) {
             if (value != null) {
                 try {
-                    return valueOf(XMLParser.parseEnumValue(value)).finder;
+                    return valueOf(XMLParser.parseEnumValue(value)).strategy;
                 } catch (IllegalArgumentException ignored) {
                 }
             }

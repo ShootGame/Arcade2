@@ -1,8 +1,5 @@
 package pl.themolka.arcade.time;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -33,8 +30,6 @@ public class Time {
     public static final char UNIT_MONTHS = 'o';
     public static final char UNIT_YEARS = 'y';
 
-    private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
-
     private final long time;
 
     private Time(long time) {
@@ -54,6 +49,15 @@ public class Time {
     public int hashCode() {
         return Objects.hash(this.time);
     }
+
+    @Override
+    public String toString() {
+        return this.isForever() ? FOREVER_KEY : Long.toString(this.getTime());
+    }
+
+    //
+    // Queries
+    //
 
     public boolean isAfter(Time target) {
         return this.getTime() > target.getTime();
@@ -217,13 +221,6 @@ public class Time {
 
     public long toYears() {
         return this.toMonths() / 365L;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, toStringStyle)
-                .append("time", this.time)
-                .build();
     }
 
     //

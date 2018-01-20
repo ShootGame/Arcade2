@@ -6,12 +6,12 @@ import org.bukkit.Location;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
-public abstract class RegionFinder {
-    public static final RegionFinder EVERYWHERE = new EverywhereFinder();
-    public static final RegionFinder EXACT = new ExactFinder();
-    public static final RegionFinder NET = new NetFinder();
-    public static final RegionFinder NET_ROUND = new NetRoundFinder();
-    public static final RegionFinder NOWHERE = new NowhereFinder();
+public abstract class RegionFieldStrategy {
+    public static final RegionFieldStrategy EVERYWHERE = new EverywhereStrategy();
+    public static final RegionFieldStrategy EXACT = new ExactStrategy();
+    public static final RegionFieldStrategy NET = new NetStrategy();
+    public static final RegionFieldStrategy NET_ROUND = new NetRoundStrategy();
+    public static final RegionFieldStrategy NOWHERE = new NowhereStrategy();
 
     protected static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
@@ -40,7 +40,7 @@ public abstract class RegionFinder {
 /**
  * Allow all queries.
  */
-class EverywhereFinder extends RegionFinder {
+class EverywhereStrategy extends RegionFieldStrategy {
     @Override
     public boolean regionContains(Region region, Vector vector) {
         return true;
@@ -50,7 +50,7 @@ class EverywhereFinder extends RegionFinder {
 /**
  * Exact position (eg. entities).
  */
-class ExactFinder extends RegionFinder {
+class ExactStrategy extends RegionFieldStrategy {
     @Override
     public boolean regionContains(Region region, Vector vector) {
         return region.contains(vector);
@@ -60,7 +60,7 @@ class ExactFinder extends RegionFinder {
 /**
  * Hook into the coordinate net (eg. blocks).
  */
-class NetFinder extends RegionFinder {
+class NetStrategy extends RegionFieldStrategy {
     @Override
     public boolean regionContains(Region region, Vector vector) {
         return region.contains(this.newBlockVector(vector));
@@ -70,7 +70,7 @@ class NetFinder extends RegionFinder {
 /**
  * Hook into the coordinate net and round the numbers results.
  */
-class NetRoundFinder extends RegionFinder {
+class NetRoundStrategy extends RegionFieldStrategy {
     @Override
     public boolean regionContains(Region region, Vector vector) {
         return region.containsRound(this.newBlockVector(vector));
@@ -80,7 +80,7 @@ class NetRoundFinder extends RegionFinder {
 /**
  * Deny all queries.
  */
-class NowhereFinder extends RegionFinder {
+class NowhereStrategy extends RegionFieldStrategy {
     @Override
     public boolean regionContains(Region region, Vector vector) {
         return false;

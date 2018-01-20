@@ -42,6 +42,11 @@ public class CapturingState extends PointState.Progress {
     }
 
     @Override
+    public Time getProgressTime() {
+        return this.point.getCaptureTime();
+    }
+
+    @Override
     public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
                           Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
         if (!dominators.isEmpty()) {
@@ -83,11 +88,6 @@ public class CapturingState extends PointState.Progress {
                 }
             }
         }
-    }
-
-    @Override
-    public Time getProgressTime() {
-        return this.point.getCaptureTime();
     }
 
     @Override

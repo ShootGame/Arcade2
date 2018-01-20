@@ -16,7 +16,7 @@ import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.RegionFinder;
+import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
@@ -26,15 +26,15 @@ import java.util.Set;
 
 public class PointCapture implements Listener {
     public static final Filter DEFAULT_FILTER = Filters.undefined();
-    public static final RegionFinder DEFAULT_REGION_FINDER = RegionFinder.EXACT;
+    public static final RegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.EXACT;
 
     private final CaptureGame game;
     private final Point point;
 
+    private RegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
     private Filter filter = DEFAULT_FILTER;
     private final Set<GamePlayer> players = new HashSet<>();
     private Region region;
-    private RegionFinder regionFinder = DEFAULT_REGION_FINDER;
 
     public PointCapture(CaptureGame game, Point point) {
         this.game = game;
@@ -49,6 +49,10 @@ public class PointCapture implements Listener {
         this.players.clear();
     }
 
+    public RegionFieldStrategy getFieldStrategy() {
+        return this.fieldStrategy;
+    }
+
     public Filter getFilter() {
         return this.filter;
     }
@@ -59,10 +63,6 @@ public class PointCapture implements Listener {
 
     public Region getRegion() {
         return this.region;
-    }
-
-    public RegionFinder getRegionFinder() {
-        return this.regionFinder;
     }
 
     public boolean hasPlayer(GamePlayer player) {
@@ -87,6 +87,10 @@ public class PointCapture implements Listener {
         return false;
     }
 
+    public void setFieldStrategy(RegionFieldStrategy fieldStrategy) {
+        this.fieldStrategy = fieldStrategy;
+    }
+
     public void setFilter(Filter filter) {
         this.filter = filter != null ? filter : DEFAULT_FILTER;
     }
@@ -95,16 +99,12 @@ public class PointCapture implements Listener {
         this.region = region;
     }
 
-    public void setRegionFinder(RegionFinder regionFinder) {
-        this.regionFinder = regionFinder;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this, Point.TO_STRING_STYLE)
+                .append("fieldStrategy", this.fieldStrategy)
                 .append("filter", this.filter)
                 .append("region", this.region)
-                .append("regionFinder", this.regionFinder)
                 .toString();
     }
 
@@ -160,16 +160,11 @@ public class PointCapture implements Listener {
     }
 
     private boolean shouldTrack(GamePlayer player, Location at) {
-        if (player == null || at == null) {
+        if (player == null || at == null || player.isDead()) {
             return false;
         }
 
-        if (this.getRegionFinder().regionContains(this.getRegion(), at)) {
-            Player bukkit = player.getBukkit();
-            return bukkit != null && !bukkit.isDead();
-        }
-
-        return false;
+        return this.getFieldStrategy().regionContains(this.getRegion(), at);
     }
 
     public Set<GamePlayer> getPlayers() {

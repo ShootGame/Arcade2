@@ -4,9 +4,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.match.Match;
 
-public class DroppedState extends FlagState.Progress implements FlagState.PhysicalFlag {
+public class DroppedState extends FlagState.Permanent implements FlagState.PhysicalFlag {
     private final GamePlayer dropper;
     private final Location location;
 
@@ -28,13 +29,7 @@ public class DroppedState extends FlagState.Progress implements FlagState.Physic
     }
 
     @Override
-    public Time getProgressTime() {
-        return null;
-    }
-
-    @Override
-    public boolean isProgressPositive() {
-        return false;
+    public void heartbeat(long ticks, Match match, GoalHolder owner) {
     }
 
     public GamePlayer getDropper() {
@@ -45,6 +40,7 @@ public class DroppedState extends FlagState.Progress implements FlagState.Physic
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("flag", this.flag)
+                .append("dropper", this.dropper)
                 .append("location", this.location)
                 .build();
     }

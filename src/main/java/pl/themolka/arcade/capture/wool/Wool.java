@@ -4,7 +4,6 @@ import net.engio.mbassy.listener.Handler;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -221,8 +220,6 @@ public class Wool extends Capturable implements Listener {
                 return;
             }
 
-            event.setCanceled(false);
-
             WoolPlaceEvent placeEvent = new WoolPlaceEvent(this.game.getPlugin(), this, competitor, player);
             this.game.getPlugin().getEventBus().publish(placeEvent);
 
@@ -230,11 +227,7 @@ public class Wool extends Capturable implements Listener {
                 return;
             }
 
-            // The wool won't be placed because the player's inventory will
-            // be cleared and the wool item in the hand will be removed.
-
-            block.setType(Material.WOOL);
-            block.setData(this.getColor().getWoolData());
+            event.setCanceled(false);
             this.capture(placeEvent.getCompleter(), player);
         }
     }

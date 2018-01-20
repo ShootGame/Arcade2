@@ -85,6 +85,7 @@ public class Point extends Capturable {
                 completer.getTitle() + ChatColor.RESET + ChatColor.YELLOW + ".";
 
         this.game.getMatch().sendGoalMessage(message);
+        this.pointTouched = true;
         this.setCompleted(completer, true);
     }
 
@@ -105,7 +106,7 @@ public class Point extends Capturable {
 
     @Override
     public String getGoalInteractMessage(String interact) {
-        if (this.isNeutral()) {
+        if (this.isNeutral() || interact == null) {
             // Neutral points are not announced.
             return null;
         }
@@ -147,7 +148,8 @@ public class Point extends Capturable {
     }
 
     public boolean canCapture(GoalHolder competitor) {
-        // Rebuild this if we will support many PointCapture objects.
+        // Rebuild this if we want to support many
+        // PointCapture objects in the future.
         return competitor != null && this.isCompletableBy(competitor) &&
                 this.getCapture().canCapture(competitor);
 
@@ -251,13 +253,14 @@ public class Point extends Capturable {
         }
 
         // Heartbeat the current state.
-        GoalHolder owner = this.getOwner();
-        this.getState().heartbeat(ticks, match, competitors, dominators, canCapture, owner);
+        GoalHolder oldOwner = this.getOwner();
+        this.getState().heartbeat(ticks, match, competitors, dominators, canCapture, oldOwner);
+        GoalHolder newOwner = this.getOwner();
 
         double pointReward = this.getPointReward();
-        if (owner != null && pointReward != Score.ZERO) {
+        if (oldOwner != null && newOwner != null && oldOwner.equals(newOwner) && pointReward != Score.ZERO) {
             // Give reward points for owning the point.
-            this.heartbeatReward(owner, pointReward);
+            this.heartbeatReward(oldOwner, pointReward);
         }
     }
 
@@ -302,6 +305,7 @@ public class Point extends Capturable {
 
         this.captured = false;
         this.capturedBy = null;
+        this.pointTouched = true;
         this.getContributions().clearContributors();
         this.setOwner(null);
 
