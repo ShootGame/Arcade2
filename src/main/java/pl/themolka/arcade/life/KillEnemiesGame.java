@@ -109,23 +109,21 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     // Refreshing Objectives
     //
 
-    public void refreshObjectives() {
+    public void refreshObjectives(GoalHolder completer) {
         for (KillEnemies objective : this.byOwner.values()) {
-            objective.refreshCompletion();
+            if (objective.isCompleted()) {
+                objective.setCompleted(completer);
+            }
         }
     }
 
     @Handler(priority = Priority.LOWEST)
     public void teamJoined(PlayerJoinedTeamEvent event) {
-        if (event.getTeam().isParticipating()) {
-            this.refreshObjectives();
-        }
+        this.refreshObjectives(event.getGamePlayer());
     }
 
     @Handler(priority = Priority.LOWEST)
     public void teamLeft(PlayerLeftTeamEvent event) {
-        if (event.getTeam().isParticipating()) {
-            this.refreshObjectives();
-        }
+        this.refreshObjectives(event.getGamePlayer());
     }
 }

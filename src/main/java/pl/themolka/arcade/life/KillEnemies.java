@@ -28,7 +28,9 @@ public class KillEnemies extends SimpleInteractableGoal {
 
     @Override
     protected void complete(GoalHolder completer) {
-        GoalCompleteEvent.call(this.game.getPlugin(), this, completer);
+        if (!super.isCompleted()) {
+            GoalCompleteEvent.call(this.game.getPlugin(), this, completer);
+        }
     }
 
     @Override
@@ -71,11 +73,5 @@ public class KillEnemies extends SimpleInteractableGoal {
         }
 
         return players;
-    }
-
-    public void refreshCompletion() {
-        if (this.isCompleted()) {
-            this.complete(null);
-        }
     }
 }

@@ -46,6 +46,7 @@ import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
 /**
@@ -132,6 +133,19 @@ public class ObserverListeners implements Listener {
                 this.game.getMatch().isRunning()) {
             event.getGamePlayer().refreshVisibility(
                     this.game.getPlugin().getPlayers());
+        }
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        GamePlayer player = event.getGamePlayer();
+        if (player.isOnline() && !player.isParticipating()) {
+            player.getPlayer().clearInventory(true);
+
+            this.game.getMatch().getObserversKit().apply(player);
+            // ^ apply kits
+
+            player.refreshVisibility(this.game.getPlugin().getPlayers());
         }
     }
 

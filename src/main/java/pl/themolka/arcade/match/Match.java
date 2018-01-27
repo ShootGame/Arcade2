@@ -297,13 +297,15 @@ public class Match implements DynamicWinnable {
     }
 
     public void refreshWinners() {
-        MatchWinner winner = this.getWinner();
-        if (winner != null) {
-            if (winner instanceof MultiMatchWinner) {
-                winner = ((MultiMatchWinner) winner).multiOrDraw(this.getDrawWinner(), this.getWinnerList());
-            }
+        if (this.isRunning()) {
+            MatchWinner winner = this.getWinner();
+            if (winner != null) {
+                if (winner instanceof MultiMatchWinner) {
+                    winner = ((MultiMatchWinner) winner).multiOrDraw(this.getDrawWinner(), this.getWinnerList());
+                }
 
-            this.end(winner);
+                this.end(winner);
+            }
         }
     }
 

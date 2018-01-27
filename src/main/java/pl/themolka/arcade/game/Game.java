@@ -393,7 +393,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
         try {
             Object object = module.buildGameModule(xml, this);
-            if (object == null) {
+            if (object == null || !(object instanceof GameModule)) {
                 return null;
             }
 
