@@ -53,7 +53,7 @@ public class Wool extends Capturable implements Listener {
                 player.getDisplayName() + ChatColor.RESET + ChatColor.YELLOW + ".";
 
         this.game.getMatch().sendGoalMessage(message);
-        this.setCompleted(completer, true);
+        this.setCompleted(completer);
     }
 
     @Override
@@ -73,18 +73,6 @@ public class Wool extends Capturable implements Listener {
     @Override
     public List<Object> getEventListeners() {
         return Collections.singletonList(this.getPickupTracker());
-    }
-
-    @Override
-    public String getGoalInteractMessage(String interact) {
-        String owner = "";
-        if (this.hasOwner()) {
-            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
-        }
-
-        return ChatColor.GOLD + interact + ChatColor.YELLOW + " picked up " +
-                owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 
     @Override
@@ -137,13 +125,28 @@ public class Wool extends Capturable implements Listener {
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("owner", this.getOwner())
-                .append("captured", this.isCaptured())
-                .append("capturedBy", this.getCapturedBy())
+                .append("completed", this.isCompleted())
+                .append("completedBy", this.getCompletedBy())
                 .append("id", this.getId())
                 .append("name", this.getName())
                 .append("color", this.color)
                 .append("craftable", this.craftable)
                 .build();
+    }
+
+    //
+    // Messages
+    //
+
+    public String getPickupMessage(String picker) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return ChatColor.GOLD + picker + ChatColor.YELLOW + " picked up " +
+                owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 
     //
@@ -208,7 +211,7 @@ public class Wool extends Capturable implements Listener {
         }
 
         event.setCanceled(true);
-        if (this.isCaptured()) {
+        if (this.isCompleted()) {
             player.sendError(ChatColor.GOLD + this.getColoredName() +
                     Messageable.ERROR_COLOR + " has already been captured!");
         } else if (this.hasOwner() && this.getOwner().contains(player)) {

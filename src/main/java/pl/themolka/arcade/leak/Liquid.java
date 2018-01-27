@@ -1,4 +1,4 @@
-package pl.themolka.arcade.leak.core;
+package pl.themolka.arcade.leak;
 
 import org.bukkit.Material;
 

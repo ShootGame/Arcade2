@@ -1,5 +1,6 @@
 package pl.themolka.arcade.kit;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jdom2.DataConversionException;
@@ -22,11 +23,14 @@ public class ArmorContent implements KitContent<ItemStack[]> {
 
     @Override
     public void apply(GamePlayer player) {
-        PlayerInventory inventory = player.getBukkit().getInventory();
-        inventory.setHelmet(this.getHelmet());
-        inventory.setChestplate(this.getChestplate());
-        inventory.setLeggings(this.getLeggings());
-        inventory.setBoots(this.getBoots());
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            PlayerInventory inventory = bukkit.getInventory();
+            inventory.setHelmet(this.getHelmet());
+            inventory.setChestplate(this.getChestplate());
+            inventory.setLeggings(this.getLeggings());
+            inventory.setBoots(this.getBoots());
+        }
     }
 
     @Override

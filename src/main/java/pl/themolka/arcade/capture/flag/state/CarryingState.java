@@ -3,8 +3,6 @@ package pl.themolka.arcade.capture.flag.state;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagDroppedEvent;
 import pl.themolka.arcade.game.GamePlayer;
@@ -12,11 +10,10 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
-public class CarryingState extends FlagState.Permanent implements FlagState.PhysicalFlag {
+public class CarryingState extends FlagState.Permanent implements FlagState.VirtualFlag {
     private final GamePlayer carrier;
     private final Location source;
 
-    private ItemStack carrierRealHelmet;
     private Location lastSecureLocation;
 
     public CarryingState(Flag flag, GamePlayer carrier, Location source) {
@@ -31,11 +28,6 @@ public class CarryingState extends FlagState.Permanent implements FlagState.Phys
     @Override
     public FlagState copy() {
         return new CarryingState(this.flag, this.carrier, this.source);
-    }
-
-    @Override
-    public Location getLocation() {
-        return this.carrier.getBukkit().getLocation();
     }
 
     @Override
@@ -57,9 +49,7 @@ public class CarryingState extends FlagState.Permanent implements FlagState.Phys
                 return;
             }
 
-            this.detachBannerFromPlayer(this.carrier);
-
-            this.game.getMatch().sendGoalMessage(this.getDropMessage(owner));
+            this.game.getMatch().sendGoalMessage(this.flag.getDropMessage(this.carrier));
             this.flag.setState(event.getNewState());
         }
     }
@@ -73,30 +63,8 @@ public class CarryingState extends FlagState.Permanent implements FlagState.Phys
         }
     }
 
-    public void attachBannerToPlayer(GamePlayer player) {
-        PlayerInventory inventory = player.getBukkit().getInventory();
-        this.carrierRealHelmet = inventory.getHelmet().clone();
-
-        inventory.setHelmet(this.flag.getItem().clone());
-    }
-
-    public void detachBannerFromPlayer(GamePlayer player) {
-        this.flag.removeFlagItems(player);
-        player.getBukkit().getInventory().setHelmet(this.carrierRealHelmet);
-    }
-
     public GamePlayer getCarrier() {
         return this.carrier;
-    }
-
-    public String getDropMessage(GoalHolder ownerCompetitor) {
-        String owner = "";
-        if (ownerCompetitor != null) {
-            owner = ChatColor.GOLD + ownerCompetitor.getTitle() + ChatColor.YELLOW + "'s ";
-        }
-
-        return ChatColor.GOLD.toString() + ChatColor.BOLD + this.carrier.getDisplayName() +
-                ChatColor.RESET + ChatColor.YELLOW + " has dropped " + owner + this.flag.getColoredName();
     }
 
     public Location getSource() {

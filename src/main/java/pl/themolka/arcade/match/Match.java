@@ -17,10 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Match {
+public class Match implements DynamicWinnable {
     private final ArcadePlugin plugin;
 
     private final DrawMatchWinner drawWinner;
+    private List<DynamicWinnable> dynamicWinnables = new ArrayList<>();
     private boolean forceEnd;
     private boolean forceStart;
     private final Game game;
@@ -36,10 +37,24 @@ public class Match {
     public Match(ArcadePlugin plugin, Game game, Observers observers) {
         this.plugin = plugin;
 
-        this.drawWinner = new DrawMatchWinner(plugin);
+        this.drawWinner = new DrawMatchWinner(this);
         this.game = game;
         this.observers = observers;
         this.observersKit = new ObserversKit(plugin);
+    }
+
+    @Override
+    public List<MatchWinner> getDynamicWinners() {
+        List<MatchWinner> results = new ArrayList<>();
+        for (DynamicWinnable winnable : this.dynamicWinnables) {
+            MatchWinner winner = winnable.getDynamicWinner();
+
+            if (winner != null) {
+                results.add(winner);
+            }
+        }
+
+        return results;
     }
 
     public void broadcastEndMessage(MatchWinner winner) {
@@ -209,7 +224,7 @@ public class Match {
         } else if (winners.size() == 1) {
             return winners.get(0);
         } else {
-            return this.getDrawWinner();
+            return MultiMatchWinner.of(winners);
         }
     }
 
@@ -284,8 +299,16 @@ public class Match {
     public void refreshWinners() {
         MatchWinner winner = this.getWinner();
         if (winner != null) {
+            if (winner instanceof MultiMatchWinner) {
+                winner = ((MultiMatchWinner) winner).multiOrDraw(this.getDrawWinner(), this.getWinnerList());
+            }
+
             this.end(winner);
         }
+    }
+
+    public boolean registerDynamicWinnable(DynamicWinnable dynamicWinnable) {
+        return this.dynamicWinnables.add(dynamicWinnable);
     }
 
     public void registerWinner(MatchWinner winner) {
@@ -363,6 +386,10 @@ public class Match {
         }
 
         this.plugin.getEventBus().publish(new MatchStartedEvent(this.plugin, this, force));
+    }
+
+    public boolean unregisterDynamicWinnable(DynamicWinnable dynamicWinnable) {
+        return this.dynamicWinnables.remove(dynamicWinnable);
     }
 
     public void unregisterWinner(MatchWinner winner) {

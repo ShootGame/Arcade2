@@ -1,12 +1,13 @@
 package pl.themolka.arcade.kit;
 
+import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class KnockbackContent implements KitContent<Float> {
+public class KnockbackContent implements RemovableKitContent<Float> {
     public static float DEFAULT_KNOCKBACK = 0F;
 
     private final float result;
@@ -16,8 +17,16 @@ public class KnockbackContent implements KitContent<Float> {
     }
 
     @Override
-    public void apply(GamePlayer player) {
-        player.getBukkit().setKnockbackReduction(this.getResult());
+    public void attach(GamePlayer player, Float value) {
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            bukkit.setKnockbackReduction(value);
+        }
+    }
+
+    @Override
+    public Float defaultValue() {
+        return DEFAULT_KNOCKBACK;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class TeamLockGame extends GameModule {
 
     @Handler(priority = Priority.HIGHER)
     public void onPlayerJoinTeam(PlayerJoinTeamEvent event) {
-        if (event.isCanceled()) {
+        if (event.isCanceled() || event.getTeam().isObservers()) {
             return;
         }
 

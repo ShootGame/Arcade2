@@ -12,6 +12,7 @@ import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.kit.FlyContent;
+import pl.themolka.arcade.kit.FlySpeedContent;
 import pl.themolka.arcade.kit.FoodLevelContent;
 import pl.themolka.arcade.kit.HealthContent;
 import pl.themolka.arcade.kit.KnockbackContent;
@@ -24,6 +25,7 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -119,6 +121,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     @Override
     public ArcadePlayer getPlayer() {
         return this.player;
+    }
+
+    @Override
+    public Set<GamePlayer> getPlayers() {
+        return Collections.singleton(this);
     }
 
     @Override
@@ -338,7 +345,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         bukkit.setFallDistance(0F);
         bukkit.setFireTicks(0);
         bukkit.setFlying(FlyContent.DEFAULT_FLYING);
-        bukkit.setFlySpeed(FlyContent.DEFAULT_SPEED);
+        bukkit.setFlySpeed(FlySpeedContent.DEFAULT_SPEED);
         bukkit.setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
         bukkit.setGlowing(false);
         bukkit.setHealthScale(HealthContent.DEFAULT_HEALTH);

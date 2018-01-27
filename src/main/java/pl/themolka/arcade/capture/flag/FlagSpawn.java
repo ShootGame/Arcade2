@@ -2,6 +2,7 @@ package pl.themolka.arcade.capture.flag;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Banner;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.capture.CaptureGame;
@@ -22,6 +23,7 @@ public class FlagSpawn {
     private final CaptureGame game;
     private final Flag flag;
 
+    private Banner banner;
     private BlockFace direction;
     private RegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
     private Filter filter = DEFAULT_FILTER;
@@ -34,6 +36,10 @@ public class FlagSpawn {
 
     public boolean canSpawn() {
         return this.filter.filter(this.flag).isNotDenied();
+    }
+
+    public Banner getBanner() {
+        return this.banner;
     }
 
     public BlockFace getDirection() {
@@ -93,6 +99,10 @@ public class FlagSpawn {
 
     public Vector nextVector(int limit) {
         return this.getRegion().getRandomVector(this.random, limit);
+    }
+
+    public void setBanner(Banner banner) {
+        this.banner = banner;
     }
 
     public void setDirection(BlockFace direction) {

@@ -163,7 +163,7 @@ public abstract class AbstractRegion implements Region {
         return obj instanceof AbstractRegion && ((AbstractRegion) obj).getId().equals(this.getId());
     }
 
-    public abstract Vector getRandom(Random random, int limit);
+    protected abstract Vector getRandom(Random random, int limit);
 
     @Override
     public int hashCode() {

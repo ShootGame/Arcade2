@@ -5,10 +5,13 @@ import org.bukkit.DyeColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
+import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.team.Team;
 import pl.themolka.arcade.util.Color;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A non-participating team observing the match and its players.
@@ -57,6 +60,20 @@ public class Observers extends Team {
     @Override
     public int getMinPlayers() {
         return 0;
+    }
+
+    @Override
+    public Set<GamePlayer> getPlayers() {
+        Set<GamePlayer> players = new HashSet<>();
+        for (ArcadePlayer online : this.plugin.getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+
+            if (!player.isParticipating()) {
+                players.add(player);
+            }
+        }
+
+        return players;
     }
 
     @Override

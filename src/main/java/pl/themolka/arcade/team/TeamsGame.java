@@ -272,7 +272,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     // Listeners
     //
 
-    @Handler(priority = Priority.HIGH)
+    @Handler(priority = Priority.HIGHEST)
     public void onChannelsUpdate(MatchStartedEvent event) {
         for (Team team : this.getTeams()) {
             for (GamePlayer player : team.getOnlineMembers()) {

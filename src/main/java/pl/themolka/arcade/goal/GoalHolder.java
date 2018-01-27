@@ -7,7 +7,9 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.util.StringId;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public interface GoalHolder extends StringId {
     boolean addGoal(Goal goal);
@@ -40,6 +42,10 @@ public interface GoalHolder extends StringId {
 
     default String getName() {
         return this.getId();
+    }
+
+    default Set<GamePlayer> getPlayers() {
+        return Collections.emptySet();
     }
 
     default String getTitle() {

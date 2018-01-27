@@ -1,7 +1,6 @@
 package pl.themolka.arcade.capture.flag.state;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagRespawnedEvent;
@@ -30,7 +29,7 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
 
     @Override
     public Time getProgressTime() {
-        return null;
+        return this.getTime();
     }
 
     @Override
@@ -53,7 +52,7 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
                 return;
             }
 
-            this.game.getMatch().sendGoalMessage(this.getRespawnMessage(owner));
+            this.game.getMatch().sendGoalMessage(this.flag.getRespawnMessage());
             this.flag.setState(event.getNewState());
         }
     }
@@ -61,17 +60,6 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
     @Override
     public boolean isProgressPositive() {
         return true;
-    }
-
-    public String getRespawnMessage(GoalHolder ownerCompetitor) {
-        String owner = null;
-        if (ownerCompetitor != null) {
-            owner = ChatColor.GOLD + ownerCompetitor.getTitle() + ChatColor.YELLOW + "'s ";
-        }
-
-        return owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.flag.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
-                " has respawned.";
     }
 
     public FlagSpawn getTarget() {

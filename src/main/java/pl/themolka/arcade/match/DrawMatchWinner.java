@@ -2,28 +2,30 @@ package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A {@link MatchWinner} which specifies a draw win.
  */
 public class DrawMatchWinner implements MatchWinner {
-    public static final String DRAW_WINNER_ID = "_draw-match-winner";
+    public static final Color WINNER_COLOR = Color.YELLOW;
+    public static final String WINNER_ID = "_draw-match-winner";
 
-    private final ArcadePlugin plugin;
+    private final Match match;
 
     /**
-     * Should be constructed ONLY from the {@link Match} class.
+     * Should ONLY be constructed from the {@link Match} class.
      */
-    protected DrawMatchWinner(ArcadePlugin plugin) {
-        this.plugin = plugin;
+    protected DrawMatchWinner(Match match) {
+        this.match = match;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public boolean contains(Player bukkit) {
-        return bukkit != null && this.contains(this.plugin.getPlayer(bukkit));
+        return bukkit != null && this.contains(this.match.getGame().getPlugin().getPlayer(bukkit));
     }
 
     @Override
@@ -54,7 +56,7 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public Color getColor() {
-        return Color.YELLOW;
+        return WINNER_COLOR;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public String getId() {
-        return DRAW_WINNER_ID;
+        return WINNER_ID;
     }
 
     @Override
@@ -75,6 +77,20 @@ public class DrawMatchWinner implements MatchWinner {
     @Override
     public String getName() {
         return "Score Draw";
+    }
+
+    @Override
+    public Set<GamePlayer> getPlayers() {
+        Set<GamePlayer> players = new HashSet<>();
+        for (ArcadePlayer online : this.match.getGame().getPlugin().getPlayers()) {
+            GamePlayer inGame = online.getGamePlayer();
+
+            if (inGame != null && inGame.isParticipating()) {
+                players.add(inGame);
+            }
+        }
+
+        return players;
     }
 
     @Override
@@ -94,5 +110,9 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public void sendGoalMessage(String message) {
+    }
+
+    public Match getMatch() {
+        return this.match;
     }
 }

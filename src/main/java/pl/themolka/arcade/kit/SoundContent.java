@@ -22,6 +22,10 @@ public class SoundContent implements KitContent<Sound> {
 
     @Override
     public void apply(GamePlayer player) {
+        if (!player.isOnline()) {
+            return;
+        }
+
         Location location = this.getLocation();
         if (location == null) {
             location = player.getBukkit().getLocation();

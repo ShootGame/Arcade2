@@ -8,7 +8,7 @@ public class EventBus extends MBassador<Event> {
         super(new PublicationErrorHandler(plugin.getLogger()));
     }
 
-    public <T extends Event> T postEvent(T event) {
+    public <E extends Event> E postEvent(E event) {
         this.publish(event);
         return event;
     }

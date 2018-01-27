@@ -26,40 +26,43 @@ public class FlagFactory implements CapturableFactory<Flag> {
 
     public Flag parseFlagXml(CaptureGame game, Element xml, Flag flag) {
         // capture
-        Element captureElement = xml.getChild("capture");
-        if (captureElement == null) {
-            return null;
+        for (Element captureElement : xml.getChildren("capture")) {
+            FlagCapture capture = this.parseFlagCapture(game, captureElement, new FlagCapture(game, flag));
+            if (capture != null) {
+                flag.addCapture(capture);
+            }
         }
 
-        FlagCapture capture = this.parseFlagCapture(game, captureElement, new FlagCapture(game, flag));
-        if (capture == null) {
-            return null;
+        // spawn and banner item
+        Banner banner = null;
+        for (Element spawnElement : xml.getChildren("spawn")) {
+            FlagSpawn spawn = this.parseFlagSpawn(game, spawnElement, new FlagSpawn(game, flag));
+            if (spawn != null) {
+                flag.addSpawn(spawn);
+
+                banner = findBannerIn(spawn.getRegion());
+
+                float yaw = (float) XMLParser.parseInt(xml.getAttributeValue("yaw"), Integer.MAX_VALUE);
+                if (yaw > 180 || yaw < -180) {
+                    if (banner == null) {
+                        continue;
+                    } else {
+                        yaw = banner.getBlock().getLocation().getYaw();
+                    }
+                }
+
+                spawn.setBanner(banner);
+                spawn.setDirection(BlockFace.byYaw(yaw));
+            }
         }
 
-        int objective = XMLParser.parseInt(xml.getAttributeValue("objective"), Flag.NOT_OBJECTIVE);
-
-        // spawn
-        Element spawnElement = xml.getChild("spawn");
-        if (spawnElement == null) {
-            return null;
-        }
-
-        FlagSpawn spawn = this.parseFlagSpawn(game, captureElement, new FlagSpawn(game, flag));
-        if (spawn == null) {
-            return null;
-        }
-
-        Banner banner = findBannerIn(spawn.getRegion());
-        if (banner == null) {
+        if (banner == null || flag.getSpawns().isEmpty()) {
             return null;
         }
 
         // setup
-        flag.setCapture(capture);
         flag.getItem().transferMetaFrom(banner);
-        flag.setObjective(objective);
-        flag.setSpawn(spawn);
-        flag.getSpawn().setDirection(BlockFace.byYaw(banner.getBlock().getLocation().getYaw()));
+        flag.setObjective(XMLParser.parseInt(xml.getAttributeValue("objective"), Flag.NOT_OBJECTIVE));
         return flag;
     }
 

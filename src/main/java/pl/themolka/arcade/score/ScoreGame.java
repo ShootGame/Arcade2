@@ -10,7 +10,6 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
-import pl.themolka.arcade.match.DrawMatchWinner;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
@@ -18,7 +17,7 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +41,12 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
     @Override
     public void onEnable() {
         GameModule module = this.getGame().getModule(MatchModule.class);
-        if (module != null) {
-            this.match = ((MatchGame) module).getMatch();
+        if (module == null || !(module instanceof MatchGame)) {
+            return;
         }
+
+        this.match = ((MatchGame) module).getMatch();
+        this.getMatch().registerDynamicWinnable(this);
 
         for (MatchWinner completableBy : this.getMatch().getWinnerList()) {
             Score score = new Score(this, completableBy);
@@ -60,18 +62,13 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
     }
 
     @Override
-    public DrawMatchWinner getDrawWinner() {
-        return this.getMatch().getDrawWinner();
-    }
-
-    @Override
     public List<MatchWinner> getDynamicWinners() {
-        double highestScore = Score.ZERO;
+        double highestScore = Score.MIN;
 
         List<MatchWinner> results = new ArrayList<>();
-        for (MatchWinner winner : this.getMatch().getWinners()) {
+        for (MatchWinner winner : this.getMatch().getWinnerList()) {
             if (winner.areGoalsCompleted()) {
-                return Collections.singletonList(winner);
+                results.add(winner);
             }
 
             Score score = this.getScore(winner);
@@ -82,19 +79,20 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
                 highestScore = score.getScore();
             }
 
-            if (score.getScore() >= highestScore) {
-                GoalHolder owner = score.getOwner();
-                if (owner instanceof MatchWinner) {
-                    results.add((MatchWinner) owner);
-                }
+            if (!results.contains(winner) && score.getScore() >= highestScore) {
+                results.add(winner);
             }
         }
 
-        if (highestScore != Score.ZERO || results.isEmpty()) {
+        if (highestScore != Score.MIN && !results.isEmpty()) {
             return results;
         }
 
         return null;
+    }
+
+    public Collection<Score> getAll() {
+        return this.byOwner.values();
     }
 
     public double getDeathLoss() {

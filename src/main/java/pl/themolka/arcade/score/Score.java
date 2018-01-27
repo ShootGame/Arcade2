@@ -1,63 +1,55 @@
 package pl.themolka.arcade.score;
 
-import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
+import pl.themolka.arcade.goal.SimpleGoal;
 
-public class Score implements Goal {
+public class Score extends SimpleGoal {
     public static final String DEFAULT_GOAL_NAME = "Score";
     public static final double ZERO = 0.0D;
-    public static final double MAX = Double.MAX_VALUE - 1.0D;
+    public static final double MIN = Double.MIN_VALUE;
+    public static final double MAX = Double.MAX_VALUE;
 
     protected final ScoreGame game;
 
-    private final GoalHolder owner;
-    private final double initScore;
+    private final double initialScore;
     private double limit;
-    private String name;
     private double score;
-    private boolean scored;
-    private GoalHolder scoredBy;
-    private boolean scoreTouched = false;
 
     public Score(ScoreGame game, GoalHolder owner) {
         this(game, owner, ZERO);
     }
 
-    public Score(ScoreGame game, GoalHolder owner, double initScore) {
+    public Score(ScoreGame game, GoalHolder owner, double initialScore) {
+        super(game.getGame(), owner);
         this.game = game;
 
-        this.owner = owner;
-        this.initScore = initScore;
-        this.score = initScore;
-        this.scored = false;
+        this.initialScore = initialScore;
+        this.score = initialScore;
     }
 
     @Override
-    public String getColoredName() {
-        return this.owner.getColor().toChat() + this.getName();
-    }
+    public void complete(GoalHolder completer) {
+        boolean byLimit = this.isLimitReached();
 
-    @Override
-    public Game getGame() {
-        return this.game.getGame();
-    }
+        ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
+        this.game.getPlugin().getEventBus().publish(event);
 
-    @Override
-    public String getName() {
-        if (this.hasName()) {
-            return this.name;
+        if (!event.isCanceled()) {
+            if (byLimit) {
+                this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
+            }
+
+            GoalCompleteEvent.call(this.game.getPlugin(), this, event.getCompleter());
         }
-
-        return DEFAULT_GOAL_NAME;
     }
 
     @Override
-    public GoalHolder getOwner() {
-        return this.owner;
+    public String getDefaultName() {
+        return DEFAULT_GOAL_NAME;
     }
 
     /**
@@ -84,57 +76,33 @@ public class Score implements Goal {
 
     @Override
     public boolean isCompletableBy(GoalHolder completer) {
-        return Goal.completableByPositive(this, completer);
+        return Goal.completableByOwner(this, completer);
     }
 
     @Override
     public boolean isCompleted() {
-        return this.scored || this.isLimitReached();
-    }
-
-    @Override
-    public boolean isCompleted(GoalHolder completer) {
-        return this.isCompleted() && (this.scoredBy == null || this.scoredBy.equals(completer));
-    }
-
-    @Override
-    public boolean isUntouched() {
-        return !this.scoreTouched;
+        return super.isCompleted() || this.isLimitReached();
     }
 
     @Override
     public boolean reset() {
-        if (!this.isCompleted()) {
-            return false;
-        }
-
         ScoreResetEvent event = new ScoreResetEvent(this.game.getPlugin(), this);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             GoalResetEvent.call(this.game.getPlugin(), this);
 
-            this.score = this.getInitScore();
-            this.scoreTouched = false;
-            this.scored = false;
-            this.scoredBy = null;
+            this.score = this.getInitialScore();
+            this.setCompleted(false);
+            this.setTouched(false);
             return true;
         }
 
         return false;
     }
 
-    @Override
-    public void setCompleted(GoalHolder completer, boolean completed) {
-        if (completed) {
-            this.handleGoalComplete(completer);
-        } else {
-            this.reset();
-        }
-    }
-
-    public double getInitScore() {
-        return this.initScore;
+    public double getInitialScore() {
+        return this.initialScore;
     }
 
     public double getLimit() {
@@ -145,12 +113,12 @@ public class Score implements Goal {
         return this.score;
     }
 
-    public boolean hasLimit() {
-        return this.score != ScoreModule.LIMIT_NULL;
+    public ScoreGame getScoreGame() {
+        return this.game;
     }
 
-    public boolean hasName() {
-        return this.name != null;
+    public boolean hasLimit() {
+        return this.score != ScoreModule.LIMIT_NULL;
     }
 
     /**
@@ -164,6 +132,10 @@ public class Score implements Goal {
      *     - GoalCompleteEvent (cancelable)
      */
     public void incrementScore(GoalHolder completer, double points) {
+        if (outOfBounds(this.getScore() + points)) {
+            return;
+        }
+
         ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, completer, points);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -172,14 +144,17 @@ public class Score implements Goal {
         }
 
         double oldProgress = this.getProgress();
+        double newScore = this.getScore() + points;
 
-        this.scoreTouched = true;
-        this.score += event.getPoints();
+        if (!outOfBounds(newScore)) {
+            this.score = newScore;
+            this.setTouched(true);
 
-        GoalProgressEvent.call(this.game.getPlugin(), this, event.getCompleter(), oldProgress);
+            GoalProgressEvent.call(this.game.getPlugin(), this, event.getCompleter(), oldProgress);
 
-        if (this.isCompleted()) {
-            this.setCompleted(event.getCompleter(), true);
+            if (this.isCompleted()) {
+                this.setCompleted(event.getCompleter());
+            }
         }
     }
 
@@ -191,32 +166,7 @@ public class Score implements Goal {
         this.limit = limit;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    private void handleGoalComplete(GoalHolder completer) {
-        if (this.scored) {
-            return;
-        }
-
-        boolean byLimit = this.isLimitReached();
-
-        ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
-        this.game.getPlugin().getEventBus().publish(event);
-
-        if (!event.isCanceled()) {
-            this.scored = true;
-            this.scoredBy = completer;
-
-            if (byLimit) {
-                this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
-            }
-
-            // This game for this `GoalHolder` has been completed - we can tell
-            // it to the plugin, so it can end the game. This method will loop
-            // all `GoalHolder`s (like players or teams) to find the winner.
-            GoalCompleteEvent.call(this.game.getPlugin(), this, event.getCompleter());
-        }
+    public static boolean outOfBounds(double score) {
+        return score < MIN || score > MAX;
     }
 }

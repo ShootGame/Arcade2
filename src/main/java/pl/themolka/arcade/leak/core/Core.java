@@ -18,9 +18,11 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.leak.LeakGame;
 import pl.themolka.arcade.leak.Leakable;
+import pl.themolka.arcade.leak.Liquid;
 import pl.themolka.arcade.region.CuboidRegion;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionBounds;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,7 +34,7 @@ public class Core extends Leakable implements Listener {
     public static final Material DEFAULT_MATERIAL = Material.OBSIDIAN;
     public static final String DETECTOR_REGION_SUFFIX = "_detector-region";
 
-    private final List<Vector> breaked = new ArrayList<>();
+    private final List<Block> blocks = new ArrayList<>();
     private Region detector;
     private Liquid liquid;
     private List<Material> material;
@@ -53,18 +55,6 @@ public class Core extends Leakable implements Listener {
     }
 
     @Override
-    public String getGoalInteractMessage(String interact) {
-        String owner = "";
-        if (this.hasOwner()) {
-            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
-        }
-
-        return ChatColor.GOLD + interact + ChatColor.YELLOW + " broke a piece of " +
-                owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
-    }
-
-    @Override
     public void leak(GoalHolder completer /* null */, GamePlayer player /* null */) {
         String owner = "";
         if (this.hasOwner()) {
@@ -76,12 +66,12 @@ public class Core extends Leakable implements Listener {
                 this.getContributions().getContributorsPretty() + ChatColor.YELLOW + ".";
 
         this.game.getMatch().sendGoalMessage(message);
-        this.setCompleted(null, true);
+        this.setCompleted(null);
     }
 
     @Override
     public void resetLeakable() {
-        this.breaked.clear();
+        this.blocks.clear();
     }
 
     public boolean addSnapshot(Block block) {
@@ -105,11 +95,6 @@ public class Core extends Leakable implements Listener {
      *   - GoalProgressEvent
      */
     public boolean breakPiece(GoalHolder breaker, GamePlayer player, Block block) {
-        String interactMessage = breaker.getTitle();
-        if (player != null) {
-            interactMessage = player.getDisplayName();
-        }
-
         CoreBreakEvent event = new CoreBreakEvent(this.game.getPlugin(), this, breaker, block, player);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -120,13 +105,10 @@ public class Core extends Leakable implements Listener {
         double oldProgress = this.getProgress();
 
         block.setType(Material.AIR);
+        this.blocks.remove(block);
 
-        this.breaked.add(new Vector(block.getX(), block.getY(), block.getZ()));
-        if (player != null) {
-            this.getContributions().addContributor(player);
-        }
-
-        breaker.sendGoalMessage(this.getGoalInteractMessage(interactMessage));
+        this.getContributions().addContributor(player);
+        breaker.sendGoalMessage(this.getBreakPieceMessage(player.getDisplayName()));
 
         GoalProgressEvent.call(this.game.getPlugin(), this, oldProgress);
         return true;
@@ -134,7 +116,8 @@ public class Core extends Leakable implements Listener {
 
     public void build(Liquid liquid, Region region, int detectorLevel) {
         // region
-        List<Block> blocks = region.getBlocks(); // may take a while
+        List<Block> blocks = this.buildBlocks(region);
+        this.blocks.addAll(blocks);
         this.setRegion(region);
 
         // detector
@@ -149,9 +132,10 @@ public class Core extends Leakable implements Listener {
             return;
         }
 
-        Vector min = bounds.getMin().clone().subtract(distance, 0, distance).setY(Region.MIN_HEIGHT);
-        Vector max = bounds.getMax().clone().add(distance, 0, distance).setY(bounds.getMax().getY() -
-                (bounds.getMax().getY() - bounds.getMin().getY()) - detectorLevel);
+        Vector min = bounds.getMin().clone().subtract(distance, 0, distance)
+                .setY(Region.MIN_HEIGHT);
+        Vector max = bounds.getMax().clone().add(distance, 0, distance)
+                .setY(bounds.getMax().getY() - (bounds.getMax().getY() - bounds.getMin().getY()) - detectorLevel);
         this.setDetector(new CuboidRegion(region.getId() + DETECTOR_REGION_SUFFIX, region.getMap(), min, max));
 
         // liquid
@@ -167,15 +151,23 @@ public class Core extends Leakable implements Listener {
         this.addSnapshot(this.createSnapshot(blocks)); // may take a while
     }
 
+    public List<Block> buildBlocks(Region region) {
+        List<Block> blocks = new ArrayList<>();
+        for (Block block : region.getBlocks()) { // may take a while
+            if (this.matchMaterial(block.getType())) {
+                blocks.add(block);
+            }
+        }
+
+        return blocks;
+    }
+
     public void clearSnapshot() {
         this.snapshot.clear();
     }
 
     public boolean contains(Block block) {
-        Vector vector = new Vector(block.getX(), block.getY(), block.getZ());
-        return this.matchMaterial(block.getType()) &&
-                this.getRegion().contains(block) &&
-                !this.breaked.contains(vector);
+        return this.matchMaterial(block.getType()) && this.blocks.contains(block);
     }
 
     public List<Block> createSnapshot(List<Block> of) {
@@ -282,12 +274,28 @@ public class Core extends Leakable implements Listener {
     @Override
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
+                .append("completed", this.isCompleted())
+                .append("completedBy", this.getCompletedBy())
                 .append("owner", this.getOwner())
                 .append("id", this.getId())
-                .append("leaked", this.isLeaked())
-                .append("leakedBy", this.getLeakedBy())
                 .append("name", this.getName())
+                .append("touched", this.isTouched())
                 .build();
+    }
+
+    //
+    // Messages
+    //
+
+    public String getBreakPieceMessage(String breaker) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return ChatColor.GOLD + breaker + ChatColor.YELLOW + " broke a piece of " +
+                owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 
     //
@@ -301,8 +309,8 @@ public class Core extends Leakable implements Listener {
         }
 
         Block block = event.getBlock();
-        if (!event.getNewState().getMaterial().equals(Material.AIR) || this.isLeaked() ||
-                !this.getRegion().contains(block) || this.getLiquid().accepts(event.getNewState().getMaterial())) {
+        if (!event.getNewState().getMaterial().equals(Material.AIR) || this.isCompleted() ||
+                !this.contains(block) || this.getLiquid().accepts(event.getNewState().getMaterial())) {
             return;
         }
 
@@ -327,7 +335,7 @@ public class Core extends Leakable implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void detectLeak(BlockFromToEvent event) {
-        if (this.isLeaked() || !this.getDetector().contains(event.getToBlock())) {
+        if (this.isCompleted() || !this.getDetector().contains(event.getToBlock())) {
             return;
         }
 

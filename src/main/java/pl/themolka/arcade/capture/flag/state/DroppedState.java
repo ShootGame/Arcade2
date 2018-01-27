@@ -19,6 +19,11 @@ public class DroppedState extends FlagState.Permanent implements FlagState.Physi
     }
 
     @Override
+    public boolean canPickup(GamePlayer player) {
+        return true;
+    }
+
+    @Override
     public FlagState copy() {
         return new DroppedState(this.flag, this.dropper, this.location);
     }

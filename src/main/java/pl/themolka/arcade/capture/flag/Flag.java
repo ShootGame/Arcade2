@@ -3,11 +3,6 @@ package pl.themolka.arcade.capture.flag;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.flag.state.CarryingState;
@@ -22,6 +17,8 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Flag extends Capturable {
     public static final String DEFAULT_GOAL_NAME = "Flag";
@@ -29,13 +26,12 @@ public class Flag extends Capturable {
     public static final int NOT_OBJECTIVE = 0;
     public static final Time HEARTBEAT_INTERVAL = Time.ofTicks(1);
 
-    private FlagCapture capture;
-    private boolean flagTouched = false;
+    private final List<FlagCapture> captures = new ArrayList<>();
     private final FlagState initialState;
     private final FlagItem item;
     private int objective = NOT_OBJECTIVE;
     private int objectiveResult = 0;
-    private FlagSpawn spawn;
+    private final List<FlagSpawn> spawns = new ArrayList<>();
     private FlagState state;
 
     public Flag(CaptureGame game, String id) {
@@ -46,7 +42,7 @@ public class Flag extends Capturable {
         super(game, owner, id);
 
         this.initialState = new InitialState(this);
-        this.item = new FlagItem();
+        this.item = new FlagItem(this);
 
         // Set the current state to a copy of the initial state.
         this.state = this.getInitialState().copy();
@@ -54,27 +50,11 @@ public class Flag extends Capturable {
 
     @Override
     public void capture(GoalHolder completer, GamePlayer player) {
-        String owner = "";
-        if (this.hasOwner()) {
-            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
-        }
-
-        String result = "";
-        if (this.isObjective()) {
-            result = " (" + ChatColor.GOLD + ChatColor.BOLD + this.getObjectiveResult() +
-                    ChatColor.RESET + ChatColor.YELLOW + " of " + this.getObjective() + ")";
-        }
-
-        String message = owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
-                " has been captured by " + ChatColor.GOLD + ChatColor.BOLD +
-                player.getDisplayName() + ChatColor.RESET + ChatColor.YELLOW + result + ".";
-
-        this.game.getMatch().sendGoalMessage(message);
+        this.game.getMatch().sendGoalMessage(this.getCaptureMessage(player));
         this.objectiveResult++;
 
         if (!this.isObjective() || this.objectiveResult >= this.objective){
-            this.setCompleted(completer, true);
+            this.setCompleted(completer);
         }
     }
 
@@ -84,29 +64,21 @@ public class Flag extends Capturable {
     }
 
     @Override
-    public String getGoalInteractMessage(String interact) {
-        return null;
-    }
-
-    @Override
-    public boolean isCompletableBy(GoalHolder completer) {
-        return super.isCompletableBy(completer);
-    }
-
-    @Override
-    public boolean isUntouched() {
-        return !this.flagTouched;
-    }
-
-    @Override
     public boolean registerGoal() {
         return this.isObjective();
     }
 
     @Override
     public void resetCapturable() {
-        this.flagTouched = false;
         this.state = this.getInitialState().copy();
+    }
+
+    public boolean addCapture(FlagCapture capture) {
+        return this.captures.add(capture);
+    }
+
+    public boolean addSpawn(FlagSpawn spawn) {
+        return this.spawns.add(spawn);
     }
 
     public DroppedState createDroppedState(GamePlayer dropper, Location location) {
@@ -117,8 +89,8 @@ public class Flag extends Capturable {
         return new SpawnedState(this, location, spawn);
     }
 
-    public FlagCapture getCapture() {
-        return this.capture;
+    public List<FlagCapture> getCaptures() {
+        return new ArrayList<>(this.captures);
     }
 
     public FlagState getInitialState() {
@@ -137,12 +109,16 @@ public class Flag extends Capturable {
         return this.objectiveResult;
     }
 
-    public FlagSpawn getSpawn() {
-        return this.spawn;
+    public List<FlagSpawn> getSpawns() {
+        return new ArrayList<>(this.spawns);
     }
 
     public FlagState getState() {
         return this.state;
+    }
+
+    public boolean hasCaptures() {
+        return !this.captures.isEmpty();
     }
 
     public void heartbeat(long ticks) {
@@ -153,17 +129,12 @@ public class Flag extends Capturable {
         return this.objective > NOT_OBJECTIVE;
     }
 
-    public void removeFlagItems(GamePlayer player) {
-        PlayerInventory inventory = player.getBukkit().getInventory();
-        for (ItemStack item : new ArrayList<>(inventory.contents())) {
-            if (this.item.isSimilar(item)) {
-                inventory.remove(item);
-            }
-        }
+    public boolean removeCapture(FlagCapture capture) {
+        return this.captures.remove(capture);
     }
 
-    public void setCapture(FlagCapture capture) {
-        this.capture = capture;
+    public boolean removeSpawn(FlagSpawn spawn) {
+        return this.spawns.add(spawn);
     }
 
     public void setObjective(int objective) {
@@ -174,11 +145,11 @@ public class Flag extends Capturable {
         this.objectiveResult = objectiveResult;
     }
 
-    public void setSpawn(FlagSpawn spawn) {
-        this.spawn = spawn;
-    }
-
     public void setState(FlagState state) {
+        String from = this.state != null ? this.state.getStateName() : "unknown";
+        String to = state != null ? state.getStateName() : "unknown";
+
+        this.game.getLogger().info(this.getName() + " is transforming from " + from + " to " + to + "...");
         this.state = state;
     }
 
@@ -186,11 +157,11 @@ public class Flag extends Capturable {
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("owner", this.getOwner())
-                .append("captured", this.isCaptured())
-                .append("capturedBy", this.getCapturedBy())
+                .append("completed", this.isCompleted())
+                .append("completedBy", this.getCompletedBy())
                 .append("id", this.getId())
                 .append("name", this.getName())
-                .append("flagTouched", this.flagTouched)
+                .append("touched", this.isTouched())
                 .append("objective", this.objective)
                 .append("objectiveResult", this.objectiveResult)
                 .build();
@@ -201,11 +172,20 @@ public class Flag extends Capturable {
     //
 
     public FlagState startCarryingState(CarryingState state) {
-        return this.startState(new FlagCarryingEvent(this.game.getPlugin(), this, this.getState(), state));
+        return this.startState(new FlagPickedUpEvent(this.game.getPlugin(), this, this.getState(), state));
+    }
+
+    public FlagState startCarryingState(GamePlayer carrier, Location source) {
+        return this.startCarryingState(new CarryingState(this, carrier, source));
     }
 
     public FlagState startRespawningState(RespawningState state) {
+        state.setProgress(FlagState.Progress.ZERO); // ZERO
         return this.startState(new FlagRespawningEvent(this.game.getPlugin(), this, this.getState(), state));
+    }
+
+    public FlagState startRespawningState(FlagSpawn target, Time time) {
+        return this.startRespawningState(new RespawningState(this, target, time));
     }
 
     private FlagState startState(FlagStateEvent event) {
@@ -220,18 +200,63 @@ public class Flag extends Capturable {
     }
 
     //
-    // Listeners
+    // Messages
     //
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        GamePlayer player = this.game.getGame().getPlayer(event.getEntity());
-        if (player != null) {
-            this.removeFlagItems(player);
+    public String getCaptureMessage(GamePlayer capturer) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
         }
+
+        String result = "";
+        if (this.isObjective()) {
+            result = " (" + ChatColor.GOLD + ChatColor.BOLD + this.getObjectiveResult() +
+                    ChatColor.RESET + ChatColor.YELLOW + " of " + this.getObjective() + ")";
+        }
+
+        return owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
+                " has been captured by " + ChatColor.GOLD + ChatColor.BOLD +
+                capturer.getDisplayName() + ChatColor.RESET + ChatColor.YELLOW + result + ".";
+    }
+
+    public String getDropMessage(GamePlayer dropper) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return ChatColor.GOLD.toString() + ChatColor.BOLD + dropper.getDisplayName() + ChatColor.RESET +
+                ChatColor.YELLOW + " has dropped " + owner + ChatColor.GOLD + ChatColor.BOLD +
+                ChatColor.ITALIC + this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
+    }
+
+    public String getPickupMessage(GamePlayer picker) {
+        String owner = "";
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return ChatColor.GOLD.toString() + ChatColor.BOLD + picker.getDisplayName() + ChatColor.RESET +
+                ChatColor.YELLOW + " has picked up " + owner + ChatColor.GOLD + ChatColor.BOLD +
+                ChatColor.ITALIC + this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
+    }
+
+    public String getRespawnMessage() {
+        String owner = null;
+        if (this.hasOwner()) {
+            owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
+        }
+
+        return owner + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW +
+                " has respawned.";
     }
 
     private class InitialState extends FlagState {
+        private final Random random = new Random();
+
         public InitialState(Flag flag) {
             super(flag);
         }
@@ -243,7 +268,17 @@ public class Flag extends Capturable {
 
         @Override
         public void heartbeat(long ticks, Match match, GoalHolder owner) {
-            super.heartbeat(ticks, match, owner);
+            List<FlagSpawn> spawns = this.flag.getSpawns();
+            if (spawns.isEmpty()) {
+                return;
+            }
+
+            FlagSpawn spawn = spawns.get(this.random.nextInt(spawns.size()));
+            Location location = spawn.nextLocationOrDefault(100);
+
+            if (location != null) {
+                this.flag.setState(new SpawnedState(this.flag, location, spawn));
+            }
         }
 
         @Override

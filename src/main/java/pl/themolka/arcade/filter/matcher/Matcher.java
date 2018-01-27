@@ -9,15 +9,15 @@ public abstract class Matcher extends AbstractFilter {
         return this.matches(object);
     }
 
-    protected FilterResult abstain() {
+    protected final FilterResult abstain() {
         return FilterResult.ABSTAIN;
     }
 
-    protected FilterResult allow() {
+    protected final FilterResult allow() {
         return FilterResult.ALLOW;
     }
 
-    protected FilterResult deny() {
+    protected final FilterResult deny() {
         return FilterResult.DENY;
     }
 

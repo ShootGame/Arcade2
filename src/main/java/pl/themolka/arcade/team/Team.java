@@ -21,9 +21,11 @@ import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A group with defined players in it.
@@ -118,6 +120,11 @@ public class Team implements MatchWinner {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public Set<GamePlayer> getPlayers() {
+        return new HashSet<>(this.onlineMembers);
     }
 
     @Override

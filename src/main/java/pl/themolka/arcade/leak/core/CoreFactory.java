@@ -7,6 +7,7 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.leak.LeakGame;
 import pl.themolka.arcade.leak.LeakableFactory;
+import pl.themolka.arcade.leak.Liquid;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLMaterial;

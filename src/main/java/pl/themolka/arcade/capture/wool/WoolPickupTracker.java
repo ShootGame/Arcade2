@@ -36,7 +36,7 @@ public class WoolPickupTracker implements Listener {
 
     public void pickup(GamePlayer picker, ItemStack item) {
         GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(picker);
-        if (competitor == null || this.wool.isCaptured() || !this.wool.isCompletableBy(competitor)) {
+        if (competitor == null || this.wool.isCompleted() || !this.wool.isCompletableBy(competitor)) {
             return;
         }
 
@@ -49,7 +49,7 @@ public class WoolPickupTracker implements Listener {
 
         if (!event.isCanceled() && !this.pickups.containsValue(picker)) {
             this.wool.getContributions().addContributor(picker);
-            competitor.sendGoalMessage(this.wool.getGoalInteractMessage(picker.getDisplayName()));
+            competitor.sendGoalMessage(this.wool.getPickupMessage(picker.getDisplayName()));
 
             this.pickups.put(competitor, picker);
             GoalProgressEvent.call(this.game.getPlugin(), this.wool, picker, oldProgress);
@@ -102,7 +102,9 @@ public class WoolPickupTracker implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void resetPickups(PlayerLeaveTeamEvent event) {
-        this.resetPickups(event.getGamePlayer());
+        if (!event.isCanceled()) {
+            this.resetPickups(event.getGamePlayer());
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagSpawn;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 
@@ -16,6 +17,11 @@ public class SpawnedState extends FlagState.Permanent implements FlagState.Physi
 
         this.location = location;
         this.spawn = spawn;
+    }
+
+    @Override
+    public boolean canPickup(GamePlayer player) {
+        return true;
     }
 
     @Override
@@ -42,5 +48,9 @@ public class SpawnedState extends FlagState.Permanent implements FlagState.Physi
 
     public FlagSpawn getSpawn() {
         return this.spawn;
+    }
+
+    public FlagState startCarrying(Flag flag, GamePlayer carrier, Location source) {
+        return flag.startCarryingState(carrier, source);
     }
 }

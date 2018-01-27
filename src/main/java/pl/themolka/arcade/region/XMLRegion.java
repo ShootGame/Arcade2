@@ -36,7 +36,7 @@ public class XMLRegion extends XMLParser {
     }
 
     public static CylinderRegion parseCylinder(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, "origin", Region.MIN_HEIGHT, xml);
+        Vector center = parseVector(map, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         double height = Region.MAX_HEIGHT;
 
@@ -67,12 +67,12 @@ public class XMLRegion extends XMLParser {
     }
 
     public static PointRegion parsePoint(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector point = parseVector(map, "point", Region.MIN_HEIGHT, xml);
+        Vector point = parseVector(map, null, Region.MIN_HEIGHT, xml);
         return new PointRegion(parseId(xml), map, point);
     }
 
     public static SphereRegion parseSphere(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, "origin", Region.MIN_HEIGHT, xml);
+        Vector center = parseVector(map, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         return new SphereRegion(parseId(xml), map, center, radius);
     }
@@ -110,7 +110,7 @@ public class XMLRegion extends XMLParser {
         double y = defY;
         double z = 0D;
 
-        Attribute xAttribute = xml.getAttribute(prefix + "-x");
+        Attribute xAttribute = xml.getAttribute(prefix != null ? prefix + "-x" : "x");
         if (xAttribute != null) {
             try {
                 x = xAttribute.getDoubleValue();
@@ -118,7 +118,7 @@ public class XMLRegion extends XMLParser {
             }
         }
 
-        Attribute yAttribute = xml.getAttribute(prefix + "-y");
+        Attribute yAttribute = xml.getAttribute(prefix != null ? prefix + "-y" : "y");
         if (yAttribute != null) {
             try {
                 y = yAttribute.getDoubleValue();
@@ -126,7 +126,7 @@ public class XMLRegion extends XMLParser {
             }
         }
 
-        Attribute zAttribute = xml.getAttribute(prefix + "-z");
+        Attribute zAttribute = xml.getAttribute(prefix != null ? prefix + "-z" : "z");
         if (zAttribute != null) {
             try {
                 z = zAttribute.getDoubleValue();

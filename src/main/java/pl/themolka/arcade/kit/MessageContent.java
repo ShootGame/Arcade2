@@ -42,11 +42,11 @@ public class MessageContent implements KitContent<String> {
     public static class Parser implements KitContentParser<MessageContent> {
         @Override
         public MessageContent parse(Element xml) throws DataConversionException {
-            return new MessageContent(XMLParser.parseMessage(xml.getValue()), this.parseType(xml));
+            return new MessageContent(XMLParser.parseMessage(xml.getTextNormalize()), this.parseType(xml));
         }
 
         private Type parseType(Element xml) {
-            Attribute attribute = xml.getAttribute("type");
+            Attribute attribute = xml.getAttribute("channel");
             if (attribute != null) {
                 return Type.valueOf(XMLParser.parseEnumValue(attribute.getValue()));
             }
@@ -110,7 +110,7 @@ public class MessageContent implements KitContent<String> {
 
         public void sendMessage(GamePlayer player, String message) {
             if (player != null && player.isOnline()) {
-                this.sendMessage(player.getGamePlayer(), message);
+                this.sendMessage(player.getPlayer(), message);
             }
         }
     }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.capture.flag;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.inventory.ItemStack;
@@ -10,8 +11,12 @@ public class FlagItem extends ItemStack {
     public static final Material MATERIAL = Material.BANNER;
     public static final int AMOUNT = 1;
 
-    public FlagItem() {
+    private final Flag flag;
+
+    public FlagItem(Flag flag) {
         super(MATERIAL, AMOUNT);
+
+        this.flag = flag;
     }
 
     @Override
@@ -47,7 +52,13 @@ public class FlagItem extends ItemStack {
                 BannerMeta.class.getSimpleName() + " class.");
     }
 
+    public Flag getFlag() {
+        return this.flag;
+    }
+
     public BannerMeta transferMetaFrom(Banner banner) {
-        return BannerUtils.toMeta(this.getItemMeta(), banner);
+        BannerMeta meta = this.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + this.flag.getColoredName());
+        return BannerUtils.toMeta(meta, banner);
     }
 }

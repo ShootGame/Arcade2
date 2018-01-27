@@ -15,7 +15,9 @@ public class ClearInventoryContent implements KitContent<Boolean> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().clearInventory(this.getResult());
+        if (player.isOnline()) {
+            player.getPlayer().clearInventory(this.getResult());
+        }
     }
 
     @Override

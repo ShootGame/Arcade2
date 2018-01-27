@@ -1,31 +1,36 @@
 package pl.themolka.arcade.kit;
 
+import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class HealthContent implements KitContent<Integer> {
-    public static final float DEFAULT_HEALTH = 20;
+public class HealthContent implements RemovableKitContent<Double> {
+    public static final double DEFAULT_HEALTH = 20D;
 
-    private final int result;
+    private final double result;
 
     public HealthContent(double result) {
-        this((int) result * 2);
-    }
-
-    public HealthContent(int result) {
         this.result = result;
     }
 
     @Override
-    public void apply(GamePlayer player) {
-        player.getBukkit().setHealth(this.getResult());
+    public void attach(GamePlayer player, Double value) {
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            bukkit.setHealth(value);
+        }
     }
 
     @Override
-    public Integer getResult() {
+    public Double defaultValue() {
+        return DEFAULT_HEALTH;
+    }
+
+    @Override
+    public Double getResult() {
         return this.result;
     }
 

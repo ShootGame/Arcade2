@@ -3,6 +3,7 @@ package pl.themolka.arcade.capture.flag.state;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
@@ -18,6 +19,11 @@ public class TimedDroppedState extends FlagState.Progress implements FlagState.P
 
         this.droppedState = droppedState;
         this.timeout = timeout;
+    }
+
+    @Override
+    public boolean canPickup(GamePlayer player) {
+        return true;
     }
 
     @Override
@@ -54,6 +60,7 @@ public class TimedDroppedState extends FlagState.Progress implements FlagState.P
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("progress", this.getProgress())
                 .append("droppedState", this.droppedState)
+                .append("timeout", this.timeout)
                 .build();
     }
 

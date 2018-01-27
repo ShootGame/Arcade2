@@ -125,29 +125,29 @@ public interface Goal {
      * @param completer `GoalHolder` who completed this `Goal`, may be `null`.
      * @param completed `true` if this `Goal` is completed, `false` if not.
      */
-    void setCompleted(GoalHolder completer, boolean completed);
+    void setCompleted(boolean completed, GoalHolder completer);
 
     //
-    // "isCompleted(...)" Execution Methods
+    // "isCompletableBy(...)" Execution Methods
     //
 
     static boolean completableByEveryone() {
         return true;
     }
 
-    static boolean completableByPositive(Goal goal, GoalHolder completer) {
-        return completableByPositive(goal.getOwner(), completer);
+    static boolean completableByOwner(Goal goal, GoalHolder completer) {
+        return completableByOwner(goal.getOwner(), completer);
     }
 
-    static boolean completableByPositive(GoalHolder owner, GoalHolder completer) {
+    static boolean completableByOwner(GoalHolder owner, GoalHolder completer) {
         return owner == null || owner.equals(completer);
     }
 
-    static boolean completableByNegative(Goal goal, GoalHolder completer) {
-        return completableByNegative(goal.getOwner(), completer);
+    static boolean completableByNonOwner(Goal goal, GoalHolder completer) {
+        return completableByNonOwner(goal.getOwner(), completer);
     }
 
-    static boolean completableByNegative(GoalHolder owner, GoalHolder completer) {
+    static boolean completableByNonOwner(GoalHolder owner, GoalHolder completer) {
         return owner == null || !owner.equals(completer);
     }
 

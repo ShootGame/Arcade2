@@ -104,14 +104,14 @@ public class Sessions implements Listener {
             return null;
         }
 
+        // unregister from online players
+        this.plugin.removePlayer(player);
+
         // make GamePlayers offline
         GamePlayer game = player.getGamePlayer();
         if (game != null) {
             game.setPlayer(null); // remove the pointer
         }
-
-        // unregister from online players
-        this.plugin.removePlayer(player);
 
         return player;
     }

@@ -5,28 +5,33 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.xml.XMLParser;
 
-public class FlyContent implements KitContent<Boolean> {
+public class FlyContent implements RemovableKitContent<Boolean> {
     public static final boolean DEFAULT_ALLOW_FLYING = false;
     public static final boolean DEFAULT_FLYING = false;
-    public static final float DEFAULT_SPEED = 0.1F;
 
-    private final boolean flying;
-    private final float speed;
     private final boolean result;
 
-    public FlyContent(boolean flying, float speed, boolean result) {
-        this.flying = flying;
-        this.speed = speed;
+    public FlyContent(boolean result) {
         this.result = result;
     }
 
     @Override
-    public void apply(GamePlayer player) {
+    public void attach(GamePlayer player, Boolean value) {
         Player bukkit = player.getBukkit();
-        bukkit.setAllowFlight(this.getResult());
-        bukkit.setFlying(this.isFlying());
-        bukkit.setFlySpeed(this.getSpeed());
+        if (bukkit != null) {
+            bukkit.setAllowFlight(value);
+
+            if (!value) {
+                bukkit.setFlying(DEFAULT_FLYING);
+            }
+        }
+    }
+
+    @Override
+    public Boolean defaultValue() {
+        return DEFAULT_ALLOW_FLYING;
     }
 
     @Override
@@ -34,23 +39,15 @@ public class FlyContent implements KitContent<Boolean> {
         return this.result;
     }
 
-    public float getSpeed() {
-        return this.speed;
-    }
-
-    public boolean isFlying() {
-        return this.flying;
-    }
-
     public static class Parser implements KitContentParser<FlyContent> {
         @Override
         public FlyContent parse(Element xml) throws DataConversionException {
             Attribute reset = xml.getAttribute("reset");
             if (reset != null) {
-                return new FlyContent(DEFAULT_FLYING, DEFAULT_SPEED, DEFAULT_ALLOW_FLYING);
+                return new FlyContent(DEFAULT_FLYING);
             }
 
-            return null;
+            return new FlyContent(XMLParser.parseBoolean(xml.getTextNormalize()));
         }
     }
 }

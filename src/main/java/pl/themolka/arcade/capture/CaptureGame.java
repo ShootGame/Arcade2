@@ -6,6 +6,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagFactory;
+import pl.themolka.arcade.capture.flag.FlagPayloadRender;
+import pl.themolka.arcade.capture.flag.FlagPhysicalRender;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointBossBarRender;
 import pl.themolka.arcade.capture.point.PointFactory;
@@ -171,6 +173,9 @@ public class CaptureGame extends GameModule {
                     }
                 }
             });
+
+            this.registerListenerObject(new FlagPayloadRender(this));
+            this.registerListenerObject(new FlagPhysicalRender(this));
         }
     }
 
@@ -203,15 +208,11 @@ public class CaptureGame extends GameModule {
 
     private void enableWools() {
         // Register wool classes ONLY when there are any wool goals.
-        int wools = 0;
         for (Capturable capturable : this.getCapturables()) {
             if (capturable instanceof Wool) {
-                wools++;
+                this.registerListenerObject(new WoolChestTracker(this));
+                break;
             }
-        }
-
-        if (wools > 0) {
-            this.registerListenerObject(new WoolChestTracker(this));
         }
     }
 }

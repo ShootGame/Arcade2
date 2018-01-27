@@ -1,19 +1,19 @@
 package pl.themolka.arcade.capture.flag;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.capture.flag.state.CarryingState;
 import pl.themolka.arcade.capture.flag.state.FlagState;
+import pl.themolka.arcade.capture.flag.state.RespawningState;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
 
-public class FlagCarryingEvent extends FlagStateEvent implements Cancelable {
+public class FlagCapturedEvent extends FlagStateEvent implements Cancelable {
     private boolean cancel;
-    private final GamePlayer carrier;
+    private final GamePlayer capturer;
 
-    public FlagCarryingEvent(ArcadePlugin plugin, Flag flag, FlagState oldState, CarryingState newState) {
+    public FlagCapturedEvent(ArcadePlugin plugin, Flag flag, FlagState oldState, RespawningState newState, GamePlayer capturer) {
         super(plugin, flag, oldState, newState);
 
-        this.carrier = newState.getCarrier();
+        this.capturer = capturer;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class FlagCarryingEvent extends FlagStateEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GamePlayer getCarrier() {
-        return this.carrier;
+    public GamePlayer getCapturer() {
+        return this.capturer;
     }
 }

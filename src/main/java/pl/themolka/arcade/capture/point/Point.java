@@ -54,7 +54,6 @@ public class Point extends Capturable {
     private boolean objective;
     private boolean permanent = false;
     private double pointReward;
-    private boolean pointTouched = false;
     private PointState state;
     private Region stateRegion;
 
@@ -85,8 +84,8 @@ public class Point extends Capturable {
                 completer.getTitle() + ChatColor.RESET + ChatColor.YELLOW + ".";
 
         this.game.getMatch().sendGoalMessage(message);
-        this.pointTouched = true;
-        this.setCompleted(completer, true);
+        this.setTouched(true);
+        this.setCompleted(completer);
     }
 
     @Override
@@ -105,18 +104,6 @@ public class Point extends Capturable {
     }
 
     @Override
-    public String getGoalInteractMessage(String interact) {
-        if (this.isNeutral() || interact == null) {
-            // Neutral points are not announced.
-            return null;
-        }
-
-        return ChatColor.GOLD + interact + ChatColor.YELLOW + " has lost " +
-                ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
-                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
-    }
-
-    @Override
     public double getProgress() {
         return this.getState().getProgress();
     }
@@ -124,11 +111,6 @@ public class Point extends Capturable {
     @Override
     public boolean isCompletableBy(GoalHolder completer) {
         return Goal.completableByEveryone();
-    }
-
-    @Override
-    public boolean isUntouched() {
-        return !this.pointTouched;
     }
 
     @Override // Register goals only when it is an map objective.
@@ -143,7 +125,6 @@ public class Point extends Capturable {
             capture.clearPlayers();
         }
 
-        this.pointTouched = false;
         this.state = this.getInitialState().copy();
     }
 
@@ -222,7 +203,7 @@ public class Point extends Capturable {
     }
 
     public void heartbeat(long ticks) {
-        if (this.isPermanent() && this.isCaptured()) {
+        if (this.isPermanent() && this.isCompleted()) {
             return;
         }
 
@@ -230,11 +211,11 @@ public class Point extends Capturable {
 
         Multimap<GoalHolder, GamePlayer> competitors = ArrayListMultimap.create();
         for (GamePlayer player : this.getPlayers()) {
-            if (this.canDominate(player)) {
+            if (this.canCapture(player) && this.canDominate(player)) {
                 GoalHolder competitor = match.findWinnerByPlayer(player);
                 // ^ This is not the best way to find registered GoalHolders every server tick.
 
-                if (competitor != null && (competitor.equals(player) || this.isCompletableBy(competitor))) {
+                if (competitor != null && (competitor.equals(player) || this.canCapture(competitor))) {
                     competitors.put(competitor, player);
                 }
             }
@@ -267,7 +248,7 @@ public class Point extends Capturable {
     public void heartbeatReward(GoalHolder competitor, double pointReward /* this is per second */) {
         if (competitor != null && pointReward != Score.ZERO) {
             Score score = this.getScore(competitor);
-            double toGive = (HEARTBEAT_INTERVAL.toTicks() / Time.SECOND.toTicks()) * pointReward;
+            double toGive = ((double) HEARTBEAT_INTERVAL.toTicks() / (double) Time.SECOND.toTicks()) * pointReward;
 
             if (score != null && toGive != Score.ZERO) {
                 PointPointsEvent event = new PointPointsEvent(this.game.getPlugin(), this, score, toGive);
@@ -298,15 +279,14 @@ public class Point extends Capturable {
     }
 
     public void lose(GoalHolder loser) {
-        String message = this.getGoalInteractMessage(loser.getTitle());
+        String message = this.getLostMessage(loser.getTitle());
         if (message != null) {
             this.game.getMatch().sendGoalMessage(message);
         }
 
-        this.captured = false;
-        this.capturedBy = null;
-        this.pointTouched = true;
+        this.setCompleted(false);
         this.getContributions().clearContributors();
+        this.setTouched(true);
         this.setOwner(null);
 
         GoalLoseEvent.call(this.game.getPlugin(), this, loser);
@@ -353,6 +333,10 @@ public class Point extends Capturable {
     }
 
     public void setState(PointState state) {
+        String from = this.state != null ? this.state.getStateName() : "unknown";
+        String to = state != null ? state.getStateName() : "unknown";
+
+        this.game.getLogger().info(this.getName() + " is transforming from " + from + " to " + to + "...");
         this.state = state;
     }
 
@@ -364,17 +348,17 @@ public class Point extends Capturable {
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("owner", this.getOwner())
-                .append("captured", this.isCaptured())
-                .append("capturedBy", this.getCapturedBy())
+                .append("completed", this.isCompleted())
+                .append("completedBy", this.getCompletedBy())
                 .append("id", this.getId())
                 .append("name", this.getName())
+                .append("touched", this.isTouched())
                 .append("capture", this.capture)
                 .append("capturingCapturedEnabled", this.capturingCapturedEnabled)
                 .append("dominatorStrategy", this.dominatorStrategy)
                 .append("loseTime", this.loseTime)
                 .append("permanent", this.permanent)
                 .append("pointReward", this.pointReward)
-                .append("pointTouched", this.pointTouched)
                 .build();
     }
 
@@ -427,5 +411,20 @@ public class Point extends Capturable {
         PointState newState = event.getNewState();
         this.setState(newState);
         return newState;
+    }
+
+    //
+    // Messages
+    //
+
+    public String getLostMessage(String loser) {
+        if (this.isNeutral() || loser == null) {
+            // Neutral points are not announced.
+            return null;
+        }
+
+        return ChatColor.GOLD + loser + ChatColor.YELLOW + " has lost " +
+                ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                this.getColoredName() + ChatColor.RESET + ChatColor.YELLOW + ".";
     }
 }

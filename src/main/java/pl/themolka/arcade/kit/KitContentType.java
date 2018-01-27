@@ -3,7 +3,7 @@ package pl.themolka.arcade.kit;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
-public enum KitContentType implements KitContentParser<Object> {
+public enum KitContentType implements KitContentParser<KitContent<?>> {
     ARMOR("armor") {
         @Override
         public ArmorContent parse(Element xml) throws DataConversionException {
@@ -29,6 +29,13 @@ public enum KitContentType implements KitContentParser<Object> {
         @Override
         public FlyContent parse(Element xml) throws DataConversionException {
             return FLY_PARSER.parse(xml);
+        }
+    },
+
+    FLY_SPEED("fly-speed", "flyspeed") {
+        @Override
+        public FlySpeedContent parse(Element xml) throws DataConversionException {
+            return FLY_SPEED_PARSER.parse(xml);
         }
     },
 
@@ -107,6 +114,7 @@ public enum KitContentType implements KitContentParser<Object> {
     public static final ClearInventoryContent.Parser CLEAR_INVENTORY_PARSER = new ClearInventoryContent.Parser();
     public static final EffectContent.Parser EFFECT_PARSER = new EffectContent.Parser();
     public static final FlyContent.Parser FLY_PARSER = new FlyContent.Parser();
+    public static final FlySpeedContent.Parser FLY_SPEED_PARSER = new FlySpeedContent.Parser();
     public static final FoodLevelContent.Parser FOOD_LEVEL_PARSER = new FoodLevelContent.Parser();
     public static final GameModeContent.Parser GAME_MODE_PARSER = new GameModeContent.Parser();
     public static final HealthContent.Parser HEALTH_PARSER = new HealthContent.Parser();
@@ -142,7 +150,7 @@ public enum KitContentType implements KitContentParser<Object> {
         return null;
     }
 
-    public static Object parseForName(String name, Element xml) throws DataConversionException {
+    public static KitContent<?> parseForName(String name, Element xml) throws DataConversionException {
         KitContentType parser = forName(name);
         if (parser != null) {
             return parser.parse(xml);

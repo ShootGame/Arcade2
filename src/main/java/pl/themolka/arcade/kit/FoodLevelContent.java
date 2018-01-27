@@ -1,12 +1,13 @@
 package pl.themolka.arcade.kit;
 
+import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class FoodLevelContent implements KitContent<Integer> {
+public class FoodLevelContent implements RemovableKitContent<Integer> {
     public static final int DEFAULT_LEVEL = 20;
 
     private final int result;
@@ -20,8 +21,16 @@ public class FoodLevelContent implements KitContent<Integer> {
     }
 
     @Override
-    public void apply(GamePlayer player) {
-        player.getBukkit().setFoodLevel(this.getResult());
+    public void attach(GamePlayer player, Integer value) {
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            bukkit.setFoodLevel(value);
+        }
+    }
+
+    @Override
+    public Integer defaultValue() {
+        return DEFAULT_LEVEL;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class FoodLevelContent implements KitContent<Integer> {
             }
 
             try {
-                return new FoodLevelContent(Double.parseDouble(xml.getTextNormalize()));
+                return new FoodLevelContent(XMLParser.parseDouble(xml.getTextNormalize()));
             } catch (NumberFormatException ex) {
                 return null;
             }

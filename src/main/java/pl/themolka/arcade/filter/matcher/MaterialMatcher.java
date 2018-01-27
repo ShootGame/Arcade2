@@ -2,6 +2,8 @@ package pl.themolka.arcade.filter.matcher;
 
 import org.bukkit.Locatable;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.filter.FilterResult;
@@ -21,7 +23,11 @@ public class MaterialMatcher extends Matcher {
 
     @Override
     public FilterResult matches(Object object) {
-        if (object instanceof Byte) {
+        if (object instanceof Block) {
+            return this.of(this.matches((Block) object));
+        } else if (object instanceof BlockState) {
+            return this.of(this.matches((BlockState) object));
+        } else if (object instanceof Byte) {
             return this.of(this.matches((byte) object));
         } else if (object instanceof ItemStack) {
             return this.of(this.matches((ItemStack) object));
@@ -34,6 +40,14 @@ public class MaterialMatcher extends Matcher {
         }
 
         return this.abstain();
+    }
+
+    public boolean matches(Block block) {
+        return this.matches(block.getType(), block.getData());
+    }
+
+    public boolean matches(BlockState blockState) {
+        return this.matches(blockState.getMaterialData());
     }
 
     public boolean matches(byte data) {

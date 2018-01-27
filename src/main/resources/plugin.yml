@@ -94,6 +94,11 @@ permissions:
             description: 'Gives access to the /setnext command.'
             default: op
 
+          # Development
+          arcade.command.cyclenow:
+            description: 'Gives access to the /cyclenow command.'
+            default: op
+
           # Match
           arcade.command.begin:
             description: 'Gives access to the /begin command.'

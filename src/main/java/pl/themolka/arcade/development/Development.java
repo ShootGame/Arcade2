@@ -11,6 +11,8 @@ public class Development extends Environment {
 
     @Override
     public void onEnable() {
+        this.getPlugin().registerCommandObject(new DevelopmentCommands(this));
+
         Element settings = this.getSettings();
     }
 }

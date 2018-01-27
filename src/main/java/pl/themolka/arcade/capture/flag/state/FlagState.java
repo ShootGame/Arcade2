@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import pl.themolka.arcade.capture.CapturableState;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.flag.Flag;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
@@ -80,6 +81,8 @@ public abstract class FlagState extends CapturableState<Flag, FlagState> {
      * The flag is physically located on the map and visible to players.
      */
     public interface PhysicalFlag {
+        boolean canPickup(GamePlayer player);
+
         Location getLocation();
     }
 

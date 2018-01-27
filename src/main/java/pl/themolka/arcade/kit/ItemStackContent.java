@@ -1,14 +1,14 @@
 package pl.themolka.arcade.kit;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.XMLItemStack;
 
-public class ItemStackContent implements KitContent<ItemStack> {
+public class ItemStackContent implements KitContent<ItemStack>, Removable {
     public static final int SLOT_NULL = -1;
 
     // armor
@@ -26,12 +26,21 @@ public class ItemStackContent implements KitContent<ItemStack> {
 
     @Override
     public void apply(GamePlayer player) {
-        PlayerInventory inventory = player.getBukkit().getInventory();
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            if (this.hasSlot()) {
+                bukkit.getInventory().setItem(this.getSlot(), this.getResult());
+            } else {
+                bukkit.getInventory().addItem(this.getResult());
+            }
+        }
+    }
 
-        if (this.hasSlot()) {
-            inventory.setItem(this.getSlot(), this.getResult());
-        } else {
-            inventory.addItem(this.getResult());
+    @Override
+    public void revoke(GamePlayer player) {
+        Player bukkit = player.getBukkit();
+        if (bukkit != null) {
+            bukkit.getInventory().remove(this.getResult());
         }
     }
 

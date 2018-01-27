@@ -46,6 +46,10 @@ public class PointCapture implements Listener {
     }
 
     public void clearPlayers() {
+        for (GamePlayer player : this.players) {
+            this.game.getPlugin().getEventBus().publish(new PointPlayerLeaveEvent(this.game.getPlugin(), this, player));
+        }
+
         this.players.clear();
     }
 
@@ -55,6 +59,10 @@ public class PointCapture implements Listener {
 
     public Filter getFilter() {
         return this.filter;
+    }
+
+    public Set<GamePlayer> getPlayers() {
+        return new HashSet<>(this.players);
     }
 
     public Point getPoint() {
@@ -165,9 +173,5 @@ public class PointCapture implements Listener {
         }
 
         return this.getFieldStrategy().regionContains(this.getRegion(), at);
-    }
-
-    public Set<GamePlayer> getPlayers() {
-        return new HashSet<>(this.players);
     }
 }
