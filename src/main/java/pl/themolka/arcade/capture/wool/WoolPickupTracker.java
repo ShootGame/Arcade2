@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +16,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
+import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.team.PlayerLeaveTeamEvent;
 
 public class WoolPickupTracker implements Listener {
@@ -107,11 +107,8 @@ public class WoolPickupTracker implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @Handler(priority = Priority.LAST)
     public void resetPickups(PlayerDeathEvent event) {
-        GamePlayer picker = this.game.getGame().getPlayer(event.getEntity());
-        if (picker != null) {
-            this.resetPickups(picker);
-        }
+        this.resetPickups(event.getVictim());
     }
 }

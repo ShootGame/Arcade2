@@ -4,10 +4,6 @@ import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
@@ -26,6 +22,7 @@ import java.util.WeakHashMap;
 
 public class LivesGame extends GameModule {
     public static final int DEATH_REVOKE = -1;
+    public static final int ZERO = 0;
 
     private Match match;
 
@@ -71,6 +68,10 @@ public class LivesGame extends GameModule {
         return this.sound;
     }
 
+    //
+    // Lives
+    //
+
     public int addLives(GamePlayer player, int lives) {
         int newValue = this.calculate(player, lives);
 
@@ -87,44 +88,54 @@ public class LivesGame extends GameModule {
     }
 
     public void eliminate(GamePlayer player) {
-        if (this.remaining.remove(player) != null) {
-            this.getPlugin().getEventBus().publish(new PlayerEliminateEvent(this.getPlugin(), player));
+        if (this.remaining.containsKey(player)) {
+            PlayerEliminateEvent event = new PlayerEliminateEvent(this.getPlugin(),
+                    player, this.remaining.getOrDefault(player, ZERO), player.getBukkit().getLocation());
+            this.getPlugin().getEventBus().publish(event);
 
-            this.match.getObservers().join(player, true);
-            this.match.refreshWinners();
+            if (event.isCanceled()) {
+                this.remaining.put(event.getPlayer(), event.getRemainingLives());
+            } else {
+                this.remaining.remove(event.getPlayer());
+                this.match.getObservers().join(event.getPlayer(), true);
+                this.match.refreshWinners();
+            }
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @Handler(priority = Priority.HIGH)
     public void revokeLife(PlayerDeathEvent event) {
-        if (event.getDeathMessage() == null) {
-            return;
-        }
+        if (event.hasDeathMessage() && event.getVictim().isParticipating()) {
+            int remaining = this.addLives(event.getVictim(), DEATH_REVOKE);
 
-        GamePlayer player = this.getGame().getPlayer(event.getEntity());
-        if (player == null || !player.isParticipating()) {
-            return;
-        }
-
-        int remaining = this.addLives(player, DEATH_REVOKE);
-
-        if (remaining <= 0) {
-            this.eliminate(player);
+            if (remaining <= ZERO) {
+                this.eliminate(event.getVictim());
+            }
         }
     }
 
-    @Handler(priority = Priority.LOW)
+    @Handler(priority = Priority.LAST)
     public void revokePlayer(PlayerQuitEvent event) {
         this.eliminate(event.getGamePlayer());
     }
 
-    private class BroadcastListener implements Listener {
-        @EventHandler(priority = EventPriority.LOWEST)
-        public void eliminate(PlayerDeathEvent event) {
-            GamePlayer player = getGame().getPlayer(event.getEntity());
+    @Handler(priority = Priority.LAST)
+    public void fillMap(MatchStartedEvent event) {
+        for (ArcadePlayer player : event.getPlugin().getPlayers()) {
+            this.remaining.put(player.getGamePlayer(), this.lives());
+        }
+    }
+
+    //
+    // Broadcasts
+    //
+
+    private class BroadcastListener {
+        @Handler(priority = Priority.LAST)
+        public void eliminate(PlayerEliminateEvent event) {
             // This listener is called BEFORE the actual elimination logic.
-            if (player != null && calculate(player, DEATH_REVOKE) <= 0) {
-                player.send(this.createText(0));
+            if (calculate(event.getPlayer(), DEATH_REVOKE) <= ZERO) {
+                event.getPlayer().send(this.createText(ZERO));
             }
         }
 
@@ -152,11 +163,18 @@ public class LivesGame extends GameModule {
         }
     }
 
-    private class SoundListener implements Listener {
-        @Handler(priority = Priority.FIRST)
+    //
+    // Sounds
+    //
+
+    private class SoundListener {
+        @Handler(priority = Priority.LAST)
         public void eliminate(PlayerEliminateEvent event) {
-            Location location = event.getPlayer().getBukkit().getLocation();
-            location.getWorld().playSound(location, sound(), 1F, 1F);
+            this.play(sound(), event.getDeathLocation());
+        }
+
+        void play(Sound sound, Location at) {
+            at.getWorld().playSound(at, sound, 1F, 1F);
         }
     }
 }

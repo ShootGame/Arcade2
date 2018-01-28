@@ -16,37 +16,39 @@ import java.util.Set;
  */
 public enum Color {
     /* colors */
-    BLACK(ChatColor.BLACK, DyeColor.BLACK),
-    DARK_BLUE(ChatColor.DARK_BLUE, DyeColor.BLUE), // A duplicate (dye)
-    DARK_GREEN(ChatColor.DARK_GREEN, DyeColor.GREEN),
-    DARK_AQUA(ChatColor.DARK_AQUA, DyeColor.CYAN),
-    DARK_RED(ChatColor.DARK_RED, DyeColor.RED), // B duplicate (dye)
-    DARK_PURPLE(ChatColor.DARK_PURPLE, DyeColor.PURPLE),
-    GOLD(ChatColor.GOLD, DyeColor.ORANGE),
-    GRAY(ChatColor.GRAY, DyeColor.SILVER),
-    DARK_GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY), // C duplicate (chat)
-    BLUE(ChatColor.BLUE, DyeColor.BLUE), // A duplicate
-    GREEN(ChatColor.GREEN, DyeColor.LIME),
-    AQUA(ChatColor.AQUA, DyeColor.LIGHT_BLUE),
-    RED(ChatColor.RED, DyeColor.RED), // B duplicate
-    LIGHT_PURPLE(ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA), // D duplicate (chat)
-    YELLOW(ChatColor.YELLOW, DyeColor.YELLOW),
-    WHITE(ChatColor.WHITE, DyeColor.WHITE),
+    BLACK("black", ChatColor.BLACK, DyeColor.BLACK),
+    DARK_BLUE("dark_blue", ChatColor.DARK_BLUE, DyeColor.BLUE), // A duplicate (dye)
+    DARK_GREEN("dark_green", ChatColor.DARK_GREEN, DyeColor.GREEN),
+    DARK_AQUA("dark_aqua", ChatColor.DARK_AQUA, DyeColor.CYAN),
+    DARK_RED("dark_red", ChatColor.DARK_RED, DyeColor.RED), // B duplicate (dye)
+    DARK_PURPLE("dark_purple", ChatColor.DARK_PURPLE, DyeColor.PURPLE),
+    GOLD("gold", ChatColor.GOLD, DyeColor.ORANGE),
+    GRAY("gray", ChatColor.GRAY, DyeColor.SILVER),
+    DARK_GRAY("dark_gray", ChatColor.DARK_GRAY, DyeColor.GRAY), // C duplicate (chat)
+    BLUE("blue", ChatColor.BLUE, DyeColor.BLUE), // A duplicate
+    GREEN("green", ChatColor.GREEN, DyeColor.LIME),
+    AQUA("aqua", ChatColor.AQUA, DyeColor.LIGHT_BLUE),
+    RED("red", ChatColor.RED, DyeColor.RED), // B duplicate
+    LIGHT_PURPLE("light_purple", ChatColor.LIGHT_PURPLE, DyeColor.MAGENTA), // D duplicate (chat)
+    YELLOW("yellow", ChatColor.YELLOW, DyeColor.YELLOW),
+    WHITE("white", ChatColor.WHITE, DyeColor.WHITE),
 
     /* dye colors */
-    BROWN(ChatColor.DARK_GRAY, DyeColor.BROWN), // C duplicate
-    PINK(ChatColor.LIGHT_PURPLE, DyeColor.PINK), // D duplicate
+    BROWN("dark_gray", ChatColor.DARK_GRAY, DyeColor.BROWN), // C duplicate
+    PINK("light_purple", ChatColor.LIGHT_PURPLE, DyeColor.PINK), // D duplicate
 
     /* formatting */
-    MAGIC(ChatColor.MAGIC),
-    BOLD(ChatColor.BOLD),
-    STRIKETHROUGH(ChatColor.STRIKETHROUGH),
-    UNDERLINE(ChatColor.UNDERLINE),
-    ITALIC(ChatColor.ITALIC),
+    MAGIC("obfuscated", ChatColor.MAGIC),
+    BOLD("bold", ChatColor.BOLD),
+    STRIKETHROUGH("strikethrough", ChatColor.STRIKETHROUGH),
+    UNDERLINE("underline", ChatColor.UNDERLINE),
+    ITALIC("italic", ChatColor.ITALIC),
 
     /* reset */
-    RESET(ChatColor.RESET);
+    RESET("reset", ChatColor.RESET);
 
+    /** Indexed by the color ID. */
+    private static final Map<String, Color> byId = new HashMap<>();
     /** Indexed by {@link ChatColor}. */
     private static final Map<ChatColor, Color> byChat = new HashMap<>();
     /** Indexed by component {@link net.md_5.bungee.api.ChatColor}. */
@@ -59,6 +61,12 @@ public enum Color {
      */
     static {
         for (Color value : values()) {
+            // ID
+            String id = value.getId();
+            if (id != null && !id.isEmpty() && !byId.containsKey(id)) {
+                byId.put(id, value);
+            }
+
             // chat
             ChatColor chat = value.toChat();
             if (chat != null && !byChat.containsKey(chat)) {
@@ -79,6 +87,8 @@ public enum Color {
         }
     }
 
+    /** The unique ID of this color to be represented in chat components */
+    private final String id;
     /** Component {@link net.md_5.bungee.api.ChatColor} representation */
     private final net.md_5.bungee.api.ChatColor component;
     /** {@link ChatColor} representation */
@@ -86,14 +96,22 @@ public enum Color {
     /** {@link DyeColor} representation */
     private final DyeColor dye;
 
-    Color(ChatColor color) {
-        this(color, null);
+    Color(String id, ChatColor color) {
+        this(id, color, null);
     }
 
-    Color(ChatColor chat, DyeColor dye) {
+    Color(String id, ChatColor chat, DyeColor dye) {
+        this.id = id;
         this.component = net.md_5.bungee.api.ChatColor.getByChar(chat.getChar());
         this.chat = chat;
         this.dye = dye;
+    }
+
+    /**
+     * Get unique ID of this color.
+     */
+    public String getId() {
+        return this.id;
     }
 
     /**
@@ -148,21 +166,21 @@ public enum Color {
     }
 
     /**
-     * Is it a real color?
+     * Is this a real color?
      */
     public boolean isColor() {
-        return this.toChat().isColor();
+        return this.toChat().isColor() && this.id != null;
     }
 
     /**
-     * Is it a formatting code?
+     * Is this a formatting code?
      */
     public boolean isFormat() {
         return this.toChat().isFormat() || this.isReset();
     }
 
     /**
-     * Is it a reset formatting code?
+     * Is this a reset formatting code?
      */
     public boolean isReset() {
         return this.equals(RESET);
@@ -202,6 +220,14 @@ public enum Color {
     //
 
     /**
+     * Convert an ID to a color
+     * @param id ID representation of a color
+     */
+    public static Color ofId(String id) {
+        return byId.get(id);
+    }
+
+    /**
      * Convert a {@link ChatColor} to a color
      * @param chat {@link ChatColor} representation of a color
      */
@@ -237,6 +263,14 @@ public enum Color {
      */
     public static Color random() {
         Color[] values = values();
+        return values[random.nextInt(values.length)];
+    }
+
+    /**
+     * Generate a random ID value
+     */
+    public static String randomId() {
+        String[] values = idValues();
         return values[random.nextInt(values.length)];
     }
 
@@ -362,6 +396,14 @@ public enum Color {
     //
     // Values
     //
+
+    /**
+     * Return values of all IDs of this enum
+     */
+    public static String[] idValues() {
+        Set<String> values = byId.keySet();
+        return values.toArray(new String[values.size()]);
+    }
 
     /**
      * Return values of all {@link ChatColor}s of this enum

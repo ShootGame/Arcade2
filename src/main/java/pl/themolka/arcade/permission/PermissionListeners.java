@@ -2,7 +2,7 @@ package pl.themolka.arcade.permission;
 
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.event.PluginFreshEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.ServerCycleEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -31,7 +31,7 @@ public class PermissionListeners {
 
     // server starts
     @Handler(priority = Priority.LOWER)
-    public void onServerStart(PluginReadyEvent event) {
+    public void onServerStart(PluginFreshEvent event) {
         for (ArcadePlayer player : event.getPlugin().getPlayers()) {
             this.refresh(player);
         }

@@ -45,9 +45,11 @@ import pl.themolka.arcade.command.Command;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
+import pl.themolka.arcade.time.Time;
 
 /**
  * Listeners related to manipulate observers. Observers are the unique players
@@ -55,6 +57,7 @@ import pl.themolka.arcade.session.PlayerMoveEvent;
  * Observers are defined with a {@link Observers} class instance.
  */
 public class ObserverListeners implements Listener {
+    public static final Time AUTO_RESPAWN = PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN;
     public static final int BORDER_Y = 32;
     public static final String PLAY_COMMAND = "join";
     public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE =
@@ -186,6 +189,13 @@ public class ObserverListeners implements Listener {
 
             player.sendError("Could not join the match right now. " +
                     "Did you defined format module?");
+        }
+    }
+
+    @Handler(priority = Priority.NORMAL)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (this.isObserving(event.getVictimBukkit())) {
+            event.setAutoRespawn(true, AUTO_RESPAWN);
         }
     }
 

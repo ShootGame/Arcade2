@@ -278,7 +278,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public void kill() {
-        if (this.isOnline()) {
+        if (this.isOnline() && !this.getBukkit().isDead()) {
             this.getBukkit().setHealth(0.0D);
         }
     }

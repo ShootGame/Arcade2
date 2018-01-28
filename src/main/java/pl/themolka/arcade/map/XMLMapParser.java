@@ -331,17 +331,7 @@ public class XMLMapParser implements MapParser {
     }
 
     private boolean parsePvp(Element parent) {
-        if (parent != null) {
-            Attribute attribute = parent.getAttribute("pvp");
-            if (attribute != null) {
-                try {
-                    return attribute.getBooleanValue();
-                } catch (DataConversionException ignored) {
-                }
-            }
-        }
-
-        return true;
+        return parent == null || XMLParser.parseBoolean(parent.getAttributeValue("pvp"), true);
     }
 
     public static class XMLParserTechnology implements MapParser.Technology {

@@ -5,7 +5,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -13,6 +12,7 @@ import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 import pl.themolka.arcade.team.PlayerLeaveTeamEvent;
 
@@ -97,12 +97,9 @@ public class FlagPayloadRender implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @Handler(priority = Priority.LAST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        GamePlayer player = this.game.getGame().getPlayer(event.getEntity());
-        if (player != null) {
-            this.detachAll(player, false);
-        }
+        this.detachAll(event.getVictim(), false);
     }
 
     @Handler(priority = Priority.LAST)

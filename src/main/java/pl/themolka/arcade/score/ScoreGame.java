@@ -2,14 +2,12 @@ package pl.themolka.arcade.score;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jdom2.Element;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
@@ -25,17 +23,14 @@ import java.util.Map;
 public class ScoreGame extends GameModule implements DynamicWinnable {
     private final Map<GoalHolder, Score> byOwner = new HashMap<>();
 
-    private final double limit;
-    private final String scoreName;
-
-    private double deathLoss;
-    private double killReward;
+    private final ScoreConfig config;
+    private final Map<String, Element> competitors;
 
     private Match match;
 
-    public ScoreGame(double limit, String scoreName) {
-        this.limit = limit;
-        this.scoreName = scoreName;
+    public ScoreGame(ScoreConfig config, Map<String, Element> competitors) {
+        this.config = config;
+        this.competitors = competitors;
     }
 
     @Override
@@ -48,15 +43,21 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         this.match = ((MatchGame) module).getMatch();
         this.getMatch().registerDynamicWinnable(this);
 
-        for (MatchWinner completableBy : this.getMatch().getWinnerList()) {
-            Score score = new Score(this, completableBy);
-            score.setLimit(this.getLimit());
-            score.setName(this.getScoreName());
+        for (Map.Entry<String, Element> competitor : this.competitors.entrySet()) {
+            MatchWinner winner = this.getMatch().findWinnerById(competitor.getKey());
+            if (winner == null) {
+                continue;
+            }
 
-            // Make sure that Score is only ONE per GoalHolder
-            if (score.isCompletableBy(completableBy) && this.getScore(completableBy) == null) {
-                this.byOwner.put(completableBy, score);
-                completableBy.addGoal(score);
+            ScoreConfig config = ScoreConfig.parse(competitor.getValue(), this.config);
+            if (config != null) {
+                Score score = new Score(this, winner, config);
+
+                // Make sure that Score is only ONE per GoalHolder
+                if (score.isCompletableBy(winner) && this.getScore(winner) == null) {
+                    this.byOwner.put(winner, score);
+                    winner.addGoal(score);
+                }
             }
         }
     }
@@ -95,16 +96,8 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.byOwner.values();
     }
 
-    public double getDeathLoss() {
-        return this.deathLoss;
-    }
-
-    public double getKillReward() {
-        return this.killReward;
-    }
-
-    public double getLimit() {
-        return this.limit;
+    public ScoreConfig getConfig() {
+        return this.config;
     }
 
     public Match getMatch() {
@@ -115,32 +108,17 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.byOwner.get(holder);
     }
 
-    public String getScoreName() {
-        return this.scoreName;
-    }
-
-    public void setDeathLoss(double deathLoss) {
-        this.deathLoss = deathLoss;
-    }
-
-    public void setKillReward(double killReward) {
-        this.killReward = killReward;
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @Handler(priority = Priority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Match match = this.getMatch();
 
         if (match != null) {
-            Player victim = event.getEntity();
-            Player killer = victim.getKiller();
-
             // kill registration
-            boolean wasKill = this.registerPoints(match, killer, this.getKillReward());
+            boolean wasKill = this.registerPoints(match, event.getKiller(), true);
 
             // death registration
             if (!wasKill) {
-                this.registerPoints(match, victim, -this.getDeathLoss());
+                this.registerPoints(match, event.getVictim(), false);
             }
         }
     }
@@ -152,12 +130,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
                 event.getScore().getOwner().getTitle() + ChatColor.YELLOW + " has been reached.");
     }
 
-    private boolean registerPoints(Match match, Player bukkit, double points) {
-        if (bukkit == null || points == Score.ZERO) {
-            return false;
-        }
-
-        GamePlayer player = match.getGame().getPlayer(bukkit);
+    private boolean registerPoints(Match match, GamePlayer player, boolean killReward) {
         if (player == null) {
             return false;
         }
@@ -167,7 +140,11 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             Score score = this.getScore(competitor);
 
             if (score != null) {
-                score.incrementScore(player, points);
+                double value = killReward ? score.getConfig().getKillReward() : -score.getConfig().getDeathLoss();
+
+                if (value != Score.ZERO) {
+                    score.incrementScore(player, value);
+                }
                 return true;
             }
         }

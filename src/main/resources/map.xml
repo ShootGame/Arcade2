@@ -18,7 +18,7 @@
     <include type="global">match.xml</include>
 
     <!-- World settings -->
-    <world difficulty="easy" environment="normal" pvp="true">
+    <world difficulty="easy" environment="normal" pvp="yes">
         <spawn x="0.5" y="64" z="0.5" />
     </world>
 

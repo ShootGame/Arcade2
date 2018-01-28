@@ -9,16 +9,11 @@ import pl.themolka.arcade.time.Time;
 
 @ModuleInfo(id = "Auto-Respawn")
 public class AutoRespawnModule extends Module<AutoRespawnGame> {
-    public static final int DEFAULT_COOLDOWN = 1;
+    public static final Time DEFAULT_COOLDOWN = Time.SECOND;
 
     @Override
     public AutoRespawnGame buildGameModule(Element xml,
                                            Game game) throws JDOMException {
-        return new AutoRespawnGame(this.parseSeconds(DEFAULT_COOLDOWN));
-    }
-
-    private long parseSeconds(int seconds) {
-        long ticks = Time.SECOND.toTicks();
-        return Math.max(seconds * ticks, ticks);
+        return new AutoRespawnGame(DEFAULT_COOLDOWN);
     }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<settings enabled="true">
+<settings enabled="yes">
     <!-- Default cycle settings -->
     <cycle countdown="25s" />
 
     <!-- Server environment type -->
     <!-- Values: `development`, `production` -->
     <environment type="development">
-        <event-debug>true</event-debug>
+        <event-debug>yes</event-debug>
     </environment>
 
     <!-- Default world spawn position -->

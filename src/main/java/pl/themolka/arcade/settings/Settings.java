@@ -1,13 +1,12 @@
 package pl.themolka.arcade.settings;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.arcade.xml.XMLPreProcessor;
 
 import java.io.File;
@@ -107,13 +106,6 @@ public class Settings {
     }
 
     private void setup(Element root) {
-        Attribute enabled = root.getAttribute("enabled");
-        if (enabled != null) {
-            try {
-                this.enabled = enabled.getBooleanValue();
-            } catch (DataConversionException ex) {
-                ex.printStackTrace();
-            }
-        }
+        this.enabled = XMLParser.parseBoolean(root.getAttributeValue("enabled"));
     }
 }

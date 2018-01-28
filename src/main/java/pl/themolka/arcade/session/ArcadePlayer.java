@@ -17,6 +17,8 @@ import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.HealthContent;
+import pl.themolka.arcade.kit.MaxHealthContent;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -243,9 +245,17 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public void respawn() {
-        PacketPlayInClientCommand packet = new PacketPlayInClientCommand(
-                PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN);
-        this.getMojang().playerConnection.a(packet);
+        Player bukkit = this.getBukkit();
+        if (bukkit != null) {
+            bukkit.setMaxHealth(MaxHealthContent.DEFAULT_HEALTH);
+            bukkit.setHealth(HealthContent.DEFAULT_HEALTH);
+        }
+
+        EntityPlayer mojang = this.getMojang();
+        if (mojang != null) {
+            this.getMojang().playerConnection.a(new PacketPlayInClientCommand(
+                    PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+        }
     }
 
     public void setDisplayName(String displayName) {

@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.event.Priority;
@@ -15,6 +14,7 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.session.PlayerJoinEvent;
@@ -120,12 +120,9 @@ public class PointCapture implements Listener {
     // Tracking Players
     //
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @Handler(priority = Priority.LAST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        GamePlayer player = this.convertPlayer(event.getEntity());
-        if (player != null) {
-            this.playerLeave(player);
-        }
+        this.playerLeave(event.getVictim());
     }
 
     // We are unable to use PlayerInitialSpawnEvent because our player sessions

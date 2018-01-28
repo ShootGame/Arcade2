@@ -1,36 +1,24 @@
 package pl.themolka.arcade.respawn;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import net.engio.mbassy.listener.Handler;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.life.PlayerDeathEvent;
+import pl.themolka.arcade.time.Time;
 
 public class AutoRespawnGame extends GameModule {
-    private final long cooldown;
+    private final Time cooldown;
 
-    public AutoRespawnGame(long cooldown) {
+    public AutoRespawnGame(Time cooldown) {
         this.cooldown = cooldown;
     }
 
-    public long getCooldown() {
+    public Time getCooldown() {
         return this.cooldown;
     }
 
-    public void respawn(GamePlayer player) {
-        ArcadePlayer source = player.getPlayer();
-        if (source != null && player.isParticipating()) {
-            source.respawn();
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
+    @Handler(priority = Priority.LAST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        GamePlayer player = this.getGame().getPlayer(event.getEntity());
-        if (player != null && player.isParticipating()) {
-            this.getServer().getScheduler().runTaskLater(this.getPlugin(), () ->
-                    this.respawn(player), this.getCooldown());
-        }
+        event.setAutoRespawn(true, this.getCooldown());
     }
 }

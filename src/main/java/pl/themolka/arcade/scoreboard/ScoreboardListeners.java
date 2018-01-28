@@ -3,7 +3,7 @@ package pl.themolka.arcade.scoreboard;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.event.Listener;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.PluginReadyEvent;
+import pl.themolka.arcade.event.PluginFreshEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.ServerCycleEvent;
@@ -33,7 +33,7 @@ public class ScoreboardListeners implements Listener {
 
     // server starts
     @Handler(priority = Priority.NORMAL)
-    public void onServerStart(PluginReadyEvent event) {
+    public void onServerStart(PluginFreshEvent event) {
         for (ArcadePlayer player : event.getPlugin().getPlayers()) {
             this.render(player);
         }

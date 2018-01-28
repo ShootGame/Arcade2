@@ -97,15 +97,7 @@ public class XMLTeam extends XMLParser {
     }
 
     public static boolean parseFriendlyFire(Element xml) {
-        Attribute attribute = xml.getAttribute("friendly-fire");
-        if (attribute != null) {
-            try {
-                return attribute.getBooleanValue();
-            } catch (DataConversionException ignored) {
-            }
-        }
-
-        return false;
+        return XMLParser.parseBoolean(xml.getAttributeValue("friendly-fire"), false);
     }
 
     public static int parseMaxPlayers(Element xml) {

@@ -6,18 +6,36 @@ import org.bukkit.boss.BarColor;
 import pl.themolka.arcade.goal.GoalHolder;
 
 public final class BossBarUtils {
+    private static final BarColor def = null;
+
     private BossBarUtils() {
     }
 
     public static BarColor color(ChatColor chat) {
-        return chat != null ? color(Color.ofChat(chat)) : null;
+        return color(chat, def);
     }
 
     public static BarColor color(Color color) {
-        return color != null ? color(color.toDye()) : null;
+        return color(color, def);
     }
 
     public static BarColor color(DyeColor dye) {
+        return color(dye, def);
+    }
+
+    public static BarColor color(GoalHolder goalHolder) {
+        return color(goalHolder, def);
+    }
+
+    public static BarColor color(ChatColor chat, BarColor def) {
+        return chat != null ? color(Color.ofChat(chat), def) : def;
+    }
+
+    public static BarColor color(Color color, BarColor def) {
+        return color != null ? color(color.toDye(), def) : def;
+    }
+
+    public static BarColor color(DyeColor dye, BarColor def) {
         if (dye != null) {
             switch (dye) {
                 case PINK:
@@ -42,10 +60,10 @@ public final class BossBarUtils {
             }
         }
 
-        return null;
+        return def;
     }
 
-    public static BarColor color(GoalHolder goalHolder) {
-        return goalHolder != null ? color(goalHolder.getColor()) : null;
+    public static BarColor color(GoalHolder goalHolder, BarColor def) {
+        return goalHolder != null ? color(goalHolder.getColor(), def) : def;
     }
 }

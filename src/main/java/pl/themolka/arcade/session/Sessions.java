@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -56,7 +57,50 @@ public class Sessions implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        ArcadePlayer victim = this.plugin.getPlayer(event.getEntity());
+        ArcadePlayer killer = this.plugin.getPlayer(victim.getBukkit().getKiller());
+
+        Game game = this.plugin.getGames().getCurrentGame();
+        if (game != null) {
+            pl.themolka.arcade.life.PlayerDeathEvent deathEvent =
+                    new pl.themolka.arcade.life.PlayerDeathEvent(
+                            this.plugin,
+                            victim,
+                            killer != null ? killer.getGamePlayer() : null,
+                            event.getDeathMessage(),
+                            event.getDroppedExp(),
+                            event.getDrops());
+            deathEvent.setKeepInventory(event.getKeepInventory());
+            deathEvent.setKeepLevel(event.getKeepLevel());
+            deathEvent.setNewExp(event.getNewExp());
+            deathEvent.setNewLevel(event.getNewLevel());
+
+            this.postEvent(deathEvent);
+
+            event.getDrops().clear();
+            event.getDrops().addAll(deathEvent.getDroppedItems());
+
+            event.setDeathMessage(deathEvent.getDeathMessage());
+            event.setDroppedExp(deathEvent.getDropExp());
+            event.setKeepInventory(deathEvent.shouldKeepInventory());
+            event.setKeepLevel(deathEvent.shouldKeepLevel());
+            event.setNewExp(deathEvent.getNewExp());
+            event.setNewLevel(deathEvent.getNewLevel());
+
+            if (deathEvent.willAutoRespawn()) {
+                this.plugin.getServer().getScheduler().runTaskLater(this.plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        victim.respawn();
+                    }
+                }, deathEvent.getAutoRespawnCooldown().toTicks());
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         ArcadePlayer player = this.plugin.getPlayer(
                 event.getPlayer().getUniqueId());

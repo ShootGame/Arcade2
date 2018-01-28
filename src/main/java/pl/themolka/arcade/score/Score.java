@@ -15,20 +15,15 @@ public class Score extends SimpleGoal {
 
     protected final ScoreGame game;
 
-    private final double initialScore;
-    private double limit;
+    private final ScoreConfig config;
     private double score;
 
-    public Score(ScoreGame game, GoalHolder owner) {
-        this(game, owner, ZERO);
-    }
-
-    public Score(ScoreGame game, GoalHolder owner, double initialScore) {
+    public Score(ScoreGame game, GoalHolder owner, ScoreConfig config) {
         super(game.getGame(), owner);
         this.game = game;
 
-        this.initialScore = initialScore;
-        this.score = initialScore;
+        this.config = config;
+        this.score = config.getInitialScore();
     }
 
     @Override
@@ -60,11 +55,11 @@ public class Score extends SimpleGoal {
      */
     @Override
     public double getProgress() {
-        if (!this.hasLimit()) {
+        if (!this.config.hasLimit()) {
             return Goal.PROGRESS_UNTOUCHED;
         }
 
-        double progress = this.getScore() / this.getLimit();
+        double progress = this.getScore() / this.config.getLimit();
         if (progress < Goal.PROGRESS_UNTOUCHED) {
             return Goal.PROGRESS_UNTOUCHED;
         } else if (progress > Goal.PROGRESS_SCORED) {
@@ -92,7 +87,7 @@ public class Score extends SimpleGoal {
         if (!event.isCanceled()) {
             GoalResetEvent.call(this.game.getPlugin(), this);
 
-            this.score = this.getInitialScore();
+            this.score = this.config.getInitialScore();
             this.setCompleted(false);
             this.setTouched(false);
             return true;
@@ -101,12 +96,8 @@ public class Score extends SimpleGoal {
         return false;
     }
 
-    public double getInitialScore() {
-        return this.initialScore;
-    }
-
-    public double getLimit() {
-        return this.limit;
+    public ScoreConfig getConfig() {
+        return this.config;
     }
 
     public double getScore() {
@@ -115,10 +106,6 @@ public class Score extends SimpleGoal {
 
     public ScoreGame getScoreGame() {
         return this.game;
-    }
-
-    public boolean hasLimit() {
-        return this.score != ScoreModule.LIMIT_NULL;
     }
 
     /**
@@ -159,11 +146,7 @@ public class Score extends SimpleGoal {
     }
 
     public boolean isLimitReached() {
-        return this.hasLimit() && this.getScore() >= this.getLimit();
-    }
-
-    public void setLimit(double limit) {
-        this.limit = limit;
+        return this.config.hasLimit() && this.getScore() >= this.config.getLimit();
     }
 
     public static boolean outOfBounds(double score) {

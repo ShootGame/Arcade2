@@ -27,6 +27,7 @@ import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
+import pl.themolka.arcade.event.PluginFreshEvent;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.PluginStartEvent;
 import pl.themolka.arcade.game.Game;
@@ -200,6 +201,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
 
             if (this.beginLogic()) {
+                this.getEventBus().publish(new PluginFreshEvent(this));
                 this.getLogger().info(getName() + " is fresh and ready to use.");
             } else {
                 this.getLogger().severe("Could not start - see logs above. Shutting down the server...");
