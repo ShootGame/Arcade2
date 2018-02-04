@@ -214,8 +214,12 @@ public class Team implements MatchWinner {
         return Objects.hash(this.getId());
     }
 
-    public boolean hasPlayer(GamePlayer player) {
+    public boolean hasPlayed(GamePlayer player) {
         return this.getMembers().contains(player);
+    }
+
+    public boolean hasPlayer(GamePlayer player) {
+        return this.getOnlineMembers().contains(player);
     }
 
     public boolean isFriendlyFire() {
@@ -282,8 +286,6 @@ public class Team implements MatchWinner {
 
         // handle it AFTER the setParticipating(...) method
         if (this.getMatch().isRunning()) {
-            player.reset();
-
             player.getPlayer().getPermissions().clearGroups();
             player.getPlayer().getPermissions().refresh();
         }
@@ -334,8 +336,6 @@ public class Team implements MatchWinner {
 
         // handle it AFTER the setParticipating method
         if (this.getMatch().isRunning()) {
-            player.reset();
-
             player.getPlayer().getPermissions().clearGroups();
             player.getPlayer().getPermissions().refresh();
         }
@@ -358,6 +358,9 @@ public class Team implements MatchWinner {
         if (player.getBukkit() != null) {
             this.getBukkit().removePlayer(player.getBukkit());
         }
+
+        this.plugin.getLogger().info(player.getUsername() + " left team '" +
+                this.getName() + "' (" + this.getId() + ") <server quit>");
     }
 
     public void send(String message) {

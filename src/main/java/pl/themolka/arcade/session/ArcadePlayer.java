@@ -248,6 +248,7 @@ public class ArcadePlayer implements Metadata, Sender {
         Player bukkit = this.getBukkit();
         if (bukkit != null) {
             bukkit.setMaxHealth(MaxHealthContent.DEFAULT_HEALTH);
+            bukkit.setHealthScale(MaxHealthContent.DEFAULT_HEALTH);
             bukkit.setHealth(HealthContent.DEFAULT_HEALTH);
         }
 

@@ -34,7 +34,6 @@ public class Score extends SimpleGoal {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            this.setCompleted(completer);
             if (byLimit) {
                 this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
             }

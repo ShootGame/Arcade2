@@ -17,6 +17,7 @@ public class TeamKitApply implements PlayerApplicable {
     @Override
     public void apply(GamePlayer player) {
         this.getKit().apply(player);
+        player.getBukkit().updateInventory();
     }
 
     public Kit getKit() {

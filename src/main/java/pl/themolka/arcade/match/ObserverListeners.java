@@ -127,7 +127,7 @@ public class ObserverListeners implements Listener {
             this.game.getMatch().getObserversKit().apply(player);
             // ^ apply kits
 
-            player.refreshVisibility(this.game.getPlugin().getPlayers());
+            player.refreshVisibilityArcadePlayer(this.game.getPlugin().getPlayers());
         }
     }
 
@@ -135,7 +135,7 @@ public class ObserverListeners implements Listener {
     public void onPlayerLeaveObservers(ObserversLeaveEvent event) {
         if (event.getGamePlayer().isOnline() &&
                 this.game.getMatch().isRunning()) {
-            event.getGamePlayer().refreshVisibility(
+            event.getGamePlayer().refreshVisibilityArcadePlayer(
                     this.game.getPlugin().getPlayers());
         }
     }
@@ -147,9 +147,8 @@ public class ObserverListeners implements Listener {
             player.getPlayer().clearInventory(true);
 
             this.game.getMatch().getObserversKit().apply(player);
+            player.getBukkit().updateInventory();
             // ^ apply kits
-
-            player.refreshVisibility(this.game.getPlugin().getPlayers());
         }
     }
 

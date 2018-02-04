@@ -196,10 +196,10 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         this.metadata.setMetadata(owner, key, metadata);
     }
 
-    public boolean canSee(GamePlayer player) {
-        return this.isOnline() && player.isOnline() &&
-                this.getGame() != null &&
-                this.getGame().canSee(this, player);
+    public boolean canSee(GamePlayer target) {
+        Game game = this.getGame();
+        return this.isOnline() && target.isOnline() &&
+                game != null && game.canSee(this, target);
     }
 
     public Player getBukkit() {
@@ -289,39 +289,53 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         }
 
         boolean participating = this.isParticipating();
+        System.out.println(participating);
         if (!participating) {
             this.getBukkit().leaveVehicle();
         }
 
         this.getBukkit().setAffectsSpawning(participating);
-        this.getBukkit().setCanPickupItems(participating);
+        this.getBukkit().setCollidable(participating);
         this.getBukkit().setCollidesWithEntities(participating);
         this.getBukkit().showInvisibles(!participating);
     }
 
-    public void refreshVisibility(Iterable<ArcadePlayer> viewers) {
+    public void refreshVisibilityArcadePlayer(Iterable<ArcadePlayer> viewers) {
+        List<GamePlayer> players = new ArrayList<>();
+        for (ArcadePlayer viewer : viewers) {
+            GamePlayer player = viewer.getGamePlayer();
+
+            if (player != null && player.isOnline()) {
+                players.add(player);
+            }
+        }
+
+        this.refreshVisibility(players);
+    }
+
+    public void refreshVisibility(Iterable<GamePlayer> viewers) {
         if (!this.isOnline()) {
             return;
         }
 
-        for (ArcadePlayer online : viewers) {
-            GamePlayer player = online.getGamePlayer();
-            if (player == null) {
-                continue;
-            }
+        Player bukkit = this.getBukkit();
+        for (GamePlayer viewer : viewers) {
+            if (viewer.isOnline()) {
+                Player viewerBukkit = viewer.getBukkit();
 
-            // can this player see looped player?
-            if (this.canSee(player)) {
-                this.getBukkit().showPlayer(player.getBukkit());
-            } else {
-                this.getBukkit().hidePlayer(player.getBukkit());
-            }
+                // can this player see looped player?
+                if (this.canSee(viewer)) {
+                    bukkit.showPlayer(viewerBukkit);
+                } else {
+                    bukkit.hidePlayer(viewerBukkit);
+                }
 
-            // can looped player see this player?
-            if (player.canSee(this)) {
-                player.getBukkit().showPlayer(this.getBukkit());
-            } else {
-                player.getBukkit().hidePlayer(this.getBukkit());
+                // can looped player see this player?
+                if (viewer.canSee(this)) {
+                    viewerBukkit.showPlayer(bukkit);
+                } else {
+                    viewerBukkit.hidePlayer(bukkit);
+                }
             }
         }
     }
@@ -336,6 +350,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
         this.getPlayer().clearInventory(true);
         this.resetDisplayName();
+
+        bukkit.closeInventory();
 
         bukkit.setAbsorption(0F);
         bukkit.setAllowFlight(FlyContent.DEFAULT_ALLOW_FLYING);

@@ -207,7 +207,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 this.getLogger().severe("Could not start - see logs above. Shutting down the server...");
                 this.getServer().shutdown();
             }
-        }, Time.TICK.toTicks());
+        }, Time.ZERO.toTicks());
     }
 
     //

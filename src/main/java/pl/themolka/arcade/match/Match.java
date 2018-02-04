@@ -1,7 +1,6 @@
 package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.CommandUtils;
@@ -384,7 +383,6 @@ public class Match implements DynamicWinnable {
             online.getPermissions().refresh();
 
             player.reset();
-            player.getBukkit().setGameMode(GameMode.SURVIVAL);
         }
 
         this.plugin.getEventBus().publish(new MatchStartedEvent(this.plugin, this, force));

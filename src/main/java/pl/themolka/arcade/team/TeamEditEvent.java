@@ -34,6 +34,12 @@ public class TeamEditEvent extends GameEvent implements TeamHolder {
     }
 
     public enum Reason {
-        FRIENDLY_FIRE, MAX_PLAYERS, MIN_PLAYERS, PAINT, RENAME, SLOTS;
+        FRIENDLY_FIRE,
+        MAX_PLAYERS,
+        MIN_PLAYERS,
+        PAINT,
+        RENAME,
+        SLOTS,
+        ;
     }
 }

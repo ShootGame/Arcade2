@@ -74,6 +74,13 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
         }
     },
 
+    LIVES("lives", "life") {
+        @Override
+        public KitContent<?> parse(Element xml) throws DataConversionException {
+            return LIVES_PARSER.parse(xml);
+        }
+    },
+
     MAX_HEALTH("max-health", "maxhealth") {
         @Override
         public MaxHealthContent parse(Element xml) throws DataConversionException {
@@ -120,6 +127,7 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
     public static final HealthContent.Parser HEALTH_PARSER = new HealthContent.Parser();
     public static final ItemStackContent.Parser ITEM_STACK_PARSER = new ItemStackContent.Parser();
     public static final KnockbackContent.Parser KNOCKBACK_PARSER = new KnockbackContent.Parser();
+    public static final LivesContent.Parser LIVES_PARSER = new LivesContent.Parser();
     public static final MaxHealthContent.Parser MAX_HEALTH_PARSER = new MaxHealthContent.Parser();
     public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();
     public static final SaturationContent.Parser SATURATION_PARSER = new SaturationContent.Parser();

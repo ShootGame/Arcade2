@@ -99,38 +99,40 @@ public class TeamsModule extends Module<TeamsGame> {
             throw new CommandException("Teams module is not enabled in this game.");
         }
 
-        TeamsGame game = this.getGameModule();
-        if (sender.hasPermission(TEAMS_MANAGE_PERMISSION) && context.getParam(0) != null) {
-            switch (context.getParam(0).toLowerCase()) {
+        TeamCommands commands = this.getGameModule().getCommands();
+        String command = context.getParam(0);
+
+        if (sender.hasPermission(TEAMS_MANAGE_PERMISSION) && command != null) {
+            switch (command.toLowerCase()) {
                 case "clear":
-                    game.clearCommand(sender, context.getParam(1));
+                    commands.clearCommand(sender, context.getParam(1));
                     break;
                 case "force":
-                    game.forceCommand(sender, context.getParam(1), context.getParam(2));
+                    commands.forceCommand(sender, context.getParam(1), context.getParam(2));
                     break;
                 case "friendly":
-                    game.friendlyCommand(sender, context.getParam(1), context.getParamBoolean(2, true));
+                    commands.friendlyCommand(sender, context.getParam(1), context.getParamBoolean(2, true));
                     break;
                 case "info":
-                    game.infoCommand(sender);
+                    commands.infoCommand(sender);
                     break;
                 case "kick":
-                    game.kickCommand(sender, context.getParam(1));
+                    commands.kickCommand(sender, context.getParam(1));
                     break;
                 case "min":
-                    game.minCommand(sender, context.getParam(1), context.getParamInt(2));
+                    commands.minCommand(sender, context.getParam(1), context.getParamInt(2));
                     break;
                 case "overfill":
-                    game.overfillCommand(sender, context.getParam(1), context.getParamInt(2));
+                    commands.overfillCommand(sender, context.getParam(1), context.getParamInt(2));
                     break;
                 case "paint":
-                    game.paintCommand(sender, context.getParam(1), context.getParam(2));
+                    commands.paintCommand(sender, context.getParam(1), context.getParam(2));
                     break;
                 case "rename":
-                    game.renameCommand(sender, context.getParam(1), context.getParams(2));
+                    commands.renameCommand(sender, context.getParam(1), context.getParams(2));
                     break;
                 case "slots":
-                    game.slotsCommand(sender, context.getParam(1), context.getParamInt(2));
+                    commands.slotsCommand(sender, context.getParam(1), context.getParamInt(2));
                     break;
                 default:
                     CommandUtils.sendTitleMessage(sender, "Teams Management");
@@ -151,7 +153,7 @@ public class TeamsModule extends Module<TeamsGame> {
             return;
         }
 
-        Collection<Team> teams = game.getTeams();
+        Collection<Team> teams = this.getGameModule().getTeams();
         CommandUtils.sendTitleMessage(sender, "Teams", Integer.toString(teams.size()));
 
         for (Team team : teams) {

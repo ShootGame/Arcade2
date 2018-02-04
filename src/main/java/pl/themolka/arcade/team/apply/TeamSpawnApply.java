@@ -12,8 +12,11 @@ public abstract class TeamSpawnApply implements PlayerApplicable {
     public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE =
             PlayerTeleportEvent.TeleportCause.PLUGIN;
 
-    private float yaw;
-    private float pitch;
+    private float yaw = DEFAULT_YAW;
+    private boolean customYaw = false;
+
+    private float pitch = DEFAULT_PITCH;
+    private boolean customPitch = false;
 
     public TeamSpawnApply() {
         this(DEFAULT_YAW);
@@ -30,15 +33,7 @@ public abstract class TeamSpawnApply implements PlayerApplicable {
 
     @Override
     public void apply(GamePlayer player) {
-        Location spawn;
-        do {
-            spawn = this.getSpawnLocation();
-        } while (spawn == null);
-
-        spawn.setYaw(this.getYaw());
-        spawn.setPitch(this.getPitch());
-
-        player.getBukkit().teleport(spawn, TELEPORT_CAUSE);
+        player.getBukkit().teleport(this.spawn(), TELEPORT_CAUSE);
     }
 
     public abstract Location getSpawnLocation();
@@ -53,9 +48,28 @@ public abstract class TeamSpawnApply implements PlayerApplicable {
 
     public void setYaw(float yaw) {
         this.yaw = yaw;
+        this.customYaw = true;
     }
 
     public void setPitch(float pitch) {
         this.pitch = pitch;
+        this.customPitch = true;
+    }
+
+    public Location spawn() {
+        Location spawn;
+        do {
+            spawn = this.getSpawnLocation();
+        } while (spawn == null);
+
+        if (this.customYaw) {
+            spawn.setYaw(this.getYaw());
+        }
+
+        if (this.customPitch) {
+            spawn.setPitch(this.getPitch());
+        }
+
+        return spawn;
     }
 }

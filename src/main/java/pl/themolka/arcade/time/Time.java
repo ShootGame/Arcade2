@@ -6,9 +6,16 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Time {
-    public static final Time FOREVER = new Time(Long.MAX_VALUE);
-    public static final String FOREVER_KEY = "oo";
-    public static final Time ZERO = new Time(0L);
+    //
+    // Special Values
+    //
+
+    public static final Time FOREVER = ConstantFactory.createForever();
+    public static final Time ZERO = ConstantFactory.createZero();
+
+    //
+    // Single Values
+    //
 
     public static final Time MILLISECOND = Time.ofMillis(1);
     public static final Time TICK = Time.ofTicks(1);
@@ -20,6 +27,11 @@ public class Time {
     public static final Time MONTH = Time.ofMonths(1);
     public static final Time YEAR = Time.ofYears(1);
 
+    //
+    // Units
+    //
+
+    public static final String FOREVER_KEY = "oo";
     public static final char UNIT_MILLIS = 'x';
     public static final char UNIT_TICKS = 't';
     public static final char UNIT_SECONDS = 's';
@@ -29,6 +41,28 @@ public class Time {
     public static final char UNIT_WEEKS = 'w';
     public static final char UNIT_MONTHS = 'o';
     public static final char UNIT_YEARS = 'y';
+
+    //
+    // Factories
+    //
+
+    private static Time create(long time) {
+        return new Time(time);
+    }
+
+    private static class ConstantFactory {
+        static Time createForever() {
+            return create(Long.MAX_VALUE);
+        }
+
+        static Time createZero() {
+            return create(0L);
+        }
+    }
+
+    //
+    // Time
+    //
 
     private final long time;
 
@@ -68,7 +102,7 @@ public class Time {
     }
 
     public boolean isForever() {
-        return this.equals(FOREVER);
+        return FOREVER.equals(this);
     }
 
     public boolean isNegative() {
@@ -267,7 +301,7 @@ public class Time {
     }
 
     public static Time ofMillis(long millis) {
-        return new Time(millis);
+        return create(millis);
     }
 
     public static Time ofTicks(long ticks) {

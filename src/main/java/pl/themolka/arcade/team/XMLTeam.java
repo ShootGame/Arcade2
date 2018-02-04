@@ -7,11 +7,11 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.match.MatchApplyContext;
+import pl.themolka.arcade.team.apply.TeamApplyContext;
 import pl.themolka.arcade.team.apply.TeamKitApply;
 import pl.themolka.arcade.team.apply.TeamSpawnsApply;
 import pl.themolka.arcade.util.Color;
@@ -81,12 +81,15 @@ public class XMLTeam extends XMLParser {
                 .slots(slots)
                 .build();
 
+        TeamApplyContext applyContext = team.getApplyContext();
         for (Element applyItem : xml.getChildren("apply")) {
             ApplyResultEntry entry = parseApply(map, applyItem, kits);
 
             if (entry != null) {
                 for (MatchApplyContext.EventType event : entry.getEvents()) {
-                    team.getApplyContext().addContent(entry.getContentUnite(), event);
+                    for (PlayerApplicable applicable : entry.getContent()) {
+                        applyContext.addContent(applicable, event);
+                    }
                 }
             }
         }
@@ -238,17 +241,6 @@ public class XMLTeam extends XMLParser {
 
         public List<PlayerApplicable> getContent() {
             return new ArrayList<>(this.content);
-        }
-
-        public PlayerApplicable getContentUnite() {
-            return new PlayerApplicable() {
-                @Override
-                public void apply(GamePlayer player) {
-                    for (PlayerApplicable content : getContent()) {
-                        content.apply(player);
-                    }
-                }
-            };
         }
 
         public List<MatchApplyContext.EventType> getEvents() {

@@ -16,6 +16,7 @@
     <module class="pl.themolka.arcade.map.ArchiveModule" />
     <module class="pl.themolka.arcade.map.MapLoaderModule" />
     <module class="pl.themolka.arcade.match.MatchModule" />
+    <module class="pl.themolka.arcade.portal.PortalsModule" />
     <module class="pl.themolka.arcade.region.RegionsModule" />
     <module class="pl.themolka.arcade.repository.RepositoriesModule" />
     <module class="pl.themolka.arcade.respawn.AutoRespawnModule" />

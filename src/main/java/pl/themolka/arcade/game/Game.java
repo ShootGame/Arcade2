@@ -87,9 +87,14 @@ public class Game implements Metadata, PlayerVisibilityFilter {
      */
     @Override
     public boolean canSee(GamePlayer viewer, GamePlayer target) {
+        if (!viewer.isOnline() || !target.isOnline()) {
+            return false;
+        }
+
         boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, target);
         for (PlayerVisibilityFilter filter : this.visibilityFilters) {
             boolean value = filter.canSee(viewer, target);
+
             if (value != def) {
                 return value;
             }

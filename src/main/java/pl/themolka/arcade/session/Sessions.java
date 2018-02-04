@@ -37,9 +37,9 @@ public class Sessions implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        ArcadePlayer player = this.destroySession(event.getPlayer());
-        if (player != null) {
-            this.removeSession(player);
+        DestroyedPlayerInfo info = this.destroySession(event.getPlayer());
+        if (info != null && info.player != null) {
+            this.removeSession(info);
         }
     }
 
@@ -119,30 +119,37 @@ public class Sessions implements Listener {
         }
     }
 
-    public ArcadePlayer createSession(Player bukkit) {
+    public CreatedPlayerInfo createSession(Player bukkit) {
         ArcadePlayer player = new ArcadePlayer(this.plugin, bukkit);
+        boolean restored = false;
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
             // try to restore the GamePlayer first
             GamePlayer gamePlayer = game.getPlayer(bukkit);
-            if (gamePlayer == null) {
+            if (gamePlayer != null) {
+                restored = true;
+            } else {
                 gamePlayer = new GamePlayer(game, player);
             }
 
+            // link objects
             gamePlayer.setPlayer(player);
             player.setGamePlayer(gamePlayer);
+
+            // register
             game.addPlayer(gamePlayer);
 
             gamePlayer.setParticipating(false); // I don't know ;d
             gamePlayer.reset();
+            gamePlayer.refreshVisibilityArcadePlayer(this.plugin.getPlayers());
         }
 
         this.plugin.addPlayer(player);
-        return player;
+        return new CreatedPlayerInfo(player, restored);
     }
 
-    public ArcadePlayer destroySession(Player bukkit) {
+    public DestroyedPlayerInfo destroySession(Player bukkit) {
         ArcadePlayer player = this.plugin.getPlayer(bukkit.getUniqueId());
         if (player == null) {
             return null;
@@ -155,19 +162,20 @@ public class Sessions implements Listener {
         GamePlayer game = player.getGamePlayer();
         if (game != null) {
             game.setPlayer(null); // remove the pointer
+            game.setParticipating(false);
         }
 
-        return player;
+        return new DestroyedPlayerInfo(player);
     }
 
-    public void insertSession(ArcadePlayer player) {
+    public void insertSession(CreatedPlayerInfo info) {
         this.postEvent(new pl.themolka.arcade.session
-                .PlayerJoinEvent(this.plugin, player));
+                .PlayerJoinEvent(this.plugin, info.player, info.restored));
     }
 
-    public void removeSession(ArcadePlayer player) {
+    public void removeSession(DestroyedPlayerInfo info) {
         this.postEvent(new pl.themolka.arcade.session
-                .PlayerQuitEvent(this.plugin, player));
+                .PlayerQuitEvent(this.plugin, info.player));
     }
 
     private Location fetchSpawn() {
@@ -181,5 +189,23 @@ public class Sessions implements Listener {
 
     private void postEvent(Event event) {
         this.plugin.getEventBus().publish(event);
+    }
+
+    private class CreatedPlayerInfo {
+        ArcadePlayer player;
+        boolean restored;
+
+        CreatedPlayerInfo(ArcadePlayer player, boolean restored) {
+            this.player = player;
+            this.restored = restored;
+        }
+    }
+
+    private class DestroyedPlayerInfo {
+        ArcadePlayer player;
+
+        DestroyedPlayerInfo(ArcadePlayer player) {
+            this.player = player;
+        }
     }
 }
