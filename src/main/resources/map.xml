@@ -30,8 +30,8 @@
     <modules>
         <!-- Format -->
         <teams>
-            <team id="blue-team" name="Blue Team" color="blue" friendly-fire="on" slots="15">
-                <apply on-join="on" on-start="on" on-respawn="on">
+            <team id="blue-team" name="Blue Team" color="blue" friendly-fire="yes" slots="15">
+                <apply match-start="yes" player-play="yes" player-respawn="yes">
                     <kit>blue-leather-armor-kit</kit>
                     <kit>my-kit</kit>
 
@@ -43,8 +43,8 @@
                 </apply>
             </team>
 
-            <team id="red-team" name="Red Team" color="dark red" friendly-fire="on" slots="15">
-                <apply on-join="on" on-start="on" on-respawn="on">
+            <team id="red-team" name="Red Team" color="dark red" friendly-fire="yes" slots="15">
+                <apply match-start="yes" player-play="yes" player-respawn="yes">
                     <kit>red-leather-armor-kit</kit>
                     <kit>my-kit</kit>
 
@@ -59,17 +59,17 @@
 
         <!-- Objectives -->
         <leak>
-            <leakable id="blue-core" name="Blue Core" owner="blue-team" liquid="lava" detector-level="5">
+            <core id="blue-core" name="Blue Core" owner="blue-team" liquid="lava" detector-level="5">
                 <region>
                     <sphere origin-x="25" origin-y="16" origin-z="0" radius="3" />
                 </region>
-            </leakable>
+            </core>
 
-            <leakable id="red-core" name="Red core" owner="red-team" liquid="lava" detector-level="5">
+            <core id="red-core" name="Red core" owner="red-team" liquid="lava" detector-level="5">
                 <region>
                     <sphere origin-x="-25" origin-y="16" origin-z="0" radius="3" />
                 </region>
-            </leakable>
+            </core>
         </leak>
 
         <!-- Other modules -->
@@ -109,7 +109,7 @@
                 </item>
                 <item slot="2" material="stone" amount="64" />
                 <item slot="3" material="stone" amount="64" />
-                <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="on">fire resistance</potion-effect>
+                <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="yes">fire resistance</potion-effect>
             </kit>
 
             <kit id="creative-kit">
@@ -156,7 +156,7 @@
                     <skull owner="TheMolkaPL" />
                 </item>
                 <item slot="6" material="potion">
-                    <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="on">fire resistance</potion-effect>
+                    <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="yes">fire resistance</potion-effect>
                 </item>
             </kit>
         </kits>

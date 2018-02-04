@@ -1,4 +1,4 @@
-package pl.themolka.arcade.team;
+package pl.themolka.arcade.team.apply;
 
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 public class TeamSpawnsApply implements PlayerApplicable {
-    private static final Random random = new Random();
+    private final Random random = new Random();
 
     private final List<TeamSpawnApply> spawns = new ArrayList<>();
 
@@ -47,7 +47,7 @@ public class TeamSpawnsApply implements PlayerApplicable {
         if (this.isEmpty()) {
             return null;
         } else {
-            return this.spawns.get(this.spawns.size());
+            return this.spawns.get(this.random.nextInt(this.spawns.size()));
         }
     }
 
@@ -69,6 +69,10 @@ public class TeamSpawnsApply implements PlayerApplicable {
             }
         }
 
-        return new TeamSpawnsApply(results);
+        if (!results.isEmpty()) {
+            return new TeamSpawnsApply(results);
+        }
+
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
+import org.jdom2.Element;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandPermissionException;
@@ -11,6 +12,8 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.KitsGame;
+import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -19,6 +22,7 @@ import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
+import pl.themolka.arcade.team.apply.TeamApplyListeners;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
@@ -41,7 +45,22 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     /** Team picker window */
     private TeamWindow window;
 
-    public TeamsGame(List<Team> teams) {
+    @Override
+    public void onEnable() {
+        MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
+        KitsGame kitsGame = (KitsGame) this.getGame().getModule(KitsModule.class);
+
+        this.match = matchGame.getMatch();
+
+        List<Team> teams = new ArrayList<>();
+        for (Element teamElement : this.getSettings().getChildren("team")) {
+            Team team = XMLTeam.parse(this.getGame().getMap(), teamElement, this.getPlugin(), kitsGame);
+            if (team != null) {
+                team.setBukkit(Team.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), team));
+                teams.add(team);
+            }
+        }
+
         for (int i = 0; i < teams.size(); i++) {
             if (i > TEAMS_LIMIT) {
                 this.getLogger().log(Level.SEVERE, "There are too many teams (reached limit of " + TEAMS_LIMIT + ")!");
@@ -51,12 +70,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             Team team = teams.get(i);
             this.teamsById.put(team.getId(), team);
         }
-    }
-
-    @Override
-    public void onEnable() {
-        MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
-        this.match = matchGame.getMatch();
 
         for (Team team : this.getTeams()) {
             team.setMatch(this.getMatch());

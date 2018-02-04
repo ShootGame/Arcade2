@@ -107,6 +107,21 @@ public class XMLParser {
         return null;
     }
 
+    public static float parseFloat(String floatt) {
+        return parseFloat(floatt, 0.0F);
+    }
+
+    public static float parseFloat(String floatt, float def) {
+        if (floatt != null) {
+            try {
+                return Float.parseFloat(floatt);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return def;
+    }
+
     public static int parseInt(String integer) {
         return parseInt(integer, 0);
     }

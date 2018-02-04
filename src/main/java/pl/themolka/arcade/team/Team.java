@@ -10,20 +10,19 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.PlayerApplicable;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.team.apply.TeamApplyContext;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,6 +36,7 @@ public class Team implements MatchWinner {
 
     private final ArcadePlugin plugin;
 
+    private final TeamApplyContext applyContext;
     private org.bukkit.scoreboard.Team bukkit;
     private final TeamChannel channel;
     private ChatColor chatColor;
@@ -46,17 +46,16 @@ public class Team implements MatchWinner {
     private final String id;
     private Match match;
     private int maxPlayers;
-    private final List<GamePlayer> members = new ArrayList<>();
+    private final Set<GamePlayer> members = new HashSet<>();
     private int minPlayers;
     private String name;
-    private final List<GamePlayer> onlineMembers = new ArrayList<>();
+    private final Set<GamePlayer> onlineMembers = new HashSet<>();
     private int slots;
-
-    private final Map<TeamApplyEvent, List<PlayerApplicable>> applyMap = new HashMap<>();
 
     public Team(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
 
+        this.applyContext = new TeamApplyContext(this);
         this.channel = new TeamChannel(plugin, this);
         this.channel.setFormat(TeamChannel.TEAM_FORMAT);
         this.id = id;
@@ -150,35 +149,8 @@ public class Team implements MatchWinner {
         return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
     }
 
-    public void addApplyContent(TeamApplyEvent event, PlayerApplicable apply) {
-        List<PlayerApplicable> value = this.getApplyContent(event);
-        value.add(apply);
-
-        this.applyMap.put(event, value);
-    }
-
-    public void addApplyContentToAll(PlayerApplicable apply) {
-        for (TeamApplyEvent event : TeamApplyEvent.values()) {
-            this.addApplyContent(event, apply);
-        }
-    }
-
-    public void apply(GamePlayer player, TeamApplyEvent event) {
-        for (PlayerApplicable apply : this.getApplyContent(event)) {
-            apply.apply(player);
-        }
-    }
-
-    public void applyToAll(TeamApplyEvent event) {
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            if (player.getGamePlayer() != null) {
-                this.apply(player.getGamePlayer(), event);
-            }
-        }
-    }
-
-    public List<PlayerApplicable> getApplyContent(TeamApplyEvent event) {
-        return this.applyMap.getOrDefault(event, new ArrayList<>());
+    public TeamApplyContext getApplyContext() {
+        return this.applyContext;
     }
 
     public org.bukkit.scoreboard.Team getBukkit() {
@@ -213,16 +185,16 @@ public class Team implements MatchWinner {
         return this.slots;
     }
 
-    public List<GamePlayer> getMembers() {
-        return this.members;
+    public Collection<GamePlayer> getMembers() {
+        return new ArrayList<>(this.members);
     }
 
     public int getMinPlayers() {
         return this.minPlayers;
     }
 
-    public List<GamePlayer> getOnlineMembers() {
-        return this.onlineMembers;
+    public Collection<GamePlayer> getOnlineMembers() {
+        return new ArrayList<>(this.onlineMembers);
     }
 
     public String getPrettyName() {

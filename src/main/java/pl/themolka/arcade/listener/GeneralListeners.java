@@ -1,5 +1,6 @@
 package pl.themolka.arcade.listener;
 
+import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,15 +18,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.BukkitCommands;
+import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
 /**
@@ -67,9 +69,9 @@ public class GeneralListeners implements Listener {
     // Fix Arrows Stuck
     //
 
-    @EventHandler
+    @Handler(priority = Priority.HIGHEST)
     public void fixArrowsStuck(PlayerRespawnEvent event) {
-        event.getPlayer().setArrowsStuck(0);
+        event.getBukkitPlayer().setArrowsStuck(0);
     }
 
     //

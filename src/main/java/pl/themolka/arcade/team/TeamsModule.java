@@ -20,9 +20,7 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModuleVersion;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @ModuleInfo(id = "Teams",
         dependency = {
@@ -44,16 +42,7 @@ public class TeamsModule extends Module<TeamsGame> {
 
     @Override
     public TeamsGame buildGameModule(Element xml, Game game) throws JDOMException {
-        List<Team> teams = new ArrayList<>();
-        for (Element teamElement : xml.getChildren("team")) {
-            Team team = XMLTeam.parse(game.getMap(), teamElement, this.getPlugin());
-            if (team != null) {
-                team.setBukkit(Team.createBukkitTeam(game.getScoreboard().getScoreboard(), team));
-                teams.add(team);
-            }
-        }
-
-        return new TeamsGame(teams);
+        return new TeamsGame();
     }
 
     //

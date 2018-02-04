@@ -9,17 +9,39 @@ import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
+import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.match.MatchApplyContext;
+import pl.themolka.arcade.team.apply.TeamKitApply;
+import pl.themolka.arcade.team.apply.TeamSpawnsApply;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class XMLTeam extends XMLParser {
-    public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin) {
+    private static final Map<String, MatchApplyContext.EventType> EVENTS = new HashMap<>();
+
+    static {
+        EVENTS.put("start", MatchApplyContext.EventType.MATCH_START);
+        EVENTS.put("match-start", MatchApplyContext.EventType.MATCH_START);
+
+        EVENTS.put("join", MatchApplyContext.EventType.PLAYER_PLAY);
+        EVENTS.put("player-join", MatchApplyContext.EventType.PLAYER_PLAY);
+        EVENTS.put("play", MatchApplyContext.EventType.PLAYER_PLAY);
+        EVENTS.put("player-player", MatchApplyContext.EventType.PLAYER_PLAY);
+
+        EVENTS.put("respawn", MatchApplyContext.EventType.PLAYER_RESPAWN);
+        EVENTS.put("player-respawn", MatchApplyContext.EventType.PLAYER_RESPAWN);
+    }
+
+    public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin, KitsGame kits) {
         String name = parseName(xml);
         ChatColor color = parseColor(xml);
         DyeColor dye = parseDyeColor(xml);
@@ -60,9 +82,12 @@ public class XMLTeam extends XMLParser {
                 .build();
 
         for (Element applyItem : xml.getChildren("apply")) {
-            ApplyResultEntry entry = parseApply(map, applyItem);
-            for (TeamApplyEvent event : entry.getEvents()) {
-                team.addApplyContent(event, entry.getApplicable());
+            ApplyResultEntry entry = parseApply(map, applyItem, kits);
+
+            if (entry != null) {
+                for (MatchApplyContext.EventType event : entry.getEvents()) {
+                    team.getApplyContext().addContent(entry.getContentUnite(), event);
+                }
             }
         }
 
@@ -97,7 +122,8 @@ public class XMLTeam extends XMLParser {
     }
 
     public static boolean parseFriendlyFire(Element xml) {
-        return XMLParser.parseBoolean(xml.getAttributeValue("friendly-fire"), false);
+        return XMLParser.parseBoolean(xml.getAttributeValue("friendly-fire"), false) ||
+                XMLParser.parseBoolean(xml.getAttributeValue("friendlyfire"), false);
     }
 
     public static int parseMaxPlayers(Element xml) {
@@ -152,31 +178,43 @@ public class XMLTeam extends XMLParser {
     // Applicable
     //
 
-    public static ApplyResultEntry parseApply(ArcadeMap map, Element xml) {
-        TeamApplyEvent[] events = TeamApplyEvent.ofCodeMany(xml.getAttributes());
-        List<PlayerApplicable> applicableList = new ArrayList<>();
-
+    public static ApplyResultEntry parseApply(ArcadeMap map, Element xml, KitsGame kits) {
+        // content
+        List<PlayerApplicable> content = new ArrayList<>();
         for (Element apply : xml.getChildren()) {
-            PlayerApplicable result = parseApplyItem(map, apply);
+            PlayerApplicable result = parseApplyItem(map, apply, kits);
+
             if (result != null) {
-                applicableList.add(result);
+                content.add(result);
             }
         }
 
-        return new ApplyResultEntry(new PlayerApplicable() {
-            @Override
-            public void apply(GamePlayer player) {
-                for (PlayerApplicable applicable : applicableList) {
-                    applicable.apply(player);
-                }
+        if (content.isEmpty()) {
+            return null;
+        }
+
+        // events
+        List<MatchApplyContext.EventType> events = new ArrayList<>();
+        for (Attribute attribute : xml.getAttributes()) {
+            String name = attribute.getName().toLowerCase();
+            MatchApplyContext.EventType event = EVENTS.get(name);
+
+            if (event != null && parseBoolean(attribute.getValue(), false)) {
+                events.add(event);
             }
-        }, events);
+        }
+
+        if (events.isEmpty()) {
+            return null;
+        }
+
+        return new ApplyResultEntry(content, events);
     }
 
-    private static PlayerApplicable parseApplyItem(ArcadeMap map, Element xml) {
+    private static PlayerApplicable parseApplyItem(ArcadeMap map, Element xml, KitsGame kits) {
         switch (xml.getName().toLowerCase()) {
             case "kit":
-                return null; // TODO kits
+                return TeamKitApply.parse(map, xml, kits);
             case "spawns":
                 return TeamSpawnsApply.parse(map, xml);
             default:
@@ -185,25 +223,36 @@ public class XMLTeam extends XMLParser {
     }
 
     public static class ApplyResultEntry {
-        private final PlayerApplicable applicable;
-        private final TeamApplyEvent[] events;
+        private final List<PlayerApplicable> content;
+        private final List<MatchApplyContext.EventType> events;
 
-        private ApplyResultEntry(PlayerApplicable applicable, TeamApplyEvent[] events) {
-            this.applicable = applicable;
+        private ApplyResultEntry(List<PlayerApplicable> content, List<MatchApplyContext.EventType> events) {
+            this.content = content;
 
-            if (events != null && events.length != 0) {
+            if (events != null && !events.isEmpty()) {
                 this.events = events;
             } else {
-                this.events = TeamApplyEvent.values();
+                this.events = Collections.singletonList(MatchApplyContext.NONE);
             }
         }
 
-        public PlayerApplicable getApplicable() {
-            return this.applicable;
+        public List<PlayerApplicable> getContent() {
+            return new ArrayList<>(this.content);
         }
 
-        public TeamApplyEvent[] getEvents() {
-            return this.events;
+        public PlayerApplicable getContentUnite() {
+            return new PlayerApplicable() {
+                @Override
+                public void apply(GamePlayer player) {
+                    for (PlayerApplicable content : getContent()) {
+                        content.apply(player);
+                    }
+                }
+            };
+        }
+
+        public List<MatchApplyContext.EventType> getEvents() {
+            return new ArrayList<>(this.events);
         }
     }
 }

@@ -270,7 +270,7 @@ public class Match implements DynamicWinnable {
 
         IObserverHandler handler = this.getObserverHandler();
         boolean observing = this.getObservers().hasPlayer(player) ||
-                handler == null || handler.isPlayerObserving(player);
+                (handler != null && handler.isPlayerObserving(player));
 
         return !this.isRunning() || observing || !player.isParticipating();
     }

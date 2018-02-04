@@ -119,6 +119,10 @@ public class UnionRegion extends AbstractRegion {
         return false;
     }
 
+    public boolean isEmpty() {
+        return this.regions.length == 0;
+    }
+
     private RegionBounds createBounds() {
         Vector min = null;
         Vector max = null;

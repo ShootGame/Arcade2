@@ -2,12 +2,14 @@ package pl.themolka.arcade.match;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -22,8 +24,14 @@ public class MatchListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void banBeds(PlayerBedEnterEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlock36Damage(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType().equals(Material.PISTON_MOVING_PIECE)) {
+        Block block = event.getClickedBlock();
+        if (block != null && block.getType().equals(Material.PISTON_MOVING_PIECE)) {
             event.setCancelled(true);
         }
     }

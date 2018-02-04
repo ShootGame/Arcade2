@@ -1,6 +1,9 @@
 package pl.themolka.arcade.item;
 
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.meta.BannerMeta;
@@ -20,8 +23,12 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.potion.XMLPotionEffect;
 import pl.themolka.arcade.xml.XMLColor;
+import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLEntity;
 import pl.themolka.arcade.xml.XMLParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class XMLItemMeta extends XMLParser {
     public static ItemMeta parse(Element xml, ItemMeta source) {
@@ -51,6 +58,36 @@ public class XMLItemMeta extends XMLParser {
     }
 
     public static BannerMeta parseBanner(Element xml, BannerMeta source) {
+        Element baseColor = xml.getChild("base-color");
+        if (baseColor != null) {
+            DyeColor dyeColor = XMLDyeColor.parse(baseColor.getValue());
+
+            if (dyeColor != null) {
+                source.setBaseColor(dyeColor);
+            }
+        }
+
+        List<Pattern> patterns = new ArrayList<>();
+        for (Element patternElement : xml.getChildren("pattern")) {
+            Attribute color = patternElement.getAttribute("color");
+            if (color == null) {
+                continue;
+            }
+
+            DyeColor dyeColor = XMLDyeColor.parse(color.getValue());
+            if (dyeColor == null) {
+                continue;
+            }
+
+            try {
+                String id = XMLParser.parseEnumValue(patternElement.getValue());
+                patterns.add(new Pattern(dyeColor, PatternType.valueOf(id)));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        source.setPatterns(patterns);
+
         return source;
     }
 

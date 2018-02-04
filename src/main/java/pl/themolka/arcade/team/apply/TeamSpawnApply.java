@@ -1,19 +1,26 @@
-package pl.themolka.arcade.team;
+package pl.themolka.arcade.team.apply;
 
 import org.bukkit.Location;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
 
 public abstract class TeamSpawnApply implements PlayerApplicable {
+    public static final float DEFAULT_YAW = 0F;
+    public static final float DEFAULT_PITCH = 0F;
+
+    public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE =
+            PlayerTeleportEvent.TeleportCause.PLUGIN;
+
     private float yaw;
     private float pitch;
 
     public TeamSpawnApply() {
-        this(0F);
+        this(DEFAULT_YAW);
     }
 
     public TeamSpawnApply(float yaw) {
-        this(yaw, 0F);
+        this(yaw, DEFAULT_PITCH);
     }
 
     public TeamSpawnApply(float yaw, float pitch) {
@@ -30,7 +37,8 @@ public abstract class TeamSpawnApply implements PlayerApplicable {
 
         spawn.setYaw(this.getYaw());
         spawn.setPitch(this.getPitch());
-        player.getBukkit().teleport(spawn);
+
+        player.getBukkit().teleport(spawn, TELEPORT_CAUSE);
     }
 
     public abstract Location getSpawnLocation();

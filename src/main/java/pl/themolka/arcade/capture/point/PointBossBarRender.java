@@ -20,7 +20,6 @@ import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.util.BossBarUtils;
 import pl.themolka.arcade.util.Color;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 

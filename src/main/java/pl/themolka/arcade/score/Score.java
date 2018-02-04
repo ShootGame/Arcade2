@@ -34,6 +34,7 @@ public class Score extends SimpleGoal {
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
+            this.setCompleted(completer);
             if (byLimit) {
                 this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
             }
@@ -119,7 +120,7 @@ public class Score extends SimpleGoal {
      *     - GoalCompleteEvent (cancelable)
      */
     public void incrementScore(GoalHolder completer, double points) {
-        if (outOfBounds(this.getScore() + points)) {
+        if (!this.game.getMatch().isRunning() || outOfBounds(this.getScore() + points)) {
             return;
         }
 
