@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -15,11 +14,13 @@ public class EffectContent implements KitContent<PotionEffect> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.addPotionEffect(this.getResult(), true);
-        }
+        player.getBukkit().addPotionEffect(this.getResult(), true);
     }
 
     @Override

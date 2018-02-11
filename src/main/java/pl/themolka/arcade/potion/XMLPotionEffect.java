@@ -4,7 +4,6 @@ import org.bukkit.Color;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.XMLTime;
@@ -25,20 +24,11 @@ public class XMLPotionEffect extends XMLParser {
     }
 
     private static boolean parseAmbient(Element xml) {
-        Attribute attribute = xml.getAttribute("ambient");
-        return attribute != null && parseBoolean(attribute.getValue());
+        return parseBoolean(xml.getAttributeValue("ambient"), false);
     }
 
     private static int parseAmplifier(Element xml) {
-        Attribute attribute = xml.getAttribute("amplifier");
-        if (attribute != null) {
-            try {
-                return attribute.getIntValue();
-            } catch (DataConversionException ignored) {
-            }
-        }
-
-        return 1;
+        return parseInt(xml.getAttributeValue("amplifier"), 1);
     }
 
     private static Color parseColor(Element xml) {
@@ -60,7 +50,7 @@ public class XMLPotionEffect extends XMLParser {
             return Integer.MAX_VALUE;
         }
 
-        return 20;
+        return Math.toIntExact(Time.SECOND.toTicks());
     }
 
     private static boolean parseParticles(Element xml) {

@@ -450,7 +450,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     public void start() {
         this.startTime = Instant.now();
 
-        for (GameModule module : new ArrayList<>(this.getModules().getModules())) {
+        for (GameModule module : this.getModules().getModules()) {
             this.enableModule(module);
         }
 

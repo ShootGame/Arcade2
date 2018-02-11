@@ -10,12 +10,13 @@ import org.bukkit.util.Vector;
 public class SpawnAgent extends ForwardingSpawn implements Directional {
     private final Spawn spawn;
     private final Entity entity;
-    private Direction direction;
 
-    private SpawnAgent(Spawn spawn, Entity entity, Direction direction) {
+    private Direction yawDirection;
+    private Direction pitchDirection;
+
+    private SpawnAgent(Spawn spawn, Entity entity) {
         this.spawn = spawn;
         this.entity = entity;
-        this.direction = direction;
     }
 
     @Override
@@ -37,14 +38,12 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
 
     @Override
     public float getYaw() {
-        float entityYaw = this.getEntityLocation().getYaw();
-        return this.direction.getYaw(entityYaw, super.getYaw());
+        return this.yawDirection.getValue(super.getYaw(), this.getEntityLocation().getYaw());
     }
 
     @Override
     public float getPitch() {
-        float entityPitch = this.getEntityLocation().getPitch();
-        return this.direction.getPitch(entityPitch, super.getPitch());
+        return this.pitchDirection.getValue(super.getPitch(), this.getEntityLocation().getPitch());
     }
 
     public Spawn getSpawn() {
@@ -59,8 +58,12 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
         return this.entity.getEntityLocation();
     }
 
-    public Direction getDirection() {
-        return this.direction;
+    public Direction getYawDirection() {
+        return this.yawDirection;
+    }
+
+    public Direction getPitchDirection() {
+        return this.pitchDirection;
     }
 
     public Location spawn() {
@@ -94,7 +97,10 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     // Instancing
     //
 
-    public static SpawnAgent create(Spawn spawn, Entity entity, Direction direction) {
-        return new SpawnAgent(spawn, entity, direction);
+    public static SpawnAgent create(Spawn spawn, Entity entity, Direction yaw, Direction pitch) {
+        SpawnAgent agent = new SpawnAgent(spawn, entity);
+        agent.yawDirection = yaw;
+        agent.pitchDirection = pitch;
+        return agent;
     }
 }

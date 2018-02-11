@@ -44,16 +44,17 @@ public class PluginGenerator implements Generator {
     public static class Parser implements GeneratorCreator<PluginGenerator> {
         @Override
         public PluginGenerator create(ArcadePlugin plugin, ArcadeMap map, Properties properties) {
-            return new PluginGenerator(this.getPlugin(plugin, properties), map.getWorldName(), properties.getProperty("id"));
-        }
-
-        private Plugin getPlugin(ArcadePlugin arcade, Properties properties) {
-            String plugin = properties.getProperty("plugin");
-            if (plugin != null) {
-                return arcade.getServer().getPluginManager().getPlugin(plugin);
+            String pluginName = properties.getProperty("plugin");
+            if (pluginName == null || pluginName.isEmpty()) {
+                return null;
             }
 
-            return null;
+            Plugin pluginObject = plugin.getServer().getPluginManager().getPlugin(pluginName.trim());
+            if (pluginObject == null) {
+                return null;
+            }
+
+            return new PluginGenerator(pluginObject, map.getWorldName(), properties.getProperty("generator-id"));
         }
     }
 }

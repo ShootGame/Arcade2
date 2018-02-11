@@ -15,6 +15,13 @@ public class FiltersModule extends Module<FiltersGame> {
     public FiltersGame buildGameModule(Element xml, Game game) throws JDOMException {
         Map<String, FilterSet> filters = new HashMap<>();
 
+        // ----------  Default Filters  ----------
+        // This should be moved somewhere else...
+
+        filters.putAll(this.defaultAllow());
+        filters.putAll(this.defaultDeny());
+        filters.putAll(this.defaultAbstain());
+
         for (Element baseElement : xml.getChildren("filter")) {
             String id = baseElement.getAttributeValue("id");
             if (id == null || id.trim().isEmpty()) {
@@ -36,5 +43,29 @@ public class FiltersModule extends Module<FiltersGame> {
         }
 
         return new FiltersGame(filters);
+    }
+
+    //
+    // Default Indexed Values
+    //
+
+    private Map<String, FilterSet> defaultAllow() {
+        return this.defaultValues(StaticFilter.ALLOW, "allow", "yes", "on", "true");
+    }
+
+    private Map<String, FilterSet> defaultDeny() {
+        return this.defaultValues(StaticFilter.DENY, "deny", "no", "off", "false");
+    }
+
+    private Map<String, FilterSet> defaultAbstain() {
+        return this.defaultValues(StaticFilter.ABSTAIN, "abstain");
+    }
+
+    private Map<String, FilterSet> defaultValues(StaticFilter filter, String... ids) {
+        Map<String, FilterSet> results = new HashMap<>();
+        for (String id : ids) {
+            results.put(id, new FilterSet(id, filter));
+        }
+        return results;
     }
 }

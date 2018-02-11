@@ -211,12 +211,12 @@ public class MatchGame extends GameModule {
         }
     }
 
+    /*
+     * Don't use MatchEndEvent, because it is called before the players
+     * are reset. The reset method would reset their titles.
+     */
     @Handler(priority = Priority.LAST)
-    public void onGameOverScreenRender(MatchEndEvent event) {
-        if (event.isCanceled()) {
-            return;
-        }
-
+    public void onGameOverScreenRender(MatchEndedEvent event) {
         BaseComponent[] defaultComponent = TextComponent.fromLegacyText(
                 ChatColor.AQUA + ChatColor.UNDERLINE.toString() + "Game over!");
         BaseComponent[] winnerComponent = TextComponent.fromLegacyText(

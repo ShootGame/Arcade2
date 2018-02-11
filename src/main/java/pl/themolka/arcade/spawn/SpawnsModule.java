@@ -5,11 +5,13 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.module.ModuleVersion;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ModuleInfo(id = "Spawns")
+@ModuleVersion("1.0")
 public class SpawnsModule extends Module<SpawnsGame> {
     @Override
     public SpawnsGame buildGameModule(Element xml, Game game) throws JDOMException {

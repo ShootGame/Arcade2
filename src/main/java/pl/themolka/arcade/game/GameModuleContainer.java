@@ -3,6 +3,7 @@ package pl.themolka.arcade.game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.util.Container;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class GameModuleContainer implements Container<GameModule> {
     }
 
     public Collection<GameModule> getModules() {
-        return this.modulesByClass.values();
+        return new ArrayList<>(this.modulesByClass.values());
     }
 
     public void register(GameModule... modules) {

@@ -13,7 +13,6 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.ArcadeCommands;
@@ -37,6 +36,7 @@ import pl.themolka.arcade.generator.GeneratorType;
 import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
+import pl.themolka.arcade.listener.TimeListeners;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
@@ -192,13 +192,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // begin the plugin logic
         this.getServer().getScheduler().runTaskLater(this, () -> {
-            try {
-                Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
+            Location spawn = XMLLocation.parse(this.getSettings().getData().getChild("spawn"));
 
-                World defaultWorld = this.getServer().getWorlds().get(0);
-                defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
-            } catch (DataConversionException ignored) {
-            }
+            World defaultWorld = this.getServer().getWorlds().get(0);
+            defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
 
             if (this.beginLogic()) {
                 this.getEventBus().publish(new PluginFreshEvent(this));
@@ -733,6 +730,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
+        this.registerListenerObject(new TimeListeners(this));
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));

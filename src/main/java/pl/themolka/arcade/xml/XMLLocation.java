@@ -2,7 +2,6 @@ package pl.themolka.arcade.xml;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 public class XMLLocation extends XMLParser {
@@ -18,39 +17,29 @@ public class XMLLocation extends XMLParser {
     public static final float YAW = 0F;
     public static final float PITCH = 0F;
 
-    public static Location parse(Element xml) throws DataConversionException {
+    public static Location parse(Element xml) {
         return parse(xml, X, Z);
     }
 
-    public static Location parse(Element xml,
-                                 double x,
-                                 double z) throws DataConversionException {
+    public static Location parse(Element xml, double x, double z) {
         return parse(xml, x, Y, z);
     }
 
-    public static Location parse(Element xml,
-                                 double x,
-                                 double y,
-                                 double z) throws DataConversionException {
+    public static Location parse(Element xml, double x, double y, double z) {
         return parse(xml, x, y, z, YAW, PITCH);
     }
 
-    public static Location parse(Element xml,
-                                 double x,
-                                 double y,
-                                 double z,
-                                 float yaw,
-                                 float pitch) throws DataConversionException {
+    public static Location parse(Element xml, double x, double y, double z, float yaw, float pitch) {
         if (xml != null) {
-            double paramX = getAttribute(xml, ATTRIBUTE_X, x).getDoubleValue();
-            double paramY = getAttribute(xml, ATTRIBUTE_Y, y).getDoubleValue();
-            double paramZ = getAttribute(xml, ATTRIBUTE_Z, z).getDoubleValue();
-            float paramYaw = getAttribute(xml, ATTRIBUTE_YAW, yaw).getFloatValue();
-            float paramPitch = getAttribute(xml, ATTRIBUTE_PITCH, pitch).getFloatValue();
+            double paramX = parseDouble(xml.getAttributeValue(ATTRIBUTE_X), x);
+            double paramY = parseDouble(xml.getAttributeValue(ATTRIBUTE_Y), y);
+            double paramZ = parseDouble(xml.getAttributeValue(ATTRIBUTE_Z), z);
+            float paramYaw = parseFloat(xml.getAttributeValue(ATTRIBUTE_YAW), yaw);
+            float paramPitch = parseFloat(xml.getAttributeValue(ATTRIBUTE_PITCH), pitch);
 
             return new Location((World) null, paramX, paramY, paramZ, paramYaw, paramPitch);
         }
 
-        return null;
+        return new Location((World) null, x, y, z, yaw, pitch);
     }
 }

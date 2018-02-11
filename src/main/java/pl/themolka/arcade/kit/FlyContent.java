@@ -18,14 +18,17 @@ public class FlyContent implements RemovableKitContent<Boolean> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void attach(GamePlayer player, Boolean value) {
         Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.setAllowFlight(value);
+        bukkit.setAllowFlight(value);
 
-            if (!value) {
-                bukkit.setFlying(DEFAULT_FLYING);
-            }
+        if (!value) {
+            bukkit.setFlying(DEFAULT_FLYING);
         }
     }
 

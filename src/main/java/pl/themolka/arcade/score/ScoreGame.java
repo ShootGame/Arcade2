@@ -2,17 +2,26 @@ package pl.themolka.arcade.score;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
+import org.bukkit.util.Vector;
 import org.jdom2.Element;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.filter.FiltersGame;
+import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.kit.KitsGame;
+import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
+import pl.themolka.arcade.session.PlayerMoveEvent;
+import pl.themolka.arcade.spawn.SpawnsGame;
+import pl.themolka.arcade.spawn.SpawnsModule;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +34,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
 
     private final ScoreConfig config;
     private final Map<String, Element> competitors;
+    private final List<ScoreBox> scoreBoxes = new ArrayList<>();
 
     private Match match;
 
@@ -58,6 +68,24 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
                     this.byOwner.put(winner, score);
                     winner.addGoal(score);
                 }
+            }
+        }
+
+        this.parseScoreBoxes();
+    }
+
+    private void parseScoreBoxes() {
+        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
+        KitsGame kits = (KitsGame) this.getGame().getModule(KitsModule.class);
+        SpawnsGame spawns = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
+
+        for (Element xml : XMLParser.children(this.getSettings(), "scorebox", "score-box")) {
+            double points = XMLParser.parseDouble(xml.getAttributeValue("points"), ScoreBox.POINTS);
+
+            ScoreBox scoreBox = XMLScoreBox.parse(this.getGame(), xml,
+                    new ScoreBox(this.getPlugin(), points), filters, kits, spawns);
+            if (scoreBox != null) {
+                this.scoreBoxes.add(scoreBox);
             }
         }
     }
@@ -108,6 +136,40 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.byOwner.get(holder);
     }
 
+    public ScoreBox getScoreBox(Vector at) {
+        for (ScoreBox scoreBox : this.scoreBoxes) {
+            if (scoreBox.getFieldStrategy().regionContains(scoreBox, at)) {
+                return scoreBox;
+            }
+        }
+
+        return null;
+    }
+
+    @Handler(priority = Priority.LOWEST)
+    public void onPlayerEnterScoreBox(PlayerMoveEvent event) {
+        if (event.isCanceled() || this.scoreBoxes.isEmpty()) {
+            return;
+        }
+
+        GamePlayer player = event.getGamePlayer();
+        ScoreBox scoreBox = this.getScoreBox(event.getTo().toVector());
+
+        if (scoreBox == null || !scoreBox.canScore(player)) {
+            return;
+        }
+
+        GoalHolder competitor = this.getMatch().findWinnerByPlayer(player);
+        if (competitor == null) {
+            return;
+        }
+
+        Score score = this.getScore(competitor);
+        if (score != null) {
+            scoreBox.score(score, player);
+        }
+    }
+
     @Handler(priority = Priority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Match match = this.getMatch();
@@ -123,7 +185,23 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         }
     }
 
-    @Handler(priority = Priority.HIGHER)
+    @Handler(priority = Priority.FIRST)
+    public void onScoreBoxReach(ScoreBoxEvent event) {
+        // Round the points, if the result is zero (it
+        // is a long), then return a real double value.
+
+        double points = Math.round(event.getPoints());
+        if (points == 0D) {
+            points = event.getPoints();
+        }
+
+        this.getMatch().sendGoalMessage(ChatColor.GOLD + event.getPlayer().getDisplayName() +
+                ChatColor.YELLOW + " scored " + ChatColor.GOLD + ChatColor.BOLD + ChatColor.ITALIC +
+                points + " points" + ChatColor.RESET + ChatColor.YELLOW + " for " + ChatColor.GOLD +
+                event.getScore().getOwner().getTitle() + ChatColor.YELLOW + ".");
+    }
+
+    @Handler(priority = Priority.FIRST)
     public void onScoreLimitReach(ScoreLimitReachEvent event) {
         this.getMatch().sendGoalMessage(ChatColor.YELLOW + "The score limit of " + ChatColor.GOLD + ChatColor.BOLD +
                 Math.round(event.getLimit()) + " points" + ChatColor.RESET + ChatColor.YELLOW + " for " + ChatColor.GOLD +

@@ -17,6 +17,17 @@ public class FiltersGame extends GameModule {
         this.filters.put(filter.getId(), filter);
     }
 
+    public Filter filterOrDefault(String id, Filter def) {
+        if (id != null) {
+            FilterSet result = this.getFilter(id.trim());
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return def;
+    }
+
     public FilterSet getFilter(String id) {
         return this.getFilter(id, null);
     }

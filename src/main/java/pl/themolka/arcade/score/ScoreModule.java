@@ -2,6 +2,7 @@ package pl.themolka.arcade.score;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.module.Module;
@@ -15,6 +16,7 @@ import java.util.Map;
         dependency = {
                 MatchModule.class},
         loadBefore = {
+                FiltersModule.class,
                 TeamsModule.class})
 public class ScoreModule extends Module<ScoreGame> {
     @Override

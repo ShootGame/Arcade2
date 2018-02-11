@@ -214,11 +214,11 @@ public class Team implements MatchWinner {
     }
 
     public boolean hasPlayed(GamePlayer player) {
-        return this.getMembers().contains(player);
+        return this.members.contains(player);
     }
 
     public boolean hasPlayer(GamePlayer player) {
-        return this.getOnlineMembers().contains(player);
+        return this.onlineMembers.contains(player);
     }
 
     public boolean isFriendlyFire() {

@@ -47,6 +47,7 @@ public class TeamApplyListeners {
         GamePlayer player = event.getGamePlayer();
         Team team = event.getTeam();
 
+
         if (this.shouldApplyTo(team)) {
             player.getPlayer().clearInventory(true);
 

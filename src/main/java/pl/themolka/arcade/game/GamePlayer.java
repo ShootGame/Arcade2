@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffect;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
@@ -379,8 +379,8 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         bukkit.resetPlayerWeather();
         bukkit.resetTitle();
 
-        for (PotionEffectType potion : PotionEffectType.values()) {
-            this.getBukkit().removePotionEffect(potion);
+        for (PotionEffect effect : bukkit.getActivePotionEffects()) {
+            bukkit.removePotionEffect(effect.getType());
         }
     }
 

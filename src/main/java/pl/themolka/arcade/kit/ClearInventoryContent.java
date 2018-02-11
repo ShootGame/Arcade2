@@ -13,10 +13,13 @@ public class ClearInventoryContent implements KitContent<Boolean> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
-        if (player.isOnline()) {
-            player.getPlayer().clearInventory(this.getResult());
-        }
+        player.getPlayer().clearInventory(this.getResult());
     }
 
     @Override

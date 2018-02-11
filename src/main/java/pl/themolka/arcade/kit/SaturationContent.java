@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -21,11 +20,13 @@ public class SaturationContent implements RemovableKitContent<Integer> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void attach(GamePlayer player, Integer value) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.setSaturation(value);
-        }
+        player.getBukkit().setSaturation(value);
     }
 
     @Override

@@ -119,7 +119,7 @@ public class Score extends SimpleGoal {
      *     - GoalCompleteEvent (cancelable)
      */
     public void incrementScore(GoalHolder completer, double points) {
-        if (!this.game.getMatch().isRunning() || outOfBounds(this.getScore() + points)) {
+        if (!this.game.getMatch().isRunning() || isValid(this.getScore() + points)) {
             return;
         }
 
@@ -133,7 +133,7 @@ public class Score extends SimpleGoal {
         double oldProgress = this.getProgress();
         double newScore = this.getScore() + points;
 
-        if (!outOfBounds(newScore)) {
+        if (!isValid(newScore)) {
             this.score = newScore;
             this.setTouched(true);
 
@@ -151,5 +151,9 @@ public class Score extends SimpleGoal {
 
     public static boolean outOfBounds(double score) {
         return score < MIN || score > MAX;
+    }
+
+    public static boolean isValid(double score) {
+        return !outOfBounds(score) && score != ZERO;
     }
 }

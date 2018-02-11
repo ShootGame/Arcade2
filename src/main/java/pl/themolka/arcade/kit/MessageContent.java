@@ -26,6 +26,11 @@ public class MessageContent implements KitContent<String> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
         this.getType().sendMessage(player, this.getResult());
     }

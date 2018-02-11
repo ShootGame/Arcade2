@@ -4,7 +4,6 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -252,9 +251,10 @@ public class XMLMapParser implements MapParser {
         map.setEnvironment(this.parseEnvironment(world));
         map.setGenerator(this.parseGenerator(world, plugin, map));
         map.setScoreboardTitle(this.parseScoreboardTitle(scoreboard));
+        map.setPvp(this.parsePvp(world));
         map.setSeed(this.parseSeed(world));
         map.setSpawn(this.parseSpawn(world));
-        map.setPvp(this.parsePvp(world));
+        map.setTime(this.parseTime(world));
 
         WorldNameGenerator generator = new WorldNameGenerator(map);
         map.setWorldName(generator.nextWorldName());
@@ -264,7 +264,7 @@ public class XMLMapParser implements MapParser {
 
     private Difficulty parseDifficulty(Element parent) {
         if (parent != null) {
-            return XMLDifficulty.parse(parent, Difficulty.PEACEFUL);
+            return XMLDifficulty.parse(parent);
         }
 
         return null;
@@ -272,7 +272,7 @@ public class XMLMapParser implements MapParser {
 
     private World.Environment parseEnvironment(Element parent) {
         if (parent != null) {
-            return XMLEnvironment.parse(parent, World.Environment.NORMAL);
+            return XMLEnvironment.parse(parent);
         }
 
         return null;
@@ -289,6 +289,10 @@ public class XMLMapParser implements MapParser {
         return null;
     }
 
+    private boolean parsePvp(Element parent) {
+        return parent == null || XMLParser.parseBoolean(parent.getAttributeValue("pvp"), true);
+    }
+
     private String parseScoreboardTitle(Element parent) {
         if (parent != null) {
             Element xml = parent.getChild("title");
@@ -302,15 +306,9 @@ public class XMLMapParser implements MapParser {
 
     private long parseSeed(Element parent) throws MapParserException {
         if (parent != null) {
-            try {
-                Element xml = parent.getChild("generator");
-                if (xml != null) {
-                    Attribute seed = xml.getAttribute("seed");
-                    if (seed != null) {
-                        return seed.getLongValue();
-                    }
-                }
-            } catch (DataConversionException ignored) {
+            Element xml = parent.getChild("generator");
+            if (xml != null) {
+                return XMLParser.parseLong(xml.getAttributeValue("seed"), ArcadeMap.DEFAULT_SEED);
             }
         }
 
@@ -318,20 +316,37 @@ public class XMLMapParser implements MapParser {
     }
 
     private Location parseSpawn(Element parent) throws MapParserException {
-        Element spawn = parent.getChild("spawn");
-        if (spawn == null) {
-            return new Location((UUID) null, XMLLocation.X, XMLLocation.Y, XMLLocation.Z);
-        }
-
-        try {
-            return XMLLocation.parse(spawn);
-        } catch (DataConversionException ex) {
-            throw new MapParserException("<spawn> incorrect", ex);
-        }
+        return XMLLocation.parse(parent.getChild("spawn"));
     }
 
-    private boolean parsePvp(Element parent) {
-        return parent == null || XMLParser.parseBoolean(parent.getAttributeValue("pvp"), true);
+    private MapTime parseTime(Element parent) {
+        MapTime result = MapTime.defaultTime();
+
+        if (parent != null) {
+            Element xml = parent.getChild("time");
+            if (xml != null) {
+                result = this.parseTimeValue(xml.getValue(), result);
+                result.setLocked(XMLParser.parseBoolean(xml.getAttributeValue("locked"), false));
+            }
+        }
+
+        return result;
+    }
+
+    private MapTime parseTimeValue(String value, MapTime def) {
+        if (value != null) {
+            try {
+                return MapTimeConstants.valueOf(XMLParser.parseEnumValue(value)).time();
+            } catch (IllegalArgumentException notByName) {
+            }
+
+            try {
+                return MapTime.ofTicks(XMLParser.parseInt(value, -1 /* -1 results outOfBounds */));
+            } catch (IllegalArgumentException outOfBounds) {
+            }
+        }
+
+        return def;
     }
 
     public static class XMLParserTechnology implements MapParser.Technology {

@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -20,11 +19,13 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void attach(GamePlayer player, Float value) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.setFlySpeed(value);
-        }
+        player.getBukkit().setFlySpeed(value);
     }
 
     @Override

@@ -8,7 +8,6 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
-import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
@@ -77,13 +76,9 @@ public class PointFactory implements CapturableFactory<Point> {
 
     private Filter findFilter(Game game, String id, Filter def) {
         if (id != null && !id.trim().isEmpty()) {
-            GameModule gameModule = game.getModule(FiltersModule.class);
-
-            if (gameModule != null) {
-                Filter filter = ((FiltersGame) gameModule).getFilter(id.trim());
-                if (filter != null) {
-                    return filter;
-                }
+            FiltersGame filters = (FiltersGame) game.getModule(FiltersModule.class);
+            if (filters != null) {
+                return filters.filterOrDefault(id, def);
             }
         }
 

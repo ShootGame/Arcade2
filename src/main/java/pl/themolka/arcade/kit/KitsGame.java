@@ -26,7 +26,7 @@ public class KitsGame extends GameModule {
     }
 
     public Kit getKit(String id, Kit def) {
-        return this.kits.getOrDefault(id, def);
+        return id != null ? this.kits.getOrDefault(id.trim(), def) : def;
     }
 
     public Set<String> getKitIds() {

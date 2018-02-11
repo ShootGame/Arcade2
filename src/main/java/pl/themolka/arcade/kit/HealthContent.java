@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -17,11 +16,13 @@ public class HealthContent implements RemovableKitContent<Double> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void attach(GamePlayer player, Double value) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.setHealth(value);
-        }
+        player.getBukkit().setHealth(value);
     }
 
     @Override

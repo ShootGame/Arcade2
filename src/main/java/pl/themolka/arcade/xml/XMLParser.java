@@ -15,6 +15,24 @@ public class XMLParser {
     public static final char COLOR_CHAR = '`';
     public static final String SPLIT_KEY = ",";
 
+    public static List<Element> children(Element element, String... children) {
+        List<Element> results = new ArrayList<>();
+        for (String child : children) {
+            results.addAll(element.getChildren(child));
+        }
+
+        return results;
+    }
+
+    public static Attribute getAttribute(Element xml, String name, Object def) throws DataConversionException {
+        Attribute attribute = xml.getAttribute(name);
+        if (attribute != null) {
+            return attribute;
+        }
+
+        return new Attribute(name, def.toString());
+    }
+
     public static List<String> parseArray(String value) {
         return parseArray(value, SPLIT_KEY);
     }
@@ -29,15 +47,6 @@ public class XMLParser {
         }
 
         return results;
-    }
-
-    public static Attribute getAttribute(Element xml, String name, Object def) throws DataConversionException {
-        Attribute attribute = xml.getAttribute(name);
-        if (attribute != null) {
-            return attribute;
-        }
-
-        return new Attribute(name, def.toString());
     }
 
     public static Map<String, Attribute> parseAttributeMap(Element xml) {
@@ -61,6 +70,7 @@ public class XMLParser {
                 case "1":
                 case "+":
                 case "yes":
+                case "allow":
                 case "on":
                 case "enable":
                 case "enabled":
@@ -69,6 +79,7 @@ public class XMLParser {
                 case "0":
                 case "-":
                 case "no":
+                case "deny":
                 case "off":
                 case "disable":
                 case "disabled":
@@ -147,6 +158,28 @@ public class XMLParser {
 
             try {
                 return Integer.parseInt(input);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return def;
+    }
+
+    public static long parseLong(String input) {
+        return parseLong(input, 0L);
+    }
+
+    public static long parseLong(String input, long def) {
+        input = normalizeInput(input);
+        if (input != null) {
+            if (unlimitedNegative(input)) {
+                return Long.MIN_VALUE;
+            } else if (unlimitedPositive(input)) {
+                return Long.MAX_VALUE;
+            }
+
+            try {
+                return Long.parseLong(input);
             } catch (NumberFormatException ignored) {
             }
         }

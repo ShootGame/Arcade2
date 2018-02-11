@@ -7,7 +7,7 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import pl.themolka.arcade.filter.FilterSet;
+import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
@@ -136,12 +136,10 @@ public class RegionsGame extends GameModule {
                 continue;
             }
 
-            FilterSet filter = this.filters.getFilter(attribute.getValue());
-            if (filter == null) {
-                continue;
+            Filter filter = this.filters.filterOrDefault(xml.getAttributeValue(event.getAttribute()), null);
+            if (filter != null) {
+                region.setFilter(event, filter);
             }
-
-            region.setFilter(event, filter);
         }
 
         return region;

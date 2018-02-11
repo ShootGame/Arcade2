@@ -32,18 +32,19 @@ import java.util.Map;
 
 public class XMLTeam extends XMLParser {
     private static final Map<String, MatchApplyContext.EventType> EVENTS = new HashMap<>();
+    private static final Direction SPAWN_DIRECTION = Direction.CONSTANT;
 
     static {
-        EVENTS.put("start", MatchApplyContext.EventType.MATCH_START);
-        EVENTS.put("match-start", MatchApplyContext.EventType.MATCH_START);
+        install(MatchApplyContext.EventType.MATCH_START, "start", "match-start");
+        install(MatchApplyContext.EventType.PLAYER_PLAY, "join", "player-join",
+                                                         "play", "player-play");
+        install(MatchApplyContext.EventType.PLAYER_RESPAWN, "respawn", "player-respawn");
+    }
 
-        EVENTS.put("join", MatchApplyContext.EventType.PLAYER_PLAY);
-        EVENTS.put("player-join", MatchApplyContext.EventType.PLAYER_PLAY);
-        EVENTS.put("play", MatchApplyContext.EventType.PLAYER_PLAY);
-        EVENTS.put("player-player", MatchApplyContext.EventType.PLAYER_PLAY);
-
-        EVENTS.put("respawn", MatchApplyContext.EventType.PLAYER_RESPAWN);
-        EVENTS.put("player-respawn", MatchApplyContext.EventType.PLAYER_RESPAWN);
+    private static void install(MatchApplyContext.EventType event, String... ids) {
+        for (String id : ids) {
+            EVENTS.put(id, event);
+        }
     }
 
     public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin,
@@ -230,7 +231,7 @@ public class XMLTeam extends XMLParser {
                 return SpawnApply.parse(xml.getValue(), spawns, new SpawnApply.AgentCreator() {
                     @Override
                     public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
-                        return SpawnAgent.create(spawn, bukkit, Direction.CONSTANT);
+                        return SpawnAgent.create(spawn, bukkit, SPAWN_DIRECTION, SPAWN_DIRECTION);
                     }
                 });
             default:

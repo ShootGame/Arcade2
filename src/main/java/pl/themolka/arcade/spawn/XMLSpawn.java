@@ -16,9 +16,9 @@ public class XMLSpawn extends XMLParser {
             case "multi":
                 return parseMulti(map, xml);
             case "region":
-                return parseRegion(map, xml);
+                return parseRegionUnion(map, xml);
             default:
-                return null;
+                return parseRegionExact(map, xml);
         }
     }
 
@@ -35,8 +35,7 @@ public class XMLSpawn extends XMLParser {
         return spawns.isEmpty() ? null : MultiSpawn.of(spawns);
     }
 
-    public static RegionSpawnVector parseRegion(ArcadeMap map, Element xml) {
-        Region region = XMLRegion.parseUnion(map, xml);
+    public static RegionSpawnVector parseRegion(ArcadeMap map, Element xml, Region region) {
         if (region == null) {
             return null;
         }
@@ -54,5 +53,15 @@ public class XMLSpawn extends XMLParser {
         }
 
         return spawn;
+    }
+
+    public static RegionSpawnVector parseRegionExact(ArcadeMap map, Element xml) {
+        Region region = XMLRegion.parse(map, xml);
+        return region != null ? parseRegion(map, xml, region) : null;
+    }
+
+    public static RegionSpawnVector parseRegionUnion(ArcadeMap map, Element xml) {
+        Region region = XMLRegion.parseUnion(map, xml);
+        return region != null ? parseRegion(map, xml, region) : null;
     }
 }

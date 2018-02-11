@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FilterSet;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.util.Forwarding;
@@ -80,12 +81,12 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     }
 
     @Override
-    public FilterSet getFilter(RegionEventType event) {
+    public Filter getFilter(RegionEventType event) {
         return this.delegate().getFilter(event);
     }
 
     @Override
-    public FilterSet getFilter(RegionEventType event, FilterSet def) {
+    public Filter getFilter(RegionEventType event, Filter def) {
         return this.delegate().getFilter(event, def);
     }
 
@@ -135,7 +136,7 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     }
 
     @Override
-    public void setFilter(RegionEventType event, FilterSet filter) {
+    public void setFilter(RegionEventType event, Filter filter) {
         this.delegate().setFilter(event, filter);
     }
 

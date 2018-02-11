@@ -1,7 +1,6 @@
 package pl.themolka.arcade.kit;
 
 import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
@@ -15,11 +14,13 @@ public class GameModeContent implements KitContent<GameMode>  {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            bukkit.setGameMode(this.getResult());
-        }
+        player.getBukkit().setGameMode(this.getResult());
     }
 
     @Override

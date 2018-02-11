@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jdom2.DataConversionException;
@@ -22,15 +21,17 @@ public class ArmorContent implements KitContent<ItemStack[]> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null) {
-            PlayerInventory inventory = bukkit.getInventory();
-            inventory.setHelmet(this.getHelmet());
-            inventory.setChestplate(this.getChestplate());
-            inventory.setLeggings(this.getLeggings());
-            inventory.setBoots(this.getBoots());
-        }
+        PlayerInventory inventory = player.getBukkit().getInventory();
+        inventory.setHelmet(this.getHelmet());
+        inventory.setChestplate(this.getChestplate());
+        inventory.setLeggings(this.getLeggings());
+        inventory.setBoots(this.getBoots());
     }
 
     @Override
@@ -62,36 +63,14 @@ public class ArmorContent implements KitContent<ItemStack[]> {
     public static class Parser implements KitContentParser<ArmorContent> {
         @Override
         public ArmorContent parse(Element xml) throws DataConversionException {
-            ItemStack helmetItem = null;
-            ItemStack chestplateItem = null;
-            ItemStack leggingsItem = null;
-            ItemStack bootsItem = null;
+            ItemStack helmet = XMLItemStack.parse(xml.getChild("helmet"));
+            ItemStack chestplate = XMLItemStack.parse(xml.getChild("chestplate"));
+            ItemStack leggings = XMLItemStack.parse(xml.getChild("leggings"));
+            ItemStack boots = XMLItemStack.parse(xml.getChild("boots"));
 
-            Element helmet = xml.getChild("helmet");
-            if (helmet != null) {
-                helmetItem = XMLItemStack.parse(helmet);
-            }
-
-            Element chestplate = xml.getChild("chestplate");
-            if (chestplate != null) {
-                chestplateItem = XMLItemStack.parse(chestplate);
-            }
-
-            Element leggings = xml.getChild("leggings");
-            if (leggings != null) {
-                leggingsItem = XMLItemStack.parse(leggings);
-            }
-
-            Element boots = xml.getChild("boots");
-            if (boots != null) {
-                bootsItem = XMLItemStack.parse(boots);
-            }
-
-            if (helmet != null || chestplate != null || leggings != null || boots != null) {
-                return new ArmorContent(helmetItem, chestplateItem, leggingsItem, bootsItem);
-            } else {
-                return null;
-            }
+            return helmet != null || chestplate != null || leggings != null || boots != null
+                    ? new ArmorContent(helmet, chestplate, leggings, boots)
+                    : null;
         }
     }
 }

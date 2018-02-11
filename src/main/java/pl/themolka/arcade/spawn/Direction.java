@@ -6,14 +6,6 @@ public interface Direction {
     Direction RELATIVE = new RelativeDirection();
     Direction TRANSLATE = new TranslateDirection();
 
-    default float getYaw(float constant, float entity) {
-        return this.getValue(constant, entity);
-    }
-
-    default float getPitch(float constant, float entity) {
-        return this.getValue(constant, entity);
-    }
-
     default float getValue(float constant, float entity) {
         return entity;
     }

@@ -17,6 +17,11 @@ public class LivesContent implements RemovableKitContent<Integer> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void attach(GamePlayer player, Integer value) {
         GameModule module = player.getGame().getModule(LivesModule.class);
         if (module != null && module.isEnabled() && module instanceof LivesGame) {

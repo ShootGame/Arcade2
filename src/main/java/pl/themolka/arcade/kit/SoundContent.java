@@ -21,11 +21,12 @@ public class SoundContent implements KitContent<Sound> {
     }
 
     @Override
-    public void apply(GamePlayer player) {
-        if (!player.isOnline()) {
-            return;
-        }
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.testBukkit(player);
+    }
 
+    @Override
+    public void apply(GamePlayer player) {
         Location location = this.getLocation();
         if (location == null) {
             location = player.getBukkit().getLocation();

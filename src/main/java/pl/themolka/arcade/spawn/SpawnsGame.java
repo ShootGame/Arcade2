@@ -19,7 +19,11 @@ public class SpawnsGame extends GameModule {
     }
 
     public Spawn getSpawn(String id) {
-        return this.spawns.get(id);
+        return this.getSpawn(id, null);
+    }
+
+    public Spawn getSpawn(String id, Spawn def) {
+        return id != null ? this.spawns.getOrDefault(id.trim(), def) : def;
     }
 
     public Set<String> getSpawnIds() {

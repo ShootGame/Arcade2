@@ -14,6 +14,7 @@ public class ArcadeMap {
     public static final World.Environment DEFAULT_ENVIRONMENT = World.Environment.NORMAL;
     public static final Generator DEFAULT_GENERATOR = GeneratorType.getDefaultGenerator();
     public static final long DEFAULT_SEED = 0L;
+    public static final MapTime DEFAULT_TIME = MapTime.defaultTime();
 
     private final OfflineMap mapInfo;
 
@@ -26,6 +27,7 @@ public class ArcadeMap {
     private String scoreboardTitle;
     private long seed;
     private Location spawn;
+    private MapTime time;
     private World world;
     private String worldName;
 
@@ -94,6 +96,14 @@ public class ArcadeMap {
         return this.spawn;
     }
 
+    public MapTime getTime() {
+        if (this.hasTime()) {
+            return this.time;
+        }
+
+        return DEFAULT_TIME;
+    }
+
     public World getWorld() {
         return this.world;
     }
@@ -120,6 +130,10 @@ public class ArcadeMap {
 
     public boolean hasSeed() {
         return this.seed != DEFAULT_SEED;
+    }
+
+    public boolean hasTime() {
+        return this.time != null;
     }
 
     public boolean isPvp() {
@@ -164,6 +178,10 @@ public class ArcadeMap {
 
     public void setSpawn(Location spawn) {
         this.spawn = spawn;
+    }
+
+    public void setTime(MapTime time) {
+        this.time = time;
     }
 
     public void setWorld(World world) {

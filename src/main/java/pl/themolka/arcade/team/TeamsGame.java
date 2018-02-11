@@ -237,7 +237,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     public void joinTeam(GamePlayer player, String query) throws CommandException {
         if (!player.isOnline()) {
-            throw new CommandException("Player is not not online.");
+            throw new CommandException("Player is not online.");
         } else if (!player.hasPermission("arcade.command.join.choose")) {
             throw new CommandPermissionException("arcade.command.join.choose");
         } else if (query == null) {
@@ -397,7 +397,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void onPlayerLeaveGame(GameCommands.LeaveCommandEvent event) {
         try {
             Team team = this.getTeam(event.getLeaveGamePlayer());
-            if (team != null && team.equals(this.getMatch().getObservers())) {
+            if (team == null || team.equals(this.getMatch().getObservers())) {
                 throw new CommandException("You are not in the game.");
             }
 

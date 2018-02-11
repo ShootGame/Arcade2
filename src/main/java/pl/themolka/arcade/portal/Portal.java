@@ -2,7 +2,6 @@ package pl.themolka.arcade.portal;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
@@ -18,7 +17,7 @@ public class Portal extends ForwardingRegion implements PlayerApplicable {
     public static final RegionFieldStrategy FIELD_STRATEGY = RegionFieldStrategy.NET;
     public static final Sound TELEPORT_SOUND = Sound.ENTITY_ENDERMEN_TELEPORT;
 
-    private final ArcadePlugin plugin;
+    protected final ArcadePlugin plugin;
 
     private Filter filter = Filters.undefined();
     private SpawnApply destination;
@@ -29,14 +28,9 @@ public class Portal extends ForwardingRegion implements PlayerApplicable {
         this.plugin = plugin;
     }
 
-    public Portal(PortalsGame game) {
-        this(game.getPlugin());
-    }
-
     @Override
     public void apply(GamePlayer player) {
-        Player bukkit = player.getBukkit();
-        if (bukkit != null && this.canTeleport(player)) {
+        if (this.canTeleport(player)) {
             this.teleport(player);
         }
     }
@@ -91,6 +85,10 @@ public class Portal extends ForwardingRegion implements PlayerApplicable {
     }
 
     public Location teleport(GamePlayer player) {
+        if (player == null || !player.isOnline()) {
+            return null;
+        }
+
         PlayerPortalEvent event = new PlayerPortalEvent(this.plugin, this, player, this.destination, TELEPORT_SOUND);
         this.plugin.getEventBus().publish(event);
 
