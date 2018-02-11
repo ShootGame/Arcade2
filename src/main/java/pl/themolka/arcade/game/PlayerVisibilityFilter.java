@@ -1,7 +1,5 @@
 package pl.themolka.arcade.game;
 
-import pl.themolka.arcade.filter.FilterResult;
-
 /**
  * Filtering players visibility by other players.
  */
@@ -17,7 +15,7 @@ public interface PlayerVisibilityFilter {
      * @param target Player who can or cannot be viewed by the <code>viewer</code>.
      * @return <code>true</code> if <code>target</code> is visible, <code>false</code> otherwise.
      */
-    FilterResult canSee(GamePlayer viewer, GamePlayer target);
+    boolean canSee(GamePlayer viewer, GamePlayer target);
 }
 
 /**
@@ -32,7 +30,7 @@ final class DefaultVisibilityFilter implements PlayerVisibilityFilter {
      * @return always <code>target</code>.
      */
     @Override
-    public FilterResult canSee(GamePlayer viewer, GamePlayer target) {
-        return FilterResult.ABSTAIN;
+    public boolean canSee(GamePlayer viewer, GamePlayer target) {
+        return true;
     }
 }
