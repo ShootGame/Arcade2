@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapError;
 import pl.themolka.arcade.map.MapParserError;
@@ -86,16 +87,16 @@ public class Game implements Metadata, PlayerVisibilityFilter {
      * @return <code>true</code> if <code>target</code> is visible, <code>false</code> otherwise.
      */
     @Override
-    public boolean canSee(GamePlayer viewer, GamePlayer target) {
+    public FilterResult canSee(GamePlayer viewer, GamePlayer target) {
         if (!viewer.isOnline() || !target.isOnline()) {
-            return false;
+            return FilterResult.ABSTAIN;
         }
 
-        boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, target);
+        FilterResult def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, target);
         for (PlayerVisibilityFilter filter : this.visibilityFilters) {
-            boolean value = filter.canSee(viewer, target);
+            FilterResult value = filter.canSee(viewer, target);
 
-            if (value != def) {
+            if (value == null || value.isDenied()) {
                 return value;
             }
         }
