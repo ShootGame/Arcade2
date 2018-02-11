@@ -278,7 +278,7 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     public void kill() {
-        if (this.isOnline() && !this.getBukkit().isDead()) {
+        if (this.isOnline() && !this.isDead()) {
             this.getBukkit().setHealth(0.0D);
         }
     }
@@ -289,7 +289,6 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
         }
 
         boolean participating = this.isParticipating();
-        System.out.println(participating);
         if (!participating) {
             this.getBukkit().leaveVehicle();
         }

@@ -1,6 +1,7 @@
 package pl.themolka.arcade.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,5 +62,9 @@ public class PlayerTrigger implements PlayerApplicable {
         PlayerTrigger value = create();
         value.addAll(triggers);
         return value;
+    }
+
+    public static PlayerTrigger create(PlayerApplicable... triggers) {
+        return create(Arrays.asList(triggers));
     }
 }

@@ -87,17 +87,20 @@ public class LivesGame extends GameModule {
         return this.remaining.getOrDefault(player, this.lives());
     }
 
-    public void eliminate(GamePlayer player) {
+    public void eliminate(GamePlayer player, boolean serverQuit) {
         if (this.remaining.containsKey(player)) {
             PlayerEliminateEvent event = new PlayerEliminateEvent(this.getPlugin(),
                     player, this.remaining.getOrDefault(player, ZERO), player.getBukkit().getLocation());
             this.getPlugin().getEventBus().publish(event);
 
-            if (event.isCanceled()) {
+            if (!serverQuit && event.isCanceled()) {
                 this.remaining.put(event.getPlayer(), event.getRemainingLives());
             } else {
+                if (!serverQuit) {
+                    this.match.getObservers().join(event.getPlayer(), true);
+                }
+
                 this.remaining.remove(event.getPlayer());
-                this.match.getObservers().join(event.getPlayer(), true);
                 this.match.refreshWinners();
             }
         }
@@ -109,14 +112,14 @@ public class LivesGame extends GameModule {
             int remaining = this.addLives(event.getVictim(), DEATH_REVOKE);
 
             if (remaining <= ZERO) {
-                this.eliminate(event.getVictim());
+                this.eliminate(event.getVictim(), false);
             }
         }
     }
 
     @Handler(priority = Priority.LAST)
     public void revokePlayer(PlayerQuitEvent event) {
-        this.eliminate(event.getGamePlayer());
+        this.eliminate(event.getGamePlayer(), true);
     }
 
     @Handler(priority = Priority.LAST)

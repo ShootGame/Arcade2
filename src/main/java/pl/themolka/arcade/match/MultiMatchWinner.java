@@ -118,6 +118,10 @@ public class MultiMatchWinner implements MatchWinner {
         return draw;
     }
 
+    //
+    // Instancing
+    //
+
     public static MultiMatchWinner of(Collection<MatchWinner> winners) {
         if (winners != null) {
             winners = unpack(winners);
@@ -143,8 +147,8 @@ public class MultiMatchWinner implements MatchWinner {
         return "_multi-match-winner:" + StringUtils.join(ids, "|");
     }
 
-    private static Collection<MatchWinner> unpack(Collection<MatchWinner> winners) {
-        Collection<MatchWinner> results = new ArrayList<>();
+    private static List<MatchWinner> unpack(Collection<MatchWinner> winners) {
+        List<MatchWinner> results = new ArrayList<>();
         for (MatchWinner winner : winners) {
             if (winner instanceof MultiMatchWinner) {
                 results.addAll(((MultiMatchWinner) winner).getWinners());

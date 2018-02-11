@@ -20,7 +20,8 @@ import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
-import pl.themolka.arcade.team.apply.TeamApplyListeners;
+import pl.themolka.arcade.spawn.SpawnsGame;
+import pl.themolka.arcade.spawn.SpawnsModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,13 +49,15 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     public void onEnable() {
         MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
         KitsGame kitsGame = (KitsGame) this.getGame().getModule(KitsModule.class);
+        SpawnsGame spawnsGame = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
 
         this.commands = new TeamCommands(this);
         this.match = matchGame.getMatch();
 
         List<Team> teams = new ArrayList<>();
         for (Element teamElement : this.getSettings().getChildren("team")) {
-            Team team = XMLTeam.parse(this.getGame().getMap(), teamElement, this.getPlugin(), kitsGame);
+            Team team = XMLTeam.parse(this.getGame().getMap(), teamElement, this.getPlugin(),
+                                      kitsGame, spawnsGame);
             if (team != null) {
                 team.setBukkit(Team.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), team));
                 teams.add(team);

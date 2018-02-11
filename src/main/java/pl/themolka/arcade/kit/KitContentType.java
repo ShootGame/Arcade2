@@ -67,6 +67,13 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
         }
     },
 
+    KILL("kill") {
+        @Override
+        public KitContent<?> parse(Element xml) throws DataConversionException {
+            return KILL_PARSER.parse(xml);
+        }
+    },
+
     KNOCKBACK("knockback", "knockback-reduction") {
         @Override
         public KnockbackContent parse(Element xml) throws DataConversionException {
@@ -126,6 +133,7 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
     public static final GameModeContent.Parser GAME_MODE_PARSER = new GameModeContent.Parser();
     public static final HealthContent.Parser HEALTH_PARSER = new HealthContent.Parser();
     public static final ItemStackContent.Parser ITEM_STACK_PARSER = new ItemStackContent.Parser();
+    public static final KillContent.Parser KILL_PARSER = new KillContent.Parser();
     public static final KnockbackContent.Parser KNOCKBACK_PARSER = new KnockbackContent.Parser();
     public static final LivesContent.Parser LIVES_PARSER = new LivesContent.Parser();
     public static final MaxHealthContent.Parser MAX_HEALTH_PARSER = new MaxHealthContent.Parser();

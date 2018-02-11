@@ -22,6 +22,8 @@ import java.util.Map;
 public class FlagPhysicalRender implements Listener {
     public static final Material BANNER = Material.STANDING_BANNER;
 
+    private static final MaterialData defaultMaterialData = new MaterialData(Material.AIR);
+
     private final CaptureGame game;
 
     private final Map<Block, MaterialData> realBlocks = new HashMap<>();
@@ -45,7 +47,7 @@ public class FlagPhysicalRender implements Listener {
     }
 
     public void take(Block block) {
-        MaterialData realBlock = this.realBlocks.get(block);
+        MaterialData realBlock = this.realBlocks.getOrDefault(block, defaultMaterialData);
         block.setTypeIdAndData(realBlock.getItemTypeId(), realBlock.getData(), false);
 
         this.realBlocks.remove(block);
@@ -64,6 +66,11 @@ public class FlagPhysicalRender implements Listener {
         if (!event.isCanceled() && state instanceof DroppedState) {
             this.put((DroppedState) state, event.getFlag());
         }
+    }
+
+    @Handler(priority = Priority.LAST)
+    public void onFlagInit(Flag.FlagInitEvent event) {
+        this.put(event.getLocation().getBlock(), event.getFlag());
     }
 
     @Handler(priority = Priority.LAST)
@@ -98,7 +105,7 @@ public class FlagPhysicalRender implements Listener {
                     Banner banner = spawn.getBanner();
 
                     if (banner != null) {
-                        banner.getBlock().setType(Material.AIR);
+                        banner.getBlock().setType(defaultMaterialData.getItemType());
                     }
                 }
             }

@@ -15,7 +15,7 @@ public class XMLGenerator extends XMLParser {
             return null;
         }
 
-        GeneratorType type = GeneratorType.forName(xml.getTextNormalize());
+        GeneratorType type = GeneratorType.forName(xml.getValue());
         if (type == null) {
             return null;
         }

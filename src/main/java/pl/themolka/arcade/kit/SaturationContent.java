@@ -47,7 +47,7 @@ public class SaturationContent implements RemovableKitContent<Integer> {
             }
 
             try {
-                return new SaturationContent(Float.parseFloat(xml.getTextNormalize()));
+                return new SaturationContent(Float.parseFloat(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

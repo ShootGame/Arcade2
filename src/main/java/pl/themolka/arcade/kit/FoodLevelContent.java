@@ -47,7 +47,7 @@ public class FoodLevelContent implements RemovableKitContent<Integer> {
             }
 
             try {
-                return new FoodLevelContent(XMLParser.parseDouble(xml.getTextNormalize()));
+                return new FoodLevelContent(XMLParser.parseDouble(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

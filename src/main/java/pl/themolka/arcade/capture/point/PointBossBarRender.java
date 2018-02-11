@@ -17,6 +17,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameStopEvent;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalProgressEvent;
+import pl.themolka.arcade.team.TeamEditEvent;
 import pl.themolka.arcade.util.BossBarUtils;
 import pl.themolka.arcade.util.Color;
 
@@ -116,14 +117,6 @@ public class PointBossBarRender implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void gameOver(GameStopEvent event) {
-        // There might be issues with this event. GameStopEvent is called AFTER
-        // a new game actually starts and calls GameStartEvent. The Minecraft
-        // client might have limit of displayed boss bars and boss bars rendered
-        // in a new game (which would be called in GameStartEvent) might not be
-        // displayed.
-        // NOTE: We won't use ServerCycleEvent since this event is not
-        //       representing the stopping game.
-
         for (BossBar bossBar : this.bossBars.values()) {
             // We need need to send the "REMOVE" packet to all members
             // of this boss bar to remove it from their views.
@@ -131,6 +124,15 @@ public class PointBossBarRender implements Listener {
         }
 
         this.bossBars.clear();
+    }
+
+    @Handler(priority = Priority.LAST)
+    public void participatorEdit(TeamEditEvent event) {
+        if (event.getReason().equals(TeamEditEvent.Reason.PAINT)) {
+            for (Point point : this.bossBars.keySet()) {
+                this.renderBossBar(point, point.getState());
+            }
+        }
     }
 
     @Handler(priority = Priority.LAST)
@@ -167,8 +169,7 @@ public class PointBossBarRender implements Listener {
     public void stateProgress(GoalProgressEvent event) {
         Goal goal = event.getGoal();
         if (goal instanceof Point) {
-            Point point = (Point) goal;
-            this.renderBossBar(point, point.getState());
+            this.renderBossBar((Point) goal);
         }
     }
 

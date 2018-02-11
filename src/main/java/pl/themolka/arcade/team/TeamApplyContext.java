@@ -1,8 +1,7 @@
-package pl.themolka.arcade.team.apply;
+package pl.themolka.arcade.team;
 
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.MatchApplyContext;
-import pl.themolka.arcade.team.Team;
 
 public class TeamApplyContext extends MatchApplyContext {
     private final Team team;
@@ -24,6 +23,9 @@ public class TeamApplyContext extends MatchApplyContext {
             case PLAYER_RESPAWN:
                 content.apply(player);
                 break;
+
+            default:
+                throw new IllegalArgumentException("Illegal event on content.");
         }
     }
 

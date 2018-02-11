@@ -290,7 +290,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             Element propertiesElement = this.getSettings().getData().getChild("properties");
             if (propertiesElement != null) {
                 for (Element property : propertiesElement.getChildren()) {
-                    this.setProperty(property.getName(), property.getTextNormalize());
+                    this.setProperty(property.getName(), property.getValue());
                 }
             }
 
@@ -647,8 +647,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         List<String> ignoredModuleList = new ArrayList<>();
         for (Element ignoredModule : ignoredModules.getChildren("module")) {
-            String id = ignoredModule.getTextNormalize();
-            if (id != null) {
+            String id = ignoredModule.getValue();
+            if (id != null && !id.isEmpty()) {
                 ignoredModuleList.add(id);
             }
         }

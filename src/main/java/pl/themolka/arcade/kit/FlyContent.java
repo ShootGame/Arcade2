@@ -47,7 +47,7 @@ public class FlyContent implements RemovableKitContent<Boolean> {
                 return new FlyContent(DEFAULT_FLYING);
             }
 
-            return new FlyContent(XMLParser.parseBoolean(xml.getTextNormalize()));
+            return new FlyContent(XMLParser.parseBoolean(xml.getValue()));
         }
     }
 }

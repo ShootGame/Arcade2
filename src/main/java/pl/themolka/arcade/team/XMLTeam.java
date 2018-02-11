@@ -3,17 +3,22 @@ package pl.themolka.arcade.team;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
+import pl.themolka.arcade.kit.KitApply;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.match.MatchApplyContext;
-import pl.themolka.arcade.team.apply.TeamApplyContext;
-import pl.themolka.arcade.team.apply.TeamKitApply;
-import pl.themolka.arcade.team.apply.TeamSpawnsApply;
+import pl.themolka.arcade.spawn.Direction;
+import pl.themolka.arcade.spawn.Spawn;
+import pl.themolka.arcade.spawn.SpawnAgent;
+import pl.themolka.arcade.spawn.SpawnApply;
+import pl.themolka.arcade.spawn.SpawnsGame;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLChatColor;
 import pl.themolka.arcade.xml.XMLDyeColor;
@@ -41,7 +46,8 @@ public class XMLTeam extends XMLParser {
         EVENTS.put("player-respawn", MatchApplyContext.EventType.PLAYER_RESPAWN);
     }
 
-    public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin, KitsGame kits) {
+    public static Team parse(ArcadeMap map, Element xml, ArcadePlugin plugin,
+                             KitsGame kits, SpawnsGame spawns) {
         String name = parseName(xml);
         ChatColor color = parseColor(xml);
         DyeColor dye = parseDyeColor(xml);
@@ -83,7 +89,7 @@ public class XMLTeam extends XMLParser {
 
         TeamApplyContext applyContext = team.getApplyContext();
         for (Element applyItem : xml.getChildren("apply")) {
-            ApplyResultEntry entry = parseApply(map, applyItem, kits);
+            ApplyResultEntry entry = parseApply(map, applyItem, kits, spawns);
 
             if (entry != null) {
                 for (MatchApplyContext.EventType event : entry.getEvents()) {
@@ -181,11 +187,12 @@ public class XMLTeam extends XMLParser {
     // Applicable
     //
 
-    public static ApplyResultEntry parseApply(ArcadeMap map, Element xml, KitsGame kits) {
+    public static ApplyResultEntry parseApply(ArcadeMap map, Element xml,
+                                              KitsGame kits, SpawnsGame spawns) {
         // content
         List<PlayerApplicable> content = new ArrayList<>();
         for (Element apply : xml.getChildren()) {
-            PlayerApplicable result = parseApplyItem(map, apply, kits);
+            PlayerApplicable result = parseApplyItem(map, apply, kits, spawns);
 
             if (result != null) {
                 content.add(result);
@@ -214,12 +221,18 @@ public class XMLTeam extends XMLParser {
         return new ApplyResultEntry(content, events);
     }
 
-    private static PlayerApplicable parseApplyItem(ArcadeMap map, Element xml, KitsGame kits) {
+    private static PlayerApplicable parseApplyItem(ArcadeMap map, Element xml,
+                                                   KitsGame kits, SpawnsGame spawns) {
         switch (xml.getName().toLowerCase()) {
             case "kit":
-                return TeamKitApply.parse(map, xml, kits);
-            case "spawns":
-                return TeamSpawnsApply.parse(map, xml);
+                return KitApply.parse(xml.getValue(), kits);
+            case "spawn":
+                return SpawnApply.parse(xml.getValue(), spawns, new SpawnApply.AgentCreator() {
+                    @Override
+                    public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
+                        return SpawnAgent.create(spawn, bukkit, Direction.CONSTANT);
+                    }
+                });
             default:
                 return null;
         }

@@ -46,7 +46,7 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
             }
 
             try {
-                return new FlySpeedContent(Integer.parseInt(xml.getTextNormalize()));
+                return new FlySpeedContent(Integer.parseInt(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

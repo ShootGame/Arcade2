@@ -42,7 +42,7 @@ public class MessageContent implements KitContent<String> {
     public static class Parser implements KitContentParser<MessageContent> {
         @Override
         public MessageContent parse(Element xml) throws DataConversionException {
-            return new MessageContent(XMLParser.parseMessage(xml.getTextNormalize()), this.parseType(xml));
+            return new MessageContent(XMLParser.parseMessage(xml.getValue()), this.parseType(xml));
         }
 
         private Type parseType(Element xml) {

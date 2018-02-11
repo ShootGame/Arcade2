@@ -30,7 +30,7 @@ public class ArchiveModule extends SimpleGlobalModule {
             directoryElement = new Element("directory").setText(DEFAULT_DIRECTORY_NAME);
         }
 
-        File file = new File(directoryElement.getTextNormalize());
+        File file = new File(directoryElement.getValue());
         if (!file.isDirectory()) {
             FileUtils.deleteQuietly(file);
         } else if (!file.exists()) {

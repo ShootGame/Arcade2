@@ -165,7 +165,7 @@ public class ObserverListeners implements Listener {
         }
 
         ItemStack item = event.getItem();
-        if (item != null && item.equals(ObserversKit.PLAY)) {
+        if (item != null && item.isSimilar(ObserversKit.PLAY)) {
             GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
             if (player == null) {
                 return;

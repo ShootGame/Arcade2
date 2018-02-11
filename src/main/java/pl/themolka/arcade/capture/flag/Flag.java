@@ -3,6 +3,7 @@ package pl.themolka.arcade.capture.flag;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.capture.Capturable;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.flag.state.CarryingState;
@@ -255,9 +256,9 @@ public class Flag extends Capturable {
     }
 
     private class InitialState extends FlagState {
-        private final Random random = new Random();
+        final Random random = new Random();
 
-        public InitialState(Flag flag) {
+        InitialState(Flag flag) {
             super(flag);
         }
 
@@ -278,6 +279,9 @@ public class Flag extends Capturable {
 
             if (location != null) {
                 this.flag.setState(new SpawnedState(this.flag, location, spawn));
+
+                ArcadePlugin plugin = this.flag.getGame().getPlugin();
+                plugin.getEventBus().publish(new FlagInitEvent(plugin, this.flag, spawn, location));
             }
         }
 
@@ -286,6 +290,26 @@ public class Flag extends Capturable {
             return new ToStringBuilder(this, TO_STRING_STYLE)
                     .append("flag", this.flag)
                     .build();
+        }
+    }
+
+    public static class FlagInitEvent extends FlagEvent {
+        private final FlagSpawn spawn;
+        private final Location location;
+
+        public FlagInitEvent(ArcadePlugin plugin, Flag flag, FlagSpawn spawn, Location location) {
+            super(plugin, flag);
+
+            this.spawn = spawn;
+            this.location = location;
+        }
+
+        public FlagSpawn getSpawn() {
+            return this.spawn;
+        }
+
+        public Location getLocation() {
+            return this.location;
         }
     }
 }

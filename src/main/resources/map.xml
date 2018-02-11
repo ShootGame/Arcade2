@@ -152,8 +152,8 @@
                         <page>Page 3/3</page>
                     </book>
                 </item>
-                <item slot="7" material="skull item">
-                    <skull owner="TheMolkaPL" />
+                <item slot="7" material="skull item:3">
+                    <skull>TheMolkaPL</skull>
                 </item>
                 <item slot="6" material="potion">
                     <potion-effect ambient="on" amplifier="1" dye-color="red" duration="oo" particles="yes">fire resistance</potion-effect>

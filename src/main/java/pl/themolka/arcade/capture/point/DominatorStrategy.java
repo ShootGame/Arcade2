@@ -32,7 +32,7 @@ class EverybodyStrategy extends DominatorStrategy {
 class ExclusiveStrategy extends DominatorStrategy {
     @Override
     public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
-        if (competitors.size() == 1) {
+        if (competitors.keySet().size() == 1) {
             return competitors;
         }
 

@@ -22,7 +22,7 @@ public class GameRulesModule extends Module<GameRulesGame> {
             GameRuleType type = GameRuleType.forName(element.getName());
 
             if (type != null) {
-                rules.add(new GameRule(type, element.getTextNormalize()));
+                rules.add(new GameRule(type, element.getValue()));
             }
         }
 

@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import pl.themolka.arcade.time.Time;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,50 +49,51 @@ public class XMLParser {
         return data;
     }
 
-    public static boolean parseBoolean(String bool) {
-        return parseBoolean(bool, false);
+    public static boolean parseBoolean(String input) {
+        return parseBoolean(input, false);
     }
 
-    public static boolean parseBoolean(String bool, boolean def) {
-        if (bool == null) {
-            return def;
+    public static boolean parseBoolean(String input, boolean def) {
+        input = normalizeInput(input);
+        if (input != null) {
+            switch (input.toLowerCase()) {
+                case "true":
+                case "1":
+                case "+":
+                case "yes":
+                case "on":
+                case "enable":
+                case "enabled":
+                    return true;
+                case "false":
+                case "0":
+                case "-":
+                case "no":
+                case "off":
+                case "disable":
+                case "disabled":
+                    return false;
+            }
         }
 
-        bool = bool.trim();
-        if (bool.isEmpty()) {
-            return def;
-        }
-
-        switch (bool.toLowerCase()) {
-            case "true":
-            case "1":
-            case "+":
-            case "yes":
-            case "on":
-            case "enable":
-            case "enabled":
-                return true;
-            case "false":
-            case "0":
-            case "-":
-            case "no":
-            case "off":
-            case "disable":
-            case "disabled":
-                return false;
-            default:
-                return def;
-        }
+        return def;
     }
 
-    public static double parseDouble(String doublee) {
-        return parseDouble(doublee, 0.0D);
+    public static double parseDouble(String input) {
+        return parseDouble(input, 0.0D);
     }
 
-    public static double parseDouble(String doublee, double def) {
-        if (doublee != null) {
+    public static double parseDouble(String input, double def) {
+        input = normalizeInput(input);
+        if (input != null) {
+            if (unlimitedNegative(input)) {
+                return Double.MIN_VALUE;
+            } else if (unlimitedPositive(input)) {
+                return Double.MAX_VALUE;
+            }
+
             try {
-                return Double.parseDouble(doublee);
+                return Double.parseDouble(input);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -100,6 +102,7 @@ public class XMLParser {
     }
 
     public static String parseEnumValue(String key) {
+        key = normalizeInput(key);
         if (key != null) {
             return key.toUpperCase().trim().replace(" ", "_").replace("-", "_");
         }
@@ -107,14 +110,21 @@ public class XMLParser {
         return null;
     }
 
-    public static float parseFloat(String floatt) {
-        return parseFloat(floatt, 0.0F);
+    public static float parseFloat(String input) {
+        return parseFloat(input, 0.0F);
     }
 
-    public static float parseFloat(String floatt, float def) {
-        if (floatt != null) {
+    public static float parseFloat(String input, float def) {
+        input = normalizeInput(input);
+        if (input != null) {
+            if (unlimitedNegative(input)) {
+                return Float.MIN_VALUE;
+            } else if (unlimitedPositive(input)) {
+                return Float.MAX_VALUE;
+            }
+
             try {
-                return Float.parseFloat(floatt);
+                return Float.parseFloat(input);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -122,14 +132,21 @@ public class XMLParser {
         return def;
     }
 
-    public static int parseInt(String integer) {
-        return parseInt(integer, 0);
+    public static int parseInt(String input) {
+        return parseInt(input, 0);
     }
 
-    public static int parseInt(String integer, int def) {
-        if (integer != null) {
+    public static int parseInt(String input, int def) {
+        input = normalizeInput(input);
+        if (input != null) {
+            if (unlimitedNegative(input)) {
+                return Integer.MIN_VALUE;
+            } else if (unlimitedPositive(input)) {
+                return Integer.MAX_VALUE;
+            }
+
             try {
-                return Integer.parseInt(integer);
+                return Integer.parseInt(input);
             } catch (NumberFormatException ignored) {
             }
         }
@@ -138,10 +155,35 @@ public class XMLParser {
     }
 
     public static String parseMessage(String message) {
+        message = normalizeInput(message);
         if (message != null) {
             return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message) + ChatColor.RESET;
         }
 
         return null;
+    }
+
+    //
+    // Helper Methods
+    //
+
+    private static String normalizeInput(String input) {
+        if (input != null) {
+            input = input.trim();
+
+            if (!input.isEmpty()) {
+                return input;
+            }
+        }
+
+        return null;
+    }
+
+    private static boolean unlimitedNegative(String input) {
+        return input.equalsIgnoreCase("-" + Time.FOREVER_KEY);
+    }
+
+    private static boolean unlimitedPositive(String input) {
+        return input.equalsIgnoreCase(Time.FOREVER_KEY);
     }
 }

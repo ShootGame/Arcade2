@@ -43,7 +43,7 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
             }
 
             try {
-                return new WalkSpeedContent(Float.parseFloat(xml.getTextNormalize()));
+                return new WalkSpeedContent(Float.parseFloat(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

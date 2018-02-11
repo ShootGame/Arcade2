@@ -37,7 +37,7 @@ public class TeamLockModule extends Module<TeamLockGame> {
         List<TeamLockRule> rules = new ArrayList<>();
         for (Element child : xml.getChildren("rule")) {
             Filter filter = filtersGame.getFilter(child.getAttributeValue("filter"));
-            String message = XMLParser.parseMessage(xml.getTextNormalize());
+            String message = XMLParser.parseMessage(xml.getValue());
 
             TeamLockRule rule = new TeamLockRule(filter, message);
             rules.add(rule);

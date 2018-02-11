@@ -47,7 +47,7 @@ public class MaxHealthContent implements RemovableKitContent<Integer> {
             }
 
             try {
-                return new MaxHealthContent(Double.parseDouble(xml.getTextNormalize()));
+                return new MaxHealthContent(Double.parseDouble(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

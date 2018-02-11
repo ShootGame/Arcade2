@@ -120,7 +120,7 @@ public class XMLPreProcessor implements Runnable {
                 }
             }
 
-            String path = entry.getElement().getTextNormalize();
+            String path = entry.getElement().getValue();
             if (path.isEmpty()) {
                 return;
             }
@@ -144,8 +144,8 @@ public class XMLPreProcessor implements Runnable {
             }
 
             // text
-            if (!from.getText().isEmpty()) {
-                apply.setText(from.getText());
+            if (!from.getValue().isEmpty()) {
+                apply.setText(from.getValue());
             }
 
             // children

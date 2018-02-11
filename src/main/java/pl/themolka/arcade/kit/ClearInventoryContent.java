@@ -1,6 +1,5 @@
 package pl.themolka.arcade.kit;
 
-import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.GamePlayer;
@@ -28,8 +27,8 @@ public class ClearInventoryContent implements KitContent<Boolean> {
     public static class Parser implements KitContentParser<ClearInventoryContent> {
         @Override
         public ClearInventoryContent parse(Element xml) throws DataConversionException {
-            Attribute armor = xml.getAttribute("armor");
-            return new ClearInventoryContent(armor != null && XMLParser.parseBoolean(armor.getValue()));
+            boolean armor = XMLParser.parseBoolean(xml.getAttributeValue("armor"), false);
+            return new ClearInventoryContent(armor);
         }
     }
 }

@@ -105,7 +105,7 @@ public class XMLItemMeta extends XMLParser {
             }
 
             for (Element page : book.getChildren("page")) {
-                source.addPage(parseMessage(page.getTextNormalize()));
+                source.addPage(parseMessage(page.getValue()));
             }
         }
 
@@ -116,7 +116,7 @@ public class XMLItemMeta extends XMLParser {
         Element book = xml.getChild("enchanted-book");
         if (book != null) {
             for (Element enchantment : book.getChildren("enchantment")) {
-                Enchantment type = Enchantment.getByName(XMLParser.parseEnumValue(enchantment.getTextNormalize()));
+                Enchantment type = Enchantment.getByName(XMLParser.parseEnumValue(enchantment.getValue()));
                 int level = 1;
 
                 try {
@@ -145,7 +145,7 @@ public class XMLItemMeta extends XMLParser {
     public static LeatherArmorMeta parseLeatherArmor(Element xml, LeatherArmorMeta source) {
         Element leatherColor = xml.getChild("leather-color");
         if (leatherColor != null) {
-            Color color = XMLColor.parse(leatherColor.getTextNormalize());
+            Color color = XMLColor.parse(leatherColor.getValue());
             if (color != null) {
                 source.setColor(color);
             }
@@ -172,10 +172,7 @@ public class XMLItemMeta extends XMLParser {
     public static SkullMeta parseSkull(Element xml, SkullMeta source) {
         Element skull = xml.getChild("skull");
         if (skull != null) {
-            Attribute owner = skull.getAttribute("owner");
-            if (owner != null) {
-                source.setOwner(owner.getValue());
-            }
+            source.setOwner(skull.getValue());
         }
 
         return source;
@@ -184,7 +181,7 @@ public class XMLItemMeta extends XMLParser {
     public static SpawnEggMeta parseSpawnEgg(Element xml, SpawnEggMeta source) {
         Element spawnerEgg = xml.getChild("spawner-egg");
         if (spawnerEgg != null) {
-            EntityType entity = XMLEntity.parse(spawnerEgg.getTextNormalize());
+            EntityType entity = XMLEntity.parse(spawnerEgg.getValue());
             if (entity != null) {
                 source.setSpawnedType(entity);
             }

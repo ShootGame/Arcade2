@@ -22,6 +22,7 @@ import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.task.Task;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,10 +119,7 @@ public class CaptureGame extends GameModule {
                 }
 
                 // name
-                String name = xml.getAttributeValue("name");
-                if (name != null) {
-                    name = name.trim();
-                }
+                String name = XMLParser.parseMessage(xml.getAttributeValue("name"));
 
                 // object
                 Capturable capturable = factory.newCapturable(this, owner, id.trim(), name, xml);

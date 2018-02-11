@@ -1,4 +1,4 @@
-package pl.themolka.arcade.team.apply;
+package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
@@ -8,9 +8,7 @@ import pl.themolka.arcade.game.PlayerApplicable;
 import pl.themolka.arcade.match.MatchApplyContext;
 import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
-import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
-import pl.themolka.arcade.team.Team;
-import pl.themolka.arcade.team.TeamsGame;
+import pl.themolka.arcade.spawn.SpawnApply;
 import pl.themolka.arcade.time.Time;
 
 /**
@@ -35,6 +33,10 @@ public class TeamApplyListeners {
     public void matchStart(MatchStartedEvent event) {
         for (Team team : this.game.getTeams()) {
             if (this.shouldApplyTo(team)) {
+                for (GamePlayer player : team.getOnlineMembers()) {
+                    player.getPlayer().clearInventory(true);
+                }
+
                 team.getApplyContext().applyAll(null, MatchApplyContext.EventType.MATCH_START);
             }
         }
@@ -46,6 +48,8 @@ public class TeamApplyListeners {
         Team team = event.getTeam();
 
         if (this.shouldApplyTo(team)) {
+            player.getPlayer().clearInventory(true);
+
             team.getApplyContext().applyAll(player, MatchApplyContext.EventType.PLAYER_PLAY);
         }
     }
@@ -58,7 +62,9 @@ public class TeamApplyListeners {
         Team team = this.game.getTeam(player);
 
         if (this.shouldApplyTo(team)) {
-            Location spawn = this.fetchSpawn(team, MatchApplyContext.EventType.PLAYER_RESPAWN);
+            player.getPlayer().clearInventory(true);
+
+            Location spawn = this.fetchSpawn(team, MatchApplyContext.EventType.PLAYER_RESPAWN, player);
             if (spawn != null) {
                 event.setRespawnPosition(spawn);
             }
@@ -73,7 +79,7 @@ public class TeamApplyListeners {
 
                     for (PlayerApplicable content : team.getApplyContext().getAllContent(
                             MatchApplyContext.EventType.PLAYER_RESPAWN)) {
-                        if (!skipSpawn(content)) {
+                        if (!(content instanceof SpawnApply)) {
                             content.apply(player);
                         }
                     }
@@ -82,28 +88,17 @@ public class TeamApplyListeners {
         }
     }
 
-    private Location fetchSpawn(Team team, MatchApplyContext.EventType event) {
+    private Location fetchSpawn(Team team, MatchApplyContext.EventType event, GamePlayer player) {
         for (PlayerApplicable content : team.getApplyContext().getAllContent(event)) {
-            Location spawn = this.fetchSpawn(content);
-            if (spawn != null) {
-                return spawn;
+            if (content instanceof SpawnApply) {
+                SpawnApply spawnApply = (SpawnApply) content;
+
+                return spawnApply.getAgentCreator().createAgent(spawnApply.getSpawn(),
+                                                                player,
+                                                                player.getBukkit()).getLocation();
             }
         }
 
         return null;
-    }
-
-    private Location fetchSpawn(PlayerApplicable content) {
-        if (content instanceof TeamSpawnApply) {
-            return ((TeamSpawnApply) content).spawn();
-        } else if (content instanceof TeamSpawnsApply) {
-            return this.fetchSpawn(((TeamSpawnsApply) content).nextRandomSpawn());
-        }
-
-        return null;
-    }
-
-    private boolean skipSpawn(PlayerApplicable content) {
-        return content instanceof TeamSpawnApply || content instanceof TeamSpawnsApply;
     }
 }

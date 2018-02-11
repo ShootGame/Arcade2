@@ -3,6 +3,7 @@ package pl.themolka.arcade.item;
 import org.apache.commons.lang3.builder.Builder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -18,25 +19,25 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     private String displayName;
     private short durability;
     private Map<Enchantment, Integer> enchantments = new HashMap<>();
+    private final List<ItemFlag> flags = new ArrayList<>();
     private Material type = Material.AIR;
     private boolean unbreakable;
 
     @Override
     public ItemStack build() {
-        ItemStack stack = new ItemStack(this.type());
-        stack.addUnsafeEnchantments(this.enchantments());
-        stack.setAmount(this.amount());
-        stack.setDurability(this.durability());
+        ItemStack stack = new ItemStack(this.type);
+        stack.addUnsafeEnchantments(this.enchantments);
+        stack.setAmount(this.amount);
+        stack.setDurability(this.durability);
         stack.setItemMeta(this.buildMeta(stack.getItemMeta()));
-
         return stack;
     }
 
     private ItemMeta buildMeta(ItemMeta meta) {
-        meta.setDisplayName(this.displayName());
-        meta.setLore(this.description());
-        meta.setUnbreakable(this.unbreakable());
-
+        meta.addItemFlags(this.flags.toArray(new ItemFlag[this.flags.size()]));
+        meta.setDisplayName(this.displayName);
+        meta.setLore(this.description);
+        meta.setUnbreakable(this.unbreakable);
         return meta;
     }
 
@@ -50,7 +51,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     }
 
     public List<String> description() {
-        return this.description;
+        return new ArrayList<>(this.description);
     }
 
     public ItemStackBuilder description(String description) {
@@ -91,12 +92,30 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     }
 
     public Map<Enchantment, Integer> enchantments() {
-        return this.enchantments;
+        return new HashMap<>(this.enchantments);
     }
 
     public ItemStackBuilder enchantments(Map<Enchantment, Integer> enchantments) {
         this.enchantments.putAll(enchantments);
         return this;
+    }
+
+    public ItemStackBuilder flag(ItemFlag flag) {
+        this.flags.add(flag);
+        return this;
+    }
+
+    public List<ItemFlag> flags() {
+        return new ArrayList<>(this.flags);
+    }
+
+    public ItemStackBuilder flags(List<ItemFlag> flags) {
+        this.flags.addAll(flags);
+        return this;
+    }
+
+    public ItemStackBuilder flags(ItemFlag... flags) {
+        return this.flags(Arrays.asList(flags));
     }
 
     public Material type() {

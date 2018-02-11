@@ -78,7 +78,7 @@ public class XMLFilter extends XMLParser {
     public static MaterialMatcher parseMaterial(Element xml) throws NumberFormatException {
         List<MaterialData> container = new ArrayList<>();
         for (Element item : xml.getChildren()) {
-            String[] split = item.getTextNormalize().split(":");
+            String[] split = item.getValue().split(":");
             Material material = Material.matchMaterial(parseEnumValue(split[0]));
 
             byte data = MaterialMatcher.DATA_NULL;

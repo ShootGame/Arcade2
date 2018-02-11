@@ -21,6 +21,7 @@
     <module class="pl.themolka.arcade.repository.RepositoriesModule" />
     <module class="pl.themolka.arcade.respawn.AutoRespawnModule" />
     <module class="pl.themolka.arcade.score.ScoreModule" />
+    <module class="pl.themolka.arcade.spawn.SpawnsModule" />
     <module class="pl.themolka.arcade.team.TeamLockModule" />
     <module class="pl.themolka.arcade.team.TeamsModule" />
 </modules>

@@ -21,10 +21,10 @@ public class ScoreModule extends Module<ScoreGame> {
     public ScoreGame buildGameModule(Element xml, Game game) throws JDOMException {
         Map<String, Element> competitors = new HashMap<>();
         for (Element competitor : xml.getChildren("competitor")) {
-            String id = competitor.getTextTrim();
+            String id = competitor.getValue();
 
-            if (!id.isEmpty()) {
-                competitors.put(id, competitor);
+            if (id != null) {
+                competitors.put(id.trim(), competitor);
             }
         }
 

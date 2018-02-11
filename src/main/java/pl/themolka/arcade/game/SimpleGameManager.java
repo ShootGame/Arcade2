@@ -221,7 +221,7 @@ public class SimpleGameManager implements GameManager {
 
         for (Element mapElement : queueElement.getChildren("map")) {
             String directory = mapElement.getAttributeValue("directory");
-            String mapName = mapElement.getTextNormalize();
+            String mapName = mapElement.getValue();
 
             OfflineMap map = null;
             if (directory != null) {

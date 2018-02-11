@@ -43,7 +43,7 @@ public class HealthContent implements RemovableKitContent<Double> {
             }
 
             try {
-                return new HealthContent(Double.parseDouble(xml.getTextNormalize()));
+                return new HealthContent(Double.parseDouble(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

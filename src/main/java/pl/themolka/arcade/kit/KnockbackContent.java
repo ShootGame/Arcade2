@@ -43,7 +43,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
             }
 
             try {
-                return new KnockbackContent(Float.parseFloat(xml.getTextNormalize()));
+                return new KnockbackContent(Float.parseFloat(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

@@ -70,7 +70,7 @@ public class SoundContent implements KitContent<Sound> {
     public static class Parser implements KitContentParser<SoundContent> {
         @Override
         public SoundContent parse(Element xml) throws DataConversionException {
-            Sound sound = XMLSound.parse(xml.getTextNormalize());
+            Sound sound = XMLSound.parse(xml.getValue());
             if (sound != null) {
                 SoundContent content = new SoundContent(sound);
                 content.setLocation(XMLLocation.parse(xml));

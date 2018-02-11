@@ -33,14 +33,14 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
                 public boolean accept(File dir, String name) {
                     if (!exclude.isEmpty()) {
                         for (Element element : exclude) {
-                            if (name.equals(element.getTextNormalize())) {
+                            if (name.equals(element.getValue())) {
                                 return false;
                             }
                         }
                         return true;
                     } else if (!include.isEmpty()) {
                         for (Element element : include) {
-                            if (name.equals(element.getTextNormalize())) {
+                            if (name.equals(element.getValue())) {
                                 return true;
                             }
                         }

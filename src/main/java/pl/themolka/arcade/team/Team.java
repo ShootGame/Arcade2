@@ -16,7 +16,6 @@ import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.team.apply.TeamApplyContext;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;

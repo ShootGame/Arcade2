@@ -115,7 +115,7 @@ public class XMLPermissions {
     private List<Group> getInherit(List<Group> source, List<Element> inherit) {
         List<Group> results = new ArrayList<>();
         for (Element element : inherit) {
-            String id = element.getTextNormalize();
+            String id = element.getValue();
             Group group = this.getGroup(source, id);
 
             if (group != null) {
@@ -133,9 +133,9 @@ public class XMLPermissions {
 
             Permission permission = null;
             if (elementName.equalsIgnoreCase("grant")) {
-                permission = new Permission(permissionElement.getTextNormalize(), true);
+                permission = new Permission(permissionElement.getValue(), true);
             } else if (elementName.equalsIgnoreCase("revoke")) {
-                permission = new Permission(permissionElement.getTextNormalize(), false);
+                permission = new Permission(permissionElement.getValue(), false);
             }
 
             if (permission != null) {
@@ -176,7 +176,7 @@ public class XMLPermissions {
             // groups
             List<Group> groups = new ArrayList<>();
             for (Element groupElement : playerElement.getChildren("group")) {
-                Group group = this.getGroup(groupList, groupElement.getText());
+                Group group = this.getGroup(groupList, groupElement.getValue());
                 if (group != null) {
                     groups.add(group);
                 }

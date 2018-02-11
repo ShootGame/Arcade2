@@ -16,7 +16,7 @@ public class KitsModule extends Module<KitsGame> {
         List<Kit> kits = new ArrayList<>();
 
         for (Element kitElement : xml.getChildren("kit")) {
-            Kit kit = XMLKit.parseKit(this.getPlugin(), kitElement);
+            Kit kit = XMLKit.parse(this.getPlugin(), kitElement);
             if (kit != null) {
                 kits.add(kit);
             }

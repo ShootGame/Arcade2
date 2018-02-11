@@ -35,7 +35,7 @@ public class TeamFilters {
         private Team team;
 
         public PlayerTeamFilter(Element xml) {
-            this.team = teams.getTeam(xml.getTextTrim());
+            this.team = teams.getTeam(xml.getValue());
         }
 
         @Override

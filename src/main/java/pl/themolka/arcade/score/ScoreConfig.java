@@ -51,18 +51,11 @@ public class ScoreConfig {
     }
 
     public static ScoreConfig parse(Element xml, ScoreConfig def) {
-        String name = xml.getAttributeValue("name", def.name);
+        String name = XMLParser.parseMessage(xml.getAttributeValue("name", def.name));
         double initialScore = XMLParser.parseDouble(xml.getAttributeValue("initial-score"), def.initialScore);
         double killReward = XMLParser.parseDouble(xml.getAttributeValue("kill-reward"), def.killReward);
         double deathLoss = XMLParser.parseDouble(xml.getAttributeValue("death-loss"), def.deathLoss);
         double limit = XMLParser.parseDouble(xml.getAttributeValue("limit"), def.limit);
-
-        if (name != null) {
-            name = name.trim();
-            if (name.isEmpty()) {
-                name = null;
-            }
-        }
 
         return new ScoreConfig(name, initialScore, killReward, deathLoss, limit);
     }

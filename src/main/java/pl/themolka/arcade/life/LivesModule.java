@@ -18,7 +18,7 @@ public class LivesModule extends Module<LivesGame> {
 
     @Override
     public LivesGame buildGameModule(Element xml, Game game) throws JDOMException {
-        int lives = XMLParser.parseInt(xml.getTextNormalize(), 1);
+        int lives = XMLParser.parseInt(xml.getValue(), 1);
         if (lives > 0) {
             boolean broadcast = XMLParser.parseBoolean(xml.getAttributeValue("broadcast"), true);
             Sound sound = XMLSound.parse(xml.getAttributeValue("sound"), DEFAULT_SOUND);

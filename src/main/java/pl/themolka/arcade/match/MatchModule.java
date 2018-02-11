@@ -31,17 +31,17 @@ public class MatchModule extends Module<MatchGame> {
 
         Element autoCycleElement = xml.getChild("auto-cycle");
         if (autoCycleElement != null) {
-            autoCycle = XMLParser.parseBoolean(autoCycleElement.getTextNormalize(), true);
+            autoCycle = XMLParser.parseBoolean(autoCycleElement.getValue(), true);
         }
 
         Element autoStartElement = xml.getChild("auto-start");
         if (autoStartElement != null) {
-            autoStart = XMLParser.parseBoolean(autoStartElement.getTextNormalize(), true);
+            autoStart = XMLParser.parseBoolean(autoStartElement.getValue(), true);
         }
 
         Element startCountdownElement = xml.getChild("start-countdown");
         if (startCountdownElement != null) {
-            Time time = XMLTime.parse(startCountdownElement.getTextNormalize());
+            Time time = XMLTime.parse(startCountdownElement.getValue());
             if (time != null) {
                 startCountdown = (int) time.toSeconds();
             } else {

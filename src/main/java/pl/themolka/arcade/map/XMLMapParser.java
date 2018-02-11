@@ -171,7 +171,7 @@ public class XMLMapParser implements MapParser {
             }
         }
 
-        String username = author.getTextTrim();
+        String username = author.getValue();
         if (username.isEmpty()) {
             return null;
         }
@@ -215,7 +215,7 @@ public class XMLMapParser implements MapParser {
                 }
 
                 for (Element log : version.getChildren("log")) {
-                    String value = log.getTextNormalize();
+                    String value = log.getValue();
                     if (!value.isEmpty()) {
                         changelog.add(value);
                     }
@@ -293,7 +293,7 @@ public class XMLMapParser implements MapParser {
         if (parent != null) {
             Element xml = parent.getChild("title");
             if (xml != null) {
-                return XMLParser.parseMessage(xml.getTextNormalize());
+                return XMLParser.parseMessage(xml.getValue());
             }
         }
 
@@ -320,7 +320,7 @@ public class XMLMapParser implements MapParser {
     private Location parseSpawn(Element parent) throws MapParserException {
         Element spawn = parent.getChild("spawn");
         if (spawn == null) {
-            return new Location((World) null, XMLLocation.X, XMLLocation.Y, XMLLocation.Z);
+            return new Location((UUID) null, XMLLocation.X, XMLLocation.Y, XMLLocation.Z);
         }
 
         try {

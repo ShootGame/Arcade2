@@ -2,6 +2,7 @@ package pl.themolka.arcade.item;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jdom2.Attribute;
@@ -27,13 +28,13 @@ public class XMLItemStack extends XMLParser {
                 .displayName(parseDisplayName(xml))
                 .durability(parseDurability(xml))
                 .enchantments(parseEnchantments(xml))
+                .flags(parseFlags(xml))
                 .type(parseType(xml))
                 .unbreakable(parseUnbreakable(xml));
 
         ItemStack item = builder.build();
         item.setItemMeta(parseItemMeta(xml, item.getItemMeta()));
         item.setDurability(parseData(xml));
-
         return item;
     }
 
@@ -67,7 +68,7 @@ public class XMLItemStack extends XMLParser {
         Element element = xml.getChild("description");
         if (element != null) {
             for (Element line : element.getChildren("line")) {
-                description.add(XMLParser.parseMessage(line.getTextNormalize()));
+                description.add(XMLParser.parseMessage(line.getValue()));
             }
         }
 
@@ -77,7 +78,7 @@ public class XMLItemStack extends XMLParser {
     private static String parseDisplayName(Element xml) {
         Element element = xml.getChild("name");
         if (element != null) {
-            return XMLParser.parseMessage(element.getTextNormalize());
+            return XMLParser.parseMessage(element.getValue());
         }
 
         return null;
@@ -87,7 +88,7 @@ public class XMLItemStack extends XMLParser {
         Element element = xml.getChild("durability");
         if (element != null) {
             try {
-                return Short.parseShort(element.getTextNormalize());
+                return Short.parseShort(element.getValue());
             } catch (NumberFormatException ignored) {
             }
         }
@@ -97,26 +98,42 @@ public class XMLItemStack extends XMLParser {
 
     private static Map<Enchantment, Integer> parseEnchantments(Element xml) {
         Map<Enchantment, Integer> enchantments = new HashMap<>();
+        enchantments.putAll(parseEnchantments0(xml));
 
         Element element = xml.getChild("enchantments");
         if (element != null) {
-            for (Element enchantment : element.getChildren("enchantment")) {
-                Enchantment type = Enchantment.getByName(XMLParser.parseEnumValue(enchantment.getTextNormalize()));
-                int level = 1;
+            enchantments.putAll(parseEnchantments0(element));
+        }
 
-                try {
-                    Attribute levelAttribute = enchantment.getAttribute("level");
-                    if (levelAttribute != null) {
-                        level = levelAttribute.getIntValue();
-                    }
-                } catch (DataConversionException ignored) {
-                }
+        return enchantments;
+    }
 
+    private static Map<Enchantment, Integer> parseEnchantments0(Element xml) {
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+        for (Element enchantment : xml.getChildren("enchantment")) {
+            Enchantment type = Enchantment.getByName(XMLParser.parseEnumValue(enchantment.getValue()));
+            int level = parseInt(enchantment.getAttributeValue("level"), 1);
+
+            if (type != null && level > 0) {
                 enchantments.put(type, level);
             }
         }
 
         return enchantments;
+    }
+
+    private static List<ItemFlag> parseFlags(Element xml) {
+        List<ItemFlag> flags = new ArrayList<>();
+
+        for (Element element : xml.getChildren("flag")) {
+            try {
+                flags.add(ItemFlag.valueOf(parseEnumValue(element.getValue())));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        return flags;
     }
 
     private static ItemMeta parseItemMeta(Element xml, ItemMeta meta) {
@@ -129,6 +146,6 @@ public class XMLItemStack extends XMLParser {
 
     private static boolean parseUnbreakable(Element xml) {
         Element element = xml.getChild("unbreakable");
-        return element != null && XMLParser.parseBoolean(element.getTextNormalize());
+        return element != null && XMLParser.parseBoolean(element.getValue());
     }
 }

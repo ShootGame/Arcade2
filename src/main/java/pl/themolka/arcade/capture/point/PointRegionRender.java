@@ -16,6 +16,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameStartEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.region.Region;
+import pl.themolka.arcade.team.TeamEditEvent;
 import pl.themolka.arcade.util.Color;
 
 import java.util.Set;
@@ -48,6 +49,14 @@ public class PointRegionRender implements Listener {
         return data != null && this.isRenderable(data.getItemType());
     }
 
+    public void renderAllPoints() {
+        for (Capturable capturable : this.game.getCapturables()) {
+            if (capturable instanceof Point) {
+                this.renderPoint((Point) capturable);
+            }
+        }
+    }
+
     public boolean renderBanner(Banner banner, DyeColor color) {
         banner.setBaseColor(color);
         return banner.update(false, false);
@@ -78,6 +87,11 @@ public class PointRegionRender implements Listener {
         }
     }
 
+    public void renderPoint(Point point) {
+        GoalHolder owner = point.getOwner();
+        this.renderPoint(point, owner != null ? owner.getColor() : point.getNeutralColor());
+    }
+
     public void renderPoint(Point point, Color color) {
         this.renderPoint(point, color.toDye());
     }
@@ -92,15 +106,13 @@ public class PointRegionRender implements Listener {
 
     @Handler(priority = Priority.LAST)
     public void initialRender(GameStartEvent event) {
-        for (Capturable capturable : this.game.getCapturables()) {
-            if (capturable instanceof Point) {
-                Point point = (Point) capturable;
+        this.renderAllPoints();
+    }
 
-                GoalHolder owner = point.getOwner();
-                Color color = owner != null ? owner.getColor() : null;
-
-                this.renderPoint(point, color != null ? color : point.getNeutralColor());
-            }
+    @Handler(priority = Priority.LAST)
+    public void renderParticipatorEdit(TeamEditEvent event) {
+        if (event.getReason().equals(TeamEditEvent.Reason.PAINT)) {
+            this.renderAllPoints();
         }
     }
 
