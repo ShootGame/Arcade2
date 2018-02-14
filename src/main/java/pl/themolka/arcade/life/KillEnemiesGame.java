@@ -3,8 +3,8 @@ package pl.themolka.arcade.life;
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class KillEnemiesGame extends GameModule implements DynamicWinnable {
-    private final Map<GoalHolder, KillEnemies> byOwner = new HashMap<>();
+    private final Map<Participator, KillEnemies> byOwner = new HashMap<>();
 
     private Match match;
 
@@ -40,7 +40,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
         for (MatchWinner winner : winnerList) {
             KillEnemies objective = new KillEnemies(this, winner, this.fetchEnemies(winnerList, winner));
 
-            // Make sure that KillEnemies is only ONE per GoalHolder
+            // Make sure that KillEnemies is only ONE per Participator
             if (objective.isCompletableBy(winner) && this.getObjective(winner) == null) {
                 this.byOwner.put(winner, objective);
                 winner.addGoal(objective);
@@ -86,7 +86,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
         return this.match;
     }
 
-    public KillEnemies getObjective(GoalHolder holder) {
+    public KillEnemies getObjective(Participator holder) {
         return this.byOwner.get(holder);
     }
 
@@ -94,9 +94,9 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
         return this.byOwner.values();
     }
 
-    private Set<GoalHolder> fetchEnemies(Collection<MatchWinner> all, MatchWinner owner) {
-        Set<GoalHolder> enemies = new HashSet<>();
-        for (GoalHolder competitor : all) {
+    private Set<Participator> fetchEnemies(Collection<MatchWinner> all, MatchWinner owner) {
+        Set<Participator> enemies = new HashSet<>();
+        for (Participator competitor : all) {
             if (!competitor.equals(owner)) {
                 enemies.add(competitor);
             }
@@ -109,7 +109,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     // Refreshing Objectives
     //
 
-    public void refreshObjectives(GoalHolder completer) {
+    public void refreshObjectives(Participator completer) {
         for (KillEnemies objective : this.byOwner.values()) {
             if (objective.isCompleted()) {
                 objective.setCompleted(completer);

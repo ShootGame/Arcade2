@@ -101,6 +101,11 @@ public class Team implements MatchWinner {
     }
 
     @Override
+    public int countGoals() {
+        return this.goals.size();
+    }
+
+    @Override
     public Color getColor() {
         return Color.ofChat(this.getChatColor());
     }
@@ -126,8 +131,18 @@ public class Team implements MatchWinner {
     }
 
     @Override
+    public boolean hasAnyGoals() {
+        return !this.goals.isEmpty();
+    }
+
+    @Override
     public boolean hasGoal(Goal goal) {
         return this.goals.contains(goal);
+    }
+
+    @Override
+    public boolean isParticipating() {
+        return !this.isObservers();
     }
 
     @Override
@@ -239,10 +254,6 @@ public class Team implements MatchWinner {
 
     public boolean isOverfilled() {
         return this.getOnlineMembers().size() >= this.getMaxPlayers();
-    }
-
-    public boolean isParticipating() {
-        return !this.isObservers();
     }
 
     public boolean isPlaying() {

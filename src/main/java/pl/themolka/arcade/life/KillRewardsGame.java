@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class KillRewardGame extends GameModule {
+public class KillRewardsGame extends GameModule {
     private final List<KillReward> rewards = new ArrayList<>();
     private final Multimap<UUID, KillReward> queuedRewards = ArrayListMultimap.create();
 
@@ -71,7 +71,7 @@ public class KillRewardGame extends GameModule {
 
     public void rewardPlayer(GamePlayer player, Iterable<KillReward> rewards) {
         for (KillReward reward : rewards) {
-            reward.apply(player);
+            reward.rewardPlayer(player);
         }
 
         Player bukkit = player.getBukkit();

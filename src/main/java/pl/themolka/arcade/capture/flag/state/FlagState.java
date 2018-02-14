@@ -5,8 +5,8 @@ import pl.themolka.arcade.capture.CapturableState;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 
 public abstract class FlagState extends CapturableState<Flag, FlagState> {
@@ -21,7 +21,7 @@ public abstract class FlagState extends CapturableState<Flag, FlagState> {
     @Override
     public abstract FlagState copy();
 
-    public void heartbeat(long ticks, Match match, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Participator owner) {
     }
 
     @Override

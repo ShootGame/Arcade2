@@ -3,6 +3,7 @@
 <modules>
     <module class="pl.themolka.arcade.capture.CaptureModule" />
     <module class="pl.themolka.arcade.channel.ChannelsModule" />
+    <module class="pl.themolka.arcade.damage.DamageModule" />
     <module class="pl.themolka.arcade.damage.RageModule" />
     <module class="pl.themolka.arcade.example.ExampleModule" />
     <module class="pl.themolka.arcade.filter.FiltersModule" />
@@ -12,7 +13,7 @@
     <module class="pl.themolka.arcade.kit.KitsModule" />
     <module class="pl.themolka.arcade.leak.LeakModule" />
     <module class="pl.themolka.arcade.life.KillEnemiesModule" />
-    <module class="pl.themolka.arcade.life.KillRewardModule" />
+    <module class="pl.themolka.arcade.life.KillRewardsModule" />
     <module class="pl.themolka.arcade.life.LivesModule" />
     <module class="pl.themolka.arcade.lobby.LobbyModule" />
     <module class="pl.themolka.arcade.map.ArchiveModule" />

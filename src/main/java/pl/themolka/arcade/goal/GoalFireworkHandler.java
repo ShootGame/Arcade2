@@ -7,6 +7,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.firework.FireworkHandler;
 import pl.themolka.arcade.firework.FireworkUtils;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.CuboidRegion;
 import pl.themolka.arcade.util.Color;
 
@@ -36,7 +37,7 @@ public class GoalFireworkHandler extends FireworkHandler {
         return FireworkUtils.spawn(at, FIREWORK_POWER, effect);
     }
 
-    public Firework fireComplete(Location at, GoalHolder competitor) {
+    public Firework fireComplete(Location at, Participator competitor) {
         return this.fireComplete(at, competitor.getColor());
     }
 

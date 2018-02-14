@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointCapturedEvent;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
@@ -15,17 +15,17 @@ import java.util.List;
 public class CapturingState extends PointState.Progress {
     public static final double CAPTURED = Progress.DONE;
 
-    private final GoalHolder capturer; // this must be final, never null
+    private final Participator capturer; // this must be final, never null
 
-    public CapturingState(LosingState losing, GoalHolder capturer) {
+    public CapturingState(LosingState losing, Participator capturer) {
         this(losing.point, capturer);
     }
 
-    public CapturingState(NeutralState neutral, GoalHolder capturer) {
+    public CapturingState(NeutralState neutral, Participator capturer) {
         this(neutral.point, capturer);
     }
 
-    public CapturingState(Point point, GoalHolder capturer) {
+    public CapturingState(Point point, Participator capturer) {
         super(point);
 
         this.capturer = capturer;
@@ -47,8 +47,8 @@ public class CapturingState extends PointState.Progress {
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
         if (!dominators.isEmpty()) {
             if (!canCapture.contains(this.capturer)) {
                 // The dominator has changed.
@@ -80,8 +80,8 @@ public class CapturingState extends PointState.Progress {
             this.point.setState(newState);
 
             if (newState instanceof CapturedState) {
-                GoalHolder oldOwner = event.getOldOwner();
-                GoalHolder newOwner = event.getNewOwner();
+                Participator oldOwner = event.getOldOwner();
+                Participator newOwner = event.getNewOwner();
 
                 if (newOwner != null && (oldOwner == null || !oldOwner.equals(newOwner))) {
                     this.point.capture(newOwner, null);
@@ -95,11 +95,11 @@ public class CapturingState extends PointState.Progress {
         return true;
     }
 
-    public GoalHolder getCapturer() {
+    public Participator getCapturer() {
         return this.capturer;
     }
 
-    public PointState startLosing(Point point, GoalHolder capturer, Multimap<GoalHolder, GamePlayer> dominators, double progress) {
+    public PointState startLosing(Point point, Participator capturer, Multimap<Participator, GamePlayer> dominators, double progress) {
         return point.startLosing(capturer, progress);
     }
 

@@ -15,7 +15,7 @@ import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
 
 import java.util.Collections;
@@ -34,14 +34,14 @@ public class Wool extends Capturable implements Listener {
         this(game, null, id);
     }
 
-    public Wool(CaptureGame game, GoalHolder owner, String id) {
+    public Wool(CaptureGame game, Participator owner, String id) {
         super(game, owner, id);
 
         this.pickupTracker = new WoolPickupTracker(game, this);
     }
 
     @Override
-    public void capture(GoalHolder completer, GamePlayer player) {
+    public void capture(Participator completer, GamePlayer player) {
         String owner = "";
         if (this.hasOwner()) {
             owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
@@ -218,7 +218,7 @@ public class Wool extends Capturable implements Listener {
             player.sendError("You may not capture your own " + ChatColor.GOLD +
                     this.getColoredName() + Messageable.ERROR_COLOR + "!");
         } else {
-            GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(player);
+            Participator competitor = this.game.getMatch().findWinnerByPlayer(player);
             if (competitor == null) {
                 return;
             }

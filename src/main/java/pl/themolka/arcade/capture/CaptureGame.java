@@ -16,7 +16,7 @@ import pl.themolka.arcade.capture.wool.Wool;
 import pl.themolka.arcade.capture.wool.WoolChestTracker;
 import pl.themolka.arcade.capture.wool.WoolFactory;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class CaptureGame extends GameModule {
     private final Map<String, Capturable> capturablesById = new HashMap<>();
-    private final Multimap<GoalHolder, Capturable> capturablesByOwner = ArrayListMultimap.create();
+    private final Multimap<Participator, Capturable> capturablesByOwner = ArrayListMultimap.create();
 
     private final Map<String, CapturableFactory> factoryMap = new HashMap<>();
 
@@ -70,7 +70,7 @@ public class CaptureGame extends GameModule {
         return this.capturablesById.values();
     }
 
-    public Collection<Capturable> getCapturables(GoalHolder owner) {
+    public Collection<Capturable> getCapturables(Participator owner) {
         return this.capturablesByOwner.get(owner);
     }
 
@@ -113,7 +113,7 @@ public class CaptureGame extends GameModule {
 
                 // owner
                 String ownerId = xml.getAttributeValue("owner");
-                GoalHolder owner = null;
+                Participator owner = null;
                 if (ownerId != null && !ownerId.trim().isEmpty()) {
                     owner = this.getMatch().findWinnerById(ownerId.trim());
                 }

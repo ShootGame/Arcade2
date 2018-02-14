@@ -2,14 +2,14 @@ package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class ScoreIncrementEvent extends ScoreEvent implements Cancelable {
     private boolean cancel;
-    private GoalHolder completer;
+    private Participator completer;
     private double points;
 
-    public ScoreIncrementEvent(ArcadePlugin plugin, Score score, GoalHolder completer, double points) {
+    public ScoreIncrementEvent(ArcadePlugin plugin, Score score, Participator completer, double points) {
         super(plugin, score);
 
         this.completer = completer;
@@ -26,7 +26,7 @@ public class ScoreIncrementEvent extends ScoreEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompleter() {
+    public Participator getCompleter() {
         return this.completer;
     }
 
@@ -42,7 +42,7 @@ public class ScoreIncrementEvent extends ScoreEvent implements Cancelable {
         return this.completer != null;
     }
 
-    public void setCompleter(GoalHolder completer) {
+    public void setCompleter(Participator completer) {
         this.completer = completer;
     }
 

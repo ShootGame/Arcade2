@@ -2,13 +2,13 @@ package pl.themolka.arcade.leak;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class LeakableLeakEvent extends LeakableEvent implements Cancelable {
     private boolean cancel;
-    private GoalHolder completer;
+    private Participator completer;
 
-    public LeakableLeakEvent(ArcadePlugin plugin, Leakable leakable, GoalHolder completer) {
+    public LeakableLeakEvent(ArcadePlugin plugin, Leakable leakable, Participator completer) {
         super(plugin, leakable);
     }
 
@@ -22,7 +22,7 @@ public class LeakableLeakEvent extends LeakableEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompleter() {
+    public Participator getCompleter() {
         return this.completer;
     }
 
@@ -30,7 +30,7 @@ public class LeakableLeakEvent extends LeakableEvent implements Cancelable {
         return this.completer != null;
     }
 
-    public void setCompleter(GoalHolder completer) {
+    public void setCompleter(Participator completer) {
         this.completer = completer;
     }
 }

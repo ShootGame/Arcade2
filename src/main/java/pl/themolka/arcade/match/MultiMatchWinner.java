@@ -32,6 +32,11 @@ public class MultiMatchWinner implements MatchWinner {
     }
 
     @Override
+    public boolean canParticipate() {
+        return true;
+    }
+
+    @Override
     public boolean contains(Player bukkit) {
         for (MatchWinner winner : this.winners) {
             if (winner.contains(bukkit)) {
@@ -40,6 +45,16 @@ public class MultiMatchWinner implements MatchWinner {
         }
 
         return false;
+    }
+
+    @Override
+    public int countGoals() {
+        int count = 0;
+        for (MatchWinner winner : this.winners) {
+            count += winner.countGoals();
+        }
+
+        return count;
     }
 
     @Override
@@ -78,6 +93,17 @@ public class MultiMatchWinner implements MatchWinner {
     }
 
     @Override
+    public boolean hasAnyGoals() {
+        for (MatchWinner winner : this.winners) {
+            if (winner.hasAnyGoals()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean hasGoal(Goal goal) {
         for (MatchWinner winner : this.winners) {
             if (winner.hasGoal(goal)) {
@@ -86,6 +112,11 @@ public class MultiMatchWinner implements MatchWinner {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isParticipating() {
+        return true;
     }
 
     @Override

@@ -3,14 +3,14 @@ package pl.themolka.arcade.capture.wool;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class WoolPlaceEvent extends WoolEvent implements Cancelable {
     private boolean cancel;
-    private GoalHolder completer;
+    private Participator completer;
     private final GamePlayer player;
 
-    public WoolPlaceEvent(ArcadePlugin plugin, Wool wool, GoalHolder completer, GamePlayer player) {
+    public WoolPlaceEvent(ArcadePlugin plugin, Wool wool, Participator completer, GamePlayer player) {
         super(plugin, wool);
 
         this.completer = completer;
@@ -27,7 +27,7 @@ public class WoolPlaceEvent extends WoolEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompleter() {
+    public Participator getCompleter() {
         return this.completer;
     }
 
@@ -35,7 +35,7 @@ public class WoolPlaceEvent extends WoolEvent implements Cancelable {
         return this.player;
     }
 
-    public void setCompleter(GoalHolder completer) {
+    public void setCompleter(Participator completer) {
         this.completer = completer;
     }
 }

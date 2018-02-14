@@ -2,8 +2,8 @@ package pl.themolka.arcade.leak;
 
 import pl.themolka.arcade.event.EventListenerComponent;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.SimpleInteractableGoal;
 import pl.themolka.arcade.util.StringId;
@@ -17,7 +17,7 @@ public abstract class Leakable extends SimpleInteractableGoal implements EventLi
         this(game, null, id);
     }
 
-    public Leakable(LeakGame game, GoalHolder owner, String id) {
+    public Leakable(LeakGame game, Participator owner, String id) {
         super(game.getGame(), owner);
         this.game = game;
 
@@ -25,7 +25,7 @@ public abstract class Leakable extends SimpleInteractableGoal implements EventLi
     }
 
     @Override
-    public void complete(GoalHolder completer) {
+    public void complete(Participator completer) {
         LeakableLeakEvent event = new LeakableLeakEvent(this.game.getPlugin(), this, completer);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -57,7 +57,7 @@ public abstract class Leakable extends SimpleInteractableGoal implements EventLi
         return false;
     }
 
-    public abstract void leak(GoalHolder completer, GamePlayer player);
+    public abstract void leak(Participator completer, GamePlayer player);
 
     public LeakGame getLeakGame() {
         return this.game;

@@ -2,8 +2,8 @@ package pl.themolka.arcade.capture;
 
 import pl.themolka.arcade.event.EventListenerComponent;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.SimpleInteractableGoal;
 import pl.themolka.arcade.util.StringId;
@@ -17,7 +17,7 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
         this(game, null, id);
     }
 
-    public Capturable(CaptureGame game, GoalHolder owner, String id) {
+    public Capturable(CaptureGame game, Participator owner, String id) {
         super(game.getGame(), owner);
         this.game = game;
 
@@ -25,7 +25,7 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
     }
 
     @Override
-    public void complete(GoalHolder completer) {
+    public void complete(Participator completer) {
         CapturableCaptureEvent event = new CapturableCaptureEvent(this.game.getPlugin(), this, completer);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -57,7 +57,7 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
         return false;
     }
 
-    public abstract void capture(GoalHolder completer, GamePlayer player);
+    public abstract void capture(Participator completer, GamePlayer player);
 
     public CaptureGame getCaptureGame() {
         return this.game;

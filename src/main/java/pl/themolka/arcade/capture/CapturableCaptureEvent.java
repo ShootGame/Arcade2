@@ -2,13 +2,13 @@ package pl.themolka.arcade.capture;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class CapturableCaptureEvent extends CapturableEvent implements Cancelable {
     private boolean cancel;
-    private GoalHolder completer;
+    private Participator completer;
 
-    public CapturableCaptureEvent(ArcadePlugin plugin, Capturable capturable, GoalHolder completer) {
+    public CapturableCaptureEvent(ArcadePlugin plugin, Capturable capturable, Participator completer) {
         super(plugin, capturable);
 
         this.completer = completer;
@@ -24,7 +24,7 @@ public class CapturableCaptureEvent extends CapturableEvent implements Cancelabl
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompleter() {
+    public Participator getCompleter() {
         return this.completer;
     }
 
@@ -32,7 +32,7 @@ public class CapturableCaptureEvent extends CapturableEvent implements Cancelabl
         return this.completer != null;
     }
 
-    public void setCompleter(GoalHolder completer) {
+    public void setCompleter(Participator completer) {
         this.completer = completer;
     }
 }

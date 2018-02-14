@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.leak.core.CoreFactory;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class LeakGame extends GameModule {
     private final Map<String, Leakable> leakablesById = new HashMap<>();
-    private final Multimap<GoalHolder, Leakable> leakablesByOwner = ArrayListMultimap.create();
+    private final Multimap<Participator, Leakable> leakablesByOwner = ArrayListMultimap.create();
 
     private final Map<String, LeakableFactory> factoryMap = new HashMap<>();
 
@@ -58,7 +58,7 @@ public class LeakGame extends GameModule {
         return this.leakablesById.values();
     }
 
-    public Collection<Leakable> getLeakables(GoalHolder owner) {
+    public Collection<Leakable> getLeakables(Participator owner) {
         return this.leakablesByOwner.get(owner);
     }
 
@@ -95,7 +95,7 @@ public class LeakGame extends GameModule {
 
                 // owner
                 String ownerId = xml.getAttributeValue("owner");
-                GoalHolder owner = null;
+                Participator owner = null;
                 if (ownerId != null && !ownerId.trim().isEmpty()) {
                     owner = this.getMatch().findWinnerById(ownerId.trim());
                 }
@@ -114,7 +114,7 @@ public class LeakGame extends GameModule {
 
                 // register
                 if (leakable.registerGoal()) {
-                    for (GoalHolder completableBy : this.match.getWinnerList()) {
+                    for (Participator completableBy : this.match.getWinnerList()) {
                         if (leakable.isCompletableBy(completableBy)) {
                             completableBy.addGoal(leakable);
                         }

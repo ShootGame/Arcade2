@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.capture.point.PointLostEvent;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
@@ -15,9 +15,9 @@ import java.util.List;
 public class LosingState extends PointState.Progress {
     public static final double LOST = Progress.ZERO;
 
-    private final GoalHolder loser; // not null
+    private final Participator loser; // not null
 
-    public LosingState(CapturedState captured, GoalHolder loser) {
+    public LosingState(CapturedState captured, Participator loser) {
         this(captured.point, loser);
     }
 
@@ -25,7 +25,7 @@ public class LosingState extends PointState.Progress {
         this(capturing.point, capturing.getCapturer());
     }
 
-    public LosingState(Point point, GoalHolder loser) {
+    public LosingState(Point point, Participator loser) {
         super(point);
 
         this.loser = loser;
@@ -47,8 +47,8 @@ public class LosingState extends PointState.Progress {
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
         if (dominators.containsKey(this.loser)) {
             // The loser is dominating the point - bring it back to him.
             this.startCapturing(this.point, this.loser, this.getProgress());
@@ -84,15 +84,15 @@ public class LosingState extends PointState.Progress {
         return false;
     }
 
-    public GoalHolder getLoser() {
+    public Participator getLoser() {
         return this.loser;
     }
 
-    public GoalHolder getOwner() {
+    public Participator getOwner() {
         return this.point.getOwner();
     }
 
-    public PointState startCapturing(Point point, GoalHolder capturer, double progress) {
+    public PointState startCapturing(Point point, Participator capturer, double progress) {
         if (point.isCapturingCapturedEnabled()) {
             return point.startCapturingCaptured(capturer, progress);
         } else {

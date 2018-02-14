@@ -1,5 +1,6 @@
 package pl.themolka.arcade.score;
 
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
@@ -18,7 +19,7 @@ public class Score extends SimpleGoal {
     private final ScoreConfig config;
     private double score;
 
-    public Score(ScoreGame game, GoalHolder owner, ScoreConfig config) {
+    public Score(ScoreGame game, Participator owner, ScoreConfig config) {
         super(game.getGame(), owner);
         this.game = game;
 
@@ -27,7 +28,7 @@ public class Score extends SimpleGoal {
     }
 
     @Override
-    public void complete(GoalHolder completer) {
+    public void complete(Participator completer) {
         boolean byLimit = this.isLimitReached();
 
         ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
@@ -118,7 +119,7 @@ public class Score extends SimpleGoal {
      *     - ScoreScoredEvent (cancelable)
      *     - GoalCompleteEvent (cancelable)
      */
-    public void incrementScore(GoalHolder completer, double points) {
+    public void incrementScore(Participator completer, double points) {
         if (!this.game.getMatch().isRunning() || isValid(this.getScore() + points)) {
             return;
         }

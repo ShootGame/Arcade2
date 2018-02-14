@@ -5,8 +5,8 @@ import pl.themolka.arcade.capture.CapturableState;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.util.Color;
 
@@ -28,8 +28,8 @@ public abstract class PointState extends CapturableState<Point, PointState> {
         return this.point.getNeutralColor();
     }
 
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
     }
 
     public double getProgress() {

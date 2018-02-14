@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.team.PlayerLeaveTeamEvent;
@@ -23,7 +23,7 @@ public class WoolPickupTracker implements Listener {
     private final CaptureGame game;
     private final Wool wool;
 
-    private final Multimap<GoalHolder, GamePlayer> pickups = ArrayListMultimap.create();
+    private final Multimap<Participator, GamePlayer> pickups = ArrayListMultimap.create();
 
     public WoolPickupTracker(CaptureGame game, Wool wool) {
         this.game = game;
@@ -35,7 +35,7 @@ public class WoolPickupTracker implements Listener {
     }
 
     public void pickup(GamePlayer picker, ItemStack item) {
-        GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(picker);
+        Participator competitor = this.game.getMatch().findWinnerByPlayer(picker);
         if (competitor == null || this.wool.isCompleted() || !this.wool.isCompletableBy(competitor)) {
             return;
         }
@@ -61,7 +61,7 @@ public class WoolPickupTracker implements Listener {
     }
 
     public void resetPickups(GamePlayer player) {
-        GoalHolder competitor = this.game.getMatch().findWinnerByPlayer(player);
+        Participator competitor = this.game.getMatch().findWinnerByPlayer(player);
         if (competitor != null) {
             this.pickups.remove(competitor, player);
         }

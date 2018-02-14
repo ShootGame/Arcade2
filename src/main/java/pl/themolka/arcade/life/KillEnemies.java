@@ -1,6 +1,7 @@
 package pl.themolka.arcade.life;
 
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
@@ -17,9 +18,9 @@ public class KillEnemies extends SimpleInteractableGoal {
 
     protected final KillEnemiesGame game;
 
-    private final Set<GoalHolder> enemies;
+    private final Set<Participator> enemies;
 
-    public KillEnemies(KillEnemiesGame game, GoalHolder owner, Set<GoalHolder> enemies) {
+    public KillEnemies(KillEnemiesGame game, Participator owner, Set<Participator> enemies) {
         super(game.getGame(), owner);
         this.game = game;
 
@@ -27,7 +28,7 @@ public class KillEnemies extends SimpleInteractableGoal {
     }
 
     @Override
-    protected void complete(GoalHolder completer) {
+    protected void complete(Participator completer) {
         if (!super.isCompleted()) {
             GoalCompleteEvent.call(this.game.getPlugin(), this, completer);
         }
@@ -68,7 +69,7 @@ public class KillEnemies extends SimpleInteractableGoal {
 
     public Set<GamePlayer> getEnemyPlayers() {
         Set<GamePlayer> players = new HashSet<>();
-        for (GoalHolder enemy : this.enemies) {
+        for (Participator enemy : this.enemies) {
             players.addAll(enemy.getPlayers());
         }
 

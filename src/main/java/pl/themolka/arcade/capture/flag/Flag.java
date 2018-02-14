@@ -13,7 +13,7 @@ import pl.themolka.arcade.capture.flag.state.RespawningState;
 import pl.themolka.arcade.capture.flag.state.SpawnedState;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
@@ -39,7 +39,7 @@ public class Flag extends Capturable {
         this(game, null, id);
     }
 
-    public Flag(CaptureGame game, GoalHolder owner, String id) {
+    public Flag(CaptureGame game, Participator owner, String id) {
         super(game, owner, id);
 
         this.initialState = new InitialState(this);
@@ -50,7 +50,7 @@ public class Flag extends Capturable {
     }
 
     @Override
-    public void capture(GoalHolder completer, GamePlayer player) {
+    public void capture(Participator completer, GamePlayer player) {
         this.game.getMatch().sendGoalMessage(this.getCaptureMessage(player));
         this.objectiveResult++;
 
@@ -268,7 +268,7 @@ public class Flag extends Capturable {
         }
 
         @Override
-        public void heartbeat(long ticks, Match match, GoalHolder owner) {
+        public void heartbeat(long ticks, Match match, Participator owner) {
             List<FlagSpawn> spawns = this.flag.getSpawns();
             if (spawns.isEmpty()) {
                 return;

@@ -26,9 +26,11 @@ public class FilterSet implements Filter, StringId {
     @Override
     public FilterResult filter(Object... objects) {
         for (Filter filter : this.getFilters()) {
-            FilterResult result = filter.filter(objects);
-            if (!result.equals(FilterResult.ABSTAIN)) {
-                return result;
+            if (filter != null) {
+                FilterResult result = filter.filter(objects);
+                if (!result.equals(FilterResult.ABSTAIN)) {
+                    return result;
+                }
             }
         }
 

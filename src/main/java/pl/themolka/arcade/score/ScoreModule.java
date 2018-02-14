@@ -8,6 +8,7 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.team.TeamsModule;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class ScoreModule extends Module<ScoreGame> {
     @Override
     public ScoreGame buildGameModule(Element xml, Game game) throws JDOMException {
         Map<String, Element> competitors = new HashMap<>();
-        for (Element competitor : xml.getChildren("competitor")) {
+        for (Element competitor : XMLParser.children(xml, "participator", "competitor", "team")) {
             String id = competitor.getValue();
 
             if (id != null) {

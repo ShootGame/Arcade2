@@ -20,15 +20,11 @@ public enum FilterResult {
     }
 
     public boolean isDenied() {
-        switch (this) {
-            case ALLOW: return false;
-            case DENY: return true;
-            default: return false;
-        }
+        return this == DENY;
     }
 
     public boolean isNotDenied() {
-        return !this.isDenied();
+        return this != DENY;
     }
 
     public boolean toBoolean() {
@@ -36,11 +32,7 @@ public enum FilterResult {
     }
 
     public static FilterResult fromBoolean(boolean value) {
-        if (value) {
-            return ALLOW;
-        } else {
-            return DENY;
-        }
+        return value ? ALLOW : DENY;
     }
 
     public static FilterResult of(boolean matches) {

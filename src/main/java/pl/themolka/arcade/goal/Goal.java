@@ -2,6 +2,7 @@ package pl.themolka.arcade.goal;
 
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.Participator;
 
 /**
  * An abstract base class for all goals in games.
@@ -42,7 +43,7 @@ public interface Goal {
      * @return owner of this {@link Goal} or `null` if it doesn't have an
      * owner.
      */
-    default GoalHolder getOwner() {
+    default Participator getOwner() {
         return null;
     }
 
@@ -52,17 +53,13 @@ public interface Goal {
      * @return percentage progress of this `Goal`
      */
     default double getProgress() {
-        if (this.isCompleted()) {
-            return PROGRESS_SCORED;
-        } else {
-            return PROGRESS_UNTOUCHED;
-        }
+        return this.isCompleted() ? PROGRESS_SCORED : PROGRESS_UNTOUCHED;
     }
 
     /**
      * Check if this `Goal` can be completed by the given `GoalHolder`.
      * @param completer `GoalHolder` to check.
-     * @return `true` if the given `GoalHolder` can complete this goal,
+     * @return `true` if the given `Participator` can complete this goal,
      * otherwise `false`.
      */
     boolean isCompletableBy(GoalHolder completer);
@@ -122,10 +119,10 @@ public interface Goal {
 
     /**
      * Set completion of this `Goal` to completed or not.
-     * @param completer `GoalHolder` who completed this `Goal`, may be `null`.
+     * @param completer `Participator` who completed this `Goal`, may be `null`.
      * @param completed `true` if this `Goal` is completed, `false` if not.
      */
-    void setCompleted(boolean completed, GoalHolder completer);
+    void setCompleted(boolean completed, Participator completer);
 
     //
     // "isCompletableBy(...)" Execution Methods

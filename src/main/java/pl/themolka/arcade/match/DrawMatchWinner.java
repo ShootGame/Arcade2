@@ -19,6 +19,8 @@ public class DrawMatchWinner implements MatchWinner {
     public static final Color WINNER_COLOR = Color.YELLOW;
     public static final String WINNER_ID = "_draw-match-winner";
 
+    public static final int GOALS_COUNT = 0;
+
     private final Match match;
 
     /**
@@ -39,6 +41,11 @@ public class DrawMatchWinner implements MatchWinner {
     }
 
     @Override
+    public boolean canParticipate() {
+        return true;
+    }
+
+    @Override
     public boolean contains(Player bukkit) {
         return bukkit != null && this.contains(this.match.getGame().getPlugin().getPlayer(bukkit));
     }
@@ -52,6 +59,11 @@ public class DrawMatchWinner implements MatchWinner {
     @Override
     public boolean contains(GamePlayer player) {
         return player != null && player.isParticipating();
+    }
+
+    @Override
+    public int countGoals() {
+        return GOALS_COUNT;
     }
 
     @Override
@@ -99,7 +111,17 @@ public class DrawMatchWinner implements MatchWinner {
     }
 
     @Override
+    public boolean hasAnyGoals() {
+        return true;
+    }
+
+    @Override
     public boolean hasGoal(Goal goal) {
+        return true;
+    }
+
+    @Override
+    public boolean isParticipating() {
         return true;
     }
 

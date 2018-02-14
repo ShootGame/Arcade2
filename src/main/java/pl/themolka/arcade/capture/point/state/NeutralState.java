@@ -4,8 +4,8 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.util.Color;
 
@@ -36,11 +36,11 @@ public class NeutralState extends PointState.Permanent {
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
         // The neutral state can only be captured by one dominator who can capture the point.
         if (canCapture.size() == 1) {
-            GoalHolder dominator = canCapture.get(0);
+            Participator dominator = canCapture.get(0);
 
             if (dominator != null) {
                 this.startCapturing(this.point, dominator, Progress.ZERO);
@@ -48,7 +48,7 @@ public class NeutralState extends PointState.Permanent {
         }
     }
 
-    public PointState startCapturing(Point point, GoalHolder capturer, double progress) {
+    public PointState startCapturing(Point point, Participator capturer, double progress) {
         return point.startCapturing(capturer, progress);
     }
 

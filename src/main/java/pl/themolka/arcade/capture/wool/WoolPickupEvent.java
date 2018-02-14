@@ -4,17 +4,17 @@ import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class WoolPickupEvent extends WoolEvent implements Cancelable {
     private boolean cancel;
-    private final GoalHolder competitor;
+    private final Participator competitor;
     private final boolean firstPickup;
     private final boolean firstCompetitorPickup;
     private final ItemStack item;
     private final GamePlayer picker;
 
-    public WoolPickupEvent(ArcadePlugin plugin, Wool wool, GoalHolder competitor, boolean firstPickup,
+    public WoolPickupEvent(ArcadePlugin plugin, Wool wool, Participator competitor, boolean firstPickup,
                            boolean firstCompetitorPickup, ItemStack item, GamePlayer picker) {
         super(plugin, wool);
 
@@ -35,7 +35,7 @@ public class WoolPickupEvent extends WoolEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompetitor() {
+    public Participator getCompetitor() {
         return this.competitor;
     }
 

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 
 public class DroppedState extends FlagState.Permanent implements FlagState.PhysicalFlag {
@@ -34,7 +34,7 @@ public class DroppedState extends FlagState.Permanent implements FlagState.Physi
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Participator owner) {
     }
 
     public GamePlayer getDropper() {

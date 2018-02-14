@@ -4,7 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,22 +16,22 @@ public abstract class DominatorStrategy {
     public static final DominatorStrategy MAJORITY = new MajorityStrategy();
     public static final DominatorStrategy NOBODY = new NobodyStrategy();
 
-    public static final Multimap<GoalHolder, GamePlayer> EMPTY_DOMINATORS =
+    public static final Multimap<Participator, GamePlayer> EMPTY_DOMINATORS =
             Multimaps.unmodifiableMultimap(ArrayListMultimap.create());
 
-    public abstract Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors);
+    public abstract Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors);
 }
 
 class EverybodyStrategy extends DominatorStrategy {
     @Override
-    public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
+    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
         return competitors;
     }
 }
 
 class ExclusiveStrategy extends DominatorStrategy {
     @Override
-    public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
+    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
         if (competitors.keySet().size() == 1) {
             return competitors;
         }
@@ -42,16 +42,16 @@ class ExclusiveStrategy extends DominatorStrategy {
 
 class LeadStrategy extends ExclusiveStrategy {
     @Override
-    public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
-        Multimap<GoalHolder, GamePlayer> dominators = ArrayListMultimap.create();
-        for (Map.Entry<GoalHolder, Collection<GamePlayer>> entry : competitors.asMap().entrySet()) {
-            GoalHolder competitor = entry.getKey();
+    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
+        Multimap<Participator, GamePlayer> dominators = ArrayListMultimap.create();
+        for (Map.Entry<Participator, Collection<GamePlayer>> entry : competitors.asMap().entrySet()) {
+            Participator competitor = entry.getKey();
             Collection<GamePlayer> players = entry.getValue();
 
             int playerCount = players.size();
             int dominatorCount = 0;
 
-            for (Map.Entry<GoalHolder, Collection<GamePlayer>> dominator : dominators.asMap().entrySet()) {
+            for (Map.Entry<Participator, Collection<GamePlayer>> dominator : dominators.asMap().entrySet()) {
                 // All competitors have same player counts - break the loop.
                 dominatorCount = dominator.getValue().size();
                 break;
@@ -75,16 +75,16 @@ class MajorityStrategy extends DominatorStrategy {
     static final LeadStrategy lead = new LeadStrategy();
 
     @Override
-    public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
-        Multimap<GoalHolder, GamePlayer> dominators = lead.getDominators(competitors);
+    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
+        Multimap<Participator, GamePlayer> dominators = lead.getDominators(competitors);
         if (dominators.size() != 1) {
             return null;
         }
 
-        GoalHolder dominator = null;
+        Participator dominator = null;
         Collection<GamePlayer> players = null;
 
-        for (Map.Entry<GoalHolder, Collection<GamePlayer>> entry : dominators.asMap().entrySet()) {
+        for (Map.Entry<Participator, Collection<GamePlayer>> entry : dominators.asMap().entrySet()) {
             dominator = entry.getKey();
             players = entry.getValue();
             break;
@@ -92,7 +92,7 @@ class MajorityStrategy extends DominatorStrategy {
 
         if (dominator != null && players != null) {
             int playerCount = players.size();
-            for (Map.Entry<GoalHolder, Collection<GamePlayer>> entry : competitors.asMap().entrySet()) {
+            for (Map.Entry<Participator, Collection<GamePlayer>> entry : competitors.asMap().entrySet()) {
                 if (!entry.getKey().equals(dominator)) {
                     playerCount -= entry.getValue().size();
 
@@ -113,7 +113,7 @@ class MajorityStrategy extends DominatorStrategy {
 
 class NobodyStrategy extends DominatorStrategy {
     @Override
-    public Multimap<GoalHolder, GamePlayer> getDominators(Multimap<GoalHolder, GamePlayer> competitors) {
+    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
         return null;
     }
 }

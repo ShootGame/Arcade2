@@ -18,7 +18,7 @@ public class KillReward implements PlayerApplicable {
     @Override
     public void apply(GamePlayer player) {
         if (this.canReward(player)) {
-            this.reward(player);
+            this.rewardPlayer(player);
         }
     }
 
@@ -34,7 +34,7 @@ public class KillReward implements PlayerApplicable {
         return this.kit;
     }
 
-    public boolean reward(GamePlayer player) {
+    public boolean rewardPlayer(GamePlayer player) {
         if (player != null && player.isOnline()) {
             Kit kit = this.getKit();
 

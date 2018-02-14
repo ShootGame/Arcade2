@@ -1,20 +1,21 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Participator;
 
 /**
  * Called when a `Goal` is being lost.
  */
 public class GoalLoseEvent extends GoalEvent {
-    private final GoalHolder loser;
+    private final Participator loser;
 
-    private GoalLoseEvent(ArcadePlugin plugin, Goal goal, GoalHolder loser) {
+    private GoalLoseEvent(ArcadePlugin plugin, Goal goal, Participator loser) {
         super(plugin, goal);
 
         this.loser = loser;
     }
 
-    public GoalHolder getLoser() {
+    public Participator getLoser() {
         return this.loser;
     }
 
@@ -26,7 +27,7 @@ public class GoalLoseEvent extends GoalEvent {
         return call(plugin, goal, null);
     }
 
-    public static GoalLoseEvent call(ArcadePlugin plugin, Goal goal, GoalHolder loser) {
+    public static GoalLoseEvent call(ArcadePlugin plugin, Goal goal, Participator loser) {
         return plugin.getEventBus().postEvent(new GoalLoseEvent(plugin, goal, loser));
     }
 }

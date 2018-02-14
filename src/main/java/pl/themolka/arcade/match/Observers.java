@@ -43,6 +43,11 @@ public class Observers extends Team {
     }
 
     @Override
+    public boolean canParticipate() {
+        return false;
+    }
+
+    @Override
     public List<Goal> getGoals() {
         throw new UnsupportedOperationException("Not supported here.");
     }
@@ -107,6 +112,11 @@ public class Observers extends Team {
     }
 
     @Override
+    public boolean isParticipating() {
+        return false;
+    }
+
+    @Override
     public boolean isPlaying() {
         return false;
     }
@@ -154,6 +164,11 @@ public class Observers extends Team {
 
     @Override
     public void setMinPlayers(int minPlayers) {
+        throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    @Override
+    public void setParticipating(boolean participating) {
         throw new UnsupportedOperationException("Not supported here.");
     }
 

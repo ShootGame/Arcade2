@@ -4,8 +4,8 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.util.Color;
 
@@ -28,7 +28,7 @@ public class CapturedState extends PointState.Permanent {
 
     @Override
     public Color getColor() {
-        GoalHolder owner = this.getOwner();
+        Participator owner = this.getOwner();
         if (owner != null) {
             return owner.getColor();
         }
@@ -43,8 +43,8 @@ public class CapturedState extends PointState.Permanent {
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
         if (dominators.isEmpty()) {
             // nobody on the point
             return;
@@ -56,14 +56,14 @@ public class CapturedState extends PointState.Permanent {
             // If there are more than one enemies on the point and
             // capturing captured mode is enabled - start losing it.
 
-            List<GoalHolder> enemies = new ArrayList<>();
-            for (GoalHolder enemy : canCapture) {
+            List<Participator> enemies = new ArrayList<>();
+            for (Participator enemy : canCapture) {
                 if (!enemy.equals(owner)) {
                     enemies.add(enemy);
                 }
             }
 
-            GoalHolder enemy = null;
+            Participator enemy = null;
             if (enemies.size() == 1) {
                 enemy = enemies.get(0);
             }
@@ -76,7 +76,7 @@ public class CapturedState extends PointState.Permanent {
         }
     }
 
-    public GoalHolder getOwner() {
+    public Participator getOwner() {
         return this.point.getOwner();
     }
 

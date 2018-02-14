@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.capture.flag.FlagDroppedEvent;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
@@ -31,7 +31,7 @@ public class CarryingState extends FlagState.Permanent implements FlagState.Virt
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Participator owner) {
         if (this.carrier.isOnline() && !this.carrier.isDead() && this.carrier.isParticipating()) {
             this.heartbeatCarrier(ticks, match, owner);
 
@@ -54,7 +54,7 @@ public class CarryingState extends FlagState.Permanent implements FlagState.Virt
         }
     }
 
-    public void heartbeatCarrier(long ticks, Match match, GoalHolder owner) {
+    public void heartbeatCarrier(long ticks, Match match, Participator owner) {
         // This message will blink, it would be strange if it would blink
         // every tick. Send this message just every real second then.
         if (ticks % Time.SECOND.toTicks() == 0) {

@@ -19,7 +19,9 @@ public class HungerGame extends GameModule {
     public void onEnable() {
         FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
         if (filters != null) {
-            this.filter = filters.filterOrDefault(this.getSettings().getAttributeValue("depletion"), this.getFilter());
+            String global = this.getSettings().getAttributeValue("filter");
+
+            this.filter = filters.filterOrDefault(global, this.filter);
         }
     }
 
@@ -31,7 +33,7 @@ public class HungerGame extends GameModule {
         return this.filter;
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         HumanEntity entity = event.getEntity();
         if (entity instanceof Player && this.cannotDeplete(this.getGame().getPlayer((Player) entity))) {

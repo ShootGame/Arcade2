@@ -3,7 +3,7 @@ package pl.themolka.arcade.util;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public final class BossBarUtils {
     private static final BarColor def = null;
@@ -23,8 +23,8 @@ public final class BossBarUtils {
         return color(dye, def);
     }
 
-    public static BarColor color(GoalHolder goalHolder) {
-        return color(goalHolder, def);
+    public static BarColor color(Participator participator) {
+        return color(participator, def);
     }
 
     public static BarColor color(ChatColor chat, BarColor def) {
@@ -63,7 +63,7 @@ public final class BossBarUtils {
         return def;
     }
 
-    public static BarColor color(GoalHolder goalHolder, BarColor def) {
-        return goalHolder != null ? color(goalHolder.getColor(), def) : def;
+    public static BarColor color(Participator participator, BarColor def) {
+        return participator != null ? color(participator.getColor(), def) : def;
     }
 }

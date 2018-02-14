@@ -1,11 +1,12 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.Participator;
 
 public abstract class SimpleInteractableGoal extends SimpleGoal implements InteractableGoal {
     private final GoalContributionContext contributions = new GoalContributionContext();
 
-    public SimpleInteractableGoal(Game game, GoalHolder owner) {
+    public SimpleInteractableGoal(Game game, Participator owner) {
         super(game, owner);
     }
 

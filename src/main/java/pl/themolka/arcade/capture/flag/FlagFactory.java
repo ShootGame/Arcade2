@@ -11,7 +11,7 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.region.XMLRegion;
@@ -19,7 +19,7 @@ import pl.themolka.arcade.xml.XMLParser;
 
 public class FlagFactory implements CapturableFactory<Flag> {
     @Override
-    public Flag newCapturable(CaptureGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+    public Flag newCapturable(CaptureGame game, Participator owner, String id, String name, Element xml) throws JDOMException {
         return this.parseFlagXml(game, xml, new Flag(game, owner, id));
     }
 

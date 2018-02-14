@@ -4,15 +4,15 @@ import org.bukkit.block.Block;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class CoreBreakEvent extends CoreEvent implements Cancelable {
     private Block block;
-    private final GoalHolder breaker;
+    private final Participator breaker;
     private boolean cancel;
     private final GamePlayer player;
 
-    public CoreBreakEvent(ArcadePlugin plugin, Core core, GoalHolder breaker, Block block, GamePlayer player) {
+    public CoreBreakEvent(ArcadePlugin plugin, Core core, Participator breaker, Block block, GamePlayer player) {
         super(plugin, core);
 
         this.block = block;
@@ -34,7 +34,7 @@ public class CoreBreakEvent extends CoreEvent implements Cancelable {
         return this.block;
     }
 
-    public GoalHolder getBreaker() {
+    public Participator getBreaker() {
         return this.breaker;
     }
 

@@ -9,7 +9,7 @@ import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.life.PlayerDeathEvent;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ScoreGame extends GameModule implements DynamicWinnable {
-    private final Map<GoalHolder, Score> byOwner = new HashMap<>();
+    private final Map<Participator, Score> byOwner = new HashMap<>();
 
     private final ScoreConfig config;
     private final Map<String, Element> competitors;
@@ -63,7 +63,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             if (config != null) {
                 Score score = new Score(this, winner, config);
 
-                // Make sure that Score is only ONE per GoalHolder
+                // Make sure that Score is only ONE per Participator
                 if (score.isCompletableBy(winner) && this.getScore(winner) == null) {
                     this.byOwner.put(winner, score);
                     winner.addGoal(score);
@@ -132,7 +132,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.match;
     }
 
-    public Score getScore(GoalHolder holder) {
+    public Score getScore(Participator holder) {
         return this.byOwner.get(holder);
     }
 
@@ -159,7 +159,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             return;
         }
 
-        GoalHolder competitor = this.getMatch().findWinnerByPlayer(player);
+        Participator competitor = this.getMatch().findWinnerByPlayer(player);
         if (competitor == null) {
             return;
         }
@@ -213,7 +213,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             return false;
         }
 
-        GoalHolder competitor = match.findWinnerByPlayer(player);
+        Participator competitor = match.findWinnerByPlayer(player);
         if (competitor != null) {
             Score score = this.getScore(competitor);
 

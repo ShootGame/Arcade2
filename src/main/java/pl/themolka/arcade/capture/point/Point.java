@@ -17,6 +17,7 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalLoseEvent;
@@ -61,7 +62,7 @@ public class Point extends Capturable {
         this(game, null, id);
     }
 
-    public Point(CaptureGame game, GoalHolder owner, String id) {
+    public Point(CaptureGame game, Participator owner, String id) {
         super(game, owner, id);
 
         if (owner != null) {
@@ -75,7 +76,7 @@ public class Point extends Capturable {
     }
 
     @Override
-    public void capture(GoalHolder completer, GamePlayer player /* null */) {
+    public void capture(Participator completer, GamePlayer player /* null */) {
         this.setOwner(completer);
 
         String message = ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.ITALIC +
@@ -128,7 +129,7 @@ public class Point extends Capturable {
         this.state = this.getInitialState().copy();
     }
 
-    public boolean canCapture(GoalHolder competitor) {
+    public boolean canCapture(Participator competitor) {
         // Rebuild this if we want to support many
         // PointCapture objects in the future.
         return competitor != null && this.isCompletableBy(competitor) &&
@@ -209,11 +210,11 @@ public class Point extends Capturable {
 
         Match match = this.game.getMatch();
 
-        Multimap<GoalHolder, GamePlayer> competitors = ArrayListMultimap.create();
+        Multimap<Participator, GamePlayer> competitors = ArrayListMultimap.create();
         for (GamePlayer player : this.getPlayers()) {
             if (this.canCapture(player) && this.canDominate(player)) {
-                GoalHolder competitor = match.findWinnerByPlayer(player);
-                // ^ This is not the best way to find registered GoalHolders every server tick.
+                Participator competitor = match.findWinnerByPlayer(player);
+                // ^ This is not the best way to find registered Participators every server tick.
 
                 if (competitor != null && (competitor.equals(player) || this.canCapture(competitor))) {
                     competitors.put(competitor, player);
@@ -221,22 +222,22 @@ public class Point extends Capturable {
             }
         }
 
-        Multimap<GoalHolder, GamePlayer> dominators = this.getDominatorStrategy().getDominators(competitors);
+        Multimap<Participator, GamePlayer> dominators = this.getDominatorStrategy().getDominators(competitors);
         if (dominators == null) {
             dominators = DominatorStrategy.EMPTY_DOMINATORS;
         }
 
-        List<GoalHolder> canCapture = new ArrayList<>();
-        for (GoalHolder competitor : dominators.keySet()) {
+        List<Participator> canCapture = new ArrayList<>();
+        for (Participator competitor : dominators.keySet()) {
             if (this.canCapture(competitor)) {
                 canCapture.add(competitor);
             }
         }
 
         // Heartbeat the current state.
-        GoalHolder oldOwner = this.getOwner();
+        Participator oldOwner = this.getOwner();
         this.getState().heartbeat(ticks, match, competitors, dominators, canCapture, oldOwner);
-        GoalHolder newOwner = this.getOwner();
+        Participator newOwner = this.getOwner();
 
         double pointReward = this.getPointReward();
         if (oldOwner != null && newOwner != null && oldOwner.equals(newOwner) && pointReward != Score.ZERO) {
@@ -245,7 +246,7 @@ public class Point extends Capturable {
         }
     }
 
-    public void heartbeatReward(GoalHolder competitor, double pointReward /* this is per second */) {
+    public void heartbeatReward(Participator competitor, double pointReward /* this is per second */) {
         if (competitor != null && pointReward != Score.ZERO) {
             Score score = this.getScore(competitor);
             double toGive = ((double) HEARTBEAT_INTERVAL.toTicks() / (double) Time.SECOND.toTicks()) * pointReward;
@@ -278,7 +279,7 @@ public class Point extends Capturable {
         return this.permanent;
     }
 
-    public void lose(GoalHolder loser) {
+    public void lose(Participator loser) {
         String message = this.getLostMessage(loser.getTitle());
         if (message != null) {
             this.game.getMatch().sendGoalMessage(message);
@@ -362,7 +363,7 @@ public class Point extends Capturable {
                 .build();
     }
 
-    private Score getScore(GoalHolder holder) {
+    private Score getScore(Participator holder) {
         GameModule module = this.game.getGame().getModule(ScoreModule.class);
         if (module != null && module instanceof ScoreGame) {
             return ((ScoreGame) module).getScore(holder);
@@ -380,7 +381,7 @@ public class Point extends Capturable {
         return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), state));
     }
 
-    public PointState startCapturing(GoalHolder capturer, double oldProgress) {
+    public PointState startCapturing(Participator capturer, double oldProgress) {
         return this.startCapturing(new CapturingState(this, capturer), oldProgress);
     }
 
@@ -389,7 +390,7 @@ public class Point extends Capturable {
         return this.startState(new PointCapturingEvent(this.game.getPlugin(), this, this.getState(), state));
     }
 
-    public PointState startCapturingCaptured(GoalHolder capturer, double oldProgress) {
+    public PointState startCapturingCaptured(Participator capturer, double oldProgress) {
         return this.startCapturingCaptured(new CapturingCapturedState(this, capturer), oldProgress);
     }
 
@@ -398,7 +399,7 @@ public class Point extends Capturable {
         return this.startState(new PointLosingEvent(this.game.getPlugin(), this, this.getState(), state));
     }
 
-    public PointState startLosing(GoalHolder loser, double oldProgress) {
+    public PointState startLosing(Participator loser, double oldProgress) {
         return this.startLosing(new LosingState(this, loser), oldProgress);
     }
 

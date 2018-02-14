@@ -2,6 +2,7 @@ package pl.themolka.arcade.goal;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.Participator;
 
 public abstract class SimpleGoal implements Goal {
     // The "ToStringStyle.SHORT_PREFIX_STYLE" strings are long and unreadable here.
@@ -10,12 +11,12 @@ public abstract class SimpleGoal implements Goal {
     private final Game game;
 
     private boolean completed = false;
-    private GoalHolder completedBy = null;
+    private Participator completedBy = null;
     private String name = null;
-    private GoalHolder owner;
+    private Participator owner;
     private boolean touched = false;
 
-    public SimpleGoal(Game game, GoalHolder owner) {
+    public SimpleGoal(Game game, Participator owner) {
         this.game = game;
 
         this.owner = owner;
@@ -37,7 +38,7 @@ public abstract class SimpleGoal implements Goal {
     }
 
     @Override
-    public GoalHolder getOwner() {
+    public Participator getOwner() {
         return this.owner;
     }
 
@@ -62,7 +63,7 @@ public abstract class SimpleGoal implements Goal {
     }
 
     @Override
-    public void setCompleted(boolean completed, GoalHolder completer) {
+    public void setCompleted(boolean completed, Participator completer) {
         if (completed) {
             this.setCompleted(completer);
         } else {
@@ -71,9 +72,9 @@ public abstract class SimpleGoal implements Goal {
         }
     }
 
-    protected abstract void complete(GoalHolder completer);
+    protected abstract void complete(Participator completer);
 
-    public GoalHolder getCompletedBy() {
+    public Participator getCompletedBy() {
         return this.completedBy;
     }
 
@@ -95,7 +96,7 @@ public abstract class SimpleGoal implements Goal {
         }
     }
 
-    public void setCompleted(GoalHolder completer) {
+    public void setCompleted(Participator completer) {
         this.setCompleted(true);
         this.completedBy = completer;
 
@@ -106,7 +107,7 @@ public abstract class SimpleGoal implements Goal {
         this.name = name;
     }
 
-    public void setOwner(GoalHolder owner) {
+    public void setOwner(Participator owner) {
         this.owner = owner;
     }
 

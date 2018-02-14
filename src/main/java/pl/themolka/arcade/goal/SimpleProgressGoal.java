@@ -1,16 +1,17 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.Participator;
 
 public abstract class SimpleProgressGoal extends SimpleGoal {
     private double initialProgress;
     private double progress;
 
-    public SimpleProgressGoal(Game game, GoalHolder owner) {
+    public SimpleProgressGoal(Game game, Participator owner) {
         this(game, owner, PROGRESS_UNTOUCHED);
     }
 
-    public SimpleProgressGoal(Game game, GoalHolder owner, double initialProgress) {
+    public SimpleProgressGoal(Game game, Participator owner, double initialProgress) {
         super(game, owner);
 
         this.initialProgress = initialProgress;

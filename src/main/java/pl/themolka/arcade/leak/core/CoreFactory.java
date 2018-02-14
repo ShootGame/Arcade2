@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.leak.LeakGame;
 import pl.themolka.arcade.leak.LeakableFactory;
 import pl.themolka.arcade.leak.Liquid;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class CoreFactory implements LeakableFactory<Core> {
     @Override
-    public Core newLeakable(LeakGame game, GoalHolder owner, String id, String name, Element xml) throws JDOMException {
+    public Core newLeakable(LeakGame game, Participator owner, String id, String name, Element xml) throws JDOMException {
         return this.parseCoreXml(game, xml, new Core(game, owner, id));
     }
 

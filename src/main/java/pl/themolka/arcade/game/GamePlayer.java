@@ -10,7 +10,6 @@ import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
-import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.kit.FlyContent;
 import pl.themolka.arcade.kit.FlySpeedContent;
 import pl.themolka.arcade.kit.FoodLevelContent;
@@ -38,7 +37,7 @@ import java.util.UUID;
  * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
  * secure to store game related data.
  */
-public class GamePlayer implements GoalHolder, Metadata, Sender {
+public class GamePlayer implements Participator, Metadata, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
     private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
@@ -78,9 +77,19 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
+    public boolean canParticipate() {
+        return this.isOnline();
+    }
+
+    @Override
     public boolean contains(Player bukkit) {
         Player source = this.getBukkit();
         return bukkit != null && source != null && source.equals(bukkit);
+    }
+
+    @Override
+    public int countGoals() {
+        return this.goals.size();
     }
 
     @Override
@@ -144,6 +153,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     }
 
     @Override
+    public boolean hasAnyGoals() {
+        return !this.goals.isEmpty();
+    }
+
+    @Override
     public boolean hasGoal(Goal goal) {
         return this.goals.contains(goal);
     }
@@ -156,6 +170,11 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     @Override
     public boolean isConsole() {
         return false;
+    }
+
+    @Override
+    public boolean isParticipating() {
+        return this.canParticipate() && this.participating;
     }
 
     @Override
@@ -194,6 +213,13 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
     public void setMetadata(Class<? extends Module<?>> owner,
                             String key, Object metadata) {
         this.metadata.setMetadata(owner, key, metadata);
+    }
+
+    @Override
+    public void setParticipating(boolean participating) {
+        if (this.canParticipate()) {
+            this.participating = participating;
+        }
     }
 
     public boolean canSee(GamePlayer target) {
@@ -271,10 +297,6 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
 
     public boolean isOnline() {
         return this.player != null;
-    }
-
-    public boolean isParticipating() {
-        return this.isOnline() && this.participating;
     }
 
     public void kill() {
@@ -412,12 +434,6 @@ public class GamePlayer implements GoalHolder, Metadata, Sender {
             this.displayName = displayName;
 
             this.getPlayer().setDisplayName(displayName);
-        }
-    }
-
-    public void setParticipating(boolean participating) {
-        if (this.isOnline()) {
-            this.participating = participating;
         }
     }
 

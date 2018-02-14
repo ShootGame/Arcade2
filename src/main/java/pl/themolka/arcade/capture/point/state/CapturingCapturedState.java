@@ -4,7 +4,7 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.themolka.arcade.capture.point.Point;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
@@ -15,11 +15,11 @@ import java.util.List;
 public class CapturingCapturedState extends CapturingState {
     private final LosingState losingState; // never null
 
-    public CapturingCapturedState(CapturedState captured, GoalHolder capturer) {
+    public CapturingCapturedState(CapturedState captured, Participator capturer) {
         this(captured.point, capturer);
     }
 
-    public CapturingCapturedState(Point point, GoalHolder capturer) {
+    public CapturingCapturedState(Point point, Participator capturer) {
         super(point, capturer);
 
         this.losingState = new LosingState(this);
@@ -46,8 +46,8 @@ public class CapturingCapturedState extends CapturingState {
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, Multimap<GoalHolder, GamePlayer> competitors,
-                          Multimap<GoalHolder, GamePlayer> dominators, List<GoalHolder> canCapture, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Multimap<Participator, GamePlayer> competitors,
+                          Multimap<Participator, GamePlayer> dominators, List<Participator> canCapture, Participator owner) {
         // The point must be first lost to be captured
         this.losingState.heartbeat(ticks, match, competitors, dominators, canCapture, owner); // losing state
         super.heartbeat(ticks, match, competitors, dominators, canCapture, owner); // capturing state
@@ -60,10 +60,10 @@ public class CapturingCapturedState extends CapturingState {
     }
 
     @Override
-    public PointState startLosing(Point point, GoalHolder capturer, Multimap<GoalHolder, GamePlayer> dominators, double progress) {
+    public PointState startLosing(Point point, Participator capturer, Multimap<Participator, GamePlayer> dominators, double progress) {
         if (dominators.size() == 1) {
             // There is only one dominator on the point.
-            GoalHolder dominator = new ArrayList<>(dominators.keySet()).get(0);
+            Participator dominator = new ArrayList<>(dominators.keySet()).get(0);
 
             if (dominator != null) {
                 // Skip losing and directly begin to capture, aka "capturing
@@ -99,11 +99,11 @@ public class CapturingCapturedState extends CapturingState {
         return this.losingState;
     }
 
-    public PointState startCapturing(Point point, GoalHolder capturer, double progress) {
+    public PointState startCapturing(Point point, Participator capturer, double progress) {
         return point.startCapturing(capturer, progress);
     }
 
-    public PointState startCapturingCaptured(Point point, GoalHolder capturer, double progress) {
+    public PointState startCapturingCaptured(Point point, Participator capturer, double progress) {
         return point.startCapturingCaptured(capturer, progress);
     }
 

@@ -14,7 +14,7 @@ import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.leak.LeakGame;
 import pl.themolka.arcade.leak.Leakable;
@@ -45,7 +45,7 @@ public class Core extends Leakable implements Listener {
         this(game, null, id);
     }
 
-    public Core(LeakGame game, GoalHolder owner, String id) {
+    public Core(LeakGame game, Participator owner, String id) {
         super(game, owner, id);
     }
 
@@ -55,7 +55,7 @@ public class Core extends Leakable implements Listener {
     }
 
     @Override
-    public void leak(GoalHolder completer /* null */, GamePlayer player /* null */) {
+    public void leak(Participator completer /* null */, GamePlayer player /* null */) {
         String owner = "";
         if (this.hasOwner()) {
             owner = ChatColor.GOLD + this.getOwner().getTitle() + ChatColor.YELLOW + "'s ";
@@ -94,7 +94,7 @@ public class Core extends Leakable implements Listener {
      *   - LeakableBreakEvent (cancelable)
      *   - GoalProgressEvent
      */
-    public boolean breakPiece(GoalHolder breaker, GamePlayer player, Block block) {
+    public boolean breakPiece(Participator breaker, GamePlayer player, Block block) {
         CoreBreakEvent event = new CoreBreakEvent(this.game.getPlugin(), this, breaker, block, player);
         this.game.getPlugin().getEventBus().publish(event);
 
@@ -320,7 +320,7 @@ public class Core extends Leakable implements Listener {
             return;
         }
 
-        GoalHolder winner = this.game.getMatch().findWinnerByPlayer(player);
+        Participator winner = this.game.getMatch().findWinnerByPlayer(player);
         if (this.getOwner().equals(winner)) {
             event.setCanceled(true);
             player.sendError("You may not damage your own " + ChatColor.GOLD +

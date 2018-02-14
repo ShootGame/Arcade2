@@ -13,7 +13,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
@@ -41,7 +41,7 @@ public class PointCapture implements Listener {
         this.point = point;
     }
 
-    public boolean canCapture(GoalHolder competitor) {
+    public boolean canCapture(Participator competitor) {
         return competitor != null && this.getFilter().filter(competitor).isNotDenied();
     }
 

@@ -2,14 +2,14 @@ package pl.themolka.arcade.score;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
     private final boolean byLimit;
     private boolean cancel;
-    private GoalHolder completer;
+    private Participator completer;
 
-    public ScoreScoredEvent(ArcadePlugin plugin, Score score, boolean byLimit, GoalHolder completer) {
+    public ScoreScoredEvent(ArcadePlugin plugin, Score score, boolean byLimit, Participator completer) {
         super(plugin, score);
 
         this.byLimit = byLimit;
@@ -25,7 +25,7 @@ public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getCompleter() {
+    public Participator getCompleter() {
         return this.completer;
     }
 
@@ -37,7 +37,7 @@ public class ScoreScoredEvent extends ScoreEvent implements Cancelable {
         return this.byLimit;
     }
 
-    public void setCompleter(GoalHolder completer) {
+    public void setCompleter(Participator completer) {
         this.completer = completer;
     }
 }

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.Location;
 import pl.themolka.arcade.capture.flag.Flag;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
 
@@ -42,7 +42,7 @@ public class TimedDroppedState extends FlagState.Progress implements FlagState.P
     }
 
     @Override
-    public void heartbeat(long ticks, Match match, GoalHolder owner) {
+    public void heartbeat(long ticks, Match match, Participator owner) {
         this.droppedState.heartbeat(ticks, match, owner);
         this.progress();
 

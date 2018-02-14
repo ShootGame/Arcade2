@@ -4,15 +4,15 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.capture.point.state.CapturedState;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.event.Cancelable;
-import pl.themolka.arcade.goal.GoalHolder;
+import pl.themolka.arcade.game.Participator;
 
 public class PointCapturedEvent extends PointStateEvent implements Cancelable {
     private boolean cancel;
-    private final GoalHolder oldOwner;
-    private final GoalHolder newOwner;
+    private final Participator oldOwner;
+    private final Participator newOwner;
 
     public PointCapturedEvent(ArcadePlugin plugin, Point point, PointState oldState, CapturedState newState,
-                              GoalHolder oldOwner, GoalHolder newOwner) {
+                              Participator oldOwner, Participator newOwner) {
         super(plugin, point, oldState, newState);
 
         this.oldOwner = oldOwner;
@@ -29,11 +29,11 @@ public class PointCapturedEvent extends PointStateEvent implements Cancelable {
         this.cancel = cancel;
     }
 
-    public GoalHolder getOldOwner() {
+    public Participator getOldOwner() {
         return this.oldOwner;
     }
 
-    public GoalHolder getNewOwner() {
+    public Participator getNewOwner() {
         return this.newOwner;
     }
 
