@@ -11,10 +11,10 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     private final Spawn spawn;
     private final Entity entity;
 
-    private Direction yawDirection;
-    private Direction pitchDirection;
+    protected Direction yawDirection;
+    protected Direction pitchDirection;
 
-    private SpawnAgent(Spawn spawn, Entity entity) {
+    public SpawnAgent(Spawn spawn, Entity entity) {
         this.spawn = spawn;
         this.entity = entity;
     }
@@ -46,6 +46,10 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
         return this.pitchDirection.getValue(super.getPitch(), this.getEntityLocation().getPitch());
     }
 
+    public boolean canSpawn(Entity entity) {
+        return !entity.isDead();
+    }
+
     public Spawn getSpawn() {
         return this.spawn;
     }
@@ -67,14 +71,14 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     }
 
     public Location spawn() {
-        if (!this.entity.isDead()) {
-            Location to = this.getLocation();
-            if (to != null) {
-                boolean ok = this.entity.teleport(this.normalize(to), this.cause());
+        Entity entity = this.getEntity();
+        Location to = this.getLocation();
 
-                this.entity.setFallDistance(0F); // reset fall distance
-                return ok ? to : null;
-            }
+        if (this.canSpawn(entity) && to != null) {
+            boolean ok = entity.teleport(this.normalize(to), this.cause());
+
+            entity.setFallDistance(0F); // reset fall distance
+            return ok ? to : null;
         }
 
         return null;
@@ -84,13 +88,17 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
      * Normalize the given location so it is safe for players. The location
      * is not safe by default, if the player is spawning on eg. a carpet.
      */
-    private Location normalize(Location location) {
+    protected Location normalize(Location location) {
         return location.clone().add(0.0D, 0.1D, 0.0D);
     }
 
-    private PlayerTeleportEvent.TeleportCause cause() {
+    protected Vector normalize(Vector vector) {
+        return vector.clone().add(0.0D, 0.1D, 0.0D);
+    }
+
+    protected PlayerTeleportEvent.TeleportCause cause() {
         PlayerTeleportEvent.TeleportCause cause = this.getSpawnCause(this.entity);
-        return cause != null ? cause : null;
+        return cause != null ? cause : DEFAULT_SPAWN_CAUSE;
     }
 
     //

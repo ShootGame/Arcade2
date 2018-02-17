@@ -148,6 +148,11 @@ public enum GameRuleType {
         return this.applicable;
     }
 
+    @Override
+    public String toString() {
+        return this.getKey();
+    }
+
     public static GameRuleType forName(String name) {
         if (name != null) {
             for (GameRuleType rule : values()) {

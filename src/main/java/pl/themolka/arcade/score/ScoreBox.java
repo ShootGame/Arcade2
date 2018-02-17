@@ -7,8 +7,8 @@ import pl.themolka.arcade.portal.Portal;
 
 /**
  * Representation of a single Score Box which is used to score given amount of
- * points for the competitor and respawn the scoring player. We can use portals
- * for all of these executions.
+ * points for the {@link pl.themolka.arcade.game.Participator} and respawn the
+ * scoring player. We can use portals for all of these executions.
  */
 public class ScoreBox extends Portal {
     public static final double POINTS = 1.0D;
@@ -33,7 +33,7 @@ public class ScoreBox extends Portal {
      * to be teleported since they cannot score points.
      */
     public boolean canScore(GamePlayer player) {
-        return !player.isParticipating() && super.canTeleport(player);
+        return player.isParticipating() && super.canTeleport(player);
     }
 
     public double getPoints() {

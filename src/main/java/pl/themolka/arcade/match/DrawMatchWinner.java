@@ -132,6 +132,9 @@ public class DrawMatchWinner implements MatchWinner {
 
     @Override
     public void sendGoalMessage(String message) {
+        for (GamePlayer player : this.getPlayers()) {
+            player.sendGoalMessage(message);
+        }
     }
 
     public Match getMatch() {

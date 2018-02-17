@@ -456,7 +456,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
 
         this.plugin.getEventBus().publish(new GameStartEvent(this.plugin, this));
 
-        this.plugin.getLogger().info("Game #" + (this.getGameId() + 1) + " has started.");
+        this.plugin.getLogger().info("Game #" + this.getGameId() + " has started.");
     }
 
     public void stop() {
@@ -474,7 +474,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
 
         this.getWindowRegistry().removeAll();
 
-        this.plugin.getLogger().info("Game #" + (this.getGameId() + 1) + " has ended.");
+        this.plugin.getLogger().info("Game #" + this.getGameId() + " has ended.");
     }
 
     private void readGlobalModule() {

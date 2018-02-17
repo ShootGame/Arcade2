@@ -44,9 +44,9 @@ public class XMLDamage extends XMLParser {
 
     public static EntityDamageEvent.DamageCause parse(String value, EntityDamageEvent.DamageCause def) {
         if (value != null) {
-            EntityDamageEvent.DamageCause result = EntityDamageEvent.DamageCause.valueOf(parseEnumValue(value));
-            if (result != null) {
-                return result;
+            try {
+                return EntityDamageEvent.DamageCause.valueOf(parseEnumValue(value));
+            } catch (IllegalArgumentException ignored) {
             }
         }
 

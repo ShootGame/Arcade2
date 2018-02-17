@@ -2,10 +2,9 @@ package pl.themolka.arcade.game;
 
 import net.minecraft.server.EntityPlayer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
@@ -17,6 +16,7 @@ import pl.themolka.arcade.kit.HealthContent;
 import pl.themolka.arcade.kit.KnockbackContent;
 import pl.themolka.arcade.kit.SaturationContent;
 import pl.themolka.arcade.kit.WalkSpeedContent;
+import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.metadata.Metadata;
 import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
@@ -37,10 +37,8 @@ import java.util.UUID;
  * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
  * secure to store game related data.
  */
-public class GamePlayer implements Participator, Metadata, Sender {
+public class GamePlayer implements MatchWinner, Metadata, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
-
-    private static final ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
 
     private ChatChannel channel;
     private ChatColor chatColor;
@@ -401,8 +399,8 @@ public class GamePlayer implements Participator, Metadata, Sender {
         bukkit.resetPlayerWeather();
         bukkit.resetTitle();
 
-        for (PotionEffect effect : bukkit.getActivePotionEffects()) {
-            bukkit.removePotionEffect(effect.getType());
+        for (PotionEffectType effect : PotionEffectType.values()) {
+            bukkit.removePotionEffect(effect);
         }
     }
 
@@ -443,7 +441,7 @@ public class GamePlayer implements Participator, Metadata, Sender {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, toStringStyle)
+        return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("uuid", this.uuid)
                 .append("online", this.isOnline())
                 .append("username", this.username)

@@ -31,8 +31,6 @@ import java.util.Set;
 public class Team implements MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
 
-    private static ToStringStyle toStringStyle = ToStringStyle.NO_FIELD_NAMES_STYLE;
-
     private final ArcadePlugin plugin;
 
     private final TeamApplyContext applyContext;
@@ -424,7 +422,7 @@ public class Team implements MatchWinner {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, toStringStyle)
+        return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("id", this.getId())
                 .build();
     }

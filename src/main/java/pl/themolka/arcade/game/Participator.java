@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.goal.GoalHolder;
@@ -11,6 +12,8 @@ import java.util.Collections;
 import java.util.Set;
 
 public interface Participator extends GoalHolder, Participartable, StringId {
+    ToStringStyle TO_STRING_STYLE = ToStringStyle.NO_FIELD_NAMES_STYLE;
+
     boolean contains(Player bukkit);
 
     default boolean contains(ArcadePlayer player) {

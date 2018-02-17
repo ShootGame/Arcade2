@@ -11,6 +11,7 @@ import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.spawn.Direction;
+import pl.themolka.arcade.spawn.SmoothSpawnAgent;
 import pl.themolka.arcade.spawn.Spawn;
 import pl.themolka.arcade.spawn.SpawnAgent;
 import pl.themolka.arcade.spawn.SpawnApply;
@@ -23,15 +24,22 @@ public class XMLPortal extends XMLParser {
 
     public static Portal parse(Game game, Element xml, Portal portal,
                                FiltersGame filters, KitsGame kits, SpawnsGame spawns) {
+        // smooth
+        boolean smooth = parseBoolean(xml.getAttributeValue("smooth"), false);
+
         // destination
         if (spawns != null) {
             SpawnApply destination = SpawnApply.parse(xml.getAttributeValue("destination"), spawns, new SpawnApply.AgentCreator() {
                 @Override
                 public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
-                    Direction yaw = DirectionValues.of(xml.getAttributeValue("yaw"),  defaultYaw);
+                    Direction yaw = DirectionValues.of(xml.getAttributeValue("yaw"), defaultYaw);
                     Direction pitch = DirectionValues.of(xml.getAttributeValue("pitch"), defaultPitch);
 
-                    return SpawnAgent.create(spawn, bukkit, yaw, pitch);
+                    if (smooth) {
+                        return SmoothSpawnAgent.create(spawn, bukkit, yaw, pitch);
+                    } else {
+                        return SpawnAgent.create(spawn, bukkit, yaw, pitch);
+                    }
                 }
             });
 

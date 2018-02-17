@@ -4,6 +4,10 @@ import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Event;
 
+/**
+ * @deprecated Will be removed in the future.
+ */
+@Deprecated
 public class FilterParseEvent extends Event {
     private final String name;
     private Filter result;

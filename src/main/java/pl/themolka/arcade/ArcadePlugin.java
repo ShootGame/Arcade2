@@ -36,7 +36,6 @@ import pl.themolka.arcade.generator.GeneratorType;
 import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
-import pl.themolka.arcade.listener.TimeListeners;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
@@ -730,7 +729,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
-        this.registerListenerObject(new TimeListeners(this));
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));

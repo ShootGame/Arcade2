@@ -36,7 +36,7 @@ public class SimpleGameManager implements GameManager {
 
     private Game currentGame;
     private final CycleCountdown cycleCountdown;
-    private int gameId;
+    private int gameId = 0;
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
     private final RestartCountdown restartCountdown;

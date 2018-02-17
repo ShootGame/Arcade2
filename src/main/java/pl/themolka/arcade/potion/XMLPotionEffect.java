@@ -54,8 +54,7 @@ public class XMLPotionEffect extends XMLParser {
     }
 
     private static boolean parseParticles(Element xml) {
-        Attribute attribute = xml.getAttribute("particles");
-        return attribute != null && parseBoolean(attribute.getValue());
+        return parseBoolean(xml.getAttributeValue("particles"), true);
     }
 
     private static PotionEffectType parseType(Element xml) {

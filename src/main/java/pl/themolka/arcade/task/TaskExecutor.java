@@ -26,7 +26,7 @@ public class TaskExecutor implements Comparable<TaskExecutor>, IncrementalId,  R
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 

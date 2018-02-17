@@ -336,12 +336,13 @@ public class XMLMapParser implements MapParser {
     private MapTime parseTimeValue(String value, MapTime def) {
         if (value != null) {
             try {
-                return MapTimeConstants.valueOf(XMLParser.parseEnumValue(value)).time();
+                String entry = XMLParser.parseEnumValue(value);
+                return MapTimeConstants.valueOf(entry).time();
             } catch (IllegalArgumentException notByName) {
             }
 
             try {
-                return MapTime.ofTicks(XMLParser.parseInt(value, -1 /* -1 results outOfBounds */));
+                return MapTime.ofTicks(XMLParser.parseLong(value, -1 /* -1 results outOfBounds */));
             } catch (IllegalArgumentException outOfBounds) {
             }
         }

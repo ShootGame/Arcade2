@@ -47,18 +47,17 @@ public class DamageGame extends GameModule {
                 }
 
                 DamageRule rule = new DamageRule(entityFilter, playerFilter);
+                rule.setMultiplier(XMLParser.parseDouble(xml.getAttributeValue("multiplier"), DamageRule.ZERO));
 
                 String value = xml.getValue();
-                boolean deny = XMLParser.parseBoolean(value, false);
+                boolean deny = !XMLParser.parseBoolean(value, true);
                 double damage = XMLParser.parseDouble(value, -1D);
 
                 if (deny || damage == DamageRule.ZERO) {
                     rule.setCanceled(true);
+                } else if (!rule.hasMultiplier() && damage < DamageRule.ZERO) {
+                    continue;
                 } else {
-                    if (damage < DamageRule.ZERO) {
-                        continue;
-                    }
-
                     rule.setDamage(damage);
                 }
 
@@ -81,20 +80,20 @@ public class DamageGame extends GameModule {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
-        this.handleEntityDamage(event, null);
+        this.handleEntityDamage(event);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityDamageByBlock(EntityDamageByBlockEvent event) {
-        this.handleEntityDamage(event, event.getDamager());
+        this.handleEntityDamage(event);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        this.handleEntityDamage(event, event.getDamager());
+        this.handleEntityDamage(event);
     }
 
-    private void handleEntityDamage(EntityDamageEvent event, Object damager) {
+    private void handleEntityDamage(EntityDamageEvent event) {
         EntityDamageEvent.DamageCause cause = event.getCause();
         if (!isValid(cause)) {
             return;
@@ -104,9 +103,9 @@ public class DamageGame extends GameModule {
 
         DamageRule rule;
         if (entity instanceof Player) {
-            rule = this.byPlayer((Player) entity, cause, null);
+            rule = this.byPlayer((Player) entity, cause);
         } else {
-            rule = this.byEntity(entity, cause, null);
+            rule = this.byEntity(entity, cause);
         }
 
         if (rule == null) {
@@ -115,12 +114,12 @@ public class DamageGame extends GameModule {
             event.setCancelled(true);
         }
 
-        event.setDamage(rule.getDamage());
+        event.setDamage(rule.getDamage(event.getDamage()));
     }
 
-    private DamageRule byEntity(Entity entity, EntityDamageEvent.DamageCause cause, Object damager) {
+    private DamageRule byEntity(Entity entity, EntityDamageEvent.DamageCause cause) {
         for (DamageRule rule : this.rules) {
-            if (rule.matches(entity, cause, damager)) {
+            if (rule.matches(entity, cause)) {
                 return rule;
             }
         }
@@ -128,10 +127,10 @@ public class DamageGame extends GameModule {
         return null;
     }
 
-    private DamageRule byPlayer(Player bukkit, EntityDamageEvent.DamageCause cause, Object damager) {
+    private DamageRule byPlayer(Player bukkit, EntityDamageEvent.DamageCause cause) {
         GamePlayer player = this.getGame().getPlayer(bukkit);
         for (DamageRule rule : this.rules) {
-            if (rule.matches(player, cause, damager)) {
+            if (rule.matches(player, cause)) {
                 return rule;
             }
         }

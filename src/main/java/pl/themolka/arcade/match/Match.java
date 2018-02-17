@@ -7,9 +7,8 @@ import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.time.Time;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ public class Match implements DynamicWinnable {
 
     private final DrawMatchWinner drawWinner;
     private List<DynamicWinnable> dynamicWinnables = new ArrayList<>();
+    private Time endTime = Time.ZERO;
     private boolean forceEnd;
     private boolean forceStart;
     private final Game game;
@@ -28,9 +28,8 @@ public class Match implements DynamicWinnable {
     private final Observers observers;
     private final ObserversKit observersKit;
     private PlayMatchWindow playWindow;
-    private Instant startTime;
+    private Time startTime = Time.ZERO;
     private MatchState state = MatchState.STARTING;
-    private Duration time;
     private final Map<String, MatchWinner> winnerMap = new HashMap<>();
 
     public Match(ArcadePlugin plugin, Game game, Observers observers) {
@@ -112,7 +111,7 @@ public class Match implements DynamicWinnable {
             return;
         }
 
-        this.time = Duration.between(this.startTime, Instant.now());
+        this.endTime = Time.now();
 
         this.broadcastEndMessage(winner);
         this.setForceEnd(force);
@@ -180,6 +179,10 @@ public class Match implements DynamicWinnable {
     public DrawMatchWinner getDrawWinner() {
         return this.drawWinner;
     }
+
+    public Time getEndTime() {
+        return this.endTime;
+    }
     
     public Game getGame() {
         return this.game;
@@ -201,7 +204,7 @@ public class Match implements DynamicWinnable {
         return this.playWindow;
     }
 
-    public Instant getStartTime() {
+    public Time getStartTime() {
         return this.startTime;
     }
 
@@ -209,8 +212,20 @@ public class Match implements DynamicWinnable {
         return this.state;
     }
 
-    public Duration getTime() {
-        return this.time;
+    public Time getTime() {
+        return this.getTime(Time.now());
+    }
+
+    public Time getTime(Time now) {
+        if (this.isStarting()) {
+            return Time.ZERO;
+        } else if (this.isRunning()) {
+            return now.minus(this.getStartTime());
+        } else if (this.isCycling()) {
+            return this.getEndTime().minus(this.getStartTime());
+        }
+
+        return Time.ZERO;
     }
 
     /**
@@ -365,7 +380,7 @@ public class Match implements DynamicWinnable {
             return;
         }
 
-        this.startTime = Instant.now();
+        this.startTime = Time.now();
 
         this.broadcastStartMessage();
         this.setForceStart(force);

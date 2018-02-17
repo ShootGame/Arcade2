@@ -119,7 +119,7 @@ public class MatchModule extends Module<MatchGame> {
             description = "Describe the match",
             permission = "arcade.command.gameinfo") // inherit from /gameinfo
     public void matchInfo(Sender sender, CommandContext context) {
-        CommandUtils.sendTitleMessage(sender, "Match", "#" + this.getPlugin().getGames().getGameId());
+        CommandUtils.sendTitleMessage(sender, "Match", "#" + this.getPlugin().getGames().getCurrentGame().getGameId());
         this.getPlugin().getEventBus().publish(new GameCommands.GameCommandEvent(this.getPlugin(), sender, context));
     }
 }

@@ -19,6 +19,10 @@ public enum FilterResult {
         }
     }
 
+    public boolean isAllowed() {
+        return this == ALLOW;
+    }
+
     public boolean isDenied() {
         return this == DENY;
     }

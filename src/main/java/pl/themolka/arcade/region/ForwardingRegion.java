@@ -7,7 +7,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.FilterSet;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.util.Forwarding;
 
@@ -157,10 +156,5 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     @Override
     public String getId() {
         return this.delegate().getId();
-    }
-
-    @Override
-    public String getIdentifier() {
-        return this.delegate().getIdentifier();
     }
 }

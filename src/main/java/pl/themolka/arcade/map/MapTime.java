@@ -3,17 +3,16 @@ package pl.themolka.arcade.map;
 import pl.themolka.arcade.time.Time;
 
 public class MapTime implements Cloneable {
-    public static final MapTime MIN = ofTicks(0);
-    public static final MapTime MAX = ofTicks(24000);
+    public static final int MIN_TICKS = 0;
+    public static final int MAX_TICKS = 23999;
 
-    private final int ticks;
+    public static final MapTime MIN = ofTicks(MIN_TICKS);
+    public static final MapTime MAX = ofTicks(MAX_TICKS);
+
+    private final long ticks;
     private boolean locked;
 
-    private MapTime(int ticks) {
-        if (ticks < MIN.getTicks() || ticks > MAX.getTicks()) {
-            throw new IllegalArgumentException("Illegal time ticks.");
-        }
-
+    private MapTime(long ticks) {
         this.ticks = ticks;
     }
 
@@ -32,7 +31,7 @@ public class MapTime implements Cloneable {
         }
     }
 
-    public int getTicks() {
+    public long getTicks() {
         return this.ticks;
     }
 
@@ -52,7 +51,7 @@ public class MapTime implements Cloneable {
     // Instancing
     //
 
-    public static MapTime ofTicks(int ticks) {
+    public static MapTime ofTicks(long ticks) {
         return new MapTime(ticks);
     }
 

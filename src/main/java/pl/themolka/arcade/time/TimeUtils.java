@@ -8,35 +8,27 @@ public final class TimeUtils {
     private TimeUtils() {
     }
 
-    public static String prettyDuration(Duration duration) {
-        return prettyTime(Time.of(duration));
+    public static String prettyDuration(Duration duration, String primary, String secondary) {
+        return prettyTime(Time.of(duration), primary, secondary);
     }
 
-    public static String prettyTime(Time time) {
-        String hoursString = "";
+    public static String prettyTime(Time time, String primary, String secondary) {
         long hours = time.toHours();
-        if (hours > 0 && hours < 10) {
-            hoursString = "0" + hours + ChatColor.WHITE + ":" + ChatColor.GREEN;
-        } else if (hours > 0) {
-            hoursString = Long.toString(hours);
+        String hoursString = printableString(hours, "");
+        if (!hoursString.isEmpty()) {
+            hoursString += ChatColor.RESET + secondary + ":" + primary;
         }
 
-        String minutesString = "00";
-        long minutes = time.minusHours(hours).toMinutes();
-        if (minutes > 0 && minutes < 10) {
-            minutesString = "0" + minutes;
-        } else if (minutes > 0) {
-            minutesString = Long.toString(minutes);
-        }
+        long minutes = time.toMinutes() - Time.ZERO.plusHours(hours).toSeconds();
+        String minutesString = printableString(minutes, "00");
 
-        String secondsString = "00";
-        long seconds = time.minusHours(hours).minusMinutes(minutes).toSeconds();
-        if (seconds > 0 && seconds < 10) {
-            secondsString = "0" + seconds;
-        } else if (seconds > 0) {
-            secondsString = Long.toString(seconds);
-        }
+        long seconds = time.toSeconds() - Time.ZERO.plusHours(hours).plusMinutes(minutes).toSeconds();
+        String secondsString = printableString(seconds, "00");
 
-        return ChatColor.GREEN + hoursString + minutesString + ChatColor.WHITE + ":" + ChatColor.GREEN + secondsString;
+        return primary + hoursString + minutesString + ChatColor.RESET + secondary + ":" + primary + secondsString;
+    }
+
+    private static String printableString(long time, String def) {
+        return time > 0 ? (time < 10 ? "0" : "") + Long.toString(time) : def;
     }
 }

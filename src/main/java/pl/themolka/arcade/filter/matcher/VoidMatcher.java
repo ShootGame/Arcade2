@@ -12,10 +12,10 @@ public class VoidMatcher extends Matcher {
 
     @Override
     public FilterResult matches(Object object) {
-        if (object instanceof Locatable) {
-            return this.of(this.matches((Locatable) object));
-        } else if (object instanceof Location) {
+        if (object instanceof Location) {
             return this.of(this.matches((Location) object));
+        } else if (object instanceof Locatable) {
+            return this.of(this.matches((Locatable) object));
         }
 
         return this.abstain();

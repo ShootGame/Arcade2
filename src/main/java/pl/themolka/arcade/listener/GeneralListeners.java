@@ -27,6 +27,9 @@ import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.GameStartEvent;
+import pl.themolka.arcade.gamerule.GameRuleType;
+import pl.themolka.arcade.map.MapTime;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
@@ -47,6 +50,8 @@ import pl.themolka.arcade.session.PlayerMoveEvent;
  * Weather:         We are not supporting weather changed dynamically by the
  *                  server itself. Modules are responsible for what and when
  *                  should be handled in the game world.
+*  Time Ticks:      The core plugin can set time in world. Make it happend on
+ *                  the {@link World} object too.
  * Custom Events:   We have some custom events. This is the best place to handle
  *                  them.
  */
@@ -58,6 +63,8 @@ public class GeneralListeners implements Listener {
             "You may not %s Ender Chests on this server.";
     public static final String PORTAL_MESSAGE = ChatColor.RED +
             "You may not %s dimension portals on this server.";
+
+    private static final GameRuleType doDaylightCycle = GameRuleType.DO_DAYLIGHT_CYCLE;
 
     private final ArcadePlugin plugin;
 
@@ -187,6 +194,31 @@ public class GeneralListeners implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onThunderChange(ThunderChangeEvent event) {
         event.setCancelled(true);
+    }
+
+    //
+    // Time Ticks
+    //
+
+    @Handler(priority = Priority.HIGHEST)
+    public void onGameStart(GameStartEvent event) {
+        Game game = event.getGame();
+        MapTime time = game.getMap().getTime();
+
+        this.walkTime(game.getWorld(), time.getTicks(), time.isLocked());
+    }
+
+    private void walkTime(World world, long time, boolean lock) {
+        world.setFullTime(time);
+
+        if (lock) {
+            String oldValue = world.getGameRuleValue(doDaylightCycle.getKey());
+            String correctValue = Boolean.toString(false);
+
+            if (oldValue == null || !oldValue.equalsIgnoreCase(correctValue)) {
+                world.setGameRuleValue(doDaylightCycle.getKey(), correctValue);
+            }
+        }
     }
 
     //

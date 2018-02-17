@@ -237,6 +237,7 @@ public class MatchGame extends GameModule {
         int stay = (int) Time.ofSeconds(3).toTicks();
         int fadeOut = (int) Time.ofTicks(30).toTicks();
 
+        boolean isDrawWinner = winner instanceof DrawMatchWinner;
         for (ArcadePlayer online : event.getPlugin().getPlayers()) {
             if (online.getGamePlayer() == null) {
                 continue;
@@ -248,7 +249,7 @@ public class MatchGame extends GameModule {
             if (winner == null || this.getObservers().contains(online)) {
                 title = defaultComponent;
                 sound = ArcadeSound.ENEMY_LOST;
-            } else if (winner.contains(online)) {
+            } else if (isDrawWinner || winner.contains(online)) {
                 title = winnerComponent;
                 sound = ArcadeSound.ENEMY_LOST;
             } else {
@@ -290,18 +291,10 @@ public class MatchGame extends GameModule {
 
     @Handler(priority = Priority.NORMAL)
     public void onMatchTimeDescribe(GameCommands.GameCommandEvent event) {
-        Time time = Time.ZERO;
-        switch (this.getMatch().getState()) {
-            case RUNNING:
-                time = Time.now().minus(Time.of(this.getMatch().getStartTime()));
-                break;
-            case CYCLING:
-                time = Time.of(this.getMatch().getTime());
-                break;
-            default:
-                break;
-        }
+        String time = TimeUtils.prettyTime(this.getMatch().getTime(),
+                                           ChatColor.GOLD.toString() + ChatColor.BOLD,
+                                           ChatColor.GRAY.toString());
 
-        event.getSender().send(ChatColor.GREEN + "Time: " + ChatColor.DARK_AQUA + TimeUtils.prettyTime(time));
+        event.getSender().send(ChatColor.GREEN + "Time: " + ChatColor.DARK_AQUA + time);
     }
 }

@@ -4,10 +4,17 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 public enum KitContentType implements KitContentParser<KitContent<?>> {
-    ARMOR("armor") {
+    BOOTS("boots") {
         @Override
-        public ArmorContent parse(Element xml) throws DataConversionException {
-            return ARMOR_PARSER.parse(xml);
+        public BootsContent parse(Element xml) throws DataConversionException {
+            return BOOTS_PARSER.parse(xml);
+        }
+    },
+
+    CHESTPLATE("chestplate") {
+        @Override
+        public ChestplateContent parse(Element xml) throws DataConversionException {
+            return CHESTPLATE_PARSER.parse(xml);
         }
     },
 
@@ -60,6 +67,20 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
         }
     },
 
+    HELD_SLOT("held-slot", "heldslot", "held-item", "helditem", "held", "slot") {
+        @Override
+        public HeldSlotContent parse(Element xml) throws DataConversionException {
+            return HELD_SLOT_PARSER.parse(xml);
+        }
+    },
+
+    HELMET("helmet") {
+        @Override
+        public HelmetContent parse(Element xml) throws DataConversionException {
+            return HELMET_PARSER.parse(xml);
+        }
+    },
+
     ITEM_STACK("item", "itemstack", "item-stack", "stack") {
         @Override
         public ItemStackContent parse(Element xml) throws DataConversionException {
@@ -78,6 +99,13 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
         @Override
         public KnockbackContent parse(Element xml) throws DataConversionException {
             return KNOCKBACK_PARSER.parse(xml);
+        }
+    },
+
+    LEGGINGS("leggings") {
+        @Override
+        public LeggingsContent parse(Element xml) throws DataConversionException {
+            return LEGGINGS_PARSER.parse(xml);
         }
     },
 
@@ -124,7 +152,8 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
     },
     ;
 
-    public static final ArmorContent.Parser ARMOR_PARSER = new ArmorContent.Parser();
+    public static final BootsContent.Parser BOOTS_PARSER = new BootsContent.Parser();
+    public static final ChestplateContent.Parser CHESTPLATE_PARSER = new ChestplateContent.Parser();
     public static final ClearInventoryContent.Parser CLEAR_INVENTORY_PARSER = new ClearInventoryContent.Parser();
     public static final EffectContent.Parser EFFECT_PARSER = new EffectContent.Parser();
     public static final FlyContent.Parser FLY_PARSER = new FlyContent.Parser();
@@ -132,9 +161,12 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
     public static final FoodLevelContent.Parser FOOD_LEVEL_PARSER = new FoodLevelContent.Parser();
     public static final GameModeContent.Parser GAME_MODE_PARSER = new GameModeContent.Parser();
     public static final HealthContent.Parser HEALTH_PARSER = new HealthContent.Parser();
+    public static final HeldSlotContent.Parser HELD_SLOT_PARSER = new HeldSlotContent.Parser();
+    public static final HelmetContent.Parser HELMET_PARSER = new HelmetContent.Parser();
     public static final ItemStackContent.Parser ITEM_STACK_PARSER = new ItemStackContent.Parser();
     public static final KillContent.Parser KILL_PARSER = new KillContent.Parser();
     public static final KnockbackContent.Parser KNOCKBACK_PARSER = new KnockbackContent.Parser();
+    public static final LeggingsContent.Parser LEGGINGS_PARSER = new LeggingsContent.Parser();
     public static final LivesContent.Parser LIVES_PARSER = new LivesContent.Parser();
     public static final MaxHealthContent.Parser MAX_HEALTH_PARSER = new MaxHealthContent.Parser();
     public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();

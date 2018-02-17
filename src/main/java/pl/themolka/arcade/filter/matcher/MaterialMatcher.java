@@ -9,6 +9,7 @@ import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.filter.FilterResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @MatcherId("material")
@@ -17,7 +18,7 @@ public class MaterialMatcher extends Matcher {
 
     private final List<MaterialData> container = new ArrayList<>();
 
-    public MaterialMatcher(List<MaterialData> container) {
+    public MaterialMatcher(Collection<MaterialData> container) {
         this.container.addAll(container);
     }
 

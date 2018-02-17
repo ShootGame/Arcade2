@@ -32,7 +32,7 @@ public class GameCommands {
             throw new CommandException("No game running right now. Please try again later.");
         }
 
-        CommandUtils.sendTitleMessage(sender, "Game", "#" + (game.getGameId() + 1));
+        CommandUtils.sendTitleMessage(sender, "Game", "#" + game.getGameId());
         this.plugin.getEventBus().publish(new GameCommandEvent(this.plugin, sender, context));
     }
 

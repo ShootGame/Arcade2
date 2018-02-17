@@ -9,7 +9,7 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.XMLItemStack;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class ItemStackContent implements KitContent<ItemStack>, Removable {
+public class ItemStackContent extends BaseInventoryContent<ItemStack> implements Removable {
     public static final int SLOT_NULL = -1;
 
     // armor
@@ -18,21 +18,14 @@ public class ItemStackContent implements KitContent<ItemStack>, Removable {
     public static final int SLOT_LEGGNINGS = 101;
     public static final int SLOT_BOOTS = 100;
 
-    private final ItemStack result;
     private int slot;
 
     public ItemStackContent(ItemStack result) {
-        this.result = result;
+        super(result);
     }
 
     @Override
-    public boolean isApplicable(GamePlayer player) {
-        return KitContent.testBukkit(player) && !player.isDead();
-    }
-
-    @Override
-    public void apply(GamePlayer player) {
-        PlayerInventory inventory = player.getBukkit().getInventory();
+    public void apply(GamePlayer player, PlayerInventory inventory) {
         if (this.hasSlot()) {
             inventory.setItem(this.getSlot(), this.getResult());
         } else {
@@ -46,11 +39,6 @@ public class ItemStackContent implements KitContent<ItemStack>, Removable {
         if (bukkit != null) {
             bukkit.getInventory().remove(this.getResult());
         }
-    }
-
-    @Override
-    public ItemStack getResult() {
-        return this.result;
     }
 
     public int getSlot() {

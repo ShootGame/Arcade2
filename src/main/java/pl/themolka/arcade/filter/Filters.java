@@ -1,6 +1,6 @@
 package pl.themolka.arcade.filter;
 
-public class Filters {
+public final class Filters {
     private static final Filter undefined = StaticFilter.ABSTAIN;
 
     private Filters() {

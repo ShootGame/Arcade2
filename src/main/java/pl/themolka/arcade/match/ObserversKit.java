@@ -8,6 +8,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.kit.ClearInventoryContent;
 import pl.themolka.arcade.kit.GameModeContent;
+import pl.themolka.arcade.kit.HeldSlotContent;
 import pl.themolka.arcade.kit.ItemStackContent;
 import pl.themolka.arcade.kit.Kit;
 
@@ -45,6 +46,8 @@ public class ObserversKit extends Kit {
 
         this.addContent(this.createNavigationItem()); // 0
         this.addContent(this.createPlayItem()); // 2
+
+        this.addContent(new HeldSlotContent(0));
     }
 
     public ItemStackContent createNavigationItem() {
