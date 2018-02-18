@@ -1,5 +1,6 @@
 package pl.themolka.arcade.filter;
 
+import pl.themolka.arcade.filter.matcher.MatcherContext;
 import pl.themolka.arcade.game.GameModule;
 
 import java.util.Collection;
@@ -8,6 +9,8 @@ import java.util.Set;
 
 public class FiltersGame extends GameModule {
     private final Map<String, FilterSet> filters;
+
+    private final MatcherContext matcherContext = new MatcherContext();
 
     public FiltersGame(Map<String, FilterSet> filters) {
         this.filters = filters;
@@ -42,6 +45,10 @@ public class FiltersGame extends GameModule {
 
     public Collection<FilterSet> getFilters() {
         return this.filters.values();
+    }
+
+    public MatcherContext getMatcherContext() {
+        return this.matcherContext;
     }
 
     public void removeFilter(FilterSet filter) {

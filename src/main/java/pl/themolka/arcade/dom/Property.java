@@ -1,44 +1,48 @@
 package pl.themolka.arcade.dom;
 
-public class Property implements NamedValue {
-    private String name;
-    private String value;
+public class Property extends Element {
+    private Node parent;
 
     private Property(String name) {
-        this.name = name;
+        super(name);
+    }
+
+    private Property(String name, String value) {
+        super(name, value);
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public Cursor getLocation() {
+        return this.hasLocation() ? this.getParent().getLocation()
+                                  : null;
     }
 
     @Override
-    public String getValue() {
-        return this.value;
+    public Node getParent() {
+        return this.parent;
     }
 
     @Override
-    public boolean hasValue() {
-        return this.value != null;
+    public boolean hasLocation() {
+        return this.hasParent() && this.getParent().hasLocation();
     }
 
     @Override
-    public String setName(String name) {
-        String oldName = this.name;
-        if (name != null) {
-            this.name = name;
-        }
-
-        return oldName;
+    public boolean hasParent() {
+        return this.parent != null;
     }
 
     @Override
-    public String setValue(String value) {
-        String oldValue = this.value;
-        this.value = value;
+    public Node setParent(Node parent) {
+        Node oldParent = this.parent;
+        this.parent = parent;
 
-        return oldValue;
+        return oldParent;
+    }
+
+    @Override
+    public String toString() {
+        return this.getName() + "=\"" + (this.hasValue() ? this.getValue() : "") + "\"";
     }
 
     //
@@ -50,8 +54,6 @@ public class Property implements NamedValue {
     }
 
     public static Property of(String name, String value) {
-        Property property = of(name);
-        property.setValue(value);
-        return property;
+        return new Property(name, value);
     }
 }

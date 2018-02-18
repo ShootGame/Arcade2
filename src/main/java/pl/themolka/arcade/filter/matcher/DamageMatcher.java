@@ -1,14 +1,21 @@
 package pl.themolka.arcade.filter.matcher;
 
 import org.bukkit.event.entity.EntityDamageEvent;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.EnumParser;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @MatcherId("damage")
 public class DamageMatcher extends Matcher {
+    public static final MatcherParser PARSER = new DamageParser();
+
     private final List<EntityDamageEvent.DamageCause> container = new ArrayList<>();
 
     public DamageMatcher(Collection<EntityDamageEvent.DamageCause> container) {
@@ -42,5 +49,15 @@ public class DamageMatcher extends Matcher {
 
     public List<EntityDamageEvent.DamageCause> getContainer() {
         return this.container;
+    }
+}
+
+class DamageParser implements MatcherParser<DamageMatcher> {
+    private final EnumParser<EntityDamageEvent.DamageCause> damageParser =
+            Parsers.enumParser(EntityDamageEvent.DamageCause.class);
+
+    @Override
+    public DamageMatcher parsePrimitive(Node node) throws ParserException {
+        return new DamageMatcher(Collections.singleton(this.damageParser.parse(node)));
     }
 }

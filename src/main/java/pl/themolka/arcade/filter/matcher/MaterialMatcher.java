@@ -6,14 +6,19 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.ParserException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @MatcherId("material")
 public class MaterialMatcher extends Matcher {
+    public static final MatcherParser PARSER = new MaterialParser();
+
     public static final byte DATA_NULL = (byte) 0;
 
     private final List<MaterialData> container = new ArrayList<>();
@@ -89,5 +94,29 @@ public class MaterialMatcher extends Matcher {
 
     public List<MaterialData> getContainer() {
         return this.container;
+    }
+}
+
+class MaterialParser implements MatcherParser<MaterialMatcher> {
+    @Override
+    public MaterialMatcher parsePrimitive(Node node) throws ParserException {
+        String[] split = node.getValue().split(":");
+
+        Material material = Material.matchMaterial(split[0]);
+        if (material == null) {
+            throw new ParserException(node, "Invalid material: " + split[0]);
+        }
+
+        byte data = MaterialMatcher.DATA_NULL;
+        if (split.length > 1) {
+            try {
+                data = Byte.parseByte(split[1]);
+            } catch (NumberFormatException ex) {
+                throw new ParserException(node, "Invalid material data: " + split[1]);
+            }
+        }
+
+        MaterialData materialData = new MaterialData(material, data);
+        return new MaterialMatcher(Collections.singleton(materialData));
     }
 }

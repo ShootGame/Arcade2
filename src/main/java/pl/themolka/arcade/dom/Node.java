@@ -1,61 +1,35 @@
 package pl.themolka.arcade.dom;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Node implements NamedValue {
+public class Node extends Element implements MutableLocatable, Parent<Node>, Propertable {
+    enum Type {
+        PRIMITIVE, TREE, UNKNOWN
+    }
+
+    private Node(String name) {
+        super(name);
+    }
+
+    private Node(String name, String value) {
+        super(name, value);
+    }
+
     private final List<Property> properties = new ArrayList<>();
     private final List<Node> children = new ArrayList<>();
 
+    private Cursor location;
     private String name;
+    private Node parent;
     private String value;
 
-    private Node(String name) {
-        this.name = name;
-    }
-
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String getValue() {
-        return this.value;
-    }
-
-    @Override
-    public boolean hasValue() {
-        return this.isPrimitive();
-    }
-
-    @Override
-    public String setName(String name) {
-        String oldName = this.name;
-        if (name != null) {
-            this.name = name;
-        }
-
-        return oldName;
-    }
-
-    @Override
-    public String setValue(String value) {
-        this.resetTree(); // switch to the primitive type if needed
-
-        String oldValue = this.value;
-        this.value = value;
-
-        return oldValue;
-    }
-
-    public boolean add(Node... children) {
-        return children != null && this.add(Arrays.asList(children));
-    }
-
     public boolean add(Collection<Node> children) {
         if (children != null) {
             this.resetPrimitive(); // switch to the tree type if needed
@@ -65,37 +39,12 @@ public class Node implements NamedValue {
         return false;
     }
 
-    public Node firstChild() {
-        return this.children.isEmpty() ? null : this.children.get(0);
-    }
-
-    public Node firstChild(Iterable<String> names) {
-        List<Node> children = this.children(names);
-        return children.isEmpty() ? null : children.get(0);
-    }
-
-    public Node firstChild(String... names) {
-        return this.firstChild(Arrays.asList(names));
-    }
-
-    public Node lastChild() {
-        int size = this.children.size();
-        return size == 0 ? null : this.children.get(size - 1);
-    }
-
-    public Node lastChild(Iterable<String> names) {
-        List<Node> children = this.children(names);
-        return children.isEmpty() ? null : children.get(children.size() - 1);
-    }
-
-    public Node lastChild(String... names) {
-        return this.lastChild(Arrays.asList(names));
-    }
-
+    @Override
     public List<Node> children() {
         return new ArrayList<>(this.children);
     }
 
+    @Override
     public List<Node> children(Iterable<String> names) {
         List<Node> results = new ArrayList<>();
 
@@ -112,26 +61,87 @@ public class Node implements NamedValue {
         return results;
     }
 
-    public List<Node> children(String... names) {
-        return this.children(Arrays.asList(names));
+    @Override
+    public int clearChildren() {
+        int count = this.children.size();
+        this.children.clear();
+        return count;
     }
 
+    @Override
+    public Node firstChild() {
+        return this.children.isEmpty() ? null : this.children.get(0);
+    }
+
+    @Override
+    public Node firstChild(Iterable<String> names) {
+        List<Node> children = this.children(names);
+        return children.isEmpty() ? null : children.get(0);
+    }
+
+    @Override
+    public Cursor getLocation() {
+        return this.location;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public Node getParent() {
+        return this.parent;
+    }
+
+    @Override
+    public String getValue() {
+        return this.value;
+    }
+
+    @Override
+    public boolean hasLocation() {
+        return this.location != null;
+    }
+
+    @Override
+    public boolean hasParent() {
+        return this.parent != null;
+    }
+
+    @Override
+    public boolean hasProperties() {
+        return !this.properties.isEmpty();
+    }
+
+    @Override
+    public boolean hasValue() {
+        return this.isPrimitive();
+    }
+
+    @Override
     public boolean isEmpty() {
         return this.children.isEmpty();
     }
 
-    public boolean isPrimitive() {
-        return this.value != null;
+    @Override
+    public Node lastChild() {
+        int size = this.children.size();
+        return size == 0 ? null : this.children.get(size - 1);
     }
 
-    public boolean isTree() {
-        return !this.children.isEmpty();
+    @Override
+    public Node lastChild(Iterable<String> names) {
+        List<Node> children = this.children(names);
+        return children.isEmpty() ? null : children.get(children.size() - 1);
     }
 
+    @Override
     public List<Property> properties() {
         return new ArrayList<>(this.properties);
     }
 
+    @Override
     public List<Property> properties(Iterable<String> names) {
         List<Property> properties = new ArrayList<>();
 
@@ -148,10 +158,7 @@ public class Node implements NamedValue {
         return properties;
     }
 
-    public List<Property> properties(String... names) {
-        return this.properties(Arrays.asList(names));
-    }
-
+    @Override
     public Property property(Iterable<String> names) {
         if (names != null) {
             for (Property property : this.properties) {
@@ -166,11 +173,27 @@ public class Node implements NamedValue {
         return null;
     }
 
-    public Property property(String... names) {
-        return this.property(Arrays.asList(names));
+    @Override
+    public String propertyValue(Iterable<String> names) {
+        return this.propertyValue(names, null);
     }
 
-    public boolean remove(Node... children) {
+    @Override
+    public String propertyValue(Iterable<String> names, String def) {
+        Property property = this.property(names);
+        if (property != null) {
+            String value = property.getValue();
+
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return def;
+    }
+
+    @Override
+    public boolean remove(Iterable<Node> children) {
         if (children == null || this.isEmpty()) {
             return false;
         }
@@ -185,6 +208,50 @@ public class Node implements NamedValue {
         return result;
     }
 
+    @Override
+    public boolean removeByName(Iterable<String> children) {
+        if (children == null || this.isEmpty()) {
+            return false;
+        }
+
+        boolean result = false;
+        for (Node child : new ArrayList<>(this.children)) {
+            for (String name : children) {
+                if (name != null && child.getName().equals(name)) {
+                    if (this.remove(child)) {
+                        result = true;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void setLocation(Cursor location) {
+        this.location = location;
+    }
+
+    @Override
+    public String setName(String name) {
+        String oldName = this.name;
+        if (name != null) {
+            this.name = name;
+        }
+
+        return oldName;
+    }
+
+    @Override
+    public Node setParent(Node parent) {
+        Node oldParent = this.parent;
+        this.parent = parent;
+
+        return oldParent;
+    }
+
+    @Override
     public Property setProperty(Property property) {
         Property oldProperty = null;
         if (property != null) {
@@ -200,10 +267,7 @@ public class Node implements NamedValue {
         return oldProperty;
     }
 
-    public Property setProperty(String name, String value) {
-        return name != null ? this.setProperty(Property.of(name, value)) : null;
-    }
-
+    @Override
     public void setProperties(Iterable<Property> properties) {
         if (properties != null) {
             for (Property property : properties) {
@@ -212,24 +276,116 @@ public class Node implements NamedValue {
         }
     }
 
-    public void setProperties(Property... properties) {
-        this.setProperties(Arrays.asList(properties));
+    @Override
+    public String setValue(String value) {
+        this.resetTree(); // switch to the primitive type if needed
+
+        String oldValue = this.value;
+        this.value = value;
+
+        return oldValue;
     }
 
+    @Override
+    public void sortChildren(Comparator<? super Node> comparator) {
+        if (comparator != null) {
+            this.children.sort(comparator);
+        }
+    }
+
+    @Override
+    public void sortProperties(Comparator<? super Property> comparator) {
+        if (comparator != null) {
+            this.properties.sort(comparator);
+        }
+    }
+
+    @Override
+    public String toShortString() {
+        return this.toString(true, false);
+    }
+
+    @Override
+    public int unsetProperties() {
+        int count = this.properties.size();
+        this.properties.clear();
+        return count;
+    }
+
+    @Override
     public boolean unsetProperty(Property property) {
         return property != null && this.properties.remove(property);
     }
 
+    @Override
     public boolean unsetProperty(String name) {
         return name != null && this.unsetProperty(this.property(name));
     }
 
-    public void sortProperties(Comparator<? super Property> comparator) {
-        this.properties.sort(comparator);
+    public Type getType() {
+        if (this.isPrimitive()) {
+            return Type.PRIMITIVE;
+        } else if (this.isTree()) {
+            return Type.TREE;
+        }
+
+        return Type.UNKNOWN;
     }
 
-    public void sortChildren(Comparator<? super Node> comparator) {
-        this.children.sort(comparator);
+    public boolean isPrimitive() {
+        return this.value != null;
+    }
+
+    public boolean isTree() {
+        return !this.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return this.toString(true, true);
+    }
+
+    public String toString(boolean children) {
+        return this.toString(true, children);
+    }
+
+    public String toString(boolean properties, boolean children) {
+        String tag = this.name;
+        if (properties && this.hasProperties()) {
+            tag += " " + StringUtils.join(this.properties, " ");
+        }
+
+        String value = null;
+        if (this.hasValue()) {
+            String realValue = this.getValue();
+            if (!realValue.isEmpty()) {
+                value = realValue.trim();
+            }
+        }
+
+        List<Node> node;
+        if (children && !this.isEmpty()) {
+            node = this.children();
+        } else {
+            node = Collections.emptyList();
+        }
+
+        boolean closingTag = value == null || node.isEmpty();
+
+        String startTag = this.toStringTag(false, tag, closingTag);
+        StringBuilder builder = new StringBuilder(startTag);
+
+        if (value != null) {
+            builder.append(value);
+        } else if (!node.isEmpty()) {
+            builder.append(StringUtils.join(node, " "));
+        }
+
+        if (!closingTag) {
+            builder.append(this.toStringTag(true, this.name, false));
+        }
+
+        return builder.toString();
     }
 
     //
@@ -245,9 +401,13 @@ public class Node implements NamedValue {
 
     private boolean resetTree() {
         boolean ok = this.isTree();
-        this.children.clear();
+        this.clearChildren();
 
         return ok;
+    }
+
+    private String toStringTag(boolean end, String tag, boolean closing) {
+        return (end ? "</" : "<") + tag + (closing ? "/>" : ">");
     }
 
     //
@@ -265,9 +425,7 @@ public class Node implements NamedValue {
     }
 
     public static Node ofPrimitive(String name, String value) {
-        Node node = of(name);
-        node.setValue(value);
-        return node;
+        return new Node(name, value);
     }
 
     public static Node ofPrimitive(String name, List<Property> properties, String value) {

@@ -190,7 +190,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         // Round the points, if the result is zero (it
         // is a long), then return a real double value.
 
-        double points = Math.round(event.getPoints());
+        double points = Math.floor(event.getPoints());
         if (points == 0D) {
             points = event.getPoints();
         }

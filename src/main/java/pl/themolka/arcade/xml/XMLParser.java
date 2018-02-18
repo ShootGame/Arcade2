@@ -1,10 +1,11 @@
 package pl.themolka.arcade.xml;
 
-import org.bukkit.ChatColor;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class XMLParser {
-    public static final char COLOR_CHAR = '`';
     public static final String SPLIT_KEY = ",";
 
     public static List<Element> children(Element element, String... children) {
@@ -58,60 +58,39 @@ public class XMLParser {
         return data;
     }
 
+    //
+    // Deprecated parsing methods - will be removed in the near future
+    //
+
+    @Deprecated
     public static boolean parseBoolean(String input) {
         return parseBoolean(input, false);
     }
 
+    @Deprecated
     public static boolean parseBoolean(String input, boolean def) {
-        input = normalizeInput(input);
-        if (input != null) {
-            switch (input.toLowerCase()) {
-                case "true":
-                case "1":
-                case "+":
-                case "yes":
-                case "allow":
-                case "on":
-                case "enable":
-                case "enabled":
-                    return true;
-                case "false":
-                case "0":
-                case "-":
-                case "no":
-                case "deny":
-                case "off":
-                case "disable":
-                case "disabled":
-                    return false;
-            }
+        try {
+            return Parsers.booleanParser().parse(field(input));
+        } catch (ParserException ex) {
+            return def;
         }
-
-        return def;
     }
 
+    @Deprecated
     public static double parseDouble(String input) {
         return parseDouble(input, 0.0D);
     }
 
+    @Deprecated
     public static double parseDouble(String input, double def) {
-        input = normalizeInput(input);
-        if (input != null) {
-            if (unlimitedNegative(input)) {
-                return Double.MIN_VALUE;
-            } else if (unlimitedPositive(input)) {
-                return Double.MAX_VALUE;
-            }
-
-            try {
-                return Double.parseDouble(input);
-            } catch (NumberFormatException ignored) {
-            }
+        try {
+            return Parsers.doubleParser().parse(field(input));
+        } catch (ParserException ex) {
+            return def;
         }
-
-        return def;
     }
 
+    @Deprecated
     public static String parseEnumValue(String key) {
         key = normalizeInput(key);
         if (key != null) {
@@ -121,84 +100,67 @@ public class XMLParser {
         return null;
     }
 
+    @Deprecated
     public static float parseFloat(String input) {
         return parseFloat(input, 0.0F);
     }
 
+    @Deprecated
     public static float parseFloat(String input, float def) {
-        input = normalizeInput(input);
-        if (input != null) {
-            if (unlimitedNegative(input)) {
-                return Float.MIN_VALUE;
-            } else if (unlimitedPositive(input)) {
-                return Float.MAX_VALUE;
-            }
-
-            try {
-                return Float.parseFloat(input);
-            } catch (NumberFormatException ignored) {
-            }
+        try {
+            return Parsers.floatParser().parse(field(input));
+        } catch (ParserException ex) {
+            return def;
         }
-
-        return def;
     }
 
+    @Deprecated
     public static int parseInt(String input) {
         return parseInt(input, 0);
     }
 
+    @Deprecated
     public static int parseInt(String input, int def) {
-        input = normalizeInput(input);
-        if (input != null) {
-            if (unlimitedNegative(input)) {
-                return Integer.MIN_VALUE;
-            } else if (unlimitedPositive(input)) {
-                return Integer.MAX_VALUE;
-            }
-
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException ignored) {
-            }
+        try {
+            return Parsers.intParser().parse(field(input));
+        } catch (ParserException ex) {
+            return def;
         }
-
-        return def;
     }
 
+    @Deprecated
     public static long parseLong(String input) {
         return parseLong(input, 0L);
     }
 
+    @Deprecated
     public static long parseLong(String input, long def) {
-        input = normalizeInput(input);
-        if (input != null) {
-            if (unlimitedNegative(input)) {
-                return Long.MIN_VALUE;
-            } else if (unlimitedPositive(input)) {
-                return Long.MAX_VALUE;
-            }
-
-            try {
-                return Long.parseLong(input);
-            } catch (NumberFormatException ignored) {
-            }
+        try {
+            return Parsers.longParser().parse(field(input));
+        } catch (ParserException ex) {
+            return def;
         }
-
-        return def;
     }
 
+    @Deprecated
     public static String parseMessage(String message) {
-        message = normalizeInput(message);
-        if (message != null) {
-            return ChatColor.translateAlternateColorCodes(COLOR_CHAR, message) + ChatColor.RESET;
+        try {
+            return Parsers.messageParser().parse(field(message));
+        } catch (ParserException ex) {
+            return null;
         }
-
-        return null;
     }
 
     //
     // Helper Methods
     //
+
+    /*
+     * Used for legacy code
+     */
+    private static pl.themolka.arcade.dom.Element field(String input) {
+        return Property.of("legacy", input);
+    }
 
     private static String normalizeInput(String input) {
         if (input != null) {
@@ -210,13 +172,5 @@ public class XMLParser {
         }
 
         return null;
-    }
-
-    private static boolean unlimitedNegative(String input) {
-        return input.equalsIgnoreCase("-" + Time.FOREVER_KEY);
-    }
-
-    private static boolean unlimitedPositive(String input) {
-        return input.equalsIgnoreCase(Time.FOREVER_KEY);
     }
 }

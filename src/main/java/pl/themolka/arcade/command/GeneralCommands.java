@@ -114,7 +114,7 @@ public class GeneralCommands {
     //
 
     @CommandInfo(name = "recycle",
-            description = "Recycle current map",
+            description = "Re-cycle current map",
             usage = "[seconds]",
             permission = "arcade.command.cycle")
     public void recycle(Sender sender, CommandContext context) {

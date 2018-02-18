@@ -5,6 +5,10 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.xml.XMLParser;
 
+/**
+ * Use {@link pl.themolka.arcade.parser.EnumParser} instead.
+ */
+@Deprecated
 public class XMLDamage extends XMLParser {
     public static final String ATTRIBUTE_DAMAGE = "damage";
 

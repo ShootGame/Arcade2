@@ -85,15 +85,26 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     }
 
     /**
-     * Normalize the given location so it is safe for players. The location
-     * is not safe by default, if the player is spawning on eg. a carpet.
+     * Normalize the given {@link Location} so it is safe for players.
+     * The Location is not safe by default, if the player is spawning
+     * on eg. a carpet.
      */
-    protected Location normalize(Location location) {
-        return location.clone().add(0.0D, 0.1D, 0.0D);
+    protected Location normalize(Location from) {
+        Vector vector = this.normalize(from.toVector());
+        return vector.toLocation(from.getWorld(), from.getYaw(), from.getPitch());
     }
 
-    protected Vector normalize(Vector vector) {
-        return vector.clone().add(0.0D, 0.1D, 0.0D);
+    /**
+     * Normalize the given {@link Vector} so it is safe for players.
+     * The Vector is not safe by default, if the player is spawning
+     * on eg. a carpet.
+     */
+    protected Vector normalize(Vector from) {
+        Vector vector = from.clone();
+        vector.setX(from.getBlockX() + 0.5D);
+        vector.setY(from.getBlockY() + 0.1D);
+        vector.setZ(from.getBlockZ() + 0.5D);
+        return vector;
     }
 
     protected PlayerTeleportEvent.TeleportCause cause() {

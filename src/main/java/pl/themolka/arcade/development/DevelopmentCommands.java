@@ -5,6 +5,7 @@ import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.task.Countdown;
@@ -80,6 +81,44 @@ public class DevelopmentCommands {
             }
 
             this.development.getPlugin().getGames().getCycleCountdown().cancelCountdown();
+            this.development.getPlugin().getGames().cycle(target);
+        }
+    }
+
+    //
+    // /recyclenow command
+    //
+
+    @CommandInfo(name = {"recyclenow"},
+            description = "Re-cycle now current map",
+            permission = "arcade.command.cyclenow")
+    public void recycleNow(Sender sender, CommandContext context) {
+        if (this.development.getPlugin().getGames().getCurrentGame() == null) {
+            throw new CommandException("Game is not running right now.");
+        }
+
+        OfflineMap target = this.development.getPlugin().getGames().getCurrentGame().getMap().getMapInfo();
+
+        GeneralCommands.CycleCommandEvent commandEvent = new GeneralCommands.CycleCommandEvent(
+                this.development.getPlugin(), sender, context, target);
+        this.development.getPlugin().getEventBus().publish(commandEvent);
+
+        if (commandEvent.isCanceled()) {
+            return;
+        }
+
+        CycleStartEvent startEvent = new CycleStartEvent(this.development.getPlugin(), target, 0);
+        this.development.getPlugin().getEventBus().publish(startEvent);
+
+        this.development.getPlugin().getGames().setNextRestart(false);
+
+        Game game = this.development.getPlugin().getGames().getCurrentGame();
+        if (game != null) {
+            for (Countdown countdown : game.getRunningCountdowns()) {
+                countdown.cancelCountdown();
+            }
+
+            sender.sendSuccess("Re-cycling now to " + target.getName() + "...");
             this.development.getPlugin().getGames().cycle(target);
         }
     }

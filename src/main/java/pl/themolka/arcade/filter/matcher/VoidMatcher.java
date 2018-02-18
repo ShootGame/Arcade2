@@ -2,12 +2,15 @@ package pl.themolka.arcade.filter.matcher;
 
 import org.bukkit.Locatable;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.ParserException;
 
 @MatcherId("void")
 public class VoidMatcher extends Matcher {
+    public static final MatcherParser PARSER = new VoidParser();
+
     public static int VOID_LEVEL = 0;
 
     @Override
@@ -34,6 +37,13 @@ public class VoidMatcher extends Matcher {
     }
 
     public boolean matches(World world, int x, int z) {
-        return world.getBlockAt(x, VOID_LEVEL, z).getType().equals(Material.AIR);
+        return world.getBlockAt(x, VOID_LEVEL, z).isEmpty();
+    }
+}
+
+class VoidParser implements MatcherParser<VoidMatcher> {
+    @Override
+    public VoidMatcher parse(Node node) throws ParserException {
+        return new VoidMatcher();
     }
 }

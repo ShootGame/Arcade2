@@ -1,4 +1,4 @@
-package pl.themolka.arcade.damage;
+package pl.themolka.arcade.mob;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -7,14 +7,16 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModuleVersion;
+import pl.themolka.arcade.xml.XMLParser;
 
-@ModuleInfo(id = "Damage",
+@ModuleInfo(id = "Mobs",
         dependency = {
                 FiltersModule.class})
 @ModuleVersion("1.0")
-public class DamageModule extends Module<DamageGame> {
+public class MobsModule extends Module<MobsGame> {
     @Override
-    public DamageGame buildGameModule(Element xml, Game game) throws JDOMException {
-        return new DamageGame();
+    public MobsGame buildGameModule(Element xml, Game game) throws JDOMException {
+        boolean denyNatural = XMLParser.parseBoolean(xml.getAttributeValue("deny-natural"), false);
+        return new MobsGame(denyNatural);
     }
 }

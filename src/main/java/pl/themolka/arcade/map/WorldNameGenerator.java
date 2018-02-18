@@ -39,7 +39,7 @@ public class WorldNameGenerator {
 
     public String nextWorldName(String name, UUID randomId) {
         if (name == null) {
-            name = this.getMap().getDirectory().getName();
+//            name = this.getMap().getDirectory().getName();
         }
 
         if (randomId == null) {

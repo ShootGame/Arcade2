@@ -399,6 +399,7 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
         bukkit.resetPlayerWeather();
         bukkit.resetTitle();
 
+        // This doesn't work... I have no idea why......
         for (PotionEffectType effect : PotionEffectType.values()) {
             bukkit.removePotionEffect(effect);
         }

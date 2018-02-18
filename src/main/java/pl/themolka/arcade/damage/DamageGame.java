@@ -24,45 +24,44 @@ public class DamageGame extends GameModule {
     @Override
     public void onEnable() {
         FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-        if (filters != null) {
-            for (Element xml : this.getSettings().getChildren("rule")) {
-                String global = xml.getAttributeValue("filter");
-                String entity = xml.getAttributeValue("entity-filter");
-                String player = xml.getAttributeValue("player-filter");
 
-                if (global != null) {
-                    if (entity == null) {
-                        entity = global;
-                    }
-                    if (player == null) {
-                        player = global;
-                    }
+        for (Element xml : this.getSettings().getChildren("rule")) {
+            String global = xml.getAttributeValue("filter");
+            String entity = xml.getAttributeValue("entity-filter");
+            String player = xml.getAttributeValue("player-filter");
+
+            if (global != null) {
+                if (entity == null) {
+                    entity = global;
                 }
-
-                Filter entityFilter = filters.filterOrDefault(entity, null);
-                Filter playerFilter = filters.filterOrDefault(player, null);
-
-                if (entityFilter == null || playerFilter == null) {
-                    continue;
+                if (player == null) {
+                    player = global;
                 }
-
-                DamageRule rule = new DamageRule(entityFilter, playerFilter);
-                rule.setMultiplier(XMLParser.parseDouble(xml.getAttributeValue("multiplier"), DamageRule.ZERO));
-
-                String value = xml.getValue();
-                boolean deny = !XMLParser.parseBoolean(value, true);
-                double damage = XMLParser.parseDouble(value, -1D);
-
-                if (deny || damage == DamageRule.ZERO) {
-                    rule.setCanceled(true);
-                } else if (!rule.hasMultiplier() && damage < DamageRule.ZERO) {
-                    continue;
-                } else {
-                    rule.setDamage(damage);
-                }
-
-                this.rules.add(rule);
             }
+
+            Filter entityFilter = filters.filterOrDefault(entity, null);
+            Filter playerFilter = filters.filterOrDefault(player, null);
+
+            if (entityFilter == null || playerFilter == null) {
+                continue;
+            }
+
+            DamageRule rule = new DamageRule(entityFilter, playerFilter);
+            rule.setMultiplier(XMLParser.parseDouble(xml.getAttributeValue("multiplier"), DamageRule.ZERO));
+
+            String value = xml.getValue();
+            boolean deny = !XMLParser.parseBoolean(value, true);
+            double damage = XMLParser.parseDouble(value, -1D);
+
+            if (deny || damage == DamageRule.ZERO) {
+                rule.setCanceled(true);
+            } else if (!rule.hasMultiplier() && damage < DamageRule.ZERO) {
+                continue;
+            } else {
+                rule.setDamage(damage);
+            }
+
+            this.rules.add(rule);
         }
     }
 

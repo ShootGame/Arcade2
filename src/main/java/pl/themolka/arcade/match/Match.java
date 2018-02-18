@@ -131,6 +131,7 @@ public class Match implements DynamicWinnable {
             player.reset();
 
             player.getBukkit().getInventory().setItem(0, ObserversKit.NAVIGATION);
+            player.getBukkit().getInventory().setHeldItemSlot(0);
             player.getBukkit().setGameMode(ObserversKit.GAME_MODE);
             player.getBukkit().setAllowFlight(true);
         }
