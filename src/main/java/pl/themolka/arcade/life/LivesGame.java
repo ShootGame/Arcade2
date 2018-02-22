@@ -75,7 +75,14 @@ public class LivesGame extends GameModule {
     public int addLives(GamePlayer player, int lives) {
         int newValue = this.calculate(player, lives);
 
-        this.remaining.put(player, newValue);
+        if (newValue > ZERO) {
+            // save the newValue if it is positive
+            this.remaining.put(player, newValue);
+        } else {
+            // eliminate the player if the newValue is zero or negative
+            this.eliminate(player, false);
+        }
+
         return newValue;
     }
 
@@ -93,27 +100,25 @@ public class LivesGame extends GameModule {
                     player, this.remaining.getOrDefault(player, ZERO), player.getBukkit().getLocation());
             this.getPlugin().getEventBus().publish(event);
 
-            if (!serverQuit && event.isCanceled()) {
+            if (event.isCanceled() && !serverQuit) {
                 this.remaining.put(event.getPlayer(), event.getRemainingLives());
-            } else {
-                if (!serverQuit) {
-                    this.match.getObservers().join(event.getPlayer(), true);
-                }
-
-                this.remaining.remove(event.getPlayer());
-                this.match.refreshWinners();
+                return;
             }
+
+            this.remaining.remove(event.getPlayer());
+            if (!serverQuit) {
+                this.match.getObservers().join(event.getPlayer(), true);
+            }
+
+            // I don't know if it should be done here.
+            this.match.refreshWinners();
         }
     }
 
     @Handler(priority = Priority.HIGH)
     public void revokeLife(PlayerDeathEvent event) {
         if (event.hasDeathMessage() && event.getVictim().isParticipating()) {
-            int remaining = this.addLives(event.getVictim(), DEATH_REVOKE);
-
-            if (remaining <= ZERO) {
-                this.eliminate(event.getVictim(), false);
-            }
+            this.addLives(event.getVictim(), DEATH_REVOKE);
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Node extends Element implements MutableLocatable, Parent<Node>, Propertable {
+public final class Node extends Element implements MutableLocatable, Parent<Node>, Propertable {
     enum Type {
         PRIMITIVE, TREE, UNKNOWN
     }

@@ -316,9 +316,12 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     @Handler(priority = Priority.LAST)
     public void onMatchEmpty(PlayerLeftTeamEvent event) {
         Team team = event.getTeam();
+        if (!team.isParticipating() || team.getMatch().isForceStart()) {
+            return;
+        }
 
         int min = team.getMinPlayers();
-        if (min != 0 && !team.getMatch().isForceStart() && team.isParticipating() && team.getOnlineMembers().size() < min) {
+        if (min != 0 && team.getOnlineMembers().size() < min) {
             team.getMatch().matchEmpty(team);
         }
     }

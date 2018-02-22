@@ -1,17 +1,18 @@
 package pl.themolka.arcade.xml;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.dom.EmptyElement;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Parsers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * @deprecated XML parsing will be replaced with the new DOM classes.
+ * All XML parsers will be removed in the near future.
+ */
+@Deprecated
 public class XMLParser {
     public static final String SPLIT_KEY = ",";
 
@@ -22,15 +23,6 @@ public class XMLParser {
         }
 
         return results;
-    }
-
-    public static Attribute getAttribute(Element xml, String name, Object def) throws DataConversionException {
-        Attribute attribute = xml.getAttribute(name);
-        if (attribute != null) {
-            return attribute;
-        }
-
-        return new Attribute(name, def.toString());
     }
 
     public static List<String> parseArray(String value) {
@@ -49,128 +41,95 @@ public class XMLParser {
         return results;
     }
 
-    public static Map<String, Attribute> parseAttributeMap(Element xml) {
-        Map<String, Attribute> data = new HashMap<>();
-        for (Attribute attribute : xml.getAttributes()) {
-            data.put(attribute.getName(), attribute);
-        }
-
-        return data;
-    }
-
-    //
-    // Deprecated parsing methods - will be removed in the near future
-    //
-
-    @Deprecated
     public static boolean parseBoolean(String input) {
         return parseBoolean(input, false);
     }
 
-    @Deprecated
     public static boolean parseBoolean(String input, boolean def) {
         try {
-            return Parsers.booleanParser().parse(field(input));
+            return Parsers.booleanParser()
+                    .parseWithValue(EmptyElement.empty(), input)
+                    .orFail();
         } catch (ParserException ex) {
             return def;
         }
     }
 
-    @Deprecated
     public static double parseDouble(String input) {
         return parseDouble(input, 0.0D);
     }
 
-    @Deprecated
     public static double parseDouble(String input, double def) {
         try {
-            return Parsers.doubleParser().parse(field(input));
+            return Parsers.doubleParser()
+                    .parseWithValue(EmptyElement.empty(), input)
+                    .orFail();
         } catch (ParserException ex) {
             return def;
         }
     }
 
-    @Deprecated
     public static String parseEnumValue(String key) {
-        key = normalizeInput(key);
         if (key != null) {
-            return key.toUpperCase().trim().replace(" ", "_").replace("-", "_");
-        }
+            key = key.trim();
 
-        return null;
-    }
-
-    @Deprecated
-    public static float parseFloat(String input) {
-        return parseFloat(input, 0.0F);
-    }
-
-    @Deprecated
-    public static float parseFloat(String input, float def) {
-        try {
-            return Parsers.floatParser().parse(field(input));
-        } catch (ParserException ex) {
-            return def;
-        }
-    }
-
-    @Deprecated
-    public static int parseInt(String input) {
-        return parseInt(input, 0);
-    }
-
-    @Deprecated
-    public static int parseInt(String input, int def) {
-        try {
-            return Parsers.intParser().parse(field(input));
-        } catch (ParserException ex) {
-            return def;
-        }
-    }
-
-    @Deprecated
-    public static long parseLong(String input) {
-        return parseLong(input, 0L);
-    }
-
-    @Deprecated
-    public static long parseLong(String input, long def) {
-        try {
-            return Parsers.longParser().parse(field(input));
-        } catch (ParserException ex) {
-            return def;
-        }
-    }
-
-    @Deprecated
-    public static String parseMessage(String message) {
-        try {
-            return Parsers.messageParser().parse(field(message));
-        } catch (ParserException ex) {
-            return null;
-        }
-    }
-
-    //
-    // Helper Methods
-    //
-
-    /*
-     * Used for legacy code
-     */
-    private static pl.themolka.arcade.dom.Element field(String input) {
-        return Property.of("legacy", input);
-    }
-
-    private static String normalizeInput(String input) {
-        if (input != null) {
-            input = input.trim();
-
-            if (!input.isEmpty()) {
-                return input;
+            if (!key.isEmpty()) {
+                return key.toUpperCase().trim().replace(" ", "_").replace("-", "_");
             }
         }
 
         return null;
+    }
+
+    public static float parseFloat(String input) {
+        return parseFloat(input, 0.0F);
+    }
+
+    public static float parseFloat(String input, float def) {
+        try {
+            return Parsers.floatParser()
+                    .parseWithValue(EmptyElement.empty(), input)
+                    .orFail();
+        } catch (ParserException ex) {
+            return def;
+        }
+    }
+
+    public static int parseInt(String input) {
+        return parseInt(input, 0);
+    }
+
+    public static int parseInt(String input, int def) {
+        try {
+            return Parsers.integerParser()
+                    .parseWithValue(EmptyElement.empty(), input)
+                    .orFail();
+        } catch (ParserException ex) {
+            return def;
+        }
+    }
+
+    public static long parseLong(String input) {
+        return parseLong(input, 0L);
+    }
+
+    public static long parseLong(String input, long def) {
+        try {
+            return Parsers.longParser()
+                    .parseWithValue(EmptyElement.empty(), input)
+                    .orFail();
+        } catch (ParserException ex) {
+            return def;
+        }
+    }
+
+    public static String parseMessage(String message) {
+        try {
+            return Parsers.messageParser()
+                    .parseWithValue(EmptyElement.empty(), message)
+                    .orFail();
+        } catch (ParserException ex) {
+            return null;
+        }
     }
 }

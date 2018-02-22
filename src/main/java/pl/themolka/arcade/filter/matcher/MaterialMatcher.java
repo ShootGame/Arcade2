@@ -9,6 +9,7 @@ import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.Parsers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -98,22 +99,18 @@ public class MaterialMatcher extends Matcher {
 }
 
 class MaterialParser implements MatcherParser<MaterialMatcher> {
+    private final pl.themolka.arcade.parser.type.MaterialParser materialParser = Parsers.materialParser();
+
     @Override
     public MaterialMatcher parsePrimitive(Node node) throws ParserException {
         String[] split = node.getValue().split(":");
+        Material material = this.materialParser.parseWithValue(node, split[0]).orFail();
 
-        Material material = Material.matchMaterial(split[0]);
-        if (material == null) {
-            throw new ParserException(node, "Invalid material: " + split[0]);
-        }
-
-        byte data = MaterialMatcher.DATA_NULL;
+        byte data;
         if (split.length > 1) {
-            try {
-                data = Byte.parseByte(split[1]);
-            } catch (NumberFormatException ex) {
-                throw new ParserException(node, "Invalid material data: " + split[1]);
-            }
+            data = Parsers.byteParser().parseWithValue(node, split[1]).orFail();
+        } else {
+            data = MaterialMatcher.DATA_NULL;
         }
 
         MaterialData materialData = new MaterialData(material, data);

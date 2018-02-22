@@ -3,9 +3,9 @@ package pl.themolka.arcade.filter.matcher;
 import org.bukkit.event.entity.EntityDamageEvent;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
-import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Parsers;
+import pl.themolka.arcade.parser.type.EnumParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +58,6 @@ class DamageParser implements MatcherParser<DamageMatcher> {
 
     @Override
     public DamageMatcher parsePrimitive(Node node) throws ParserException {
-        return new DamageMatcher(Collections.singleton(this.damageParser.parse(node)));
+        return new DamageMatcher(Collections.singleton(this.damageParser.parse(node).orFail()));
     }
 }

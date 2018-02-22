@@ -1,6 +1,6 @@
 package pl.themolka.arcade.dom;
 
-public class Property extends Element {
+public final class Property extends Element {
     private Node parent;
 
     private Property(String name) {

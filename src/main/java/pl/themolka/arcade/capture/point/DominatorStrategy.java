@@ -77,7 +77,7 @@ class MajorityStrategy extends DominatorStrategy {
     @Override
     public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> competitors) {
         Multimap<Participator, GamePlayer> dominators = lead.getDominators(competitors);
-        if (dominators.size() != 1) {
+        if (dominators.keySet().size() != 1) {
             return null;
         }
 

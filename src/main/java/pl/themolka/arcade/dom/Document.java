@@ -3,7 +3,7 @@ package pl.themolka.arcade.dom;
 /**
  * 500th class :D
  */
-public class Document {
+public final class Document {
     private Node root;
 
     private Document() {

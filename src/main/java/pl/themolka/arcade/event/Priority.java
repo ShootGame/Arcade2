@@ -7,7 +7,10 @@ package pl.themolka.arcade.event;
  *
  * https://github.com/bennidi/mbassador/blob/master/src/main/java/net/engio/mbassy/listener/Handler.java#L42-L47
  */
-public class Priority {
+public final class Priority {
+    private Priority() {
+    }
+
     /**
      * Handled first, should contain <u>major</u> handlers
      * <b>Should <u>never</u> be canceled!</b>
