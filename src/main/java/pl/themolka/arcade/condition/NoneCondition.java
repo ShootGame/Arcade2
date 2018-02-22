@@ -15,4 +15,9 @@ public class NoneCondition extends AnyCondition {
     public boolean defaultValue() {
         return true;
     }
+
+    @Override
+    public Result test(Condition condition) {
+        return condition.test() ? Result.FALSE : Result.ABSTAIN;
+    }
 }

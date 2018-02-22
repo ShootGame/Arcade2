@@ -6,7 +6,7 @@ import pl.themolka.arcade.util.NamedValue;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class ParserResult<T> {
+public abstract class ParserResult<T> implements IParserResult<T> {
     private final Element element; // DOM element
     private final Source source; // DOM name and value
 
@@ -19,27 +19,9 @@ public abstract class ParserResult<T> {
         return this.element;
     }
 
-    public abstract T get();
-
-    public abstract boolean isPresent();
-
-    public T or(T def) {
-        return this.isPresent() ? this.get() : def;
-    }
-
-    public T orFail() throws ParserException {
-        return this.orNull();
-    }
-
-    public T orNull() {
-        return this.or(null);
-    }
-
     public Source source() {
         return this.source;
     }
-
-    public abstract Optional<T> toOptional();
 
     protected class Source extends NamedValue<String, String> {
         Source(String name, String value) {
@@ -52,32 +34,32 @@ public abstract class ParserResult<T> {
     //
 
     // empty
-    public static ParserResult<?> empty() {
+    public static <T> ParserResult<T> empty() {
         return empty(null);
     }
 
-    public static ParserResult<?> empty(Element element) {
+    public static <T> ParserResult<T> empty(Element element) {
         return empty(element, null);
     }
 
-    public static ParserResult<?> empty(Element element, String name) {
+    public static <T> ParserResult<T> empty(Element element, String name) {
         return empty(element, null, null);
     }
 
-    public static ParserResult<?> empty(Element element, String name, String value) {
+    public static <T> ParserResult<T> empty(Element element, String name, String value) {
         return new EmptyResult<>(element, name, value);
     }
 
     // fail
-    public static ParserResult<?> fail(ParserException fail) {
+    public static <T> ParserResult<T> fail(ParserException fail) {
         return fail(fail, null);
     }
 
-    public static ParserResult<?> fail(ParserException fail, String name) {
+    public static <T> ParserResult<T> fail(ParserException fail, String name) {
         return fail(fail, name, null);
     }
 
-    public static ParserResult<?> fail(ParserException fail, String name, String value) {
+    public static <T> ParserResult<T> fail(ParserException fail, String name, String value) {
         return new FailResult<>(fail, name, value);
     }
 
@@ -94,7 +76,7 @@ public abstract class ParserResult<T> {
     public static <T> ParserResult<T> maybe(Element element, String name, String value, T maybe) {
         return element != null && name != null && value != null && maybe != null
                 ? fine(element, name, value, maybe)
-                : (ParserResult<T>) empty(element, name, value);
+                : empty(element, name, value);
     }
 
     // java.util.Optional<T>
@@ -119,14 +101,14 @@ class EmptyResult<T> extends ParserResult<T> {
     }
 
     @Override
-    public T orFail() throws ParserException {
-        Element element = this.element();
-        throw new ParserException(element, element != null ? "No value defined (or empty)" : "Element undefined");
+    public Optional<T> optional() {
+        return Optional.empty();
     }
 
     @Override
-    public Optional<T> toOptional() {
-        return Optional.empty();
+    public T orFail() throws ParserException {
+        Element element = this.element();
+        throw new ParserException(element, element != null ? "No value defined (or empty)" : "Element undefined");
     }
 }
 
@@ -150,13 +132,13 @@ class FailResult<T> extends ParserResult<T> {
     }
 
     @Override
-    public T orFail() throws ParserException {
-        throw this.fail();
+    public Optional<T> optional() {
+        return Optional.empty();
     }
 
     @Override
-    public Optional<T> toOptional() {
-        return Optional.empty();
+    public T orFail() throws ParserException {
+        throw this.fail();
     }
 
     ParserException fail() {
@@ -181,11 +163,6 @@ class FineResult<T> extends ParserResult<T> {
     @Override
     public boolean isPresent() {
         return true;
-    }
-
-    @Override
-    public Optional<T> toOptional() {
-        return Optional.of(this.result);
     }
 
     T result() {

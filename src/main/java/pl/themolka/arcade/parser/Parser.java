@@ -9,7 +9,7 @@ public interface Parser<T> {
 
     default ParserResult<T> parse(Element element) {
         return element != null ? this.parseWithDefinition(element, element.getName(), element.getValue())
-                               : (ParserResult<T>) ParserResult.empty();
+                               : ParserResult.empty();
     }
 
     default ParserResult<T> parseWithDefinition(String name, String value) {
@@ -24,6 +24,6 @@ public interface Parser<T> {
 
     default ParserResult<T> parseWithValue(Element element, String value) {
         return element != null ? this.parseWithDefinition(element, element.getName(), value)
-                               : (ParserResult<T>) ParserResult.empty();
+                               : ParserResult.empty();
     }
 }

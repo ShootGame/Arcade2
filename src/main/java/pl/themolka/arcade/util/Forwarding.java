@@ -5,9 +5,9 @@ import com.google.common.collect.ForwardingObject;
 /**
  * The {@link ForwardingObject} does not support types... The best way to omit
  * this is to create our own class with will use types.
- * @param <V> The forwarded class type.
+ * @param <T> The forwarded class type.
  */
-public abstract class Forwarding<V> extends ForwardingObject {
+public abstract class Forwarding<T> extends ForwardingObject {
     @Override
-    protected abstract V delegate();
+    protected abstract T delegate();
 }

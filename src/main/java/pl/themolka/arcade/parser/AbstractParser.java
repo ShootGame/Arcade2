@@ -2,6 +2,7 @@ package pl.themolka.arcade.parser;
 
 import org.apache.commons.lang3.StringUtils;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.dom.EmptyElement;
 
 import java.util.List;
 
@@ -9,11 +10,11 @@ public abstract class AbstractParser<T> implements Parser<T> {
     @Override
     public ParserResult<T> parseWithDefinition(Element element, String name, String value) {
         if (element == null) {
-            element = Element.empty();
-        }
-        if (name == null) {
+            element = EmptyElement.empty();
+        } else if (name == null) {
             name = element.getName();
         }
+
         if (value == null) {
             value = element.getValue();
         }
@@ -26,10 +27,10 @@ public abstract class AbstractParser<T> implements Parser<T> {
                 return this.parse(element, normalizedName, normalizedValue);
             }
         } catch (ParserException cause) {
-            return (ParserResult<T>) ParserResult.fail(cause, name, value);
+            return ParserResult.fail(cause, name, value);
         }
 
-        return (ParserResult<T>) ParserResult.empty(element, name, value);
+        return ParserResult.empty(element, name, value);
     }
 
     private String normalizeInput(String input) {

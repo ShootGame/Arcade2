@@ -18,12 +18,4 @@ public abstract class Element extends NamedValue<String, String>
     public String toShortString() {
         return this.toString();
     }
-
-    //
-    // Instancing
-    //
-
-    public static Element empty() {
-        return EmptyElement.empty();
-    }
 }

@@ -30,6 +30,11 @@ public final class EmptyElement extends Element {
     }
 
     @Override
+    public String setName(String name) {
+        return null;
+    }
+
+    @Override
     public Node setParent(Node parent) {
         return null;
     }
@@ -38,7 +43,7 @@ public final class EmptyElement extends Element {
     // Instancing
     //
 
-    private static final EmptyElement empty = new EmptyElement("__empty__");
+    private static final EmptyElement empty = new EmptyElement(EmptyElement.class.getSimpleName());
 
     public static EmptyElement empty() {
         return empty;
