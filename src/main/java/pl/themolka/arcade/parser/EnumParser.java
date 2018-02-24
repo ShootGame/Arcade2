@@ -2,6 +2,7 @@ package pl.themolka.arcade.parser;
 
 import pl.themolka.arcade.dom.Element;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
 public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
     private final Class<T> type;
 
-    private EnumParser(Class<T> type) {
+    public EnumParser(Class<T> type) {
         this.type = Objects.requireNonNull(type, "type cannot be null");
     }
 
@@ -21,7 +22,7 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
 
     @Override
     protected ParserResult<T> parse(Element element, String name, String value) throws ParserException {
-        String input = value.toUpperCase().replace(" ", "_").replace("-", "_");
+        String input = toEnumValue(value);
 
         try {
             // try the fastest way first
@@ -45,15 +46,28 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
         throw this.fail(element, name, value, "Unknown enum property");
     }
 
+    public List<Object> expectedValues() {
+        return valueNames(this.type);
+    }
+
     public Class<T> getType() {
         return this.type;
     }
 
-    //
-    // Instancing
-    //
+    static String toEnumValue(String input) {
+        return input.toUpperCase().replace(" ", "_").replace("-", "_");
+    }
 
-    public static <T extends Enum<T>> EnumParser<T> create(Class<T> enumClass) {
-        return new EnumParser<>(enumClass);
+    static String toPrettyValue(String input) {
+        return input.toLowerCase().replace("_", " ").replace("-", " ");
+    }
+
+    public static <T extends Enum<T>> List<Object> valueNames(Class<T> enumClass) {
+        List<Object> valueNames = new ArrayList<>();
+        for (T constant : enumClass.getEnumConstants()) {
+            valueNames.add(toPrettyValue(constant.name()));
+        }
+
+        return valueNames;
     }
 }

@@ -1,17 +1,12 @@
-package pl.themolka.arcade.parser.type;
+package pl.themolka.arcade.parser;
 
 import pl.themolka.arcade.dom.Element;
-import pl.themolka.arcade.parser.AbstractParser;
-import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 
 import java.util.Collections;
 import java.util.List;
 
+// This the default parser behavior.
 public class TextParser extends AbstractParser<String> {
-    public TextParser() {
-    }
-
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a text");

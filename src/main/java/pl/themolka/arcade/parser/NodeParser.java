@@ -16,5 +16,5 @@ public abstract class NodeParser<T> extends AbstractParser<T> {
         throw this.fail(element, name, value, "Not a node");
     }
 
-    protected abstract ParserResult<T> parse(Node node, String name, String value);
+    protected abstract ParserResult<T> parse(Node node, String name, String value) throws ParserException;
 }

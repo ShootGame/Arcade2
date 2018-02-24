@@ -697,6 +697,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadParsers() {
         this.parsers = new ParserManager(this);
         this.parsers.registerDefaults();
+        this.parsers.install();
     }
 
     private void loadPermissions() {

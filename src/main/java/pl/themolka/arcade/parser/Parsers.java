@@ -7,13 +7,10 @@ import pl.themolka.arcade.parser.number.IntegerParser;
 import pl.themolka.arcade.parser.number.LongParser;
 import pl.themolka.arcade.parser.number.ShortParser;
 import pl.themolka.arcade.parser.type.BooleanParser;
-import pl.themolka.arcade.parser.type.MaterialDataParser;
-import pl.themolka.arcade.parser.type.MaterialParser;
 import pl.themolka.arcade.parser.type.MessageParser;
-import pl.themolka.arcade.parser.type.TextParser;
 
 /**
- * Temporary fast and easy access to the numeric, standard and default parsers.
+ * Temporary fast and easy access to the numeric and standard parsers.
  * @deprecated This class is temporary.
  */
 @Deprecated
@@ -65,7 +62,7 @@ public final class Parsers {
     }
 
     public static <E extends Enum<E>> EnumParser<E> enumParser(Class<E> type) {
-        return EnumParser.create(type);
+        return new EnumParser(type);
     }
 
     private static final MessageParser messageParser = new MessageParser();
@@ -76,19 +73,5 @@ public final class Parsers {
     private static final TextParser textParser = new TextParser();
     public static TextParser textParser() {
         return textParser;
-    }
-
-    //
-    // Default Types
-    //
-
-    private static final MaterialParser materialParser = new MaterialParser();
-    public static MaterialParser materialParser() {
-        return materialParser;
-    }
-
-    private static final MaterialDataParser materialDataParser = new MaterialDataParser();
-    public static MaterialDataParser materialDataParser() {
-        return materialDataParser;
     }
 }

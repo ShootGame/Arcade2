@@ -4,19 +4,24 @@ import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.AbstractParser;
+import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
-import pl.themolka.arcade.parser.Parsers;
 import pl.themolka.arcade.parser.number.ByteParser;
 
 import java.util.Collections;
 import java.util.List;
 
-public class MaterialDataParser extends AbstractParser<MaterialData> {
-    private final ByteParser byteParser = Parsers.byteParser();
-    private final MaterialParser materialParser = Parsers.materialParser();
+public class MaterialDataParser extends AbstractParser<MaterialData>
+                                implements InstallableParser {
+    private ByteParser byteParser;
+    private MaterialParser materialParser;
 
-    public MaterialDataParser() {
+    @Override
+    public void install(ParserContext context) {
+        this.byteParser = context.of(ByteParser.class);
+        this.materialParser = context.of(MaterialParser.class);
     }
 
     @Override

@@ -10,6 +10,10 @@ import java.util.Set;
 public class ParserContainer implements Container<Parser> {
     private final Map<Class<? extends Parser>, Parser<?>> parsers = new HashMap<>();
 
+    public ParserContainer() {
+        this.parsers.put(TextParser.class, new TextParser()); // text is default
+    }
+
     @Override
     public Class<Parser> getType() {
         return Parser.class;
@@ -33,6 +37,10 @@ public class ParserContainer implements Container<Parser> {
 
     public Collection<Parser<?>> getParsers() {
         return this.parsers.values();
+    }
+
+    public TextParser getTextParser() {
+        return this.getParser(TextParser.class);
     }
 
     public void register(ParserContainer container) {

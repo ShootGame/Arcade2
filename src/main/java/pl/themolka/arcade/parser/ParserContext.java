@@ -8,7 +8,7 @@ public class ParserContext {
     }
 
     public <T extends Enum<T>> EnumParser<T> enumType(Class<T> enumType) {
-        return EnumParser.create(enumType);
+        return new EnumParser<>(enumType);
     }
 
     public ParserContainer getContainer() {
@@ -17,6 +17,11 @@ public class ParserContext {
 
     public <T extends Parser<?>> T of(Class<T> clazz) {
         return this.getContainer().getParser(clazz);
+    }
+
+    // Text is the default value, so we can reference it here.
+    public TextParser text() {
+        return this.getContainer().getTextParser();
     }
 
     public <T> Parser<T> type(Class<T> type) {

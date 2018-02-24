@@ -22,7 +22,7 @@ public abstract class NumberParser<T extends Number> extends AbstractParser<T> {
         try {
             return ParserResult.fine(element, name, value, this.parse(value));
         } catch (NumberFormatException cause) {
-            throw this.fail(element, name, value, "Unknown number (or not a number)", cause);
+            throw this.fail(element, name, value, "Illegal number (or not a number)", cause);
         }
     }
 

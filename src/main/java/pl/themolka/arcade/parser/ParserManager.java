@@ -1,7 +1,12 @@
 package pl.themolka.arcade.parser;
 
+import org.bukkit.Difficulty;
+import org.bukkit.EntityLocation;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.BlockVector;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.parser.number.ByteParser;
 import pl.themolka.arcade.parser.number.DoubleParser;
@@ -10,20 +15,25 @@ import pl.themolka.arcade.parser.number.IntegerParser;
 import pl.themolka.arcade.parser.number.LongParser;
 import pl.themolka.arcade.parser.number.ShortParser;
 import pl.themolka.arcade.parser.type.BooleanParser;
+import pl.themolka.arcade.parser.type.DifficultyParser;
+import pl.themolka.arcade.parser.type.GameModeParser;
+import pl.themolka.arcade.parser.type.LocationParser;
 import pl.themolka.arcade.parser.type.MaterialDataParser;
 import pl.themolka.arcade.parser.type.MaterialParser;
 import pl.themolka.arcade.parser.type.MessageParser;
-import pl.themolka.arcade.parser.type.TextParser;
+import pl.themolka.arcade.parser.type.VectorParser;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 public class ParserManager {
     private final ArcadePlugin plugin;
 
     private final ParserContainer container = new ParserContainer();
     private final Map<Class<?>, Class<? extends Parser>> byType = new HashMap<>();
+    private boolean installed = false;
 
     public ParserManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -44,6 +54,21 @@ public class ParserManager {
 
     public Set<Class<?>> getTypes() {
         return this.byType.keySet();
+    }
+
+    public void install() {
+        if (this.installed) {
+            throw new IllegalStateException("Already installed!");
+        }
+
+        ParserContext context = new ParserContext(this);
+        for (Parser<?> parser : this.container.getParsers()) {
+            if (parser instanceof InstallableParser) {
+                ((InstallableParser) parser).install(context);
+            }
+        }
+
+        this.installed = true;
     }
 
     public void registerType(Class<?> type, Parser<?> parser) {
@@ -74,12 +99,15 @@ public class ParserManager {
 
         // Standard
         this.register(container, BooleanParser.class, Boolean.class);
-        this.register(container, MessageParser.class);
-        this.register(container, TextParser.class, String.class);
+        this.register(container, MessageParser.class, String.class);
 
         // Default
+        this.register(container, DifficultyParser.class, Difficulty.class);
+        this.register(container, GameModeParser.class, GameMode.class);
+        this.register(container, LocationParser.class, EntityLocation.class, Location.class);
         this.register(container, MaterialDataParser.class, MaterialData.class);
         this.register(container, MaterialParser.class, Material.class);
+        this.register(container, VectorParser.class, BlockVector.class, Vector.class);
     }
 
     private void register(ParserContainer container, Class<? extends Parser<?>> parser, Class<?>... types) {

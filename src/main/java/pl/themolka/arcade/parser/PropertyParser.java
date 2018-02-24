@@ -16,5 +16,5 @@ public abstract class PropertyParser<T> extends AbstractParser<T> {
         throw this.fail(element, name, value, "Not a property");
     }
 
-    protected abstract ParserResult<T> parse(Property property, String name, String value);
+    protected abstract ParserResult<T> parse(Property property, String name, String value) throws ParserException;
 }
