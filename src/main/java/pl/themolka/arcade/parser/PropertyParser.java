@@ -4,6 +4,9 @@ import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.Property;
 
 public abstract class PropertyParser<T> extends AbstractParser<T> {
+    public PropertyParser() {
+    }
+
     @Override
     protected ParserResult<T> parse(Element element, String name, String value) throws ParserException {
         if (element instanceof Property) {

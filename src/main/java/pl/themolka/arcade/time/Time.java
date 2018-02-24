@@ -93,10 +93,15 @@ public class Time {
     // Queries
     //
 
+    /**
+     * Is THIS after the given target?
+     */
     public boolean isAfter(Time target) {
         return this.getTime() > target.getTime();
     }
-
+    /**
+     * Is THIS before the given target?
+     */
     public boolean isBefore(Time target) {
         return this.getTime() < target.getTime();
     }

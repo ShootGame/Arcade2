@@ -22,11 +22,6 @@ public class DOMException extends Exception {
         this.element = element;
     }
 
-    public DOMException(Element element, String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-        this.element = element;
-    }
-
     public Element getElement() {
         return this.element;
     }
@@ -37,25 +32,27 @@ public class DOMException extends Exception {
 
         String message = this.getMessage();
         if (message != null) {
-            builder.append("Error: \"").append(message).append("\"");
+            builder.append(message);
         } else {
             builder.append("Unknown error");
         }
 
         Element element = this.getElement();
-        if (element.hasLocation()) {
-            Cursor location = element.getLocation();
-            builder.append(" at line ")
-                   .append(location.getLine())
-                   .append(":")
-                   .append(location.getColumn());
-        }
+        if (element != null) {
+            if (element.hasLocation()) {
+                Cursor location = element.getLocation();
+                builder.append(", line ")
+                       .append(location.getLine())
+                       .append(":")
+                       .append(location.getColumn());
+            }
 
-        String near = element.toShortString();
-        if (near != null) {
-            builder.append(" near ").append(near);
-        } else {
-            builder.append(".");
+            String near = element.toShortString();
+            if (near != null) {
+                builder.append(" near \"").append(near).append("\"");
+            } else {
+                builder.append(".");
+            }
         }
 
         return builder.toString();

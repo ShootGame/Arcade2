@@ -93,10 +93,14 @@ public interface Region extends StringId {
      */
 
     default boolean containsRound(BlockVector vector) {
-        return this.contains(new Vector(vector.getX() + 0.5D, vector.getY() + 0.5D, vector.getZ() + 0.5D));
+        return this.contains(new Vector(vector.getBlockX() + 0.5D,
+                                        vector.getBlockY() + 0.5D,
+                                        vector.getBlockZ() + 0.5D));
     }
 
     default boolean containsZero(BlockVector vector) {
-        return this.contains(new Vector(vector.getX(), vector.getY(), vector.getZ()));
+        return this.contains(new Vector(vector.getBlockX(),
+                                        vector.getBlockY(),
+                                        vector.getBlockZ()));
     }
 }

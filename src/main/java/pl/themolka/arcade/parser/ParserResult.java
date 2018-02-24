@@ -43,7 +43,7 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     }
 
     public static <T> ParserResult<T> empty(Element element, String name) {
-        return empty(element, null, null);
+        return empty(element, name, null);
     }
 
     public static <T> ParserResult<T> empty(Element element, String name, String value) {
@@ -85,30 +85,23 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     }
 }
 
-class EmptyResult<T> extends ParserResult<T> {
+class EmptyResult<T> extends FailResult<T> {
     EmptyResult(Element element, String name, String value) {
-        super(element, name, value);
+        super(new ParserException(element, createMessage(element)), name, value);
     }
 
     @Override
-    public T get() {
+    public T orDefault(T def) throws ParserException {
+        return def;
+    }
+
+    @Override
+    public T orDefaultNull() throws ParserException {
         return null;
     }
 
-    @Override
-    public boolean isPresent() {
-        return false;
-    }
-
-    @Override
-    public Optional<T> optional() {
-        return Optional.empty();
-    }
-
-    @Override
-    public T orFail() throws ParserException {
-        Element element = this.element();
-        throw new ParserException(element, element != null ? "No value defined (or empty)" : "Element undefined");
+    static String createMessage(Element element) {
+        return element != null ? "No value defined (or empty)." : "Element undefined";
     }
 }
 
@@ -118,12 +111,12 @@ class FailResult<T> extends ParserResult<T> {
     FailResult(ParserException fail, String name, String value) {
         super(fail.getElement(), name, value);
 
-        this.fail = Objects.requireNonNull(fail, "fail cannot be null");
+        this.fail = Objects.requireNonNull(fail, "fail cannot be null (use EmptyResult instead?)");
     }
 
     @Override
     public T get() {
-        return null;
+        throw new NullPointerException("Parser failed");
     }
 
     @Override
@@ -134,6 +127,11 @@ class FailResult<T> extends ParserResult<T> {
     @Override
     public Optional<T> optional() {
         return Optional.empty();
+    }
+
+    @Override
+    public T orDefault(T def) throws ParserException {
+        return this.orFail();
     }
 
     @Override
@@ -152,7 +150,7 @@ class FineResult<T> extends ParserResult<T> {
     FineResult(Element element, String name, String value, T result) {
         super(element, name, value);
 
-        this.result = Objects.requireNonNull(result, "results cannot be null");
+        this.result = Objects.requireNonNull(result, "results cannot be null (use EmptyResult instead?)");
     }
 
     @Override
@@ -163,6 +161,11 @@ class FineResult<T> extends ParserResult<T> {
     @Override
     public boolean isPresent() {
         return true;
+    }
+
+    @Override
+    public T orDefault(T def) throws ParserException {
+        return this.or(def);
     }
 
     T result() {

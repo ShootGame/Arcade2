@@ -7,6 +7,9 @@ import pl.themolka.arcade.dom.EmptyElement;
 import java.util.List;
 
 public abstract class AbstractParser<T> implements Parser<T> {
+    public AbstractParser() {
+    }
+
     @Override
     public ParserResult<T> parseWithDefinition(Element element, String name, String value) {
         if (element == null) {
@@ -73,7 +76,7 @@ public abstract class AbstractParser<T> implements Parser<T> {
         List<Object> expect = this.expect();
         String expected = expect != null && !expect.isEmpty() ? " (" + StringUtils.join(expect, ", ") + " expected)" : "";
 
-        return new ParserException(element, "Invalid input value \"" + value + "\" in \"" +
-                name + "\"" + (fail != null ? " " + fail : "") + expected, cause);
+        return new ParserException(element, "Invalid value \"" + value + "\" in \"" +
+                name + "\"" + (fail != null ? ": " + fail : "") + expected, cause);
     }
 }

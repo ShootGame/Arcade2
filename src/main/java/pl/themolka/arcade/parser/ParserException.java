@@ -19,8 +19,4 @@ public class ParserException extends DOMException {
     public ParserException(Element element, Throwable cause) {
         super(element, cause);
     }
-
-    public ParserException(Element element, String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(element, message, cause, enableSuppression, writableStackTrace);
-    }
 }

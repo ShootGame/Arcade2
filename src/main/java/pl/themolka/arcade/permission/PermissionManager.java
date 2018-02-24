@@ -1,11 +1,11 @@
 package pl.themolka.arcade.permission;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
+import pl.themolka.arcade.dom.JDOMEngine;
+import pl.themolka.arcade.dom.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,8 +70,8 @@ public class PermissionManager {
         }
     }
 
-    public Element getData() {
-        return this.getDocument().getRootElement();
+    public Node getData() {
+        return this.getDocument().getRoot();
     }
 
     public Group getDefaultGroup() {
@@ -102,17 +102,16 @@ public class PermissionManager {
         return this.getGroup(groupId) != null;
     }
 
-    public Document readPermissionsFile() throws IOException, JDOMException {
+    public Document readPermissionsFile() throws DOMException, IOException {
         return this.readPermissionsFile(this.file);
     }
 
-    public Document readPermissionsFile(File file) throws IOException, JDOMException {
+    public Document readPermissionsFile(File file) throws DOMException, IOException {
         if (!file.exists()) {
             this.copyPermissionsFile(file, false);
         }
 
-        SAXBuilder builder = new SAXBuilder();
-        return builder.build(file);
+        return JDOMEngine.getDefaultEngine().read(file);
     }
 
     public void removeGroup(Group group) {

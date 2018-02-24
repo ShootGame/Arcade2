@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class FloatParser extends NumberParser<Float> {
+    public FloatParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a decimal (float)");

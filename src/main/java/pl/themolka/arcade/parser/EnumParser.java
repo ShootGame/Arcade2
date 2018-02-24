@@ -1,18 +1,16 @@
-package pl.themolka.arcade.parser.type;
+package pl.themolka.arcade.parser;
 
 import pl.themolka.arcade.dom.Element;
-import pl.themolka.arcade.parser.AbstractParser;
-import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+// Note: This parser is unique - create its instance with the create method.
 public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
     private final Class<T> type;
 
-    public EnumParser(Class<T> type) {
+    private EnumParser(Class<T> type) {
         this.type = Objects.requireNonNull(type, "type cannot be null");
     }
 
@@ -49,5 +47,13 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
 
     public Class<T> getType() {
         return this.type;
+    }
+
+    //
+    // Instancing
+    //
+
+    public static <T extends Enum<T>> EnumParser<T> create(Class<T> enumClass) {
+        return new EnumParser<>(enumClass);
     }
 }

@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class NumberParser<T extends Number> extends AbstractParser<T> {
+    public NumberParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a number");
@@ -19,7 +22,7 @@ public abstract class NumberParser<T extends Number> extends AbstractParser<T> {
         try {
             return ParserResult.fine(element, name, value, this.parse(value));
         } catch (NumberFormatException cause) {
-            throw this.fail(element, name, value, cause);
+            throw this.fail(element, name, value, "Unknown number (or not a number)", cause);
         }
     }
 

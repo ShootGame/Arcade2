@@ -1,13 +1,13 @@
 package pl.themolka.arcade.settings;
 
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.xml.XMLParser;
-import pl.themolka.arcade.xml.XMLPreProcessor;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
+import pl.themolka.arcade.dom.JDOMEngine;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.Parsers;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,8 +58,8 @@ public class Settings {
         }
     }
 
-    public Element getData() {
-        return this.getDocument().getRootElement();
+    public Node getData() {
+        return this.getDocument().getRoot();
     }
 
     public Document getDocument() {
@@ -74,38 +74,28 @@ public class Settings {
         return this.enabled;
     }
 
-    public void preprocess() {
-        XMLPreProcessor handler = new XMLPreProcessor(this.plugin, this.getData());
-        handler.prepare();
-        handler.run();
-
-        this.getDocument().detachRootElement();
-        this.getDocument().setRootElement(handler.getElement());
-    }
-
-    public Document readSettingsFile() throws IOException, JDOMException {
+    public Document readSettingsFile() throws DOMException, IOException {
         return this.readSettingsFile(this.file);
     }
 
-    public Document readSettingsFile(File file) throws IOException, JDOMException {
+    public Document readSettingsFile(File file) throws DOMException, IOException {
         if (!file.exists()) {
             this.copySettingsFile(file, false);
         }
 
-        SAXBuilder builder = new SAXBuilder();
-        return builder.build(file);
+        return JDOMEngine.getDefaultEngine().read(file);
     }
 
-    public void setDocument(Document document) {
+    public void setDocument(Document document) throws ParserException {
         this.document = document;
 
-        Element root = document.getRootElement();
+        Node root = document.getRoot();
         if (root != null) {
             this.setup(root);
         }
     }
 
-    private void setup(Element root) {
-        this.enabled = XMLParser.parseBoolean(root.getAttributeValue("enabled"));
+    private void setup(Node root) throws ParserException {
+        this.enabled = Parsers.booleanParser().parse(root.property("enable", "enabled")).orFail();
     }
 }

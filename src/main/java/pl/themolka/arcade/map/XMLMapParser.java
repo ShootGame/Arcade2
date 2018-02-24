@@ -6,16 +6,17 @@ import org.bukkit.World;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.DOMEngine;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.JDOMEngine;
 import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.generator.XMLGenerator;
+import pl.themolka.arcade.xml.JDOM;
 import pl.themolka.arcade.xml.XMLDifficulty;
 import pl.themolka.arcade.xml.XMLEnvironment;
 import pl.themolka.arcade.xml.XMLLocation;
 import pl.themolka.arcade.xml.XMLParser;
-import pl.themolka.arcade.xml.XMLPreProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @deprecated Will be replaced with universal DOM classes.
+ */
+@Deprecated
 public class XMLMapParser implements MapParser {
     public static final String XML_DEFAULT_FILENAME = "map.xml";
+
+    private final DOMEngine engine = JDOMEngine.getDefaultEngine();
 
     private final ArcadePlugin plugin;
 
@@ -42,58 +49,41 @@ public class XMLMapParser implements MapParser {
     @Override
     public void readFile(File file) throws IOException, MapParserException {
         try {
-            this.document = new SAXBuilder().build(file);
-        } catch (JDOMException jdom) {
-            throw new MapParserException("Failed to parse XML", jdom);
+            this.document = JDOM.from(this.engine.read(file));
+        } catch (DOMException dom) {
+            throw new MapParserException("Failed to read XML", dom);
         }
-
-        this.preprocess();
     }
 
     @Override
     public void readStream(InputStream input) throws IOException, MapParserException {
         try {
-            this.document = new SAXBuilder().build(input);
-        } catch (JDOMException jdom) {
-            throw new MapParserException("Failed to parse XML", jdom);
+            this.document = JDOM.from(this.engine.read(input));
+        } catch (DOMException dom) {
+            throw new MapParserException("Failed to read XML", dom);
         }
-
-        this.preprocess();
     }
 
     @Override
     public void readReader(Reader reader) throws IOException, MapParserException {
         try {
-            this.document = new SAXBuilder().build(reader);
-        } catch (JDOMException jdom) {
-            throw new MapParserException("Failed to parse XML", jdom);
+            this.document = JDOM.from(this.engine.read(reader));
+        } catch (DOMException dom) {
+            throw new MapParserException("Failed to read XML", dom);
         }
-
-        this.preprocess();
     }
 
     @Override
     public void readUrl(URL url) throws IOException, MapParserException {
         try {
-            this.document = new SAXBuilder().build(url);
-        } catch (JDOMException jdom) {
-            throw new MapParserException("Failed to parse XML", jdom);
+            this.document = JDOM.from(this.engine.read(url));
+        } catch (DOMException dom) {
+            throw new MapParserException("Failed to read XML", dom);
         }
-
-        this.preprocess();
     }
 
     public Document getDocument() {
         return this.document;
-    }
-
-    public void preprocess() {
-        XMLPreProcessor handler = new XMLPreProcessor(this.plugin, this.getDocument().getRootElement());
-        handler.prepare();
-//        handler.run();
-
-        this.getDocument().detachRootElement();
-        this.getDocument().setRootElement(handler.getElement());
     }
 
     //

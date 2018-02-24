@@ -25,9 +25,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     private final List<Node> children = new ArrayList<>();
 
     private Cursor location;
-    private String name;
     private Node parent;
-    private String value;
 
     @Override
     public boolean add(Collection<Node> children) {
@@ -85,18 +83,8 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     }
 
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
     public Node getParent() {
         return this.parent;
-    }
-
-    @Override
-    public String getValue() {
-        return this.value;
     }
 
     @Override
@@ -115,13 +103,13 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     }
 
     @Override
-    public boolean hasValue() {
-        return this.isPrimitive();
+    public boolean isEmpty() {
+        return this.children.isEmpty();
     }
 
     @Override
-    public boolean isEmpty() {
-        return this.children.isEmpty();
+    public boolean isSelectable() {
+        return this.hasLocation();
     }
 
     @Override
@@ -228,19 +216,16 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         return result;
     }
 
+    // TODO: Implement selections properly.
     @Override
-    public void setLocation(Cursor location) {
-        this.location = location;
+    public Selection select() {
+        return this.isSelectable() ? Selection.cursor(this.getLocation())
+                                   : null;
     }
 
     @Override
-    public String setName(String name) {
-        String oldName = this.name;
-        if (name != null) {
-            this.name = name;
-        }
-
-        return oldName;
+    public void setLocation(Cursor location) {
+        this.location = location;
     }
 
     @Override
@@ -278,12 +263,8 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public String setValue(String value) {
-        this.resetTree(); // switch to the primitive type if needed
-
-        String oldValue = this.value;
-        this.value = value;
-
-        return oldValue;
+        this.resetTree();
+        return super.setValue(value);
     }
 
     @Override
@@ -333,7 +314,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     }
 
     public boolean isPrimitive() {
-        return this.value != null;
+        return this.hasValue();
     }
 
     public boolean isTree() {
@@ -350,7 +331,9 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     }
 
     public String toString(boolean properties, boolean children) {
-        String tag = this.name;
+        String nodeName = this.getName();
+
+        String tag = nodeName;
         if (properties && this.hasProperties()) {
             tag += " " + StringUtils.join(this.properties, " ");
         }
@@ -382,7 +365,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         }
 
         if (!closingTag) {
-            builder.append(this.toStringTag(true, this.name, false));
+            builder.append(this.toStringTag(true, nodeName, false));
         }
 
         return builder.toString();
@@ -394,7 +377,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     private boolean resetPrimitive() {
         boolean ok = this.isPrimitive();
-        this.value = null;
+        this.setValue(null);
 
         return ok;
     }

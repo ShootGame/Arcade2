@@ -33,6 +33,9 @@ public class BooleanParser extends AbstractParser<Boolean> {
         }
     }
 
+    public BooleanParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a boolean");

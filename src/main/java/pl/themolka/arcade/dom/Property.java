@@ -4,17 +4,16 @@ public final class Property extends Element {
     private Node parent;
 
     private Property(String name) {
-        super(name);
+        this(name, null); // super would make value null
     }
 
     private Property(String name, String value) {
-        super(name, value);
+        super(name, normalizeValue(value));
     }
 
     @Override
     public Cursor getLocation() {
-        return this.hasLocation() ? this.getParent().getLocation()
-                                  : null;
+        return this.hasLocation() ? this.getParent().getLocation() : null;
     }
 
     @Override
@@ -33,6 +32,17 @@ public final class Property extends Element {
     }
 
     @Override
+    public boolean isSelectable() {
+        return this.hasLocation();
+    }
+
+    // TODO: Implement selections properly.
+    @Override
+    public Selection select() {
+        return this.isSelectable() ? Selection.cursor(this.getLocation()) : null;
+    }
+
+    @Override
     public Node setParent(Node parent) {
         Node oldParent = this.parent;
         this.parent = parent;
@@ -41,8 +51,20 @@ public final class Property extends Element {
     }
 
     @Override
+    public String setValue(String value) {
+        return super.setValue(normalizeValue(value));
+    }
+
+    @Override
     public String toString() {
         return this.getName() + "=\"" + (this.hasValue() ? this.getValue() : "") + "\"";
+    }
+
+    /**
+     * Make sure that value is never null.
+     */
+    static String normalizeValue(String value) {
+        return value != null ? value : "";
     }
 
     //

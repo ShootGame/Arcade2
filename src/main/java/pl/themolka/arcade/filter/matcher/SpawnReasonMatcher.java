@@ -3,31 +3,29 @@ package pl.themolka.arcade.filter.matcher;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.Parsers;
-import pl.themolka.arcade.parser.type.EnumParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
+
+import static org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 @MatcherId("spawn-reason")
 public class SpawnReasonMatcher extends Matcher {
     public static final MatcherParser PARSER = new SpawnReasonParser();
 
-    private final List<CreatureSpawnEvent.SpawnReason> container = new ArrayList<>();
+    private final SpawnReason reason;
 
-    public SpawnReasonMatcher(Collection<CreatureSpawnEvent.SpawnReason> container) {
-        this.container.addAll(container);
+    public SpawnReasonMatcher(SpawnReason reason) {
+        this.reason = reason;
     }
 
     @Override
     public FilterResult matches(Object object) {
         if (object instanceof CreatureSpawnEvent) {
             return this.of(this.matches((CreatureSpawnEvent) object));
-        } else if (object instanceof CreatureSpawnEvent.SpawnReason) {
-            return this.of(this.matches((CreatureSpawnEvent.SpawnReason) object));
+        } else if (object instanceof SpawnReason) {
+            return this.of(this.matches((SpawnReason) object));
         }
 
         return this.abstain();
@@ -37,17 +35,14 @@ public class SpawnReasonMatcher extends Matcher {
         return this.matches(event.getSpawnReason());
     }
 
-    public boolean matches(CreatureSpawnEvent.SpawnReason reason) {
-        return this.container.contains(reason);
+    public boolean matches(SpawnReason reason) {
+        return Objects.equals(this.reason, reason);
     }
 }
 
 class SpawnReasonParser implements MatcherParser<SpawnReasonMatcher> {
-    private final EnumParser<CreatureSpawnEvent.SpawnReason> reasonParser =
-            Parsers.enumParser(CreatureSpawnEvent.SpawnReason.class);
-
     @Override
-    public SpawnReasonMatcher parsePrimitive(Node node) throws ParserException {
-        return new SpawnReasonMatcher(Collections.singleton(this.reasonParser.parse(node).orFail()));
+    public SpawnReasonMatcher parsePrimitive(Node node, ParserContext context) throws ParserException {
+        return new SpawnReasonMatcher(context.enumType(SpawnReason.class).parse(node).orFail());
     }
 }

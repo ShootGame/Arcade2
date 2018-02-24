@@ -4,10 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapManager;
@@ -16,10 +15,11 @@ import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.Parsers;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.time.Time;
-import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.util.Tickable;
 
 import java.io.File;
@@ -78,7 +78,7 @@ public class SimpleGameManager implements GameManager {
         this.plugin.getLogger().info("Generating new unique world '" + map.getWorldName() + "' for map '" + map.getMapInfo().getName() + "'...");
         World world = maps.createWorld(map);
 
-        Game game = new Game(this.plugin, this.getGameId(), map, world);
+        Game game = new Game(this.plugin, this.gameId++, map, world);
         map.setGame(game);
 
         map.getSpawn().setWorld(world);
@@ -138,9 +138,6 @@ public class SimpleGameManager implements GameManager {
 
             if (this.currentGame != null) {
                 this.destroyGame(this.getCurrentGame());
-
-                this.gameId++;
-                this.plugin.getServerSession().getContent().setLastGameId(this.getGameId());
             }
 
             this.setCurrentGame(game);
@@ -214,14 +211,14 @@ public class SimpleGameManager implements GameManager {
 
     @Override
     public void fillDefaultQueue() {
-        Element queueElement = this.plugin.getSettings().getData().getChild("queue");
-        if (queueElement == null) {
-            queueElement = new Element("queue");
+        Node node = this.plugin.getSettings().getData().child("queue");
+        if (node == null) {
+            node = Node.of("queue");
         }
 
-        for (Element mapElement : queueElement.getChildren("map")) {
-            String directory = mapElement.getAttributeValue("directory");
-            String mapName = mapElement.getValue();
+        for (Node mapNode : node.children("map")) {
+            String directory = mapNode.propertyValue("directory");
+            String mapName = mapNode.getValue();
 
             OfflineMap map = null;
             if (directory != null) {
@@ -295,19 +292,15 @@ public class SimpleGameManager implements GameManager {
 
     @Override
     public void setDefaultMaxGameId() {
-        Element queueElement = plugin.getSettings().getData().getChild("queue");
-        if (queueElement == null) {
-            return;
-        }
-
-        Attribute attribute = queueElement.getAttribute("restart-after");
-        if (attribute == null) {
+        Node node = plugin.getSettings().getData().child("queue");
+        if (node == null) {
             return;
         }
 
         try {
-            this.setMaxGameId(attribute.getIntValue());
-        } catch (DataConversionException ignored) {
+            this.setMaxGameId(Parsers.integerParser().parse(node.property("restart-after")).orFail());
+        } catch (ParserException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -331,12 +324,12 @@ public class SimpleGameManager implements GameManager {
     }
 
     private Duration readCycleCountdown(Settings settings) {
-        Element cycle = settings.getData().getChild("cycle");
+        Node cycle = settings.getData().child("cycle");
 
         if (cycle != null) {
-            Attribute countdown = cycle.getAttribute("countdown");
+            Property countdown = cycle.property("countdown");
             if (countdown != null) {
-                Time time = XMLTime.parse(countdown);
+                Time time = Time.parseTime(countdown.getValue());
                 if (time != null) {
                     return time.toDuration();
                 }

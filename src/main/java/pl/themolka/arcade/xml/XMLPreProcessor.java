@@ -2,14 +2,15 @@ package pl.themolka.arcade.xml;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.JDOMEngine;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 
+@Deprecated
 public class XMLPreProcessor implements Runnable {
     private final ArcadePlugin plugin;
 
@@ -168,8 +169,7 @@ public class XMLPreProcessor implements Runnable {
                 public Element process(ArcadePlugin plugin, Element element, String path) throws Throwable {
                     File file = new File(path);
                     if (file.exists()) {
-                        SAXBuilder builder = new SAXBuilder();
-                        Element root = builder.build(file).getRootElement();
+                        Element root = JDOM.from(JDOMEngine.getDefaultEngine().read(file)).getRootElement();
 
                         if (root != null) {
                             XMLPreProcessor handler = new XMLPreProcessor(plugin, root);

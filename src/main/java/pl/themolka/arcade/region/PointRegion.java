@@ -81,12 +81,6 @@ public class PointRegion extends AbstractRegion {
     }
 
     private RegionBounds createBounds() {
-        return new PointRegionBounds(this);
-    }
-
-    private class PointRegionBounds extends RegionBounds {
-        public PointRegionBounds(PointRegion region) {
-            super(region, region.getPoint(), region.getPoint());
-        }
+        return new RegionBounds(this, this.point, this.point);
     }
 }

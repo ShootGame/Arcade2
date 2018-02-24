@@ -26,6 +26,16 @@ public abstract class ForwardingParserResult<T> extends Forwarding<IParserResult
     }
 
     @Override
+    public T orDefault(T def) throws ParserException {
+        return this.delegate().orDefault(def);
+    }
+
+    @Override
+    public T orDefaultNull() throws ParserException {
+        return this.delegate().orDefaultNull();
+    }
+
+    @Override
     public T orFail() throws ParserException {
         return this.delegate().orFail();
     }

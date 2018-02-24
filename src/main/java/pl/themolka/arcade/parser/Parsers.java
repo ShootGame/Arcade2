@@ -7,7 +7,6 @@ import pl.themolka.arcade.parser.number.IntegerParser;
 import pl.themolka.arcade.parser.number.LongParser;
 import pl.themolka.arcade.parser.number.ShortParser;
 import pl.themolka.arcade.parser.type.BooleanParser;
-import pl.themolka.arcade.parser.type.EnumParser;
 import pl.themolka.arcade.parser.type.MaterialDataParser;
 import pl.themolka.arcade.parser.type.MaterialParser;
 import pl.themolka.arcade.parser.type.MessageParser;
@@ -66,7 +65,7 @@ public final class Parsers {
     }
 
     public static <E extends Enum<E>> EnumParser<E> enumParser(Class<E> type) {
-        return new EnumParser<>(type);
+        return EnumParser.create(type);
     }
 
     private static final MessageParser messageParser = new MessageParser();

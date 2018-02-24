@@ -14,8 +14,9 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 public class MobsGame extends GameModule {
     private final List<MobSpawnRule> rules = new ArrayList<>();
@@ -30,8 +31,7 @@ public class MobsGame extends GameModule {
         if (this.denyNatural) {
             // Register the natural rule first, so it
             // is handled before any other rules.
-            CreatureSpawnEvent.SpawnReason reason = CreatureSpawnEvent.SpawnReason.NATURAL;
-            this.rules.add(new MobSpawnRule(new SpawnReasonMatcher(Collections.singleton(reason)), true));
+            this.rules.add(new MobSpawnRule(new SpawnReasonMatcher(SpawnReason.NATURAL), true));
         }
 
         FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
@@ -63,7 +63,7 @@ public class MobsGame extends GameModule {
         }
     }
 
-    private MobSpawnRule findRule(Entity entity, CreatureSpawnEvent.SpawnReason reason, Location location) {
+    private MobSpawnRule findRule(Entity entity, SpawnReason reason, Location location) {
         for (MobSpawnRule rule : this.rules) {
             if (rule.matches(entity, reason, location)) {
                 return rule;

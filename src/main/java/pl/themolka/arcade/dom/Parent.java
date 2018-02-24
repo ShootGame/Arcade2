@@ -16,6 +16,18 @@ public interface Parent<E> {
         return children != null && this.add(Arrays.asList(children));
     }
 
+    default E child() {
+        return this.firstChild();
+    }
+
+    default E child(Iterable<String> names) {
+        return this.firstChild(names);
+    }
+
+    default E child(String... names) {
+        return this.firstChild(names);
+    }
+
     List<E> children();
 
     List<E> children(Iterable<String> names);

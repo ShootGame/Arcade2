@@ -3,31 +3,29 @@ package pl.themolka.arcade.filter.matcher;
 import org.bukkit.event.entity.EntityDamageEvent;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.Parsers;
-import pl.themolka.arcade.parser.type.EnumParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
+
+import static org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 @MatcherId("damage")
 public class DamageMatcher extends Matcher {
     public static final MatcherParser PARSER = new DamageParser();
 
-    private final List<EntityDamageEvent.DamageCause> container = new ArrayList<>();
+    private final DamageCause cause;
 
-    public DamageMatcher(Collection<EntityDamageEvent.DamageCause> container) {
-        this.container.addAll(container);
+    public DamageMatcher(DamageCause cause) {
+        this.cause = cause;
     }
 
     @Override
     public FilterResult matches(Object object) {
         if (object instanceof EntityDamageEvent) {
             return this.of(this.matches((EntityDamageEvent) object));
-        } else if (object instanceof EntityDamageEvent.DamageCause) {
-            return this.of(this.matches((EntityDamageEvent.DamageCause) object));
+        } else if (object instanceof DamageCause) {
+            return this.of(this.matches((DamageCause) object));
         }
 
         return this.abstain();
@@ -37,27 +35,14 @@ public class DamageMatcher extends Matcher {
         return this.matches(event.getCause());
     }
 
-    public boolean matches(EntityDamageEvent.DamageCause damage) {
-        for (EntityDamageEvent.DamageCause value : this.getContainer()) {
-            if (value.equals(damage)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public List<EntityDamageEvent.DamageCause> getContainer() {
-        return this.container;
+    public boolean matches(DamageCause cause) {
+        return Objects.equals(this.cause, cause);
     }
 }
 
 class DamageParser implements MatcherParser<DamageMatcher> {
-    private final EnumParser<EntityDamageEvent.DamageCause> damageParser =
-            Parsers.enumParser(EntityDamageEvent.DamageCause.class);
-
     @Override
-    public DamageMatcher parsePrimitive(Node node) throws ParserException {
-        return new DamageMatcher(Collections.singleton(this.damageParser.parse(node).orFail()));
+    public DamageMatcher parsePrimitive(Node node, ParserContext context) throws ParserException {
+        return new DamageMatcher(context.enumType(DamageCause.class).parse(node).orFail());
     }
 }

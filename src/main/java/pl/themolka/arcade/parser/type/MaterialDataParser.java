@@ -16,6 +16,9 @@ public class MaterialDataParser extends AbstractParser<MaterialData> {
     private final ByteParser byteParser = Parsers.byteParser();
     private final MaterialParser materialParser = Parsers.materialParser();
 
+    public MaterialDataParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a material data type");
@@ -26,11 +29,7 @@ public class MaterialDataParser extends AbstractParser<MaterialData> {
         String[] split = value.split(":", 2);
 
         Material material = this.materialParser.parseWithValue(element, value).orFail();
-
-        byte data = 0;
-        if (split.length > 1) {
-            data = this.byteParser.parseWithValue(element, split[1]).orFail();
-        }
+        byte data = this.byteParser.parseWithValue(element, split.length > 1 ? split[1] : null).orDefault((byte) 0);
 
         return ParserResult.fine(element, name, value, new MaterialData(material, data));
     }

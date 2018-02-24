@@ -2,14 +2,13 @@ package pl.themolka.arcade.command;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.metadata.ManifestFile;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 public class ArcadeCommands {
     private final ArcadePlugin plugin;
@@ -63,9 +62,6 @@ public class ArcadeCommands {
             case "reset":
                 this.reset(sender);
                 break;
-            case "session":
-                this.session(sender);
-                break;
             case "updater":
                 this.updater(sender);
                 break;
@@ -107,12 +103,9 @@ public class ArcadeCommands {
             this.plugin.getEventBus().publish(new SettingsReloadEvent(this.plugin, settings));
 
             sender.sendSuccess("Successfully reloaded settings file. Well done!");
-        } catch (IOException io) {
-            io.printStackTrace();
-            throw new CommandException("Could not reload settings file: " + io.getMessage());
-        } catch (JDOMException jdom) {
-            jdom.printStackTrace();
-            throw new CommandException("Could not reload XML file: " + jdom.getMessage());
+        } catch (DOMException | IOException ex) {
+            ex.printStackTrace();
+            throw new CommandException("Could not reload settings file: " + ex.getMessage());
         }
     }
 
@@ -131,23 +124,6 @@ public class ArcadeCommands {
         } catch (IOException io) {
             io.printStackTrace();
             throw new CommandException("Could not reset settings file: " + io.getMessage());
-        }
-    }
-
-    //
-    // '/arcade session' command
-    //
-
-    private void session(Sender sender) {
-        if (!sender.hasPermission("arcade.command.reload")) {
-            throw new CommandPermissionException("arcade.command.reload");
-        }
-
-        try {
-            this.plugin.getServerSession().deserialize();
-        } catch (IOException io) {
-            this.plugin.getLogger().log(Level.SEVERE, "Could not reload server-session file: " + io.getMessage(), io);
-            throw new CommandException("Could not reload server-session file: " + io.getMessage());
         }
     }
 

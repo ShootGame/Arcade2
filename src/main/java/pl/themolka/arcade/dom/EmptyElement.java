@@ -30,6 +30,16 @@ public final class EmptyElement extends Element {
     }
 
     @Override
+    public boolean isSelectable() {
+        return false;
+    }
+
+    @Override
+    public Selection select() {
+        return null;
+    }
+
+    @Override
     public String setName(String name) {
         return null;
     }

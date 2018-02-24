@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class LongParser extends NumberParser<Long> {
+    public LongParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a real number (long)");

@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class TextParser extends AbstractParser<String> {
+    public TextParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a text");

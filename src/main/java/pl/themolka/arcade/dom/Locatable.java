@@ -1,7 +1,7 @@
 package pl.themolka.arcade.dom;
 
 /**
- * Something that is located.
+ * Something that can be located.
  */
 public interface Locatable {
     Cursor getLocation();

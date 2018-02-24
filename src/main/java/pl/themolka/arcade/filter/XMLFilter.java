@@ -13,7 +13,6 @@ import pl.themolka.arcade.filter.matcher.VoidMatcher;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -73,9 +72,9 @@ public class XMLFilter extends XMLParser {
 
     public static Filter parseDamage(Element xml) {
         EntityDamageEvent.DamageCause damage = XMLDamage.parse(xml.getValue());
-        return Filters.secure(damage == null
-                ? null
-                : new DamageMatcher(Collections.singletonList(damage)));
+        return Filters.secure(damage != null
+                ? new DamageMatcher(damage)
+                : null);
     }
 
     public static StaticFilter parseDeny() {
@@ -94,9 +93,9 @@ public class XMLFilter extends XMLParser {
             }
         }
 
-        return Filters.secure(material == null
-                ? null
-                : new MaterialMatcher(Collections.singletonList(new MaterialData(material, data))));
+        return Filters.secure(material != null
+                ? new MaterialMatcher(new MaterialData(material, data))
+                : null);
     }
 
     public static ModifierFilter parseNone(ArcadePlugin plugin, Element xml) {

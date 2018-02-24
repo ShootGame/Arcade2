@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class ParserContainer implements Container<Parser> {
-    private final Map<Class<?>, Parser<?>> parsers = new HashMap<>();
+    private final Map<Class<? extends Parser>, Parser<?>> parsers = new HashMap<>();
 
     @Override
     public Class<Parser> getType() {
         return Parser.class;
     }
 
-    public boolean contains(Class<?> clazz) {
+    public boolean contains(Class<? extends Parser> clazz) {
         return this.parsers.containsKey(clazz);
     }
 
@@ -23,11 +23,11 @@ public class ParserContainer implements Container<Parser> {
         return this.parsers.containsValue(parser);
     }
 
-    public <T extends Parser<T>> T getParser(Class<T> clazz) {
+    public <T extends Parser<?>> T getParser(Class<T> clazz) {
         return (T) this.parsers.get(clazz);
     }
 
-    public Set<Class<?>> getParserClasses() {
+    public Set<Class<? extends Parser>> getParserClasses() {
         return this.parsers.keySet();
     }
 

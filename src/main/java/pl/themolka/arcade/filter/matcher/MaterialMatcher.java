@@ -8,24 +8,25 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.Parsers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
 @MatcherId("material")
 public class MaterialMatcher extends Matcher {
     public static final MatcherParser PARSER = new MaterialParser();
 
-    public static final byte DATA_NULL = (byte) 0;
+    public static final byte DATA_NULL = 0;
 
-    private final List<MaterialData> container = new ArrayList<>();
+    private final MaterialData material;
 
-    public MaterialMatcher(Collection<MaterialData> container) {
-        this.container.addAll(container);
+    public MaterialMatcher(Material material) {
+        this(new MaterialData(material));
+    }
+
+    public MaterialMatcher(MaterialData material) {
+        this.material = material;
     }
 
     @Override
@@ -58,13 +59,7 @@ public class MaterialMatcher extends Matcher {
     }
 
     public boolean matches(byte data) {
-        for (MaterialData value : this.getContainer()) {
-            if (value.getData() == data) {
-                return true;
-            }
-        }
-
-        return false;
+        return Objects.equals(this.material.getData(), data);
     }
 
     public boolean matches(ItemStack item) {
@@ -76,44 +71,21 @@ public class MaterialMatcher extends Matcher {
     }
 
     public boolean matches(Material material) {
-        for (MaterialData value : this.getContainer()) {
-            if (value.getItemType().equals(material)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Objects.equals(this.material.getItemType(), material);
     }
 
     public boolean matches(MaterialData data) {
-        return this.matches(data.getItemType(), data.getData());
+        return Objects.equals(this.material, data);
     }
 
     public boolean matches(Material material, byte data) {
         return this.matches(material) && this.matches(data);
     }
-
-    public List<MaterialData> getContainer() {
-        return this.container;
-    }
 }
 
 class MaterialParser implements MatcherParser<MaterialMatcher> {
-    private final pl.themolka.arcade.parser.type.MaterialParser materialParser = Parsers.materialParser();
-
     @Override
-    public MaterialMatcher parsePrimitive(Node node) throws ParserException {
-        String[] split = node.getValue().split(":");
-        Material material = this.materialParser.parseWithValue(node, split[0]).orFail();
-
-        byte data;
-        if (split.length > 1) {
-            data = Parsers.byteParser().parseWithValue(node, split[1]).orFail();
-        } else {
-            data = MaterialMatcher.DATA_NULL;
-        }
-
-        MaterialData materialData = new MaterialData(material, data);
-        return new MaterialMatcher(Collections.singleton(materialData));
+    public MaterialMatcher parsePrimitive(Node node, ParserContext context) throws ParserException {
+        return new MaterialMatcher(context.type(MaterialData.class).parse(node).orFail());
     }
 }

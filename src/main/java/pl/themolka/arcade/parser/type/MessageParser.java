@@ -12,6 +12,9 @@ import java.util.List;
 public class MessageParser extends AbstractParser<String> {
     public static final char COLOR_CODE = '`';
 
+    public MessageParser() {
+    }
+
     @Override
     public List<Object> expect() {
         return Collections.singletonList("a colorable text");
