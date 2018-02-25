@@ -7,6 +7,10 @@ import org.jdom2.Element;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.type.MaterialParser}
+ */
+@Deprecated
 public class XMLMaterial extends XMLParser {
     public static final String ATTRIBUTE_MATERIAL = "material";
 

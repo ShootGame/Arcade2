@@ -5,6 +5,10 @@ import org.bukkit.DyeColor;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.EnumParser}
+ */
+@Deprecated
 public class XMLColor extends XMLParser {
     public static Color parse(Attribute xml) {
         return parse(xml, null);

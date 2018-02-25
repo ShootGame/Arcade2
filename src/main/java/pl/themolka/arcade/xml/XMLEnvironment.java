@@ -4,6 +4,10 @@ import org.bukkit.World;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.EnumParser}
+ */
+@Deprecated
 public class XMLEnvironment extends XMLParser {
     public static final String ATTRIBUTE_ENVIRONMENT = "environment";
 

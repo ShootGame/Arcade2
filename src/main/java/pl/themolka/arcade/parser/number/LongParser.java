@@ -1,8 +1,11 @@
 package pl.themolka.arcade.parser.number;
 
+import pl.themolka.arcade.parser.Produces;
+
 import java.util.Collections;
 import java.util.List;
 
+@Produces(Long.class)
 public class LongParser extends NumberParser<Long> {
     public LongParser() {
     }

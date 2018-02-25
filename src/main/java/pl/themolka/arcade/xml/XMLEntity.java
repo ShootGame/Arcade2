@@ -4,6 +4,10 @@ import org.bukkit.entity.EntityType;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.type.EntityTypeParser}
+ */
+@Deprecated
 public class XMLEntity extends XMLParser {
     public static final String ATTRIBUTE_ENTITY = "entity";
 

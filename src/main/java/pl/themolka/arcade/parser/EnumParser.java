@@ -54,11 +54,11 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
         return this.type;
     }
 
-    static String toEnumValue(String input) {
+    public static String toEnumValue(String input) {
         return input.toUpperCase().replace(" ", "_").replace("-", "_");
     }
 
-    static String toPrettyValue(String input) {
+    public static String toPrettyValue(String input) {
         return input.toLowerCase().replace("_", " ").replace("-", " ");
     }
 

@@ -4,6 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.type.LocationParser}
+ */
+@Deprecated
 public class XMLLocation extends XMLParser {
     public static final String ATTRIBUTE_X = "x";
     public static final String ATTRIBUTE_Y = "y";

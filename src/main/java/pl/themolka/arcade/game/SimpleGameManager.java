@@ -15,8 +15,8 @@ import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.MapQueueFillEvent;
 import pl.themolka.arcade.map.OfflineMap;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.Parsers;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.time.Time;
@@ -292,13 +292,14 @@ public class SimpleGameManager implements GameManager {
 
     @Override
     public void setDefaultMaxGameId() {
-        Node node = plugin.getSettings().getData().child("queue");
+        Node node = this.plugin.getSettings().getData().child("queue");
         if (node == null) {
             return;
         }
 
         try {
-            this.setMaxGameId(Parsers.integerParser().parse(node.property("restart-after")).orFail());
+            ParserContext context = this.plugin.getParsers().createContext();
+            this.setMaxGameId(context.type(Integer.class).parse(node.property("restart-after")).orFail());
         } catch (ParserException ex) {
             ex.printStackTrace();
         }

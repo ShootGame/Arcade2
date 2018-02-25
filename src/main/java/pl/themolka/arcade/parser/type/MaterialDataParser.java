@@ -8,11 +8,13 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.number.ByteParser;
 
 import java.util.Collections;
 import java.util.List;
 
+@Produces(MaterialData.class)
 public class MaterialDataParser extends AbstractParser<MaterialData>
                                 implements InstallableParser {
     private ByteParser byteParser;

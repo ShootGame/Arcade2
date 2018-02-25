@@ -46,7 +46,12 @@ import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.module.ModulesLoadEvent;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserContainer;
 import pl.themolka.arcade.parser.ParserManager;
+import pl.themolka.arcade.parser.ParsersFile;
+import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Silent;
 import pl.themolka.arcade.permission.ClientPermissionStorage;
 import pl.themolka.arcade.permission.Group;
 import pl.themolka.arcade.permission.PermissionListeners;
@@ -179,12 +184,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.loadPermissions();
         this.loadCommands();
+        this.loadParsers();
         this.loadModules();
         this.loadMaps();
-        this.loadParsers();
         this.loadTasks();
         this.loadWindows();
         this.loadGames();
+
+        this.parsers.install(); // Install parser dependencies
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 
@@ -696,8 +703,33 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadParsers() {
         this.parsers = new ParserManager(this);
-        this.parsers.registerDefaults();
-        this.parsers.install();
+
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {
+            ParsersFile file = new ParsersFile(input);
+
+            ParserContainer container = new ParserContainer();
+            for (Class<? extends Parser<?>> parser : file.getParsers()) {
+                try {
+                    container.register(parser.newInstance());
+
+                    Silent silent = parser.getAnnotation(Silent.class);
+                    Produces produces = parser.getAnnotation(Produces.class);
+
+                    if (silent == null && produces != null) {
+                        Class<?> producesType = produces.value();
+                        if (producesType != null) {
+                            this.parsers.registerType(producesType, parser);
+                        }
+                    }
+                } catch (ReflectiveOperationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            this.parsers.getContainer().register(container);
+        } catch (DOMException | IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void loadPermissions() {

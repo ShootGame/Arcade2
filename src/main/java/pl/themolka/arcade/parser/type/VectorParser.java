@@ -7,11 +7,13 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.number.DoubleParser;
 
 import java.util.Collections;
 import java.util.List;
 
+@Produces(Vector.class)
 public class VectorParser extends NodeParser<Vector>
                           implements InstallableParser {
     private DoubleParser doubleParser;

@@ -9,7 +9,6 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.util.StringId;
 import pl.themolka.arcade.util.Version;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,15 +50,12 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
         this.loadBefore = info.loadBefore();
         this.name = info.id();
 
-        Annotation versionAnnotation = this.getClass().getAnnotation(ModuleVersion.class);
-        if (versionAnnotation != null) {
-            ModuleVersion version = (ModuleVersion) versionAnnotation;
-            if (version.value() != null) {
-                Version versionObject = Version.valueOf(version.value());
+        ModuleVersion versionInfo = this.getClass().getAnnotation(ModuleVersion.class);
+        if (versionInfo != null && versionInfo.value() != null) {
+            Version version = Version.valueOf(versionInfo.value());
 
-                if (versionObject != null) {
-                    this.setVersion(versionObject);
-                }
+            if (version != null) {
+                this.setVersion(version);
             }
         }
     }

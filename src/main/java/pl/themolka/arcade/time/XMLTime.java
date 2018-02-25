@@ -4,6 +4,10 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.xml.XMLParser;
 
+/**
+ * @deprecated {@link TimeParser}
+ */
+@Deprecated
 public class XMLTime extends XMLParser {
     public static final String ATTRIBUTE_TIME = "time";
 

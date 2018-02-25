@@ -5,12 +5,14 @@ import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.AbstractParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Produces(Boolean.class)
 public class BooleanParser extends AbstractParser<Boolean> {
     public static final String[] TRUE = new String[] {
             "true", "1", "+", "yes", "allow", "on", "enable", "enabled"};

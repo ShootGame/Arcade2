@@ -9,11 +9,13 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.number.FloatParser;
 
 import java.util.Collections;
 import java.util.List;
 
+@Produces(Location.class)
 public class LocationParser extends NodeParser<Location>
                             implements InstallableParser {
     private FloatParser floatParser;

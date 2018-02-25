@@ -5,10 +5,12 @@ import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.AbstractParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
 import java.util.List;
 
+@Produces(String.class)
 public class MessageParser extends AbstractParser<String> {
     public static final char COLOR_CODE = '`';
 

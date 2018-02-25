@@ -8,17 +8,19 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
 import java.util.List;
 
+@Produces(Material.class)
 public class MaterialParser extends AbstractParser<Material>
                             implements InstallableParser {
-    private EnumParser<Material> enumParser;
+    private EnumParser<Material> materialParser;
 
     @Override
     public void install(ParserContext context) {
-        this.enumParser = context.enumType(Material.class);
+        this.materialParser = context.enumType(Material.class);
     }
 
     @Override
@@ -33,6 +35,6 @@ public class MaterialParser extends AbstractParser<Material>
             return ParserResult.fine(element, name, value, material);
         }
 
-        return this.enumParser.parseWithDefinition(element, name, value);
+        return this.materialParser.parseWithDefinition(element, name, value);
     }
 }

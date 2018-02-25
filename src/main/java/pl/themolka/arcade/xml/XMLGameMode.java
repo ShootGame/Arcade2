@@ -4,6 +4,10 @@ import org.bukkit.GameMode;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.type.GameModeParser}
+ */
+@Deprecated
 public class XMLGameMode extends XMLParser {
     public static final String ATTRIBUTE_GAME_MODE = "game-mode";
 

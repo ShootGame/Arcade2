@@ -4,6 +4,10 @@ import org.bukkit.Difficulty;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
+/**
+ * @deprecated {@link pl.themolka.arcade.parser.type.DifficultyParser}
+ */
+@Deprecated
 public class XMLDifficulty extends XMLParser {
     public static final String ATTRIBUTE_DIFFICULTY = "difficulty";
 

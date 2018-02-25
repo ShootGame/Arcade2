@@ -8,24 +8,26 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.number.IntegerParser;
 
 import java.util.List;
 
+@Produces(GameMode.class)
 public class GameModeParser extends AbstractParser<GameMode>
                             implements InstallableParser {
-    private EnumParser<GameMode> enumParser;
+    private EnumParser<GameMode> gameModeParser;
     private IntegerParser integerParser;
 
     @Override
     public void install(ParserContext context) {
-        this.enumParser = context.enumType(GameMode.class);
+        this.gameModeParser = context.enumType(GameMode.class);
         this.integerParser = context.of(IntegerParser.class);
     }
 
     @Override
     public List<Object> expect() {
-        return this.enumParser.expectedValues();
+        return this.gameModeParser.expectedValues();
     }
 
     @Override
@@ -40,6 +42,6 @@ public class GameModeParser extends AbstractParser<GameMode>
             }
         }
 
-        return this.enumParser.parseWithDefinition(element, name, value);
+        return this.gameModeParser.parseWithDefinition(element, name, value);
     }
 }

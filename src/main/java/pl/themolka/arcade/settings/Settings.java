@@ -6,8 +6,8 @@ import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.JDOMEngine;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.Parsers;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +19,7 @@ public class Settings {
 
     private final ArcadePlugin plugin;
 
+    private final ParserContext context;
     private Document document;
     private boolean enabled;
     private final File file;
@@ -30,6 +31,7 @@ public class Settings {
     public Settings(ArcadePlugin plugin, File file) {
         this.plugin = plugin;
 
+        this.context = plugin.getParsers().createContext();
         this.file = file;
     }
 
@@ -96,6 +98,6 @@ public class Settings {
     }
 
     private void setup(Node root) throws ParserException {
-        this.enabled = Parsers.booleanParser().parse(root.property("enable", "enabled")).orFail();
+        this.enabled = this.context.type(Boolean.class).parse(root.property("enable", "enabled")).orFail();
     }
 }
