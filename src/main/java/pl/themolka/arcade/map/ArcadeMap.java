@@ -19,17 +19,17 @@ public class ArcadeMap {
     private final OfflineMap mapInfo;
 
     private ArcadeMapConfiguration configuration;
-    private Difficulty difficulty;
-    private World.Environment environment;
+    @Deprecated private Difficulty difficulty;
+    @Deprecated private World.Environment environment;
     private Game game;
-    private Generator generator;
-    private boolean pvp;
+    @Deprecated private Generator generator;
+    @Deprecated private boolean pvp;
     private String scoreboardTitle;
-    private long seed;
-    private Location spawn;
-    private MapTime time;
-    private World world;
-    private String worldName;
+    @Deprecated private long seed;
+    @Deprecated private Location spawn;
+    @Deprecated private MapTime time;
+    @Deprecated private World world;
+    @Deprecated private String worldName;
 
     public ArcadeMap(OfflineMap mapInfo) {
         this.mapInfo = mapInfo;

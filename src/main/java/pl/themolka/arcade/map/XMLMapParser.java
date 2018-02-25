@@ -7,9 +7,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.dom.DOMEngine;
 import pl.themolka.arcade.dom.DOMException;
-import pl.themolka.arcade.dom.JDOMEngine;
+import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.generator.XMLGenerator;
 import pl.themolka.arcade.xml.JDOM;
@@ -36,20 +35,21 @@ import java.util.UUID;
 public class XMLMapParser implements MapParser {
     public static final String XML_DEFAULT_FILENAME = "map.xml";
 
-    private final DOMEngine engine = JDOMEngine.getDefaultEngine();
-
     private final ArcadePlugin plugin;
 
     private Document document;
+    private final DOMEngine engine;
 
     public XMLMapParser(ArcadePlugin plugin) {
         this.plugin = plugin;
+
+        this.engine = plugin.getDomEngines().forFile(XML_DEFAULT_FILENAME);
     }
 
     @Override
     public void readFile(File file) throws IOException, MapParserException {
         try {
-            this.document = JDOM.from(this.engine.read(file));
+            this.document = JDOM.from(this.plugin.getDomEngines().forFile(file).read(file));
         } catch (DOMException dom) {
             throw new MapParserException("Failed to read XML", dom);
         }
@@ -239,7 +239,7 @@ public class XMLMapParser implements MapParser {
         map.setConfiguration(new ArcadeMapConfiguration(root));
         map.setDifficulty(this.parseDifficulty(world));
         map.setEnvironment(this.parseEnvironment(world));
-        map.setGenerator(this.parseGenerator(world, plugin, map));
+        map.setGenerator(this.parseGenerator(world, plugin));
         map.setScoreboardTitle(this.parseScoreboardTitle(scoreboard));
         map.setPvp(this.parsePvp(world));
         map.setSeed(this.parseSeed(world));
@@ -268,11 +268,11 @@ public class XMLMapParser implements MapParser {
         return null;
     }
 
-    private Generator parseGenerator(Element parent, ArcadePlugin plugin, ArcadeMap map) throws MapParserException {
+    private Generator parseGenerator(Element parent, ArcadePlugin plugin) throws MapParserException {
         if (parent != null) {
             Element xml = parent.getChild("generator");
             if (xml != null) {
-                return XMLGenerator.parse(xml, plugin, map);
+                return XMLGenerator.parse(xml, plugin);
             }
         }
 
@@ -340,6 +340,11 @@ public class XMLMapParser implements MapParser {
         return def;
     }
 
+    /**
+     * @deprecated {@link XMLMapParser} is deprecated.
+     * See {@link XMLMapParser} for more information.
+     */
+    @Deprecated
     public static class XMLParserTechnology implements MapParser.Technology {
         private final ArcadePlugin plugin;
 

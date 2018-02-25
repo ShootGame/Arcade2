@@ -7,13 +7,21 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Something that can hold children.
+ * Something that can hold <E> children.
  */
 public interface Parent<E> {
     boolean add(Collection<E> children);
 
     default boolean add(E... children) {
         return children != null && this.add(Arrays.asList(children));
+    }
+
+    void appendChildren(Iterable<E> append, boolean deep);
+
+    default void appendChildren(boolean deep, E... append) {
+        if (append != null) {
+            this.appendChildren(Arrays.asList(append), deep);
+        }
     }
 
     default E child() {

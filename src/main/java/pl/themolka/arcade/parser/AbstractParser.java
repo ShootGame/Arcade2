@@ -23,8 +23,8 @@ public abstract class AbstractParser<T> implements Parser<T> {
         }
 
         try {
-            String normalizedName = this.normalizeInput(name);
-            String normalizedValue = this.normalizeInput(value);
+            String normalizedName = this.normalizeName(name);
+            String normalizedValue = this.normalizeValue(value);
 
             if (normalizedName != null && normalizedValue != null) {
                 return this.parse(element, normalizedName, normalizedValue);
@@ -55,6 +55,14 @@ public abstract class AbstractParser<T> implements Parser<T> {
     public abstract List<Object> expect();
 
     protected abstract ParserResult<T> parse(Element element, String name, String value) throws ParserException;
+
+    protected String normalizeName(String name) throws ParserException {
+        return this.normalizeInput(name);
+    }
+
+    protected String normalizeValue(String value) throws ParserException {
+        return this.normalizeInput(value);
+    }
 
     //
     // Return Methods

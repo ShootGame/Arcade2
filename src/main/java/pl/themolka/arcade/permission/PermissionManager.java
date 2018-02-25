@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
-import pl.themolka.arcade.dom.JDOMEngine;
 import pl.themolka.arcade.dom.Node;
 
 import java.io.File;
@@ -111,7 +110,7 @@ public class PermissionManager {
             this.copyPermissionsFile(file, false);
         }
 
-        return JDOMEngine.getDefaultEngine().read(file);
+        return this.plugin.getDomEngines().forFile(file).read(file);
     }
 
     public void removeGroup(Group group) {

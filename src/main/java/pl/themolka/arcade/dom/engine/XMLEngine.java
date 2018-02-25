@@ -1,6 +1,8 @@
-package pl.themolka.arcade.dom;
+package pl.themolka.arcade.dom.engine;
 
 import org.xml.sax.InputSource;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
 
 import java.io.IOException;
 import java.io.InputStream;

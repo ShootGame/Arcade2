@@ -1,4 +1,7 @@
-package pl.themolka.arcade.dom;
+package pl.themolka.arcade.dom.engine;
+
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +12,7 @@ import java.io.StringReader;
 import java.net.URL;
 
 /**
- * Something that can read DOM content and convert them into {@link Document}s.
+ * Something that can read DOM content and convert it into a {@link Document}s.
  */
 public interface DOMEngine {
     default Document read(File file) throws DOMException, IOException {

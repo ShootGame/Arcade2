@@ -3,6 +3,7 @@ package pl.themolka.arcade.dom;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,7 +22,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         super(name, value);
     }
 
-    private final List<Property> properties = new ArrayList<>();
+    private final Propertable properties = new Properties();
     private final List<Node> children = new ArrayList<>();
 
     private Cursor location;
@@ -35,6 +36,18 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         }
 
         return false;
+    }
+
+    @Override
+    public void appendChildren(Iterable<Node> append, boolean deep) {
+        if (append != null) {
+            this.append(append, deep, false);
+        }
+    }
+
+    @Override
+    public void appendProperties(Iterable<Property> append) {
+        this.properties.appendProperties(append);
     }
 
     @Override
@@ -99,7 +112,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public boolean hasProperties() {
-        return !this.properties.isEmpty();
+        return this.properties.hasProperties();
     }
 
     @Override
@@ -126,58 +139,27 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public List<Property> properties() {
-        return new ArrayList<>(this.properties);
+        return this.properties.properties();
     }
 
     @Override
     public List<Property> properties(Iterable<String> names) {
-        List<Property> properties = new ArrayList<>();
-
-        if (names != null) {
-            for (Property property : this.properties) {
-                for (String name : names) {
-                    if (name != null && property.getName().equals(name)) {
-                        properties.add(property);
-                    }
-                }
-            }
-        }
-
-        return properties;
+        return this.properties.properties(names);
     }
 
     @Override
     public Property property(Iterable<String> names) {
-        if (names != null) {
-            for (Property property : this.properties) {
-                for (String name : names) {
-                    if (name != null && property.getName().equals(name)) {
-                        return property;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return this.properties.property(names);
     }
 
     @Override
     public String propertyValue(Iterable<String> names) {
-        return this.propertyValue(names, null);
+        return this.properties.propertyValue(names);
     }
 
     @Override
     public String propertyValue(Iterable<String> names, String def) {
-        Property property = this.property(names);
-        if (property != null) {
-            String value = property.getValue();
-
-            if (value != null) {
-                return value;
-            }
-        }
-
-        return def;
+        return this.properties.propertyValue(names, def);
     }
 
     @Override
@@ -238,27 +220,12 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public Property setProperty(Property property) {
-        Property oldProperty = null;
-        if (property != null) {
-            oldProperty = this.property(property.getName());
-
-            if (oldProperty != null) {
-                oldProperty.setValue(property.getValue());
-            } else {
-                this.properties.add(property);
-            }
-        }
-
-        return oldProperty;
+        return this.properties.setProperty(property);
     }
 
     @Override
     public void setProperties(Iterable<Property> properties) {
-        if (properties != null) {
-            for (Property property : properties) {
-                this.setProperty(property);
-            }
-        }
+        this.properties.setProperties(properties);
     }
 
     @Override
@@ -276,9 +243,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public void sortProperties(Comparator<? super Property> comparator) {
-        if (comparator != null) {
-            this.properties.sort(comparator);
-        }
+        this.properties.sortProperties(comparator);
     }
 
     @Override
@@ -288,19 +253,44 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public int unsetProperties() {
-        int count = this.properties.size();
-        this.properties.clear();
-        return count;
+        return this.properties.unsetProperties();
     }
 
     @Override
     public boolean unsetProperty(Property property) {
-        return property != null && this.properties.remove(property);
+        return this.properties.unsetProperty(property);
     }
 
     @Override
     public boolean unsetProperty(String name) {
-        return name != null && this.unsetProperty(this.property(name));
+        return this.properties.unsetProperty(name);
+    }
+
+    public void append(Iterable<Node> append, boolean deep, boolean properties) {
+        if (append != null) {
+            for (Node toAppend : append) {
+                if (properties) {
+                    this.appendProperties(toAppend.properties());
+                }
+
+                if (this.isPrimitive()) {
+                    // Primitive types cannot hold children.
+                    continue;
+                }
+
+                this.add(toAppend);
+                if (deep) {
+                    // Append again with its children if deep is true
+                    toAppend.append(toAppend.children, true, properties);
+                }
+            }
+        }
+    }
+
+    public void append(boolean deep, boolean properties, Node... append) {
+        if (append != null) {
+            this.append(Arrays.asList(append), deep, properties);
+        }
     }
 
     public Type getType() {

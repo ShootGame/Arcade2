@@ -1,10 +1,8 @@
 package pl.themolka.arcade.generator;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.dom.Propertable;
 
-import java.util.Properties;
-
-public interface GeneratorCreator<T> {
-    T create(ArcadePlugin plugin, ArcadeMap map, Properties properties);
+public interface GeneratorCreator<T extends Generator> {
+    T create(ArcadePlugin plugin, Propertable properties);
 }

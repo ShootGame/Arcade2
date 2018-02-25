@@ -14,7 +14,7 @@ public interface MatcherParser<T extends Matcher> {
         // Try again as the tree type if the value is
         // empty (eg. starting tag is closing tag).
         String value = node.getValue();
-        if (value.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             return this.parseTree(node, context);
         } else {
             throw new ParserException(node, "Node " + node.getName() + " is not primitive type");

@@ -12,13 +12,13 @@ public interface EventListenerComponent {
         return Collections.emptyList();
     }
 
-    // This only handles our own event bus.
+    // This handles only our own event bus.
     @Deprecated
     default void registerEventListeners(EventBus bus) {
         this.registerEventListeners(bus, REGISTER_THIS_TOO);
     }
 
-    // This only handles our own event bus.
+    // This handles only our own event bus.
     @Deprecated
     default void registerEventListeners(EventBus bus, boolean thisToo) {
         if (thisToo) {

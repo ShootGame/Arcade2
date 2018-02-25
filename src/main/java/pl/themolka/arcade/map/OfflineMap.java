@@ -86,7 +86,7 @@ public class OfflineMap implements Paginationable {
     }
 
     public List<Author> getAuthors() {
-        return this.authors;
+        return new ArrayList<>(this.authors);
     }
 
     public String getAuthorsPretty() {

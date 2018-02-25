@@ -8,6 +8,14 @@ import java.util.List;
  * Something that can hold properties.
  */
 public interface Propertable {
+    void appendProperties(Iterable<Property> append);
+
+    default void appendProperties(Property... append) {
+        if (append != null) {
+            this.appendProperties(Arrays.asList(append));
+        }
+    }
+
     boolean hasProperties();
 
     List<Property> properties();

@@ -19,15 +19,11 @@ public class MapTime implements Cloneable {
     @Override
     public MapTime clone() {
         try {
-            MapTime mapTime = new MapTime(this.ticks);
+            MapTime mapTime = (MapTime) super.clone();
             mapTime.locked = this.locked;
             return mapTime;
-        } finally {
-            try {
-                super.clone();
-            } catch (CloneNotSupportedException ex) {
-                ex.printStackTrace();
-            }
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 

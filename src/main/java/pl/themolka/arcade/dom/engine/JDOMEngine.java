@@ -1,4 +1,4 @@
-package pl.themolka.arcade.dom;
+package pl.themolka.arcade.dom.engine;
 
 import org.jdom2.Attribute;
 import org.jdom2.Element;
@@ -8,6 +8,10 @@ import org.jdom2.input.sax.SAXEngine;
 import org.jdom2.located.LocatedElement;
 import org.jdom2.located.LocatedJDOMFactory;
 import org.xml.sax.InputSource;
+import pl.themolka.arcade.dom.Cursor;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
+import pl.themolka.arcade.dom.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,11 +24,19 @@ import java.util.Objects;
 
 /**
  * Producing DOM objects from the JDOM library.
+ *
+ * JDOM doesn't attach locations by default - we need to use the
+ * {@link LocatedJDOMFactory} to do it.
  */
-public class JDOMEngine implements XMLEngine {
-    private static final JDOMEngine defaultEngine = createDefault();
-
+@FileExtensions({"xml"})
+public class JDOMEngine extends LocatedJDOMFactory implements XMLEngine {
     private final SAXEngine sax;
+
+    public JDOMEngine() {
+        SAXBuilder builder = new SAXBuilder();
+        builder.setJDOMFactory(this);
+        this.sax = builder;
+    }
 
     public JDOMEngine(SAXEngine sax) {
         this.sax = Objects.requireNonNull(sax, "sax cannot be null");
@@ -116,23 +128,5 @@ public class JDOMEngine implements XMLEngine {
         }
 
         return node;
-    }
-
-    //
-    // Instancing
-    //
-
-    public static JDOMEngine getDefaultEngine() {
-        return defaultEngine;
-    }
-
-    private static JDOMEngine createDefault() {
-        try {
-            SAXBuilder sax = new SAXBuilder();
-            sax.setJDOMFactory(new LocatedJDOMFactory()); // so we have lines and columns attached
-            return new JDOMEngine(sax.buildEngine());
-        } catch (JDOMException jdom) {
-            throw new RuntimeException(jdom);
-        }
     }
 }

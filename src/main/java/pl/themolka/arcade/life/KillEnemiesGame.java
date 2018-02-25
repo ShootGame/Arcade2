@@ -7,6 +7,7 @@ import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.MatchEmptyEvent;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
@@ -115,6 +116,12 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
                 objective.setCompleted(completer);
             }
         }
+    }
+
+    @Handler(priority = Priority.LOWEST)
+    public void matchEmpty(MatchEmptyEvent event) {
+        // The match may not end if its empty by default.
+        event.setCanceled(true);
     }
 
     @Handler(priority = Priority.LOWEST)

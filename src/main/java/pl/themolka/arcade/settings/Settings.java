@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
-import pl.themolka.arcade.dom.JDOMEngine;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -85,7 +84,7 @@ public class Settings {
             this.copySettingsFile(file, false);
         }
 
-        return JDOMEngine.getDefaultEngine().read(file);
+        return this.plugin.getDomEngines().forFile(file).read(file);
     }
 
     public void setDocument(Document document) throws ParserException {

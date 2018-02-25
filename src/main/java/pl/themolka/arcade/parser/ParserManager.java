@@ -1,6 +1,7 @@
 package pl.themolka.arcade.parser;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.util.PluginInstallable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,9 @@ public class ParserManager {
 
         ParserContext context = this.createContext();
         for (Parser<?> parser : this.container.getParsers()) {
+            if (parser instanceof PluginInstallable) {
+                ((PluginInstallable) parser).installPlugin(this.plugin);
+            }
             if (parser instanceof InstallableParser) {
                 ((InstallableParser) parser).install(context);
             }

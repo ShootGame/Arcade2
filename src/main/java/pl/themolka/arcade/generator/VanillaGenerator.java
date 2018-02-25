@@ -3,9 +3,7 @@ package pl.themolka.arcade.generator;
 import org.bukkit.WorldType;
 import org.bukkit.generator.ChunkGenerator;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.map.ArcadeMap;
-
-import java.util.Properties;
+import pl.themolka.arcade.dom.Propertable;
 
 public class VanillaGenerator implements Generator {
     private VanillaGenerator() {
@@ -23,7 +21,7 @@ public class VanillaGenerator implements Generator {
 
     public static class Parser implements GeneratorCreator<VanillaGenerator> {
         @Override
-        public VanillaGenerator create(ArcadePlugin plugin, ArcadeMap map, Properties properties) {
+        public VanillaGenerator create(ArcadePlugin plugin, Propertable properties) {
             return new VanillaGenerator();
         }
     }

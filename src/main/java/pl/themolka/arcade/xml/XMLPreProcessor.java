@@ -3,13 +3,15 @@ package pl.themolka.arcade.xml;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.dom.JDOMEngine;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
 
+/**
+ * @deprecated Not used anymore. Will be removed in the near future.
+ */
 @Deprecated
 public class XMLPreProcessor implements Runnable {
     private final ArcadePlugin plugin;
@@ -169,7 +171,7 @@ public class XMLPreProcessor implements Runnable {
                 public Element process(ArcadePlugin plugin, Element element, String path) throws Throwable {
                     File file = new File(path);
                     if (file.exists()) {
-                        Element root = JDOM.from(JDOMEngine.getDefaultEngine().read(file)).getRootElement();
+                        Element root = JDOM.from(plugin.getDomEngines().forFile(file).read(file)).getRootElement();
 
                         if (root != null) {
                             XMLPreProcessor handler = new XMLPreProcessor(plugin, root);

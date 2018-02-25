@@ -18,9 +18,13 @@
     <parser class="pl.themolka.arcade.parser.type.MaterialDataParser" />
     <parser class="pl.themolka.arcade.parser.type.MaterialParser" />
     <parser class="pl.themolka.arcade.parser.type.MessageParser" />
-    <parser class="pl.themolka.arcade.parser.type.PercentageParser" />
+    <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
+    <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
 
     <!-- External -->
+    <parser class="pl.themolka.arcade.generator.GeneratorParser" />
+    <parser class="pl.themolka.arcade.map.MapTimeParser" />
+    <parser class="pl.themolka.arcade.map.WorldInfoParser" />
     <parser class="pl.themolka.arcade.time.TimeParser" />
 </parsers>

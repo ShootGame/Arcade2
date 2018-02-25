@@ -1,8 +1,8 @@
 package pl.themolka.arcade.parser;
 
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
-import pl.themolka.arcade.dom.JDOMEngine;
 import pl.themolka.arcade.dom.Node;
 
 import java.io.IOException;
@@ -15,8 +15,8 @@ public class ParsersFile {
 
     private final Document document;
 
-    public ParsersFile(InputStream input) throws DOMException, IOException {
-        this.document = JDOMEngine.getDefaultEngine().read(input);
+    public ParsersFile(ArcadePlugin plugin, InputStream input) throws DOMException, IOException {
+        this.document = plugin.getDomEngines().forFile(DEFAULT_FILENAME).read(input);
     }
 
     public Document getDocument() {

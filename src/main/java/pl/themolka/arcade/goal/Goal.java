@@ -3,7 +3,7 @@ package pl.themolka.arcade.goal;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
-import pl.themolka.arcade.parser.type.PercentageParser;
+import pl.themolka.arcade.util.Percentage;
 
 /**
  * An abstract base class for all goals in games.
@@ -12,12 +12,12 @@ public interface Goal {
     /**
      * This `Goal` is completed in 100%.
      */
-    double PROGRESS_SCORED = PercentageParser.MAX_VALUE;
+    double PROGRESS_SCORED = Percentage.MAX_VALUE;
 
     /**
      * This `Goal` is completed in 0%.
      */
-    double PROGRESS_UNTOUCHED = PercentageParser.MIN_VALUE;
+    double PROGRESS_UNTOUCHED = Percentage.MIN_VALUE;
 
     /**
      * Colored name of this `Goal` displayed on goal results.

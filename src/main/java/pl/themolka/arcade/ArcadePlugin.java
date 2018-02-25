@@ -21,6 +21,7 @@ import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.engine.EngineManager;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.DeadListeners;
@@ -104,6 +105,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private BukkitCommands commands;
     private ConsoleSender console;
+    private EngineManager domEngines;
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
@@ -369,6 +371,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public ConsoleSender getConsole() {
         return this.console;
+    }
+
+    public EngineManager getDomEngines() {
+        return this.domEngines;
     }
 
     public Environment getEnvironment() {
@@ -649,7 +655,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         List<Module<?>> moduleList = new ArrayList<>();
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ModulesFile.DEFAULT_FILENAME)) {
-            ModulesFile file = new ModulesFile(input);
+            ModulesFile file = new ModulesFile(this, input);
 
             for (Module<?> module : file.getModules()) {
                 ModuleInfo infoAnnotation = module.getClass().getAnnotation(ModuleInfo.class);
@@ -702,10 +708,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     }
 
     private void loadParsers() {
+        this.domEngines = new EngineManager();
         this.parsers = new ParserManager(this);
 
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {
-            ParsersFile file = new ParsersFile(input);
+            ParsersFile file = new ParsersFile(this, input);
 
             ParserContainer container = new ParserContainer();
             for (Class<? extends Parser<?>> parser : file.getParsers()) {
@@ -730,6 +737,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         } catch (DOMException | IOException ex) {
             ex.printStackTrace();
         }
+
+        this.domEngines.registerDefault();
     }
 
     private void loadPermissions() {

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.parser.type;
 
+import org.apache.commons.lang3.StringUtils;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.AbstractParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -9,19 +10,13 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
 import pl.themolka.arcade.parser.number.DoubleParser;
+import pl.themolka.arcade.util.Percentage;
 
 import java.util.Collections;
 import java.util.List;
 
-@Silent
-@Produces(Double.class)
-public class PercentageParser extends AbstractParser<Double>
+public abstract class PercentageParser extends AbstractParser<Percentage>
                               implements InstallableParser {
-    public static final double MIN_VALUE = 0.0D;
-    public static final double MAX_VALUE = 1.0D;
-
-    public static final String PERCENTAGE = "%";
-
     private DoubleParser doubleParser;
 
     @Override
@@ -30,27 +25,48 @@ public class PercentageParser extends AbstractParser<Double>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a percentage between " + MIN_VALUE + " and " + MAX_VALUE);
-    }
-
-    @Override
-    protected ParserResult<Double> parse(Element element, String name, String value) throws ParserException {
+    protected ParserResult<Percentage> parse(Element element, String name, String value) throws ParserException {
         double result;
-        if (value.contains(PERCENTAGE)) {
-            // For input type "33%"
-            result = this.doubleParser.parseWithDefinition(element, name, value.replace(PERCENTAGE, "")).orFail() / 100D;
+        if (StringUtils.contains(value, Percentage.SYMBOL)) {
+            result = this.doubleParser.parseWithDefinition(element, name,
+                    StringUtils.remove(value, Percentage.SYMBOL)).orFail() / 100D;
         } else {
-            // For input type "0.33"
             result = this.doubleParser.parseWithDefinition(element, name, value).orFail();
         }
 
-        if (result < MIN_VALUE) {
-            throw this.fail(element, name, value, "Percentage smaller than 0%");
-        } else if (result > MAX_VALUE) {
-            throw this.fail(element, name, value, "Percentage greater than 100%");
+        try {
+            return ParserResult.fine(element, name, value, this.parse(result));
+        } catch (IllegalArgumentException ex) {
+            throw this.fail(element, name, value, ex.getMessage(), ex);
+        }
+    }
+
+    protected abstract Percentage parse(double input);
+
+    @Produces(Percentage.class)
+    public static class Finite extends PercentageParser {
+        @Override
+        public List<Object> expect() {
+            return Collections.singletonList("a percentage between 0% and 100%");
         }
 
-        return ParserResult.fine(element, name, value, result);
+        @Override
+        protected Percentage parse(double input) {
+            return Percentage.finite(input);
+        }
+    }
+
+    @Silent // Don't register this parser
+    @Produces(Percentage.class)
+    public static class Infinite extends PercentageParser {
+        @Override
+        public List<Object> expect() {
+            return Collections.singletonList("a percentage");
+        }
+
+        @Override
+        protected Percentage parse(double input) {
+            return Percentage.infinite(input);
+        }
     }
 }
