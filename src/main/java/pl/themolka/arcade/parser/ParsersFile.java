@@ -37,7 +37,7 @@ public class ParsersFile {
         for (Node node : parent.children("parser")) {
             try {
                 Class<?> clazz = Class.forName(node.propertyValue("class"));
-                if (clazz.isAssignableFrom(Parser.class)) {
+                if (Parser.class.isAssignableFrom(clazz)) {
                     parsers.add((Class<? extends Parser<?>>) clazz);
                 }
             } catch (ReflectiveOperationException ex) {

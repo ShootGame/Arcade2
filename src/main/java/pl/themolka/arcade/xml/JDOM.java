@@ -41,8 +41,8 @@ public final class JDOM {
 
         // attach location
         Element element;
-        if (node.hasLocation()) {
-            Cursor cursor = node.getLocation();
+        if (node.isSelectable()) {
+            Cursor cursor = node.select().getEnd();
 
             LocatedElement located = new LocatedElement(node.getName());
             located.setLine(cursor.getLine());

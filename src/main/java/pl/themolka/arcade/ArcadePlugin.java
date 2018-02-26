@@ -118,7 +118,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private ParserManager parsers;
     private PermissionManager permissions;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
-    private final Map<String, Object> properties = new HashMap<>();
     private boolean running;
     private String serverName = DEFAULT_SERVER_NAME;
     private Settings settings;
@@ -160,11 +159,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.commands = new BukkitCommands(this, this.getName());
         this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
 
+        this.loadParsers(); // Must be loaded before settings
+
         this.settings = new Settings(this);
         try {
             this.reloadConfig();
         } catch (RuntimeException ex) {
-            ex.printStackTrace();
+            this.getLogger().log(Level.CONFIG, "Failed to load settings", ex);
         }
 
         if (!this.getSettings().isEnabled()) {
@@ -186,7 +187,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.loadPermissions();
         this.loadCommands();
-        this.loadParsers();
         this.loadModules();
         this.loadMaps();
         this.loadTasks();
@@ -283,17 +283,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     @Override
     public void reloadConfig() {
         try {
-            this.getSettings().setDocument(this.getSettings().readSettingsFile());
-
-            // reload properties
-            Node properties = this.getSettings().getData().child("properties");
-            if (properties != null) {
-                for (Node property : properties.children()) {
-                    this.setProperty(property.getName(), property.getValue());
-                }
-            }
-
-            this.getEventBus().publish(new SettingsReloadEvent(this, this.getSettings()));
+            this.settings.setDocument(this.settings.readSettingsFile());
+            this.getEventBus().publish(new SettingsReloadEvent(this, this.settings));
         } catch (DOMException | IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -453,14 +444,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return new ArrayList<>(this.players.values());
     }
 
-    public Object getProperty(String key) {
-        return this.getProperty(key, null);
-    }
-
-    public Object getProperty(String key, Object def) {
-        return this.properties.getOrDefault(key, def);
-    }
-
     public String getServerName() {
         return this.serverName;
     }
@@ -491,10 +474,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public WindowRegistry getWindowRegistry() {
         return this.windowRegistry;
-    }
-
-    public boolean hasProperty(String key) {
-        return this.getProperty(key) != null;
     }
 
     public boolean isRunning() {
@@ -576,10 +555,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         if (this.getEnvironment() == null) {
             this.environment = environment;
         }
-    }
-
-    public void setProperty(String key, Object value) {
-        this.properties.put(key, value);
     }
 
     public void setServerName(String serverName) {
@@ -709,15 +684,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadParsers() {
         this.domEngines = new EngineManager();
-        this.parsers = new ParserManager(this);
+        this.domEngines.registerDefault();
 
+        this.parsers = new ParserManager(this);
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {
             ParsersFile file = new ParsersFile(this, input);
 
+            int done = 0;
             ParserContainer container = new ParserContainer();
             for (Class<? extends Parser<?>> parser : file.getParsers()) {
                 try {
                     container.register(parser.newInstance());
+                    done++;
 
                     Silent silent = parser.getAnnotation(Silent.class);
                     Produces produces = parser.getAnnotation(Produces.class);
@@ -734,11 +712,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
 
             this.parsers.getContainer().register(container);
+            this.getLogger().info("Registered " + done + " parsers.");
         } catch (DOMException | IOException ex) {
             ex.printStackTrace();
         }
-
-        this.domEngines.registerDefault();
     }
 
     private void loadPermissions() {

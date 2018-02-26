@@ -3,10 +3,27 @@ package pl.themolka.arcade.dom;
 /**
  * 500th class :D
  */
-public final class Document {
+public class Document implements Content, Locatable {
     private Node root;
 
-    private Document() {
+    private Selection location;
+
+    protected Document() {
+    }
+
+    @Override
+    public boolean isSelectable() {
+        return this.location != null;
+    }
+
+    @Override
+    public void locate(Cursor start, Cursor end) {
+        this.location = Selection.between(start, end);
+    }
+
+    @Override
+    public Selection select() {
+        return this.location;
     }
 
     public Node getRoot() {
@@ -22,6 +39,11 @@ public final class Document {
         this.root = root;
 
         return oldRoot;
+    }
+
+    @Override
+    public String toString() {
+        return this.hasRoot() ? this.getRoot().toString() : super.toString();
     }
 
     //

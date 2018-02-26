@@ -39,17 +39,14 @@ public class DOMException extends Exception {
 
         Element element = this.getElement();
         if (element != null) {
-            if (element.hasLocation()) {
-                Cursor location = element.getLocation();
-                builder.append(", line ")
-                       .append(location.getLine())
-                       .append(":")
-                       .append(location.getColumn());
+            if (element.isSelectable()) {
+                Selection selection = element.select();
+                builder.append(", at line ").append(selection);
             }
 
             String near = element.toShortString();
             if (near != null) {
-                builder.append(" near \"").append(near).append("\"");
+                builder.append(" in '").append(near).append("'");
             } else {
                 builder.append(".");
             }

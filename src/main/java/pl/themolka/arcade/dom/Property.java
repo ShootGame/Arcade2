@@ -1,6 +1,7 @@
 package pl.themolka.arcade.dom;
 
-public final class Property extends Element {
+public final class Property extends Element implements Locatable {
+    private Selection location;
     private Node parent;
 
     private Property(String name) {
@@ -12,18 +13,13 @@ public final class Property extends Element {
     }
 
     @Override
-    public Cursor getLocation() {
-        return this.hasLocation() ? this.getParent().getLocation() : null;
+    public boolean detach() {
+        return this.setParent(null) != null;
     }
 
     @Override
     public Node getParent() {
         return this.parent;
-    }
-
-    @Override
-    public boolean hasLocation() {
-        return this.hasParent() && this.getParent().hasLocation();
     }
 
     @Override
@@ -33,13 +29,23 @@ public final class Property extends Element {
 
     @Override
     public boolean isSelectable() {
-        return this.hasLocation();
+        return this.location != null || (this.hasParent() && this.getParent().isSelectable());
     }
 
-    // TODO: Implement selections properly.
+    @Override
+    public void locate(Cursor start, Cursor end) {
+        this.location = Selection.between(start, end);
+    }
+
     @Override
     public Selection select() {
-        return this.isSelectable() ? Selection.cursor(this.getLocation()) : null;
+        if (this.location != null) {
+            return this.location;
+        } else if (this.hasParent()) {
+            return this.getParent().select();
+        }
+
+        return null;
     }
 
     @Override

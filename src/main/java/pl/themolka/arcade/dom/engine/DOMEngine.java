@@ -12,7 +12,7 @@ import java.io.StringReader;
 import java.net.URL;
 
 /**
- * Something that can read DOM content and convert it into a {@link Document}s.
+ * Something that can read DOM content and convert it into a {@link Document}.
  */
 public interface DOMEngine {
     default Document read(File file) throws DOMException, IOException {

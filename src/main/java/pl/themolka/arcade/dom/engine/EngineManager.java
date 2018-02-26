@@ -23,18 +23,18 @@ public class EngineManager {
         return this.getEngine(FilenameUtils.getExtension(file));
     }
 
-    public Set<String> getFileExtensions() {
-        return this.engines.keySet();
-    }
-
     public DOMEngine getEngine(String fileExtension) {
-        return fileExtension != null && fileExtension.isEmpty()
-                ? this.getEngine(fileExtension.toLowerCase())
+        return fileExtension != null && !fileExtension.isEmpty()
+                ? this.engines.get(fileExtension.toLowerCase())
                 : null;
     }
 
     public Set<DOMEngine> getEngines() {
         return new HashSet<>(this.engines.values());
+    }
+
+    public Set<String> getSupportedFileExtensions() {
+        return this.engines.keySet();
     }
 
     public void registerDefault() {

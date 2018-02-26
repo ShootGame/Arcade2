@@ -7,7 +7,7 @@ import pl.themolka.arcade.util.NamedValue;
  * This is the base class for all DOM representation classes.
  */
 public abstract class Element extends NamedValue<String, String>
-                              implements Child<Node>, Locatable, Selectable {
+                              implements NestedContent<Node> {
     public Element(String name) {
         super(name);
     }

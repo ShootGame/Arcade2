@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public final class Node extends Element implements MutableLocatable, Parent<Node>, Propertable {
+public final class Node extends Element implements Locatable, Parent<Node>, Propertable {
     enum Type {
         PRIMITIVE, TREE, UNKNOWN
     }
@@ -25,13 +25,18 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     private final Propertable properties = new Properties();
     private final List<Node> children = new ArrayList<>();
 
-    private Cursor location;
+    private Selection location;
     private Node parent;
 
     @Override
     public boolean add(Collection<Node> children) {
         if (children != null) {
             this.resetPrimitive(); // switch to the tree type if needed
+
+            for (Node node : children) {
+                this.attach(node);
+            }
+
             return this.children.addAll(children);
         }
 
@@ -47,7 +52,13 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public void appendProperties(Iterable<Property> append) {
-        this.properties.appendProperties(append);
+        if (append != null) {
+            this.properties.appendProperties(append);
+
+            for (Property property : append) {
+                this.attach(property);
+            }
+        }
     }
 
     @Override
@@ -74,9 +85,18 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public int clearChildren() {
+        for (Node child : this.children) {
+            child.detach();
+        }
+
         int count = this.children.size();
         this.children.clear();
         return count;
+    }
+
+    @Override
+    public boolean detach() {
+        return this.setParent(null) != null;
     }
 
     @Override
@@ -91,18 +111,8 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     }
 
     @Override
-    public Cursor getLocation() {
-        return this.location;
-    }
-
-    @Override
     public Node getParent() {
         return this.parent;
-    }
-
-    @Override
-    public boolean hasLocation() {
-        return this.location != null;
     }
 
     @Override
@@ -122,7 +132,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public boolean isSelectable() {
-        return this.hasLocation();
+        return this.location != null;
     }
 
     @Override
@@ -135,6 +145,11 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     public Node lastChild(Iterable<String> names) {
         List<Node> children = this.children(names);
         return children.isEmpty() ? null : children.get(children.size() - 1);
+    }
+
+    @Override
+    public void locate(Cursor start, Cursor end) {
+        this.location = Selection.between(start, end);
     }
 
     @Override
@@ -171,6 +186,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         boolean result = true;
         for (Node child : children) {
             if (!this.children.remove(child)) {
+                child.detach();
                 result = false;
             }
         }
@@ -198,16 +214,9 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         return result;
     }
 
-    // TODO: Implement selections properly.
     @Override
     public Selection select() {
-        return this.isSelectable() ? Selection.cursor(this.getLocation())
-                                   : null;
-    }
-
-    @Override
-    public void setLocation(Cursor location) {
-        this.location = location;
+        return this.location;
     }
 
     @Override
@@ -220,7 +229,12 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public Property setProperty(Property property) {
-        return this.properties.setProperty(property);
+        Property oldProperty = this.properties.setProperty(property);
+        if (property != null) {
+            this.attach(property);
+        }
+
+        return oldProperty;
     }
 
     @Override
@@ -258,12 +272,25 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
 
     @Override
     public boolean unsetProperty(Property property) {
-        return this.properties.unsetProperty(property);
+        if (property != null && this.properties.unsetProperty(property)) {
+            property.detach();
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public boolean unsetProperty(String name) {
-        return this.properties.unsetProperty(name);
+        if (name != null) {
+            Property property = this.property(name);
+            if (property != null) {
+                property.detach();
+                return this.unsetProperty(property);
+            }
+        }
+
+        return false;
     }
 
     public void append(Iterable<Node> append, boolean deep, boolean properties) {
@@ -323,11 +350,11 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
     public String toString(boolean properties, boolean children) {
         String nodeName = this.getName();
 
-        String tag = nodeName;
-        if (properties && this.hasProperties()) {
-            tag += " " + StringUtils.join(this.properties, " ");
-        }
+        // starting tag
+        String starting = nodeName + (properties ? StringUtils.join(this.properties, " ") : "");
+        StringBuilder builder = new StringBuilder(this.toStringTag(false, starting));
 
+        // primitive value
         String value = null;
         if (this.hasValue()) {
             String realValue = this.getValue();
@@ -336,6 +363,7 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
             }
         }
 
+        // children
         List<Node> node;
         if (children && !this.isEmpty()) {
             node = this.children();
@@ -343,27 +371,24 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
             node = Collections.emptyList();
         }
 
-        boolean closingTag = value == null || node.isEmpty();
-
-        String startTag = this.toStringTag(false, tag, closingTag);
-        StringBuilder builder = new StringBuilder(startTag);
-
+        // body
         if (value != null) {
             builder.append(value);
         } else if (!node.isEmpty()) {
             builder.append(StringUtils.join(node, " "));
         }
 
-        if (!closingTag) {
-            builder.append(this.toStringTag(true, nodeName, false));
-        }
-
-        return builder.toString();
+        // closing tag
+        return builder.append(this.toStringTag(true, nodeName)).toString();
     }
 
     //
     // Helper Methods
     //
+
+    private void attach(Child<Node> child) {
+        child.setParent(this);
+    }
 
     private boolean resetPrimitive() {
         boolean ok = this.isPrimitive();
@@ -379,8 +404,8 @@ public final class Node extends Element implements MutableLocatable, Parent<Node
         return ok;
     }
 
-    private String toStringTag(boolean end, String tag, boolean closing) {
-        return (end ? "</" : "<") + tag + (closing ? "/>" : ">");
+    private String toStringTag(boolean closing, String tag) {
+        return (closing ? "</" : "<") + tag + ">";
     }
 
     //

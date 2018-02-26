@@ -1,5 +1,7 @@
 package pl.themolka.arcade.dom;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -109,6 +111,11 @@ public class Properties implements Propertable {
         if (comparator != null) {
             this.properties.sort(comparator);
         }
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(this.properties, " ");
     }
 
     @Override

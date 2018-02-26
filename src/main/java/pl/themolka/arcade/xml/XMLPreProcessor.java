@@ -161,8 +161,7 @@ public class XMLPreProcessor implements Runnable {
             GLOBAL {
                 @Override
                 public Element process(ArcadePlugin plugin, Element element, String path) throws Throwable {
-                    String global = (String) plugin.getProperty("XMLPreProcessor.include.global");
-                    return LOCAL.process(plugin, element, global + File.separator + path);
+                    return LOCAL.process(plugin, element, path);
                 }
             },
 

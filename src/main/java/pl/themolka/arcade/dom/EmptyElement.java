@@ -10,18 +10,13 @@ public final class EmptyElement extends Element {
     }
 
     @Override
-    public Cursor getLocation() {
-        return null;
+    public boolean detach() {
+        return false;
     }
 
     @Override
     public Node getParent() {
         return null;
-    }
-
-    @Override
-    public boolean hasLocation() {
-        return false;
     }
 
     @Override

@@ -3,7 +3,7 @@ package pl.themolka.arcade.dom;
 import java.util.Objects;
 
 /**
- * Immutable cursor position in the file.
+ * Immutable cursor position in a document.
  */
 public class Cursor {
     private final int line;
@@ -82,5 +82,10 @@ public class Cursor {
 
     public Cursor moveUpRelative(int up) {
         return this.move(-up, 0);
+    }
+
+    @Override
+    public String toString() {
+        return "L" + this.line + ":" + this.column;
     }
 }

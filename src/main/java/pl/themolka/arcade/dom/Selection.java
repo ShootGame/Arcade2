@@ -94,7 +94,7 @@ public final class Selection {
 
     public Selection shiftLeft(int left) {
         Cursor newEnd = this.end.moveLeft(left);
-        if (newEnd.isAfter(this.start)) {
+        if (newEnd.isBefore(this.start)) {
             throw new IllegalArgumentException("Before the starting cursor.");
         }
 
@@ -108,6 +108,11 @@ public final class Selection {
         }
 
         return between(newStart, this.end);
+    }
+
+    @Override
+    public String toString() {
+        return this.getStart() + (this.isEmpty() ? "" : " - " + this.getEnd());
     }
 
     //
