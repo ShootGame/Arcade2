@@ -5,23 +5,23 @@ import org.bukkit.util.Vector;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class XMLRegion extends XMLParser {
-    public static Region parse(ArcadeMap map, Element xml) {
+    public static Region parse(Game game, Element xml) {
         try {
             switch (xml.getName().toLowerCase()) {
-                case "cuboid": return parseCuboid(map, xml);
-                case "cylinder": return parseCylinder(map, xml);
-                case "global": return parseGlobal(map);
-                case "negative": return parseNegative(map, xml);
-                case "point": return parsePoint(map, xml);
-                case "sphere": return parseSphere(map, xml);
-                case "union": return parseUnion(map, xml);
+                case "cuboid": return parseCuboid(game, xml);
+                case "cylinder": return parseCylinder(game, xml);
+                case "global": return parseGlobal(game);
+                case "negative": return parseNegative(game, xml);
+                case "point": return parsePoint(game, xml);
+                case "sphere": return parseSphere(game, xml);
+                case "union": return parseUnion(game, xml);
             }
         } catch (NumberFormatException ignored) {
         }
@@ -29,14 +29,14 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
-    public static CuboidRegion parseCuboid(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector min = parseVector(map, "min", Region.MIN_HEIGHT, xml);
-        Vector max = parseVector(map, "max", Region.MAX_HEIGHT, xml);
-        return new CuboidRegion(parseId(xml), map, min, max);
+    public static CuboidRegion parseCuboid(Game game, Element xml) throws NumberFormatException {
+        Vector min = parseVector(game, "min", Region.MIN_HEIGHT, xml);
+        Vector max = parseVector(game, "max", Region.MAX_HEIGHT, xml);
+        return new CuboidRegion(game, parseId(xml), min, max);
     }
 
-    public static CylinderRegion parseCylinder(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, null, Region.MIN_HEIGHT, xml);
+    public static CylinderRegion parseCylinder(Game game, Element xml) throws NumberFormatException {
+        Vector center = parseVector(game, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         double height = Region.MAX_HEIGHT;
 
@@ -45,17 +45,17 @@ public class XMLRegion extends XMLParser {
             height = Double.parseDouble(heightAttribute);
         }
 
-        return new CylinderRegion(parseId(xml), map, center, height, radius);
+        return new CylinderRegion(game, parseId(xml), center, height, radius);
     }
 
-    public static GlobalRegion parseGlobal(ArcadeMap map) {
-        return new GlobalRegion(map);
+    public static GlobalRegion parseGlobal(Game game) {
+        return new GlobalRegion(game);
     }
 
-    public static NegativeRegion parseNegative(ArcadeMap map, Element xml) throws NumberFormatException {
+    public static NegativeRegion parseNegative(Game game, Element xml) throws NumberFormatException {
         try {
             Element regionElement = xml.getChildren().get(0);
-            Region region = parse(map, regionElement);
+            Region region = parse(game, regionElement);
 
             if (region != null) {
                 return new NegativeRegion(region);
@@ -66,22 +66,22 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
-    public static PointRegion parsePoint(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector point = parseVector(map, null, Region.MIN_HEIGHT, xml);
-        return new PointRegion(parseId(xml), map, point);
+    public static PointRegion parsePoint(Game game, Element xml) throws NumberFormatException {
+        Vector point = parseVector(game, null, Region.MIN_HEIGHT, xml);
+        return new PointRegion(game, parseId(xml), point);
     }
 
-    public static SphereRegion parseSphere(ArcadeMap map, Element xml) throws NumberFormatException {
-        Vector center = parseVector(map, null, Region.MIN_HEIGHT, xml);
+    public static SphereRegion parseSphere(Game game, Element xml) throws NumberFormatException {
+        Vector center = parseVector(game, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
-        return new SphereRegion(parseId(xml), map, center, radius);
+        return new SphereRegion(game, parseId(xml), center, radius);
     }
 
-    public static UnionRegion parseUnion(ArcadeMap map, Element xml) throws NumberFormatException {
+    public static UnionRegion parseUnion(Game game, Element xml) throws NumberFormatException {
         List<Region> regions = new ArrayList<>();
         if (xml != null) {
             for (Element child : xml.getChildren()) {
-                Region region = parse(map, child);
+                Region region = parse(game, child);
 
                 if (region != null) {
                     regions.add(region);
@@ -89,7 +89,7 @@ public class XMLRegion extends XMLParser {
             }
         }
 
-        return new UnionRegion(map, regions.toArray(new Region[regions.size()]));
+        return new UnionRegion(game, regions.toArray(new Region[regions.size()]));
     }
 
     //
@@ -105,7 +105,7 @@ public class XMLRegion extends XMLParser {
         return RandomStringUtils.randomAlphanumeric(5);
     }
 
-    private static Vector parseVector(ArcadeMap map, String prefix, double defY, Element xml) {
+    private static Vector parseVector(Game game, String prefix, double defY, Element xml) {
         double x = 0D;
         double y = defY;
         double z = 0D;

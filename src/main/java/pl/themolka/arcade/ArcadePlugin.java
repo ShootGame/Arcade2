@@ -162,11 +162,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadParsers(); // Must be loaded before settings
 
         this.settings = new Settings(this);
-        try {
-            this.reloadConfig();
-        } catch (RuntimeException ex) {
-            this.getLogger().log(Level.CONFIG, "Failed to load settings", ex);
-        }
+        this.reloadConfig();
 
         if (!this.getSettings().isEnabled()) {
             this.getLogger().log(Level.INFO, this.getName() + " isn't enabled in the settings file, skipped enabling...");
@@ -192,8 +188,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadTasks();
         this.loadWindows();
         this.loadGames();
-
-        this.parsers.install(); // Install parser dependencies
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
 
@@ -260,7 +254,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         try {
             this.getEnvironment().onDisable();
         } catch (Throwable th) {
-            this.getLogger().log(Level.SEVERE, "Could not disable environment " + this.getEnvironment().getType().prettyName(), th);
+            this.getLogger().log(Level.SEVERE, "Could not disable environment " + this.getEnvironment().getType().toString(), th);
         }
 
         this.getEventBus().shutdown();
@@ -716,6 +710,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         } catch (DOMException | IOException ex) {
             ex.printStackTrace();
         }
+
+        this.parsers.install(); // Install parser dependencies
     }
 
     private void loadPermissions() {

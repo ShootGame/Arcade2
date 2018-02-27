@@ -28,7 +28,7 @@ public class RegionsGame extends GameModule {
         this.filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
 
         for (Element child : this.getSettings().getChildren()) {
-            Region region = XMLRegion.parse(this.getGame().getMap(), child);
+            Region region = XMLRegion.parse(this.getGame(), child);
 
             if (region != null) {
                 this.addRegion(this.parseFilters(child, region));
@@ -106,7 +106,7 @@ public class RegionsGame extends GameModule {
             return results.get(0);
         }
 
-        return new UnionRegion(this.getGame().getMap(), results.toArray(new Region[results.size()]));
+        return new UnionRegion(this.getGame(), results.toArray(new Region[results.size()]));
     }
 
     public Region fetch(double x, double z) {

@@ -2,7 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.Random;
 
@@ -12,8 +12,8 @@ public class CuboidRegion extends AbstractRegion {
     private final Vector max;
     private final Vector min;
 
-    public CuboidRegion(String id, ArcadeMap map, Vector min, Vector max) {
-        super(id, map);
+    public CuboidRegion(Game game, String id, Vector min, Vector max) {
+        super(game, id);
 
         this.max = new Vector(Math.max(max.getX(), min.getX()), Math.max(max.getY(), min.getY()),  Math.max(max.getZ(), min.getZ()));
         this.min = new Vector(Math.min(max.getX(), min.getX()), Math.min(max.getY(), min.getY()), Math.min(max.getZ(), min.getZ()));
@@ -26,7 +26,7 @@ public class CuboidRegion extends AbstractRegion {
     }
 
     public CuboidRegion(CuboidRegion original) {
-        this(original.getId(), original.getMap(), original.getMax(), original.getMin());
+        this(original.getGame(), original.getId(), original.getMax(), original.getMin());
     }
 
     @Override

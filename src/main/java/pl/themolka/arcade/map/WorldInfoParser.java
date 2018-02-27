@@ -5,19 +5,14 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.generator.Generator;
-import pl.themolka.arcade.generator.GeneratorParser;
 import pl.themolka.arcade.generator.GeneratorType;
-import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.parser.number.LongParser;
-import pl.themolka.arcade.parser.type.BooleanParser;
-import pl.themolka.arcade.parser.type.DifficultyParser;
-import pl.themolka.arcade.parser.type.LocationParser;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,23 +28,23 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     public static final Location DEFAULT_SPAWN = new Location((World) null, 0.5D, 16D, 0.5D);
     public static final MapTime DEFAULT_TIME = MapTime.defaultTime();
 
-    private BooleanParser booleanParser;
-    private DifficultyParser difficultyParser;
-    private EnumParser<World.Environment> environmentParser;
-    private GeneratorParser generatorParser;
-    private LocationParser locationParser;
-    private LongParser longParser;
-    private MapTimeParser timeParser;
+    private Parser<Boolean> booleanParser;
+    private Parser<Difficulty> difficultyParser;
+    private Parser<World.Environment> environmentParser;
+    private Parser<Generator> generatorParser;
+    private Parser<Location> locationParser;
+    private Parser<Long> longParser;
+    private Parser<MapTime> timeParser;
 
     @Override
     public void install(ParserContext context) {
-        this.booleanParser = context.of(BooleanParser.class);
-        this.difficultyParser = context.of(DifficultyParser.class);
+        this.booleanParser = context.type(Boolean.class);
+        this.difficultyParser = context.type(Difficulty.class);
         this.environmentParser = context.enumType(World.Environment.class);
-        this.generatorParser = context.of(GeneratorParser.class);
-        this.locationParser = context.of(LocationParser.class);
-        this.longParser = context.of(LongParser.class);
-        this.timeParser = context.of(MapTimeParser.class);
+        this.generatorParser = context.type(Generator.class);
+        this.locationParser = context.type(Location.class);
+        this.longParser = context.type(Long.class);
+        this.timeParser = context.type(MapTime.class);
     }
 
     @Override
@@ -58,7 +53,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     }
 
     @Override
-    protected ParserResult<WorldInfo> parseTree(Node node, String name, String value) throws ParserException {
+    protected ParserResult<WorldInfo> parseTree(Node node, String name) throws ParserException {
         WorldInfo info = new WorldInfo();
         info.setDifficulty(this.difficultyParser.parse(node.property("difficulty")).orDefault(DEFAULT_DIFFICULTY));
         info.setEnvironment(this.environmentParser.parse(node.property("environment")).orDefault(DEFAULT_ENVIRONMENT));
@@ -67,6 +62,6 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
         info.setRandomSeed(this.longParser.parse(node.property("seed", "random-seed")).orDefault(DEFAULT_RANDOM_SEED));
         info.setSpawn(this.locationParser.parse(node.firstChild("spawn")).orDefault(DEFAULT_SPAWN));
         info.setTime(this.timeParser.parse(node.firstChild("time")).orDefault(DEFAULT_TIME));
-        return ParserResult.fine(node, name, value, info);
+        return ParserResult.fine(node, name, info);
     }
 }

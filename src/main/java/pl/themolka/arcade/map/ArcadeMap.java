@@ -5,34 +5,56 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.generator.GeneratorType;
 import pl.themolka.arcade.scoreboard.ScoreboardContext;
 
-public class ArcadeMap {
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+
+public class ArcadeMap implements GameHolder {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.PEACEFUL;
     public static final World.Environment DEFAULT_ENVIRONMENT = World.Environment.NORMAL;
     public static final Generator DEFAULT_GENERATOR = GeneratorType.getDefaultGenerator();
     public static final long DEFAULT_SEED = 0L;
     public static final MapTime DEFAULT_TIME = MapTime.defaultTime();
 
-    private final OfflineMap mapInfo;
+    private final OfflineMap mapInfo; // TODO: mutable?
 
-    private ArcadeMapConfiguration configuration;
-    @Deprecated private Difficulty difficulty;
-    @Deprecated private World.Environment environment;
+    @Deprecated private ArcadeMapConfiguration configuration; // bye bye
+    @Deprecated private Difficulty difficulty; // moved to WorldInfo
+    @Deprecated private World.Environment environment; // moved to WorldInfo
     private Game game;
-    @Deprecated private Generator generator;
-    @Deprecated private boolean pvp;
-    private String scoreboardTitle;
-    @Deprecated private long seed;
-    @Deprecated private Location spawn;
-    @Deprecated private MapTime time;
-    @Deprecated private World world;
-    @Deprecated private String worldName;
+    @Deprecated private Generator generator; // moved to WorldInfo
+    @Deprecated private boolean pvp; // moved to WorldInfo
+    @Deprecated private String scoreboardTitle; // moved to ScoreboardInfo
+    @Deprecated private long seed; // moved to WorldInfo
+    @Deprecated private Location spawn; // moved to WorldInfo
+    @Deprecated private MapTime time; // moved to WorldInfo
+    private Reference<World> world;
+    private String worldName;
+
+    // ---------------------------  New Fields  --------------------------- //
+    // These fields will replace @deprecated fields. Don't forger to finish //
+    //  MapManifestParser - it puts null in the constructor of this class.  //
+    // -------------------------------------------------------------------- //
+    private final WorldInfo worldInfo = null; // init in constructor
+    private final ScoreboardInfo scoreboardInfo = null; // init in constructor
+    private final ModulesInfo modulesInfo = null; // init in constructor
 
     public ArcadeMap(OfflineMap mapInfo) {
         this.mapInfo = mapInfo;
+    }
+
+    @Override
+    public Game getGame() {
+        return this.game;
+    }
+
+    @Override
+    public ArcadeMap getMap() {
+        return this;
     }
 
     public OfflineMap getMapInfo() {
@@ -57,10 +79,6 @@ public class ArcadeMap {
         }
 
         return DEFAULT_ENVIRONMENT;
-    }
-
-    public Game getGame() {
-        return this.game;
     }
 
     public Generator getGenerator() {
@@ -105,7 +123,7 @@ public class ArcadeMap {
     }
 
     public World getWorld() {
-        return this.world;
+        return this.world.get();
     }
 
     public String getWorldName() {
@@ -185,7 +203,7 @@ public class ArcadeMap {
     }
 
     public void setWorld(World world) {
-        this.world = world;
+        this.world = new WeakReference<>(world);
     }
 
     public void setWorldName(String worldName) {

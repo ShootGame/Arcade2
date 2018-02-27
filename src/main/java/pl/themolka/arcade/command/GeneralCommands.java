@@ -6,8 +6,8 @@ import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.RestartCountdown;
-import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
+import pl.themolka.arcade.map.queue.MapQueue;
 import pl.themolka.arcade.task.Countdown;
 
 import java.time.Duration;

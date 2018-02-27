@@ -6,6 +6,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.util.StringId;
 import pl.themolka.arcade.util.Version;
 
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T> extends SimpleModuleListener implements Listener, StringId {
+public class Module<T> extends SimpleModuleListener
+                       implements GameHolder, Listener, StringId {
     public static final String DEFAULT_VERSION_STRING = "1.0";
     public static final Version DEFAULT_VERSION = Version.valueOf(DEFAULT_VERSION_STRING);
 
@@ -61,6 +63,11 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
     }
 
     @Override
+    public Game getGame() {
+        return this.plugin.getGames().getCurrentGame();
+    }
+
+    @Override
     public final String getId() {
         return this.id;
     }
@@ -78,10 +85,6 @@ public class Module<T> extends SimpleModuleListener implements Listener, StringI
 
     public Class<? extends Module<?>>[] getDependency() {
         return this.dependency;
-    }
-
-    public Game getGame() {
-        return this.plugin.getGames().getCurrentGame();
     }
 
     public T getGameModule() {

@@ -1,7 +1,6 @@
 package pl.themolka.arcade.team;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -9,6 +8,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * A group with defined players in it.
  */
-public class Team implements MatchWinner {
+public class Team implements GameHolder, MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
 
     private final ArcadePlugin plugin;
@@ -109,6 +109,11 @@ public class Team implements MatchWinner {
     }
 
     @Override
+    public Game getGame() {
+        return this.getMatch().getGame();
+    }
+
+    @Override
     public List<Goal> getGoals() {
         return new ArrayList<>(this.goals);
     }
@@ -179,10 +184,6 @@ public class Team implements MatchWinner {
 
     public DyeColor getDyeColor() {
         return this.dyeColor;
-    }
-
-    public Game getGame() {
-        return this.getMatch().getGame();
     }
 
     public Match getMatch() {

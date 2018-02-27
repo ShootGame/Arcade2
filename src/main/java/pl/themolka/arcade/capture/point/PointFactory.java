@@ -37,7 +37,7 @@ public class PointFactory implements CapturableFactory<Point> {
 
         // state region
         Element stateElement = xml.getChild("state");
-        Region stateRegion = stateElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), stateElement) : null;
+        Region stateRegion = stateElement != null ? XMLRegion.parseUnion(game.getGame(), stateElement) : null;
         if (stateRegion == null) {
             stateRegion = capture.getRegion(); // Set state region to the capture region (if it is not set).
         }
@@ -59,7 +59,7 @@ public class PointFactory implements CapturableFactory<Point> {
     }
 
     public PointCapture parsePointCapture(CaptureGame game, Element xml, PointCapture capture) {
-        Region region = XMLRegion.parseUnion(game.getGame().getMap(), xml);
+        Region region = XMLRegion.parseUnion(game.getGame(), xml);
         if (region == null) {
             return null;
         }

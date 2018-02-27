@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @deprecated Uses JDOM.
+ */
+@Deprecated
 public class ArcadeMapConfiguration {
     private final Map<String, Element> elementsById = new HashMap<>();
     private final Element root;

@@ -124,7 +124,7 @@ public final class WoolUtils {
     }
 
     public static String name(DyeColor color) {
-        String[] name = StringUtils.split(color.name(), '_');
+        String[] name = StringUtils.split(color.toString(), '_');
         for (int i = 0; i < name.length; i++) {
             name[i] = StringUtils.capitalize(name[i].toLowerCase());
         }

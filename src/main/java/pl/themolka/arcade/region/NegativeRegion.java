@@ -9,7 +9,7 @@ public class NegativeRegion extends AbstractRegion {
     private final Region region;
 
     public NegativeRegion(Region region) {
-        super(region.getId(), region.getMap());
+        super(region.getGame(), region.getId());
 
         this.region = region;
     }

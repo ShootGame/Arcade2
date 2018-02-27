@@ -1,5 +1,6 @@
 package pl.themolka.arcade.map;
 
+@Deprecated
 public abstract class AbstractMapError implements MapError {
     private final ArcadeMap map;
 

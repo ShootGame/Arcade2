@@ -10,7 +10,7 @@ public class RegionBounds extends CuboidRegion {
     private final Region region;
 
     public RegionBounds(Region region, Vector min, Vector max) {
-        super("_" + region.getId() + "-bounds", region.getMap(), min, max);
+        super(region.getGame(), "_" + region.getId() + "-bounds", min, max);
 
         this.region = region;
     }

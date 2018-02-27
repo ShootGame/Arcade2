@@ -1,5 +1,6 @@
 package pl.themolka.arcade.map;
 
+@Deprecated
 public class MapParserError extends AbstractMapError {
     private final MapParserException exception;
 

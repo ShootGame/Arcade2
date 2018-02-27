@@ -1,11 +1,12 @@
 package pl.themolka.arcade.task;
 
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-public class Countdown extends Task implements CountdownListener {
+public class Countdown extends Task implements CountdownListener, GameHolder {
     private Duration duration;
     private boolean forcedCancel;
     private Game game;
@@ -21,6 +22,11 @@ public class Countdown extends Task implements CountdownListener {
         if (duration != null) {
             this.setDuration(duration);
         }
+    }
+
+    @Override
+    public Game getGame() {
+        return this.game;
     }
 
     /**
@@ -141,10 +147,6 @@ public class Countdown extends Task implements CountdownListener {
         }
 
         return Long.MAX_VALUE;
-    }
-
-    public Game getGame() {
-        return this.game;
     }
 
     public long getLeftSeconds() {

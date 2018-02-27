@@ -24,14 +24,6 @@ public enum EnvironmentType {
 
     public abstract Environment buildEnvironment(Element settings) throws JDOMException;
 
-    public String prettyName() {
-        return StringUtils.capitalize(this.name().toLowerCase().replace("_", " "));
-    }
-
-    public String toPrettyString() {
-        return this.prettyName();
-    }
-
     public static EnvironmentType forName(String name) {
         if (name != null) {
             EnvironmentType environment = valueOf(XMLParser.parseEnumValue(name));
@@ -41,5 +33,10 @@ public enum EnvironmentType {
         }
 
         return Environment.DEFAULT_TYPE;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.capitalize(this.name().toLowerCase().replace("_", " "));
     }
 }

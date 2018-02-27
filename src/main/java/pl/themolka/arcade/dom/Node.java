@@ -22,7 +22,7 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
         super(name, value);
     }
 
-    private final Propertable properties = new Properties();
+    private final Properties properties = new Properties();
     private final List<Node> children = new ArrayList<>();
 
     private Selection location;
@@ -92,6 +92,22 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
         int count = this.children.size();
         this.children.clear();
         return count;
+    }
+
+    @Override
+    public Node clone() {
+        Node clone = (Node) super.clone();
+        for (Property property : this.properties.clone().properties()) {
+            clone.properties.appendProperties(property);
+        }
+
+        for (Node original : this.children) {
+            clone.children.add(original.clone());
+        }
+
+        clone.location = this.location;
+        clone.parent = this.parent;
+        return clone;
     }
 
     @Override
@@ -216,7 +232,16 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
 
     @Override
     public Selection select() {
-        return this.location;
+        if (this.location != null) {
+            return this.location;
+        } else if (this.hasParent()) {
+            Selectable parent = this.getParent();
+            if (parent.isSelectable()) {
+                return parent.select();
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -351,7 +376,11 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
         String nodeName = this.getName();
 
         // starting tag
-        String starting = nodeName + (properties ? StringUtils.join(this.properties, " ") : "");
+        String starting = nodeName;
+        if (properties && this.properties.hasProperties()) {
+            starting += " " + StringUtils.join(this.properties, " ");
+        }
+
         StringBuilder builder = new StringBuilder(this.toStringTag(false, starting));
 
         // primitive value

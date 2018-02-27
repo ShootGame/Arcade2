@@ -136,10 +136,7 @@ public enum Color {
      * Get dye data of this this color
      */
     public byte getDyeData() {
-        if (this.isFormat()) {
-            throw new IllegalArgumentException(this.name() + " is a format.");
-        }
-
+        this.requireNonFormat();
         return this.toDye().getDyeData();
     }
 
@@ -147,10 +144,7 @@ public enum Color {
      * Get {@link org.bukkit.material.Wool} data of this color
      */
     public byte getWoolData() {
-        if (this.isFormat()) {
-            throw new IllegalArgumentException(this.name() + " is a format.");
-        }
-
+        this.requireNonFormat();
         return this.toDye().getWoolData();
     }
 
@@ -158,10 +152,7 @@ public enum Color {
      * Get {@link Color} of this color
      */
     public org.bukkit.Color getColor() {
-        if (this.isFormat()) {
-            throw new IllegalArgumentException(this.name() + " is a format.");
-        }
-
+        this.requireNonFormat();
         return this.toDye().getColor();
     }
 
@@ -213,6 +204,12 @@ public enum Color {
     @Override
     public String toString() {
         return this.toChat().toString();
+    }
+
+    private void requireNonFormat() {
+        if (this.isFormat()) {
+            throw new IllegalArgumentException(this.name() + " is a format.");
+        }
     }
 
     //

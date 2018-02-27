@@ -24,7 +24,7 @@ public class WoolFactory implements CapturableFactory<Wool> {
         }
 
         Element monumentElement = xml.getChild("monument");
-        Region monument = monumentElement != null ? XMLRegion.parseUnion(game.getGame().getMap(), monumentElement) : null;
+        Region monument = monumentElement != null ? XMLRegion.parseUnion(game.getGame(), monumentElement) : null;
         if (monument == null) {
             return null;
         }

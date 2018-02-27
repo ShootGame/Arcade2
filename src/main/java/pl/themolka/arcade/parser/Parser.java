@@ -4,6 +4,10 @@ import pl.themolka.arcade.dom.Element;
 
 import java.util.List;
 
+/**
+ * Something that can or cannot parse T.
+ * <b>The result cannot be {@code null}!</b>
+ */
 public interface Parser<T> {
     List<Object> expect();
 

@@ -1,4 +1,6 @@
-package pl.themolka.arcade.map;
+package pl.themolka.arcade.map.queue;
+
+import pl.themolka.arcade.map.OfflineMap;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,20 +27,12 @@ public class MapQueue extends LinkedList<OfflineMap> {
         this.addAll(queue);
     }
 
-    public void setNextMap(OfflineMap map) {
-        this.setNextMap(map, true);
-    }
-
-    public OfflineMap setNextMap(OfflineMap map, boolean force) {
-        if (force) {
-            if (this.hasNextMap()) {
-                return this.set(0, map);
-            }
-            this.addMap(map);
-        } else {
-            this.offerFirst(map);
+    public OfflineMap setNextMap(OfflineMap map) {
+        if (this.hasNextMap()) {
+            return this.set(0, map); // replace
         }
 
+        this.offerFirst(map);
         return null;
     }
 }

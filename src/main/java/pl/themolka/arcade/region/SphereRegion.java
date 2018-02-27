@@ -2,7 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.Random;
 
@@ -11,8 +11,8 @@ public class SphereRegion extends AbstractRegion {
     private final Vector center;
     private final double radius;
 
-    public SphereRegion(String id, ArcadeMap map, Vector center, double radius) {
-        super(id, map);
+    public SphereRegion(Game game, String id, Vector center, double radius) {
+        super(game, id);
 
         this.center = center;
         this.radius = radius;
@@ -21,7 +21,7 @@ public class SphereRegion extends AbstractRegion {
     }
 
     public SphereRegion(SphereRegion original) {
-        this(original.getId(), original.getMap(), original.getCenter(), original.getRadius());
+        this(original.getGame(), original.getId(), original.getCenter(), original.getRadius());
     }
 
     @Override

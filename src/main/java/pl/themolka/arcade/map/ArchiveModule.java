@@ -13,6 +13,10 @@ import pl.themolka.arcade.module.SimpleGlobalModule;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @deprecated uses JDOM, rewrite
+ */
+@Deprecated
 @ModuleInfo(id = "Archive")
 public class ArchiveModule extends SimpleGlobalModule {
     public static final String DEFAULT_DIRECTORY_NAME = "./archive";

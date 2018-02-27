@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Properties implements Propertable {
+public class Properties implements Cloneable, Propertable {
     private final List<Property> properties = new ArrayList<>();
 
     @Override
@@ -17,6 +17,20 @@ public class Properties implements Propertable {
                     this.properties.add(toAppend);
                 }
             }
+        }
+    }
+
+    @Override
+    public Properties clone() {
+        try {
+            Properties clone = (Properties) super.clone();
+            for (Property original : this.properties) {
+                clone.properties.add(original.clone());
+            }
+
+            return clone;
+        } catch (CloneNotSupportedException clone) {
+            throw new Error(clone);
         }
     }
 

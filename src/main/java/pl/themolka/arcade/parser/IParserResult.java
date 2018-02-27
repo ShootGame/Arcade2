@@ -2,6 +2,53 @@ package pl.themolka.arcade.parser;
 
 import java.util.Optional;
 
+/**
+ * Result of a fine parsed, or failed T object.
+ *
+ * <table border="1">
+ *   <caption>Summary of Result Methods</caption>
+ *   <tr>
+ *     <td></td>
+ *     <td><em>{@link #get()}</em></td>
+ *     <td><em>{@link #isPresent()}</em></td>
+ *     <td><em>{@link #or(Object)}</em></td>
+ *     <td><em>{@link #orNull()}</em></td>
+ *     <td><em>{@link #orFail()}</em></td>
+ *     <td><em>{@link #orDefault(Object)}</em></td>
+ *     <td><em>{@link #orDefaultNull()}</em></td>
+ *   </tr>
+ *   <tr>
+ *     <td><b>{@link EmptyResult}</b> <em>Empty input was provided</em></td>
+ *     <td>{@link NullPointerException} thrown</td>
+ *     <td>{@code false}</td>
+ *     <td>given parameter</td>
+ *     <td>{@code null}</td>
+ *     <td>{@link ParserException} thrown</td>
+ *     <td>given parameter</td>
+ *     <td>{@code null}</td>
+ *   </tr>
+ *   <tr>
+ *     <td><b>{@link FailResult}</b> <em>Object failed to parse</em></td>
+ *     <td>{@link NullPointerException} thrown</td>
+ *     <td>{@code false}</td>
+ *     <td>given parameter</td>
+ *     <td>{@code null}</td>
+ *     <td>{@link ParserException} thrown</td>
+ *     <td>{@link ParserException} thrown</td>
+ *     <td>{@link ParserException} thrown</td>
+ *   </tr>
+ *   <tr>
+ *     <td><b>{@link FineResult}</b> <em>Object parsed successfully</em></td>
+ *     <td>parsed object</td>
+ *     <td>{@code true}</td>
+ *     <td>parsed object</td>
+ *     <td>parsed object</td>
+ *     <td>parsed object</td>
+ *     <td>parsed object</td>
+ *     <td>parsed object</td>
+ *   </tr>
+ * </table>
+ */
 public interface IParserResult<T> {
     /**
      * Get the result, never null.
@@ -10,12 +57,12 @@ public interface IParserResult<T> {
     T get();
 
     /**
-     * If the result is present?
+     * Is the result present?
      */
     boolean isPresent();
 
     /**
-     * Convert this result to an {@link Optional<T>}.
+     * Convert this result into an {@link Optional<T>}.
      */
     default Optional<T> optional() {
         return this.isPresent() ? Optional.of(this.get()) : Optional.empty();

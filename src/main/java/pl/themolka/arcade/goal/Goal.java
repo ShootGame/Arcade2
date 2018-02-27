@@ -2,13 +2,14 @@ package pl.themolka.arcade.goal;
 
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.util.Percentage;
 
 /**
  * An abstract base class for all goals in games.
  */
-public interface Goal {
+public interface Goal extends GameHolder {
     /**
      * This `Goal` is completed in 100%.
      */
@@ -29,6 +30,7 @@ public interface Goal {
      * Game which this `Goal` is inside.
      * @return {@link Game} of this `Goal`.
      */
+    @Override
     Game getGame();
 
     /**

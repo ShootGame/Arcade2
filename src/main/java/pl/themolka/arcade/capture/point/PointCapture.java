@@ -126,7 +126,7 @@ public class PointCapture implements Listener {
     }
 
     // We are unable to use PlayerInitialSpawnEvent because our player sessions
-    // are created or restored in the PlayerJoinEvent which called after it.
+    // are created or restored in the PlayerJoinEvent which is called after it.
     @Handler(priority = Priority.LAST)
     public void onPlayerInitialSpawn(PlayerJoinEvent event) {
         GamePlayer player = event.getGamePlayer();

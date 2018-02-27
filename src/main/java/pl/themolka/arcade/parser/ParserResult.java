@@ -25,7 +25,7 @@ public abstract class ParserResult<T> implements IParserResult<T> {
 
     protected class Source extends NamedValue<String, String> {
         Source(String name, String value) {
-            super(name, value);
+            super(name != null ? name : "", value);
         }
     }
 
@@ -43,11 +43,7 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     }
 
     public static <T> ParserResult<T> empty(Element element, String name) {
-        return empty(element, name, null);
-    }
-
-    public static <T> ParserResult<T> empty(Element element, String name, String value) {
-        return new EmptyResult<>(element, name, value);
+        return new EmptyResult<>(element, name);
     }
 
     // fail
@@ -64,6 +60,10 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     }
 
     // fine
+    public static <T> ParserResult<T> fine(Element element, String name, T result) {
+        return fine(element, name, null, result);
+    }
+
     public static <T> ParserResult<T> fine(Element element, String name, String value, T result) {
         return new FineResult<>(
                 Objects.requireNonNull(element, "element cannot be null (use maybe(...) instead?)"),
@@ -76,7 +76,7 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     public static <T> ParserResult<T> maybe(Element element, String name, String value, T maybe) {
         return element != null && name != null && value != null && maybe != null
                 ? fine(element, name, value, maybe)
-                : empty(element, name, value);
+                : empty(element, name);
     }
 
     // java.util.Optional<T>
@@ -86,8 +86,8 @@ public abstract class ParserResult<T> implements IParserResult<T> {
 }
 
 class EmptyResult<T> extends FailResult<T> {
-    EmptyResult(Element element, String name, String value) {
-        super(new ParserException(element, createMessage(element)), name, value);
+    EmptyResult(Element element, String name) {
+        super(new ParserException(element, createMessage(element)), name, null);
     }
 
     @Override
@@ -101,7 +101,7 @@ class EmptyResult<T> extends FailResult<T> {
     }
 
     static String createMessage(Element element) {
-        return element != null ? "No value defined (or empty)." : "Element undefined";
+        return element != null ? "No value defined (or missing)." : "Missing element";
     }
 }
 
@@ -116,7 +116,7 @@ class FailResult<T> extends ParserResult<T> {
 
     @Override
     public T get() {
-        throw new NullPointerException("Parser failed");
+        throw new NullPointerException("There is no parsed object in this result");
     }
 
     @Override

@@ -25,6 +25,8 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.permission.PermissionContext;
 import pl.themolka.arcade.time.Time;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -44,8 +46,8 @@ public class ArcadePlayer implements Metadata, Sender {
 
     private final ArcadePlugin plugin;
 
-    private final Player bukkit; // Bukkit
-    private GamePlayer gamePlayer; // NEVER null
+    private final Reference<Player> bukkit; // Bukkit
+    private Reference<GamePlayer> gamePlayer; // NEVER null
     private Time lastPlayedSound = Time.now();
     private final MetadataContainer metadata = new MetadataContainer();
     private final PermissionContext permissions;
@@ -53,7 +55,7 @@ public class ArcadePlayer implements Metadata, Sender {
     public ArcadePlayer(ArcadePlugin plugin, Player bukkit) {
         this.plugin = plugin;
 
-        this.bukkit = bukkit;
+        this.bukkit = new WeakReference<>(bukkit);
         this.permissions = new PermissionContext(plugin, this);
     }
 
@@ -63,12 +65,12 @@ public class ArcadePlayer implements Metadata, Sender {
 
     @Override
     public GamePlayer getGamePlayer() {
-        return this.gamePlayer;
+        return this.gamePlayer.get();
     }
 
     @Override
     public Locale getLocale() {
-        Locale locale = this.bukkit.getCurrentLocale();
+        Locale locale = this.getBukkit().getCurrentLocale();
         if (locale != null) {
             return locale;
         }
@@ -161,7 +163,7 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public Player getBukkit() {
-        return this.bukkit;
+        return this.bukkit.get();
     }
 
     public ChatState getChatState() {
@@ -169,7 +171,7 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public String getDisplayName() {
-        String display = this.bukkit.getDisplayName();
+        String display = this.getBukkit().getDisplayName();
         if (display != null) {
             return display;
         }
@@ -229,7 +231,7 @@ public class ArcadePlayer implements Metadata, Sender {
                      float volume, float pitch) {
         Time now = Time.now();
         if (now.minus(this.getLastPlayedSound()).toMillis() >= SOUND_INTERVAL) {
-            this.bukkit.playSound(position, sound, volume, pitch);
+            this.getBukkit().playSound(position, sound, volume, pitch);
             this.lastPlayedSound = now;
         }
     }
@@ -260,15 +262,15 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public void setDisplayName(String displayName) {
-        this.bukkit.setDisplayName(displayName);
+        this.getBukkit().setDisplayName(displayName);
     }
 
     public void setGamePlayer(GamePlayer gamePlayer) {
-        this.gamePlayer = gamePlayer;
+        this.gamePlayer = new WeakReference<>(gamePlayer);
     }
 
     private void sendMessage(ChatMessageType type, String message) {
-        this.bukkit.sendMessage(type, TextComponent.fromLegacyText(message));
+        this.getBukkit().sendMessage(type, TextComponent.fromLegacyText(message));
     }
 
     public void sendPacket(Object packet) {
@@ -277,9 +279,10 @@ public class ArcadePlayer implements Metadata, Sender {
 
     @Override
     public String toString() {
+        Player bukkit = this.getBukkit();
         return new ToStringBuilder(this, toStringStyle)
-                .append("uuid", this.bukkit.getUniqueId())
-                .append("username", this.bukkit.getName())
+                .append("uuid", bukkit.getUniqueId())
+                .append("username", bukkit.getName())
                 .build();
     }
 

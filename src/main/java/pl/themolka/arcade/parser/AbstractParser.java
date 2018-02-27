@@ -6,7 +6,32 @@ import pl.themolka.arcade.dom.EmptyElement;
 
 import java.util.List;
 
+/**
+ * Base class for all parsers with simple exception handling.
+ *
+ * <ul>
+ *   <li>The default behavior of parsers is {@link TextParser}.</li>
+ *   <li>{@link Enum}s can easily be parsed using the {@link EnumParser}.</li>
+ * </ul>
+ *
+ * Normally, this class is used as a base class for all DOM type parsers. All
+ * parsers should inherit respective DOM type parser. These are as follows:
+ *
+ * <ul>
+ *   <li><b>{@link ElementParser}</b> for non-null key/value pair which can
+ *   parse all {@link Element}s.</li>
+ *   <li><b>{@link NodeParser}</b> for primitive or tree type
+ *   {@link pl.themolka.arcade.dom.Node}s.</li>
+ *   <li><b>{@link PropertyParser}</b> for non-null
+ *   {@link pl.themolka.arcade.dom.Property}</li>
+ * </ul>
+ */
 public abstract class AbstractParser<T> implements Parser<T> {
+    /**
+     * To many items in {@link #expect()} would make it unreadable.
+     */
+    public static final int EXPECT_ARRAY_LIMIT = 25;
+
     public AbstractParser() {
     }
 
@@ -26,14 +51,14 @@ public abstract class AbstractParser<T> implements Parser<T> {
             String normalizedName = this.normalizeName(name);
             String normalizedValue = this.normalizeValue(value);
 
-            if (normalizedName != null && normalizedValue != null) {
+            if (normalizedName != null) {
                 return this.parse(element, normalizedName, normalizedValue);
             }
         } catch (ParserException cause) {
             return ParserResult.fail(cause, name, value);
         }
 
-        return ParserResult.empty(element, name, value);
+        return ParserResult.empty(element, name);
     }
 
     private String normalizeInput(String input) {
@@ -53,6 +78,14 @@ public abstract class AbstractParser<T> implements Parser<T> {
 
     @Override
     public abstract List<Object> expect();
+
+    public List<Object> expectCompact() {
+        return this.expect();
+    }
+
+    public int expectCompactWaypoint() {
+        return EXPECT_ARRAY_LIMIT;
+    }
 
     protected abstract ParserResult<T> parse(Element element, String name, String value) throws ParserException;
 
@@ -82,9 +115,20 @@ public abstract class AbstractParser<T> implements Parser<T> {
 
     protected ParserException fail(Element element, String name, String value, String fail, Throwable cause) {
         List<Object> expect = this.expect();
-        String expected = expect != null && !expect.isEmpty() ? " (" + StringUtils.join(expect, ", ") + " expected)" : "";
+        if (expect != null && expect.size() > this.expectCompactWaypoint()) {
+            expect = this.expectCompact();
+        }
 
-        return new ParserException(element, "Invalid value \"" + value + "\" in \"" +
-                name + "\"" + (fail != null ? ": " + fail : "") + expected, cause);
+        String expected = expect != null && !expect.isEmpty() ? " (" + StringUtils.join(expect, "/") + " expected)" : "";
+
+        String invalidString;
+        if (value != null) {
+            invalidString = "Invalid value \"" + value + "\"";
+        } else {
+            invalidString = "Missing value";
+        }
+
+        return new ParserException(element, invalidString + " in \"" + name + "\"" +
+                (fail != null ? ": " + fail : "") + expected, cause);
     }
 }

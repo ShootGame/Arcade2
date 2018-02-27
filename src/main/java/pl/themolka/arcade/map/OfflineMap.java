@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class OfflineMap implements Paginationable {
+    public static final int NAME_MIN_LENGTH = 3;
     public static final int NAME_MAX_LENGTH = 32;
 
     private final String name;

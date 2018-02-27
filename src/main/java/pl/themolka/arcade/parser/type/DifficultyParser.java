@@ -2,36 +2,35 @@ package pl.themolka.arcade.parser.type;
 
 import org.bukkit.Difficulty;
 import pl.themolka.arcade.dom.Element;
-import pl.themolka.arcade.parser.AbstractParser;
-import pl.themolka.arcade.parser.EnumParser;
+import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.parser.number.IntegerParser;
 
 import java.util.List;
 
 @Produces(Difficulty.class)
-public class DifficultyParser extends AbstractParser<Difficulty>
+public class DifficultyParser extends ElementParser<Difficulty>
                               implements InstallableParser {
-    private EnumParser<Difficulty> difficultyParser;
-    private IntegerParser integerParser;
+    private Parser<Difficulty> difficultyParser;
+    private Parser<Integer> integerParser;
 
     @Override
     public void install(ParserContext context) {
         this.difficultyParser = context.enumType(Difficulty.class);
-        this.integerParser = context.of(IntegerParser.class);
+        this.integerParser = context.type(Integer.class);
     }
 
     @Override
     public List<Object> expect() {
-        return this.difficultyParser.expectedValues();
+        return this.difficultyParser.expect();
     }
 
     @Override
-    protected ParserResult<Difficulty> parse(Element element, String name, String value) throws ParserException {
+    protected ParserResult<Difficulty> parseElement(Element element, String name, String value) throws ParserException {
         // Try to find legacy ID first.
         Integer id = this.integerParser.parseWithDefinition(element, name, value).orNull();
         if (id != null) {

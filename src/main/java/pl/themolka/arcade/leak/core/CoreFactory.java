@@ -52,7 +52,7 @@ public class CoreFactory implements LeakableFactory<Core> {
         }
 
         // region
-        Region region = XMLRegion.parseUnion(game.getGame().getMap(), xml.getChild("region"));
+        Region region = XMLRegion.parseUnion(game.getGame(), xml.getChild("region"));
         if (region == null) {
             return null;
         }

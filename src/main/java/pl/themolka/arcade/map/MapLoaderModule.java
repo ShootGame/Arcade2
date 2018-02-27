@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * @deprecated uses JDOM, rewrite
+ */
+@Deprecated
 @ModuleInfo(id = "Map-Loader",
         loadBefore = {
                 RepositoriesModule.class})

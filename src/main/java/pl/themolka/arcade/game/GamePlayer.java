@@ -23,6 +23,8 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.UUID;
  * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
  * secure to store game related data.
  */
-public class GamePlayer implements MatchWinner, Metadata, Sender {
+public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
     private ChatChannel channel;
@@ -48,7 +50,7 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
     private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
     // Pointer to the ArcadePlayer instance, or null if the players is offline.
-    private ArcadePlayer player;
+    private Reference<ArcadePlayer> player;
     private final String username;
     private final UUID uuid;
 
@@ -96,6 +98,11 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
     }
 
     @Override
+    public Game getGame() {
+        return this.game;
+    }
+
+    @Override
     public List<Goal> getGoals() {
         return new ArrayList<>(this.goals);
     }
@@ -127,7 +134,7 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
 
     @Override
     public ArcadePlayer getPlayer() {
-        return this.player;
+        return this.player.get();
     }
 
     @Override
@@ -169,6 +176,8 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
     public boolean isConsole() {
         return false;
     }
+
+
 
     @Override
     public boolean isParticipating() {
@@ -266,10 +275,6 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
         } else {
             return this.getDisplayName();
         }
-    }
-
-    public Game getGame() {
-        return this.game;
     }
 
     public EntityPlayer getMojang() {
@@ -437,7 +442,7 @@ public class GamePlayer implements MatchWinner, Metadata, Sender {
     }
 
     public void setPlayer(ArcadePlayer player) {
-        this.player = player;
+        this.player = new WeakReference<>(player);
     }
 
     @Override

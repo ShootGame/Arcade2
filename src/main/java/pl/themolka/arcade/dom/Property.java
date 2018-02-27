@@ -13,6 +13,14 @@ public final class Property extends Element implements Locatable {
     }
 
     @Override
+    public Property clone() {
+        Property clone = (Property) super.clone();
+        clone.location = this.location;
+        clone.parent = this.parent;
+        return clone;
+    }
+
+    @Override
     public boolean detach() {
         return this.setParent(null) != null;
     }
@@ -42,7 +50,10 @@ public final class Property extends Element implements Locatable {
         if (this.location != null) {
             return this.location;
         } else if (this.hasParent()) {
-            return this.getParent().select();
+            Selectable parent = this.getParent();
+            if (parent.isSelectable()) {
+                return parent.select();
+            }
         }
 
         return null;

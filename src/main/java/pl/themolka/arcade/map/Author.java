@@ -2,6 +2,7 @@ package pl.themolka.arcade.map;
 
 import org.bukkit.ChatColor;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Author implements Comparable<Author> {
@@ -11,6 +12,8 @@ public class Author implements Comparable<Author> {
     private final String description;
 
     private Author(UUID uuid, String username, String description) {
+        Objects.requireNonNull(username, "username cannot be null");
+
         this.uuid = uuid;
         this.offlineUuid = this.newOfflineUuid(username);
         this.username = username;
@@ -27,11 +30,7 @@ public class Author implements Comparable<Author> {
     }
 
     public UUID getOfflineUuid() {
-        if (this.hasUuid()) {
-            return this.offlineUuid;
-        }
-
-        return null;
+        return this.offlineUuid;
     }
 
     public String getUsername() {

@@ -2,7 +2,7 @@ package pl.themolka.arcade.parser.type;
 
 import com.google.common.collect.ImmutableMap;
 import pl.themolka.arcade.dom.Element;
-import pl.themolka.arcade.parser.AbstractParser;
+import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Produces(Boolean.class)
-public class BooleanParser extends AbstractParser<Boolean> {
+public class BooleanParser extends ElementParser<Boolean> {
     public static final String[] TRUE = new String[] {
             "true", "1", "+", "yes", "allow", "on", "enable", "enabled"};
     public static final String[] FALSE = new String[] {
@@ -41,7 +41,7 @@ public class BooleanParser extends AbstractParser<Boolean> {
     }
 
     @Override
-    protected ParserResult<Boolean> parse(Element element, String name, String value) throws ParserException {
+    protected ParserResult<Boolean> parseElement(Element element, String name, String value) throws ParserException {
         Boolean result = values.get(value.toLowerCase());
         if (result != null) {
             return ParserResult.fine(element, name, value, result);

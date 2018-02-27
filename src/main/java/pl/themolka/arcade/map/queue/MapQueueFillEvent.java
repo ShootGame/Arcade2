@@ -1,4 +1,4 @@
-package pl.themolka.arcade.map;
+package pl.themolka.arcade.map.queue;
 
 import pl.themolka.arcade.ArcadePlugin;
 

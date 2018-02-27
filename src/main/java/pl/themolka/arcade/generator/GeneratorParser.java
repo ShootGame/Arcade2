@@ -2,9 +2,9 @@ package pl.themolka.arcade.generator;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
@@ -18,7 +18,7 @@ public class GeneratorParser extends NodeParser<Generator>
                              implements InstallableParser, PluginInstallable {
     private ArcadePlugin plugin;
 
-    private EnumParser<GeneratorType> typeParser;
+    private Parser<GeneratorType> typeParser;
 
     @Override
     public void installPlugin(ArcadePlugin plugin) {
@@ -32,7 +32,7 @@ public class GeneratorParser extends NodeParser<Generator>
 
     @Override
     public List<Object> expect() {
-        return this.typeParser.expectedValues();
+        return this.typeParser.expect();
     }
 
     @Override

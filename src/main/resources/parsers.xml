@@ -12,7 +12,6 @@
     <!-- Default -->
     <parser class="pl.themolka.arcade.parser.type.BooleanParser" />
     <parser class="pl.themolka.arcade.parser.type.DifficultyParser" />
-    <parser class="pl.themolka.arcade.parser.type.EntityTypeParser" />
     <parser class="pl.themolka.arcade.parser.type.GameModeParser" />
     <parser class="pl.themolka.arcade.parser.type.LocationParser" />
     <parser class="pl.themolka.arcade.parser.type.MaterialDataParser" />
@@ -20,11 +19,24 @@
     <parser class="pl.themolka.arcade.parser.type.MessageParser" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />
+    <parser class="pl.themolka.arcade.parser.type.UUIDParser" />
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
+    <parser class="pl.themolka.arcade.parser.type.VersionParser" />
 
     <!-- External -->
     <parser class="pl.themolka.arcade.generator.GeneratorParser" />
+    <parser class="pl.themolka.arcade.map.AuthorParser" />
+    <parser class="pl.themolka.arcade.map.ChangelogParser" />
+    <parser class="pl.themolka.arcade.map.MapManifestParser" />
     <parser class="pl.themolka.arcade.map.MapTimeParser" />
+    <parser class="pl.themolka.arcade.map.MapVersionParser" />
+    <parser class="pl.themolka.arcade.map.ModulesInfoParser" />
+    <parser class="pl.themolka.arcade.map.OfflineMapParser" />
+    <parser class="pl.themolka.arcade.map.ScoreboardInfoParser" />
     <parser class="pl.themolka.arcade.map.WorldInfoParser" />
+    <parser class="pl.themolka.arcade.mob.EntityTypeParser" />
+    <parser class="pl.themolka.arcade.time.LocalDateParser" />
+    <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />
+    <parser class="pl.themolka.arcade.time.LocalTimeParser" />
     <parser class="pl.themolka.arcade.time.TimeParser" />
 </parsers>

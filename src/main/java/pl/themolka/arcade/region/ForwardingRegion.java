@@ -6,7 +6,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.filter.Filter;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.util.Forwarding;
 
@@ -90,6 +92,11 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     }
 
     @Override
+    public Game getGame() {
+        return this.delegate().getGame();
+    }
+
+    @Override
     public double getHighestY() {
         return this.delegate().getHighestY();
     }
@@ -97,6 +104,11 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     @Override
     public ArcadeMap getMap() {
         return this.delegate().getMap();
+    }
+
+    @Override
+    public ArcadePlugin getPlugin() {
+        return this.delegate().getPlugin();
     }
 
     @Override

@@ -2,8 +2,8 @@ package pl.themolka.arcade.game;
 
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapParserException;
-import pl.themolka.arcade.map.MapQueue;
 import pl.themolka.arcade.map.OfflineMap;
+import pl.themolka.arcade.map.queue.MapQueue;
 
 import java.io.IOException;
 

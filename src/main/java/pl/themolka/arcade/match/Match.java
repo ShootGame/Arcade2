@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Match implements DynamicWinnable {
+public class Match implements DynamicWinnable, GameHolder {
     private final ArcadePlugin plugin;
 
     private final DrawMatchWinner drawWinner;
@@ -53,6 +54,11 @@ public class Match implements DynamicWinnable {
         }
 
         return results;
+    }
+
+    @Override
+    public Game getGame() {
+        return this.game;
     }
 
     public void broadcastEndMessage(MatchWinner winner) {
@@ -183,10 +189,6 @@ public class Match implements DynamicWinnable {
 
     public Time getEndTime() {
         return this.endTime;
-    }
-    
-    public Game getGame() {
-        return this.game;
     }
 
     public IObserverHandler getObserverHandler() {

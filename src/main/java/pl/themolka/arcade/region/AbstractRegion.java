@@ -7,7 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,16 +20,16 @@ public abstract class AbstractRegion implements Region {
     private static final Random random = new Random();
 
     private final Map<RegionEventType, Filter> filters = new HashMap<>();
+    private final Game game;
     private final String id;
-    private final ArcadeMap map;
 
-    public AbstractRegion(String id, ArcadeMap map) {
+    public AbstractRegion(Game game, String id) {
+        this.game = game;
         this.id = id;
-        this.map = map;
     }
 
     public AbstractRegion(AbstractRegion original) {
-        this(original.getId(), original.getMap());
+        this(original.getGame(), original.getId());
     }
 
     @Override
@@ -105,13 +105,13 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    public String getId() {
-        return this.id;
+    public Game getGame() {
+        return this.game;
     }
 
     @Override
-    public ArcadeMap getMap() {
-        return this.map;
+    public String getId() {
+        return this.id;
     }
 
     @Override

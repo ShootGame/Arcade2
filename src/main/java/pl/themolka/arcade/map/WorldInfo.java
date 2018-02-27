@@ -5,10 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.generator.Generator;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
-
-public class WorldInfo {
+public class WorldInfo implements Cloneable {
     private Difficulty difficulty;
     private World.Environment environment;
     private Generator generator;
@@ -16,8 +13,23 @@ public class WorldInfo {
     private long randomSeed;
     private Location spawn;
     private MapTime time;
-    private Reference<World> world;
-    private String worldName;
+
+    @Override
+    public WorldInfo clone() {
+        try {
+            WorldInfo clone = (WorldInfo) super.clone();
+            clone.difficulty = this.difficulty;
+            clone.environment = this.environment;
+            clone.generator = this.generator;
+            clone.pvp = this.pvp;
+            clone.randomSeed = this.randomSeed;
+            clone.spawn = this.spawn.clone();
+            clone.time = this.time.clone();
+            return clone;
+        } catch (CloneNotSupportedException clone) {
+            throw new Error(clone);
+        }
+    }
 
     public Difficulty getDifficulty() {
         return this.difficulty;
@@ -41,14 +53,6 @@ public class WorldInfo {
 
     public MapTime getTime() {
         return this.time;
-    }
-
-    public World getWorld() {
-        return this.world.get();
-    }
-
-    public String getWorldName() {
-        return this.worldName;
     }
 
     public boolean isPvp() {
@@ -81,13 +85,5 @@ public class WorldInfo {
 
     public void setTime(MapTime time) {
         this.time = time;
-    }
-
-    public void setWorld(World world) {
-        this.world = new WeakReference<>(world);
-    }
-
-    public void setWorldName(String worldName) {
-        this.worldName = worldName;
     }
 }

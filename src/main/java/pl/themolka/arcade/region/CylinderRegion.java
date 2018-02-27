@@ -2,7 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.Random;
 
@@ -12,8 +12,8 @@ public class CylinderRegion extends AbstractRegion {
     private final double height;
     private final double radius;
 
-    public CylinderRegion(String id, ArcadeMap map, Vector center, double height, double radius) {
-        super(id, map);
+    public CylinderRegion(Game game, String id, Vector center, double height, double radius) {
+        super(game, id);
 
         this.center = center;
         this.height = height;
@@ -23,7 +23,7 @@ public class CylinderRegion extends AbstractRegion {
     }
 
     public CylinderRegion(CylinderRegion original) {
-        this(original.getId(), original.getMap(), original.getCenter(), original.getHeight(), original.getRadius());
+        this(original.getGame(), original.getId(), original.getCenter(), original.getHeight(), original.getRadius());
     }
 
     @Override

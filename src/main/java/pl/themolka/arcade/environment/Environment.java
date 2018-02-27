@@ -26,7 +26,7 @@ public class Environment extends SimpleEnvironmentListener implements Listener {
         this.loaded = true;
         this.plugin = plugin;
 
-        plugin.getLogger().info("This server is starting in the " + type.prettyName() + " mode...");
+        plugin.getLogger().info("This server is starting in the " + this.type.toString() + " mode...");
 
         plugin.registerCommandObject(this);
         plugin.registerListenerObject(this);

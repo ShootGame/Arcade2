@@ -1,14 +1,14 @@
 package pl.themolka.arcade.parser.number;
 
 import pl.themolka.arcade.dom.Element;
-import pl.themolka.arcade.parser.AbstractParser;
+import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 
 import java.util.Collections;
 import java.util.List;
 
-public abstract class NumberParser<T extends Number> extends AbstractParser<T> {
+public abstract class NumberParser<T extends Number> extends ElementParser<T> {
     public NumberParser() {
     }
 
@@ -18,7 +18,7 @@ public abstract class NumberParser<T extends Number> extends AbstractParser<T> {
     }
 
     @Override
-    protected ParserResult<T> parse(Element element, String name, String value) throws ParserException {
+    protected ParserResult<T> parseElement(Element element, String name, String value) throws ParserException {
         try {
             return ParserResult.fine(element, name, value, this.parse(value));
         } catch (NumberFormatException cause) {

@@ -24,7 +24,7 @@ public class SpawnsModule extends Module<SpawnsGame> {
             }
 
             if (id != null && !id.isEmpty()) {
-                Spawn spawn = XMLSpawn.parse(game.getMap(), child);
+                Spawn spawn = XMLSpawn.parse(game, child);
                 if (spawn != null) {
                     spawns.put(id, spawn);
                 }

@@ -2,7 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +12,12 @@ public class UnionRegion extends AbstractRegion {
     private final RegionBounds bounds;
     private final Region[] regions;
 
-    public UnionRegion(ArcadeMap map, Region... regions) {
-        this(generateId(regions), map, regions);
+    public UnionRegion(Game game, Region... regions) {
+        this(game, generateId(regions), regions);
     }
 
-    public UnionRegion(String id, ArcadeMap map, Region... regions) {
-        super(id, map);
+    public UnionRegion(Game game, String id, Region... regions) {
+        super(game, id);
 
         this.regions = regions;
 
@@ -25,7 +25,7 @@ public class UnionRegion extends AbstractRegion {
     }
 
     public UnionRegion(UnionRegion original) {
-        this(original.getId(), original.getMap(), original.getRegions());
+        this(original.getGame(), original.getId(), original.getRegions());
     }
 
     @Override

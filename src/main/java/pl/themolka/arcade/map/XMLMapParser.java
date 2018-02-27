@@ -110,6 +110,8 @@ public class XMLMapParser implements MapParser {
     private String parseName(String name) throws MapParserException {
         if (name == null) {
             throw new MapParserException("<name> not given");
+        } else if (name.length() < OfflineMap.NAME_MIN_LENGTH) {
+            throw new MapParserException("<name> too short (shorter than " + OfflineMap.NAME_MIN_LENGTH + " characters)");
         } else if (name.length() > OfflineMap.NAME_MAX_LENGTH) {
             throw new MapParserException("<name> too long (longer than " + OfflineMap.NAME_MAX_LENGTH + " characters)");
         }

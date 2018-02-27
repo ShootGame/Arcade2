@@ -7,8 +7,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-// Note: This parser is unique - create its instance with the create method.
-public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
+/**
+ * Simple and easy {@link Enum} parsing.
+ */
+public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
     private final Class<T> type;
 
     public EnumParser(Class<T> type) {
@@ -17,11 +19,23 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
 
     @Override
     public List<Object> expect() {
-        return Collections.singletonList(this.type.getSimpleName());
+        List<Object> expect = new ArrayList<>();
+
+        T[] constants = this.type.getEnumConstants();
+        for (T constant : constants) {
+            expect.add(toPrettyValue(toPrettyValue(constant.name())));
+        }
+
+        return expect;
     }
 
     @Override
-    protected ParserResult<T> parse(Element element, String name, String value) throws ParserException {
+    public List<Object> expectCompact() {
+        return Collections.singletonList(this.type.getSimpleName() + " constant");
+    }
+
+    @Override
+    protected ParserResult<T> parseElement(Element element, String name, String value) throws ParserException {
         String input = toEnumValue(value);
 
         try {
@@ -43,11 +57,7 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
             }
         }
 
-        throw this.fail(element, name, value, "Unknown enum property");
-    }
-
-    public List<Object> expectedValues() {
-        return valueNames(this.type);
+        throw this.fail(element, name, value, "Unknown " + this.type.getSimpleName() + " property");
     }
 
     public Class<T> getType() {
@@ -55,14 +65,15 @@ public class EnumParser<T extends Enum<T>> extends AbstractParser<T> {
     }
 
     public static String toEnumValue(String input) {
-        return input.toUpperCase().replace(" ", "_").replace("-", "_");
+        return input.toUpperCase().replace(" ", "_")
+                                  .replace("-", "_");
     }
 
     public static String toPrettyValue(String input) {
-        return input.toLowerCase().replace("_", " ").replace("-", " ");
+        return input.toLowerCase().replace("_", " ");
     }
 
-    public static <T extends Enum<T>> List<Object> valueNames(Class<T> enumClass) {
+    public <T extends Enum<T>> List<Object> valueNames(Class<T> enumClass) {
         List<Object> valueNames = new ArrayList<>();
         for (T constant : enumClass.getEnumConstants()) {
             valueNames.add(toPrettyValue(constant.name()));

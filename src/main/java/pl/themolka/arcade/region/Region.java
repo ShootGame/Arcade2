@@ -7,13 +7,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.List;
 import java.util.Random;
 
-public interface Region extends StringId {
+public interface Region extends GameHolder, StringId {
     double MIN_HEIGHT = -0.1;
     double MAX_HEIGHT = Double.MAX_VALUE;
     int RANDOM_LIMIT = 10;
@@ -51,8 +51,6 @@ public interface Region extends StringId {
     Filter getFilter(RegionEventType event, Filter def);
 
     double getHighestY();
-
-    ArcadeMap getMap();
 
     Vector getRandomVector();
 

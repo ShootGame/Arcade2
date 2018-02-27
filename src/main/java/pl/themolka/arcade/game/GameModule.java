@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class GameModule extends SimpleGameListener implements Listener, Paginationable, StringId {
+public class GameModule extends SimpleGameListener
+                        implements GameHolder, Listener, Paginationable, StringId {
     private ArcadePlugin plugin;
 
     private boolean enabled;
@@ -59,6 +60,11 @@ public class GameModule extends SimpleGameListener implements Listener, Paginati
     @Override
     public String getId() {
         return this.getModule().getId();
+    }
+
+    @Override
+    public Game getGame() {
+        return this.game;
     }
 
     @Override
@@ -112,10 +118,6 @@ public class GameModule extends SimpleGameListener implements Listener, Paginati
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
         }
-    }
-
-    public Game getGame() {
-        return this.game;
     }
 
     public List<Object> getListenerObjects() {

@@ -10,6 +10,8 @@ public class LeakableLeakEvent extends LeakableEvent implements Cancelable {
 
     public LeakableLeakEvent(ArcadePlugin plugin, Leakable leakable, Participator completer) {
         super(plugin, leakable);
+
+        this.completer = completer;
     }
 
     @Override

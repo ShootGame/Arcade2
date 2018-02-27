@@ -97,7 +97,7 @@ public class RepoFileQueries extends Commands {
         for (String flag : context.getFlags()) {
             switch (flag) {
                 case "environment":
-                    if (!this.plugin.getEnvironment().getType().prettyName().equals(context.getFlag(flag))) {
+                    if (!this.plugin.getEnvironment().getType().toString().equals(context.getFlag(flag))) {
                         return false;
                     }
                     break;

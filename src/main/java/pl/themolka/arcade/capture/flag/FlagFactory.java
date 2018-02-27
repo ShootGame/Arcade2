@@ -66,7 +66,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
     }
 
     public FlagCapture parseFlagCapture(CaptureGame game, Element xml, FlagCapture capture) {
-        Region region = XMLRegion.parseUnion(game.getGame().getMap(), xml);
+        Region region = XMLRegion.parseUnion(game.getGame(), xml);
         if (region == null) {
             return null;
         }
@@ -78,7 +78,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
     }
 
     public FlagSpawn parseFlagSpawn(CaptureGame game, Element xml, FlagSpawn spawn) {
-        Region region = XMLRegion.parseUnion(game.getGame().getMap(), xml);
+        Region region = XMLRegion.parseUnion(game.getGame(), xml);
         if (region == null) {
             return null;
         }

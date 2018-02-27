@@ -2,15 +2,13 @@ package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.parser.number.LongParser;
-import pl.themolka.arcade.parser.type.BooleanParser;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,15 +19,15 @@ public class MapTimeParser extends NodeParser<MapTime>
     public static final boolean DEFAULT_IS_LOCKED = false;
     public static final long DEFAULT_TIME_TICKS = MapTime.defaultTime().getTicks();
 
-    private BooleanParser booleanParser;
-    private EnumParser<MapTimeConstants> contantParser;
-    private LongParser longParser;
+    private Parser<Boolean> booleanParser;
+    private Parser<MapTimeConstants> contantParser;
+    private Parser<Long> longParser;
 
     @Override
     public void install(ParserContext context) {
-        this.booleanParser = context.of(BooleanParser.class);
+        this.booleanParser = context.type(Boolean.class);
         this.contantParser = context.enumType(MapTimeConstants.class);
-        this.longParser = context.of(LongParser.class);
+        this.longParser = context.type(Long.class);
     }
 
     @Override

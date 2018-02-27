@@ -8,6 +8,15 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 
+/**
+ * Legacy {@link OfflineMap} and {@link ArcadeMap} parsing. This parser will be
+ * replaced with two separate parsers - {@link OfflineMapParser} for
+ * {@link OfflineMap} objects, and {@link MapManifestParser} for
+ * {@link ArcadeMap} objects. The idea is to create independent parsers for
+ * these two totally different classes.
+ * @deprecated {@link OfflineMapParser} and {@link MapManifestParser}
+ */
+@Deprecated
 public interface MapParser {
     void readFile(File file) throws IOException, MapParserException;
 

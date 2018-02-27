@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,8 +15,8 @@ public class PointRegion extends AbstractRegion {
     private final List<Block> blocks;
     private final RegionBounds bounds;
 
-    public PointRegion(String id, ArcadeMap map, Vector point) {
-        super(id, map);
+    public PointRegion(Game game, String id, Vector point) {
+        super(game, id);
 
         this.point = point;
 
@@ -25,7 +25,7 @@ public class PointRegion extends AbstractRegion {
     }
 
     public PointRegion(PointRegion original) {
-        this(original.getId(), original.getMap(), original.getPoint());
+        this(original.getGame(), original.getId(), original.getPoint());
     }
 
     @Override

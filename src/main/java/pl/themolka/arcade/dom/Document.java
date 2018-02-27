@@ -23,7 +23,13 @@ public class Document implements Content, Locatable {
 
     @Override
     public Selection select() {
-        return this.location;
+        if (this.location != null) {
+            return this.location;
+        } else if (this.hasRoot() && this.root.isSelectable()) {
+            return this.root.select();
+        }
+
+        return null;
     }
 
     public Node getRoot() {

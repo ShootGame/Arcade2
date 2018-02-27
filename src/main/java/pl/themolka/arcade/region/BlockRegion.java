@@ -5,7 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.map.ArcadeMap;
+import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,32 +15,32 @@ public class BlockRegion extends AbstractRegion {
     private final List<Block> blocks = new ArrayList<>();
     private final Region parent;
 
-    public BlockRegion(String id, ArcadeMap map, Region parent) {
-        super(id, map);
+    public BlockRegion(Game game, String id, Region parent) {
+        super(game, id);
 
         this.parent = parent;
     }
 
-    public BlockRegion(String id, ArcadeMap map, Region parent, Block... blocks) {
-        this(id, map, parent);
+    public BlockRegion(Game game, String id, Region parent, Block... blocks) {
+        this(game, id, parent);
 
         this.addBlocks(blocks);
     }
 
-    public BlockRegion(String id, ArcadeMap map, Region parent, Material... materials) {
-        this(id, map, parent);
+    public BlockRegion(Game game, String id, Region parent, Material... materials) {
+        this(game, id, parent);
 
         this.addBlocks(materials);
     }
 
-    public BlockRegion(String id, ArcadeMap map, Region parent, MaterialData... materials) {
-        this(id, map, parent);
+    public BlockRegion(Game game, String id, Region parent, MaterialData... materials) {
+        this(game, id, parent);
 
         this.addBlocks(materials);
     }
 
     public BlockRegion(BlockRegion original) {
-        this(original.getId(), original.getMap(), original.getParent(), original.getBlocks().toArray(new Block[original.getBlocks().size()]));
+        this(original.getGame(), original.getId(), original.getParent(), original.getBlocks().toArray(new Block[original.getBlocks().size()]));
     }
 
     @Override

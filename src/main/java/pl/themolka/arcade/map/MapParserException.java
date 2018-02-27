@@ -2,6 +2,11 @@ package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.module.Module;
 
+/**
+ * Legacy parser exception
+ * @deprecated {@link pl.themolka.arcade.parser.ParserException}
+ */
+@Deprecated
 public class MapParserException extends Exception {
     private Module<?> module;
 

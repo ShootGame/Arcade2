@@ -10,6 +10,11 @@ public final class EmptyElement extends Element {
     }
 
     @Override
+    public EmptyElement clone() {
+        return (EmptyElement) super.clone();
+    }
+
+    @Override
     public boolean detach() {
         return false;
     }

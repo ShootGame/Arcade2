@@ -66,7 +66,7 @@ public class XMLPortal extends XMLParser {
         }
 
         // region
-        Region region = XMLRegion.parseUnion(game.getMap(), xml);
+        Region region = XMLRegion.parseUnion(game, xml);
         if (region == null) {
             return null; // region is required!
         }

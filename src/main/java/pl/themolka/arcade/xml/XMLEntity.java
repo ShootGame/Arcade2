@@ -5,7 +5,7 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 
 /**
- * @deprecated {@link pl.themolka.arcade.parser.type.EntityTypeParser}
+ * @deprecated {@link pl.themolka.arcade.mob.EntityTypeParser}
  */
 @Deprecated
 public class XMLEntity extends XMLParser {

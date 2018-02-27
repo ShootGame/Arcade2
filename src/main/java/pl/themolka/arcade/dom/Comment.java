@@ -36,7 +36,16 @@ public class Comment implements Locatable, NestedContent<Content> {
 
     @Override
     public Selection select() {
-        return this.location;
+        if (this.location != null) {
+            return this.location;
+        } else if (this.hasParent()) {
+            Selectable parent = this.getParent();
+            if (parent.isSelectable()) {
+                parent.select();
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -136,7 +136,7 @@ public class Core extends Leakable implements Listener {
                 .setY(Region.MIN_HEIGHT);
         Vector max = bounds.getMax().clone().add(distance, 0, distance)
                 .setY(bounds.getMax().getY() - (bounds.getMax().getY() - bounds.getMin().getY()) - detectorLevel);
-        this.setDetector(new CuboidRegion(region.getId() + DETECTOR_REGION_SUFFIX, region.getMap(), min, max));
+        this.setDetector(new CuboidRegion(region.getGame(), region.getId() + DETECTOR_REGION_SUFFIX, min, max));
 
         // liquid
         if (liquid == null) {
