@@ -131,9 +131,6 @@ public class Match implements DynamicWinnable, GameHolder {
 
             player.setCurrentChannel(null);
             player.setParticipating(false);
-
-            online.getPermissions().clearGroups();
-            online.getPermissions().refresh();
             player.reset();
 
             player.getBukkit().getInventory().setItem(0, ObserversKit.NAVIGATION);
@@ -396,10 +393,6 @@ public class Match implements DynamicWinnable, GameHolder {
             }
 
             player.setParticipating(true);
-
-            online.getPermissions().clearGroups();
-            online.getPermissions().refresh();
-
             player.reset();
         }
 

@@ -1,39 +1,27 @@
 package pl.themolka.arcade.environment;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.development.Development;
-import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Node;
 
 public enum EnvironmentType {
     DEVELOPMENT {
         @Override
-        public Environment buildEnvironment(Element settings) throws JDOMException {
-            return new Development(settings, this);
+        public Environment buildEnvironment(Node options) throws DOMException {
+            return new Development(options, this);
         }
     },
 
     PRODUCTION {
         @Override
-        public Environment buildEnvironment(Element settings) throws JDOMException {
-            return new Production(settings, this);
+        public Environment buildEnvironment(Node options) throws DOMException {
+            return new Production(options, this);
         }
     },
     ;
 
-    public abstract Environment buildEnvironment(Element settings) throws JDOMException;
-
-    public static EnvironmentType forName(String name) {
-        if (name != null) {
-            EnvironmentType environment = valueOf(XMLParser.parseEnumValue(name));
-            if (environment != null) {
-                return environment;
-            }
-        }
-
-        return Environment.DEFAULT_TYPE;
-    }
+    public abstract Environment buildEnvironment(Node options) throws DOMException;
 
     @Override
     public String toString() {

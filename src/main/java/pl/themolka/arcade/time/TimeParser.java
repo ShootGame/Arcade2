@@ -7,13 +7,13 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Time.class)
 public class TimeParser extends ElementParser<Time> {
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a time duration");
+    public Set<Object> expect() {
+        return Collections.singleton("a time duration");
     }
 
     @Override

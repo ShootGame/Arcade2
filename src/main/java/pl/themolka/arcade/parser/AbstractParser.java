@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.EmptyElement;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for all parsers with simple exception handling.
@@ -77,9 +77,9 @@ public abstract class AbstractParser<T> implements Parser<T> {
     //
 
     @Override
-    public abstract List<Object> expect();
+    public abstract Set<Object> expect();
 
-    public List<Object> expectCompact() {
+    public Set<Object> expectCompact() {
         return this.expect();
     }
 
@@ -114,7 +114,7 @@ public abstract class AbstractParser<T> implements Parser<T> {
     }
 
     protected ParserException fail(Element element, String name, String value, String fail, Throwable cause) {
-        List<Object> expect = this.expect();
+        Set<Object> expect = this.expect();
         if (expect != null && expect.size() > this.expectCompactWaypoint()) {
             expect = this.expectCompact();
         }

@@ -1,9 +1,10 @@
-package pl.themolka.arcade.util;
+package pl.themolka.arcade.bossbar;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.util.Color;
 
 public final class BossBarUtils {
     private static final BarColor def = null;

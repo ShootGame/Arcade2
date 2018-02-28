@@ -203,7 +203,7 @@ public class GeneralListeners implements Listener {
     @Handler(priority = Priority.HIGHEST)
     public void onGameStart(GameStartEvent event) {
         Game game = event.getGame();
-        MapTime time = game.getMap().getTime();
+        MapTime time = game.getMap().getManifest().getWorld().getTime();
 
         this.walkTime(game.getWorld(), time.getTicks(), time.isLocked());
     }

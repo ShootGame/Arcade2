@@ -11,7 +11,7 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Material.class)
 public class MaterialParser extends ElementParser<Material>
@@ -24,8 +24,8 @@ public class MaterialParser extends ElementParser<Material>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a material type");
+    public Set<Object> expect() {
+        return Collections.singleton("a material type");
     }
 
     @Override

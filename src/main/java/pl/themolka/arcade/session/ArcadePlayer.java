@@ -19,16 +19,11 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.HealthContent;
 import pl.themolka.arcade.kit.MaxHealthContent;
-import pl.themolka.arcade.metadata.Metadata;
-import pl.themolka.arcade.metadata.MetadataContainer;
-import pl.themolka.arcade.module.Module;
-import pl.themolka.arcade.permission.PermissionContext;
 import pl.themolka.arcade.time.Time;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,7 +32,7 @@ import java.util.UUID;
  * are not secure to be stored in objects - use {@link GamePlayer} or
  * {@link UUID} instead.
  */
-public class ArcadePlayer implements Metadata, Sender {
+public class ArcadePlayer implements Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
     public static final int USERNAME_MIN_LENGTH = 3; // was changed to 4 in beta
     public static final int USERNAME_MAX_LENGTH = 16;
@@ -49,14 +44,11 @@ public class ArcadePlayer implements Metadata, Sender {
     private final Reference<Player> bukkit; // Bukkit
     private Reference<GamePlayer> gamePlayer; // NEVER null
     private Time lastPlayedSound = Time.now();
-    private final MetadataContainer metadata = new MetadataContainer();
-    private final PermissionContext permissions;
 
     public ArcadePlayer(ArcadePlugin plugin, Player bukkit) {
         this.plugin = plugin;
 
         this.bukkit = new WeakReference<>(bukkit);
-        this.permissions = new PermissionContext(plugin, this);
     }
 
     //
@@ -76,17 +68,6 @@ public class ArcadePlayer implements Metadata, Sender {
         }
 
         return DEFAULT_LOCALE;
-    }
-
-    @Override
-    public Object getMetadata(Class<? extends Module<?>> owner,
-                              String key, Object def) {
-        return this.metadata.getMetadata(owner, key, def);
-    }
-
-    @Override
-    public Set<String> getMetadataKeys() {
-        return this.metadata.getMetadataKeys();
     }
 
     @Override
@@ -136,12 +117,6 @@ public class ArcadePlayer implements Metadata, Sender {
         }
     }
 
-    @Override
-    public void setMetadata(Class<? extends Module<?>> owner,
-                            String key, Object metadata) {
-        this.metadata.setMetadata(owner, key, metadata);
-    }
-
     //
     // Methods
     //
@@ -180,8 +155,7 @@ public class ArcadePlayer implements Metadata, Sender {
     }
 
     public String getFullName() {
-        return this.getPermissions().getPrefixes() +
-                this.getDisplayName() + ChatColor.RESET;
+        return this.getDisplayName() + ChatColor.RESET;
     }
 
     public EntityPlayer getMojang() {
@@ -190,10 +164,6 @@ public class ArcadePlayer implements Metadata, Sender {
 
     public Time getLastPlayedSound() {
         return this.lastPlayedSound;
-    }
-
-    public PermissionContext getPermissions() {
-        return this.permissions;
     }
 
     public void play(ArcadeSound sound) {

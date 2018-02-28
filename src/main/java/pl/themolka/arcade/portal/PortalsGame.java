@@ -1,6 +1,9 @@
 package pl.themolka.arcade.portal;
 
 import net.engio.mbassy.listener.Handler;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 import org.jdom2.Element;
 import pl.themolka.arcade.event.Priority;
@@ -10,6 +13,7 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.kit.KitsModule;
+import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 import pl.themolka.arcade.spawn.SpawnsGame;
 import pl.themolka.arcade.spawn.SpawnsModule;
@@ -80,15 +84,37 @@ public class PortalsGame extends GameModule {
 
     @Handler(priority = Priority.LOW)
     public void detectPortal(PlayerMoveEvent event) {
-        if (event.isCanceled()) {
-            return;
+        if (!event.isCanceled()) {
+            this.detectPortal(event.getGamePlayer(), event.getTo().toVector());
         }
+    }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void detectPortal(PlayerTeleportEvent event) {
+        GamePlayer player = this.getGame().getPlayer(event.getPlayer());
+        if (player != null) {
+            this.detectPortal(player, event.getTo().toVector());
+        }
+    }
+
+    // See pl.themolka.arcade.capture.point.PointCapture#onPlayerInitialSpawn
+    @Handler(priority = Priority.LOW)
+    public void detectPortal(PlayerJoinEvent event) {
         GamePlayer player = event.getGamePlayer();
-        Portal portal = this.getPortal(event.getTo().toVector());
+        this.detectPortal(player, player.getBukkit().getLocation().toVector());
+    }
 
-        if (portal != null && portal.canTeleport(player)) {
-            portal.teleport(player);
+    private Portal detectPortal(GamePlayer player, Vector at) {
+        Portal portal = this.getPortal(at);
+        if (portal == null) {
+            return null;
         }
+
+        if (portal.canTeleport(player)) {
+            portal.teleport(player);
+            return portal;
+        }
+
+        return null;
     }
 }

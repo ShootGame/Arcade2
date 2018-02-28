@@ -11,7 +11,7 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(MapTime.class)
 public class MapTimeParser extends NodeParser<MapTime>
@@ -31,8 +31,8 @@ public class MapTimeParser extends NodeParser<MapTime>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a map time");
+    public Set<Object> expect() {
+        return Collections.singleton("a map time");
     }
 
     @Override

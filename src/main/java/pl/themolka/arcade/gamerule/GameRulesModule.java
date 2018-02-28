@@ -13,8 +13,6 @@ import java.util.List;
 @ModuleInfo(id = "GameRules")
 @ModuleVersion(value = "1.0")
 public class GameRulesModule extends Module<GameRulesGame> {
-    public static final String METADATA_GAMERULES = "GameRules";
-
     @Override
     public GameRulesGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<GameRule> rules = new ArrayList<>();

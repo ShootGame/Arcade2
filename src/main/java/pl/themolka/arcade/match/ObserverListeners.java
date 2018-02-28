@@ -201,16 +201,15 @@ public class ObserverListeners implements Listener {
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerVoidTeleport(PlayerMoveEvent event) {
-        if (!event.isCanceled() &&
-                this.isObserving(event.getPlayer().getBukkit())) {
+        if (!event.isCanceled() && this.isObserving(event.getPlayer().getBukkit())) {
             ArcadeMap map = this.game.getGame().getMap();
             int y = event.getTo().getBlockY();
 
             // teleport observers when they are in the void
             if (y < 0 - BORDER_Y || y > map.getWorld()
                     .getMaxHeight() + BORDER_Y) {
-                event.getPlayer().getBukkit().teleport(
-                        map.getSpawn(), TELEPORT_CAUSE);
+                event.getPlayer().getBukkit().teleport(map.getManifest().getWorld().getSpawn(),
+                                                       TELEPORT_CAUSE);
             }
         }
     }

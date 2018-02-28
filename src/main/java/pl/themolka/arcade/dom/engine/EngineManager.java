@@ -15,12 +15,17 @@ import java.util.Set;
 public class EngineManager {
     private final Map<String, DOMEngine> engines = new HashMap<>();
 
-    public DOMEngine forFile(File file) {
+    public DOMEngine forFile(File file) throws EngineNotInstalledException {
         return this.forFile(file.getName());
     }
 
-    public DOMEngine forFile(String file) {
-        return this.getEngine(FilenameUtils.getExtension(file));
+    public DOMEngine forFile(String file) throws EngineNotInstalledException {
+        DOMEngine engine = this.getEngine(FilenameUtils.getExtension(file));
+        if (engine != null) {
+            return engine;
+        }
+
+        throw new EngineNotInstalledException("No engine installed for file: " + file);
     }
 
     public DOMEngine getEngine(String fileExtension) {
@@ -39,6 +44,7 @@ public class EngineManager {
 
     public void registerDefault() {
         this.registerDefault(JDOMEngine.class);
+        this.registerDefault(PropertiesEngine.class);
     }
 
     public void registerEngine(DOMEngine engine, String... fileExtensions) {

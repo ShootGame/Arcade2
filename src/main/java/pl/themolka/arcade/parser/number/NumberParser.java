@@ -6,15 +6,15 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 public abstract class NumberParser<T extends Number> extends ElementParser<T> {
     public NumberParser() {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a number");
+    public Set<Object> expect() {
+        return Collections.singleton("a number");
     }
 
     @Override

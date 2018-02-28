@@ -10,13 +10,11 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(ScoreboardInfo.class)
 public class ScoreboardInfoParser extends NodeParser<ScoreboardInfo>
                                   implements InstallableParser {
-    public static final String DEFAULT_TITLE = null;
-
     private Parser<String> titleParser;
 
     @Override
@@ -25,14 +23,14 @@ public class ScoreboardInfoParser extends NodeParser<ScoreboardInfo>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("scoreboard information");
+    public Set<Object> expect() {
+        return Collections.singleton("scoreboard information");
     }
 
     @Override
     protected ParserResult<ScoreboardInfo> parseTree(Node node, String name) throws ParserException {
         ScoreboardInfo info = new ScoreboardInfo();
-        info.setTitle(this.titleParser.parse(node.property("title")).orDefault(DEFAULT_TITLE));
+        info.setTitle(this.titleParser.parse(node.property("title")).orDefaultNull());
         return ParserResult.fine(node, name, info);
     }
 }

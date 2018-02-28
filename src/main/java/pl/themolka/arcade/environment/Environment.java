@@ -1,8 +1,8 @@
 package pl.themolka.arcade.environment;
 
 import org.bukkit.event.Listener;
-import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.Node;
 
 public class Environment extends SimpleEnvironmentListener implements Listener {
     public static final EnvironmentType DEFAULT_TYPE = EnvironmentType.DEVELOPMENT;
@@ -10,11 +10,11 @@ public class Environment extends SimpleEnvironmentListener implements Listener {
     private ArcadePlugin plugin;
 
     private boolean loaded = false;
-    private final Element settings;
+    private final Node options;
     private final EnvironmentType type;
 
-    public Environment(Element settings, EnvironmentType type) {
-        this.settings = settings;
+    public Environment(Node options, EnvironmentType type) {
+        this.options = options;
         this.type = type;
     }
 
@@ -32,12 +32,12 @@ public class Environment extends SimpleEnvironmentListener implements Listener {
         plugin.registerListenerObject(this);
     }
 
-    public ArcadePlugin getPlugin() {
-        return this.plugin;
+    public Node getOptions() {
+        return this.options;
     }
 
-    public Element getSettings() {
-        return this.settings;
+    public ArcadePlugin getPlugin() {
+        return this.plugin;
     }
 
     public EnvironmentType getType() {

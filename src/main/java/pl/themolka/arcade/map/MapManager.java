@@ -1,10 +1,12 @@
 package pl.themolka.arcade.map;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.generator.Generator;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,7 +24,6 @@ public class MapManager implements FilenameFilter {
     private final MapContainer container = new MapContainer();
     private Field containerField;
     private List<MapContainerLoader> loaderList = new ArrayList<>();
-    private MapParser.Technology parser;
 
     public MapManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -81,20 +82,24 @@ public class MapManager implements FilenameFilter {
     }
 
     public World createWorld(ArcadeMap map) {
+        WorldInfo info = map.getManifest().getWorld();
+        Generator generator = info.getGenerator();
+        Location spawn = info.getSpawn();
+
         WorldCreator creator = new WorldCreator(map.getWorldName())
-                .environment(map.getEnvironment())
+                .environment(info.getEnvironment())
                 .generateStructures(false)
-                .generator(map.getGenerator().getChunkGenerator())
+                .generator(generator.getChunkGenerator())
                 .hardcore(false)
-                .seed(map.getSeed())
-                .type(map.getGenerator().getWorldType());
+                .seed(info.getRandomSeed().getSeed())
+                .type(generator.getWorldType());
 
         World world = creator.createWorld();
         world.setAutoSave(false);
-        world.setDifficulty(map.getDifficulty());
+        world.setDifficulty(info.getDifficulty());
         world.setKeepSpawnInMemory(false);
-        world.setPVP(map.isPvp());
-        world.setSpawnLocation(map.getSpawn().getBlockX(), map.getSpawn().getBlockY(), map.getSpawn().getBlockZ());
+        world.setPVP(info.isPvp());
+        world.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
 
         map.setWorld(world);
         return world;
@@ -136,16 +141,8 @@ public class MapManager implements FilenameFilter {
         return this.loaderList;
     }
 
-    public MapParser.Technology getParser() {
-        return this.parser;
-    }
-
     public File getWorldContainer() {
         return this.plugin.getServer().getWorldContainer();
-    }
-
-    public void setParser(MapParser.Technology parser) {
-        this.parser = parser;
     }
 
     public void setWorldContainer(File container) {

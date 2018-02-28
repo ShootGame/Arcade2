@@ -20,8 +20,6 @@ import java.util.List;
 @ModuleInfo(id = "Match")
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 15;
-    public static final String METADATA_MATCH = "Match";
-    public static final String METADATA_OBSERVERS = "Observers";
 
     @Override
     public MatchGame buildGameModule(Element xml, Game game) throws JDOMException {
@@ -60,7 +58,6 @@ public class MatchModule extends Module<MatchGame> {
             observers.setName(Observers.OBSERVERS_NAME);
         }
 
-        this.getGame().setMetadata(MatchModule.class, METADATA_OBSERVERS, observers);
         return new MatchGame(autoCycle, autoStart, startCountdown, observers);
     }
 

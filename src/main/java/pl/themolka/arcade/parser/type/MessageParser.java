@@ -8,15 +8,15 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(String.class)
 public class MessageParser extends ElementParser<String> {
     public static final char COLOR_CODE = '`';
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a colorable text");
+    public Set<Object> expect() {
+        return Collections.singleton("colored text");
     }
 
     @Override

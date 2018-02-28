@@ -285,19 +285,12 @@ public class Team implements GameHolder, MatchWinner {
         this.onlineMembers.add(player);
         this.getBukkit().addPlayer(player.getBukkit());
 
-        player.setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM, this);
         player.setChatColor(this.getChatColor());
         player.setCurrentChannel(this.getCurrentChannel());
         player.setDisplayName(this.getChatColor() +
                 player.getUsername() + ChatColor.RESET);
         player.setParticipating(this.getMatch().isRunning() &&
                 this.isParticipating());
-
-        // handle it AFTER the setParticipating(...) method
-        if (this.getMatch().isRunning()) {
-            player.getPlayer().getPermissions().clearGroups();
-            player.getPlayer().getPermissions().refresh();
-        }
 
         this.plugin.getLogger().info(player.getUsername() + " joined team '" +
                 this.getName() + "' (" + this.getId() + ")");
@@ -337,17 +330,10 @@ public class Team implements GameHolder, MatchWinner {
         this.onlineMembers.remove(player);
         this.getBukkit().removePlayer(player.getBukkit());
 
-        player.removeMetadata(TeamsModule.class, TeamsModule.METADATA_TEAM);
         player.setChatColor(null);
         player.setCurrentChannel(null);
         player.setParticipating(false);
         player.resetDisplayName();
-
-        // handle it AFTER the setParticipating method
-        if (this.getMatch().isRunning()) {
-            player.getPlayer().getPermissions().clearGroups();
-            player.getPlayer().getPermissions().refresh();
-        }
 
         this.plugin.getLogger().info(player.getUsername() + " left team '" +
                 this.getName() + "' (" + this.getId() + ")");

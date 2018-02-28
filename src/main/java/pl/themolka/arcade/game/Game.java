@@ -3,14 +3,13 @@ package pl.themolka.arcade.game;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.map.ArcadeMap;
-import pl.themolka.arcade.map.MapError;
-import pl.themolka.arcade.map.MapParserError;
 import pl.themolka.arcade.map.MapParserException;
-import pl.themolka.arcade.metadata.Metadata;
-import pl.themolka.arcade.metadata.MetadataContainer;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
@@ -19,25 +18,24 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
  * A game representation of the currently playing map.
  */
-public class Game implements Metadata, PlayerVisibilityFilter {
+public class Game implements PlayerVisibilityFilter {
     private final ArcadePlugin plugin;
 
-    private final List<MapError> errors = new ArrayList<>();
     private final int gameId;
     private final ArcadeMap map;
-    private final MetadataContainer metadata = new MetadataContainer();
     private final GameModuleContainer modules = new GameModuleContainer();
     private final List<GamePlayerListener> playerListeners = new ArrayList<>();
     private final Map<UUID, GamePlayer> players = new HashMap<>();
@@ -46,7 +44,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     private final List<Task> taskList = new ArrayList<>();
     private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>();
     private final GameWindowRegistry windowRegistry;
-    private final World world;
+    private final Reference<World> world;
 
     /**
      * Create a new game and load modules from the configuration.
@@ -54,12 +52,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
      * @param gameId An unique identifier of this game in this server session.
      * @param map A map which this game will be playing on.
      * @param world A world which this game will be playing on.
-     *
-     * TODO: Add multi-world support in the future.
-     * Really - we should add an ability to play the same game on multiple maps...
-     * To do this - we should add a {@link Map} containg a {@link World} as a key
-     *              and {@link Game} as a value. All events should be handled per
-     *              playing game.
      */
     public Game(ArcadePlugin plugin, int gameId, ArcadeMap map, World world) {
         this.plugin = plugin;
@@ -68,15 +60,9 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         this.map = map;
         this.scoreboard = new ScoreboardContext(plugin, this);
         this.windowRegistry = new GameWindowRegistry(this);
-        this.world = world;
+        this.world = new WeakReference<>(world);
 
-        Element modules = map.getConfiguration().getRoot().getChild("modules");
-        if (modules == null) {
-            this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
-            modules = new Element("modules");
-        }
-
-        this.readModules(modules);
+        this.readModules();
     }
 
     /**
@@ -103,21 +89,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         return def;
     }
 
-    @Override
-    public Object getMetadata(Class<? extends Module<?>> owner, String key, Object def) {
-        return this.metadata.getMetadata(owner, key, def);
-    }
-
-    @Override
-    public Set<String> getMetadataKeys() {
-        return this.metadata.getMetadataKeys();
-    }
-
-    @Override
-    public void setMetadata(Class<? extends Module<?>> owner, String key, Object metadata) {
-        this.metadata.setMetadata(owner, key, metadata);
-    }
-
     public int addAsyncTask(Task task) {
         int id = Task.DEFAULT_TASK_ID;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
@@ -126,14 +97,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         }
 
         return id;
-    }
-
-    public boolean addError(MapError error) {
-        return this.errors.add(error);
-    }
-
-    public boolean addError(MapParserException exception) {
-        return this.addError(new MapParserError(this.getMap(), exception));
     }
 
     public void addPlayer(GamePlayer player) {
@@ -168,15 +131,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         return this.visibilityFilters.add(filter);
     }
 
-    public boolean clearErrors() {
-        if (this.hasErrors()) {
-            this.errors.clear();
-            return true;
-        }
-
-        return false;
-    }
-
     public void enableModule(GameModule module) {
         if (module == null || module.getModule() == null || module.isEnabled()) {
             return;
@@ -193,7 +147,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
                         this.getModules().register(game);
                     }
                 } catch (MapParserException ex) {
-                    this.addError(ex);
+                    ex.printStackTrace();
                 }
             }
 
@@ -239,10 +193,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         }
 
         return results;
-    }
-
-    public List<MapError> getErrors() {
-        return this.errors;
     }
 
     public int getGameId() {
@@ -372,7 +322,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
     }
 
     public World getWorld() {
-        return this.world;
+        return this.world.get();
     }
 
     public boolean hasDependencies(GameModule module) {
@@ -383,10 +333,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         }
 
         return true;
-    }
-
-    public boolean hasErrors() {
-        return !this.errors.isEmpty();
     }
 
     public GameModule readModule(Element xml) throws MapParserException {
@@ -412,9 +358,9 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         }
     }
 
-    public void readModules(Element parent) {
-        this.readMapModule(parent);
-        this.readGlobalModule();
+    public void readModules() {
+        this.readMapModules();
+        this.readGlobalModules();
     }
 
     public void removePlayer(GamePlayer player) {
@@ -464,8 +410,6 @@ public class Game implements Metadata, PlayerVisibilityFilter {
 
         for (GameModule module : this.getModules().getModules()) {
             module.setEnabled(false);
-            module.onDisable();
-            module.destroy();
         }
 
         for (Task task : this.getTasks()) {
@@ -477,7 +421,7 @@ public class Game implements Metadata, PlayerVisibilityFilter {
         this.plugin.getLogger().info("Game #" + this.getGameId() + " has ended.");
     }
 
-    private void readGlobalModule() {
+    private void readGlobalModules() {
         for (Module<?> global : this.plugin.getModules().getModules()) {
             if (!global.isGlobal() || this.getModules().contains(global.getId())) {
                 continue;
@@ -489,22 +433,69 @@ public class Game implements Metadata, PlayerVisibilityFilter {
                     this.getModules().register(module);
                 }
             } catch (MapParserException ex) {
-                this.addError(ex);
+                ex.printStackTrace();
             }
         }
     }
 
-    private void readMapModule(Element parent) {
-        for (Element xml : parent.getChildren()) {
+    private void readMapModules() {
+        Node parent = Node.ofChildren("legacy", this.map.getManifest().getModules().getModules());
+
+        if (parent == null || parent.isEmpty()) {
+            this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
+            return;
+        }
+
+        for (Node node : parent.children()) {
             try {
-                GameModule module = this.readModule(xml);
+                GameModule module = this.readModule(toJdom(node));
                 if (module != null) {
                     this.getModules().register(module);
                 }
             } catch (MapParserException ex) {
-                this.addError(ex);
                 ex.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Converting our DOM {@link Node}s into JDOM {@link Element}s.
+     *
+     * The Goal is to totally drop JDOM library from the source. We need to
+     * convert our DOM objects to JDOM's to support legacy code. This class
+     * should be used only for legacy purposes and ignored in new code.
+     *
+     * @deprecated Should be removed.
+     */
+    @Deprecated
+    public static Element toJdom(Node node) {
+        if (node == null) {
+            return null;
+        }
+
+        Element element = new Element(node.getName());
+
+        // attach properties
+        for (Property property : node.properties()) {
+            element.setAttribute(new Attribute(property.getName(), property.getValue()));
+        }
+
+        // attach body
+        if (node.isPrimitive()) {
+            element.setText(node.getValue());
+        } else if (node.isTree()) {
+            List<Element> children = new ArrayList<>();
+            for (Node child : node.children()) {
+                Element jdom = toJdom(child);
+
+                if (jdom != null) {
+                    children.add(jdom);
+                }
+            }
+
+            element.addContent(children);
+        }
+
+        return element;
     }
 }

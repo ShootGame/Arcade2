@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Arcade parsers **sorted in alphabetical order** -->
 <parsers>
-    <!-- Numbers -->
+    <parser class="pl.themolka.arcade.config.RefParser" />
+
+    <parser class="pl.themolka.arcade.damage.DamageGameParser" />
+    <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
+
+    <parser class="pl.themolka.arcade.environment.EnvironmentParser" />
+    <parser class="pl.themolka.arcade.generator.GeneratorParser" />
+
+    <parser class="pl.themolka.arcade.map.AuthorParser" />
+    <parser class="pl.themolka.arcade.map.ChangelogParser" />
+    <parser class="pl.themolka.arcade.map.MapManifestParser" />
+    <parser class="pl.themolka.arcade.map.MapTimeParser" />
+    <parser class="pl.themolka.arcade.map.MapVersionParser" />
+    <parser class="pl.themolka.arcade.map.MapFileVersionParser" />
+    <parser class="pl.themolka.arcade.map.ModulesInfoParser" />
+    <parser class="pl.themolka.arcade.map.OfflineMapParser" />
+    <parser class="pl.themolka.arcade.map.RandomSeedParser" />
+    <parser class="pl.themolka.arcade.map.ScoreboardInfoParser" />
+    <parser class="pl.themolka.arcade.map.WorldInfoParser" />
+
+    <parser class="pl.themolka.arcade.mob.EntityTypeParser" />
+
     <parser class="pl.themolka.arcade.parser.number.ByteParser" />
     <parser class="pl.themolka.arcade.parser.number.DoubleParser" />
     <parser class="pl.themolka.arcade.parser.number.FloatParser" />
@@ -9,7 +30,6 @@
     <parser class="pl.themolka.arcade.parser.number.LongParser" />
     <parser class="pl.themolka.arcade.parser.number.ShortParser" />
 
-    <!-- Default -->
     <parser class="pl.themolka.arcade.parser.type.BooleanParser" />
     <parser class="pl.themolka.arcade.parser.type.DifficultyParser" />
     <parser class="pl.themolka.arcade.parser.type.GameModeParser" />
@@ -23,18 +43,6 @@
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
     <parser class="pl.themolka.arcade.parser.type.VersionParser" />
 
-    <!-- External -->
-    <parser class="pl.themolka.arcade.generator.GeneratorParser" />
-    <parser class="pl.themolka.arcade.map.AuthorParser" />
-    <parser class="pl.themolka.arcade.map.ChangelogParser" />
-    <parser class="pl.themolka.arcade.map.MapManifestParser" />
-    <parser class="pl.themolka.arcade.map.MapTimeParser" />
-    <parser class="pl.themolka.arcade.map.MapVersionParser" />
-    <parser class="pl.themolka.arcade.map.ModulesInfoParser" />
-    <parser class="pl.themolka.arcade.map.OfflineMapParser" />
-    <parser class="pl.themolka.arcade.map.ScoreboardInfoParser" />
-    <parser class="pl.themolka.arcade.map.WorldInfoParser" />
-    <parser class="pl.themolka.arcade.mob.EntityTypeParser" />
     <parser class="pl.themolka.arcade.time.LocalDateParser" />
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />
     <parser class="pl.themolka.arcade.time.LocalTimeParser" />

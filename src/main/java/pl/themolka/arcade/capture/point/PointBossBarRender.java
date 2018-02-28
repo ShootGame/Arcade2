@@ -10,6 +10,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import pl.themolka.arcade.bossbar.BossBarUtils;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.command.CommandUtils;
@@ -18,7 +19,6 @@ import pl.themolka.arcade.game.GameStopEvent;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.team.TeamEditEvent;
-import pl.themolka.arcade.util.BossBarUtils;
 import pl.themolka.arcade.util.Color;
 
 import java.util.Map;
@@ -64,9 +64,9 @@ public class PointBossBarRender implements Listener {
             this.bossBars.put(point, bossBar = this.createBossBar());
         }
 
-        bossBar.setColor(this.getBarColor(pointColor));
+        bossBar.setColor(BossBarUtils.color(progressColor, BAR_COLOR));
         bossBar.setProgress(progress);
-        bossBar.setTitle(this.getBarTitle(point.getName(), pointColor, progress, progressColor));
+        bossBar.setTitle(this.createBarTitle(point.getName(), pointColor, progress, progressColor));
         bossBar.setVisible(true);
         return bossBar;
     }
@@ -177,16 +177,7 @@ public class PointBossBarRender implements Listener {
     // Helper Methods
     //
 
-    private BarColor getBarColor(Color color) {
-        BarColor barColor = BossBarUtils.color(color);
-        if (barColor != null) {
-            return barColor;
-        }
-
-        return BAR_COLOR;
-    }
-
-    private BaseComponent getBarTitle(String pointName, Color pointColor, double progress, Color progressColor) {
+    private BaseComponent createBarTitle(String pointName, Color pointColor, double progress, Color progressColor) {
         String progressPretty = Math.round(progress * 100D) + "%";
 
         net.md_5.bungee.api.ChatColor realPointColor = pointColor.toComponent();

@@ -11,16 +11,20 @@ public class WorldInfoBuilder implements Builder<WorldInfo> {
     private World.Environment environment;
     private Generator generator;
     private boolean pvp;
-    private long randomSeed;
+    private RandomSeed randomSeed;
     private Location spawn;
     private MapTime time;
-    private World world;
-    private String worldName;
 
     @Override
     public WorldInfo build() {
         WorldInfo info = new WorldInfo();
-        info.setDifficulty(this.difficulty);
+        info.setDifficulty(this.difficulty());
+        info.setEnvironment(this.environment());
+        info.setGenerator(this.generator());
+        info.setPvp(this.pvp());
+        info.setRandomSeed(this.randomSeed());
+        info.setSpawn(this.spawn());
+        info.setTime(this.time());
         return info;
     }
 
@@ -60,11 +64,11 @@ public class WorldInfoBuilder implements Builder<WorldInfo> {
         return this;
     }
 
-    public long randomSeed() {
+    public RandomSeed randomSeed() {
         return this.randomSeed;
     }
 
-    public WorldInfoBuilder randomSeed(long randomSeed) {
+    public WorldInfoBuilder randomSeed(RandomSeed randomSeed) {
         this.randomSeed = randomSeed;
         return this;
     }
@@ -84,24 +88,6 @@ public class WorldInfoBuilder implements Builder<WorldInfo> {
 
     public WorldInfoBuilder time(MapTime time) {
         this.time = time;
-        return this;
-    }
-
-    public World world() {
-        return this.world;
-    }
-
-    public WorldInfoBuilder world(World world) {
-        this.world = world;
-        return this;
-    }
-
-    public String worldName() {
-        return this.worldName;
-    }
-
-    public WorldInfoBuilder worldName(String worldName) {
-        this.worldName = worldName;
         return this;
     }
 }

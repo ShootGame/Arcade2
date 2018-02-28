@@ -9,16 +9,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public final class Node extends Element implements Locatable, Parent<Node>, Propertable {
+public class Node extends Element implements Locatable, Parent<Node>, Propertable {
     enum Type {
         PRIMITIVE, TREE, UNKNOWN
     }
 
-    private Node(String name) {
+    protected Node(String name) {
         super(name);
     }
 
-    private Node(String name, String value) {
+    protected Node(String name, String value) {
         super(name, value);
     }
 
@@ -71,10 +71,12 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
         List<Node> results = new ArrayList<>();
 
         if (names != null) {
-            for (Node child : this.children) {
-                for (String name : names) {
-                    if (name != null && child.getName().equals(name)) {
-                        results.add(child);
+            for (String name : names) {
+                if (name != null) {
+                    for (Node child : this.children) {
+                        if (child.getName().equals(name)) {
+                            results.add(child);
+                        }
                     }
                 }
             }
@@ -148,7 +150,7 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
 
     @Override
     public boolean isSelectable() {
-        return this.location != null;
+        return this.location != null || (this.parent != null && this.parent.isSelectable());
     }
 
     @Override
@@ -212,16 +214,14 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
 
     @Override
     public boolean removeByName(Iterable<String> children) {
-        if (children == null || this.isEmpty()) {
-            return false;
-        }
-
         boolean result = false;
-        for (Node child : new ArrayList<>(this.children)) {
+        if (children != null) {
             for (String name : children) {
-                if (name != null && child.getName().equals(name)) {
-                    if (this.remove(child)) {
-                        result = true;
+                if (name != null) {
+                    for (Node child : new ArrayList<>(this.children)) {
+                        if (child.getName().equals(name) && this.remove(child)) {
+                            result = true;
+                        }
                     }
                 }
             }
@@ -345,6 +345,33 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
         }
     }
 
+    public String childValue() {
+        return this.firstChildValue();
+    }
+
+    public String childValue(Iterable<String> names) {
+        return this.firstChildValue(names);
+    }
+
+    public String childValue(String... names) {
+        return this.firstChildValue(names);
+    }
+
+    public String firstChildValue() {
+        Node firstChild = this.firstChild();
+        return firstChild != null ? firstChild.getValue() : null;
+    }
+
+    public String firstChildValue(Iterable<String> names) {
+        Node firstChild = this.firstChild(names);
+        return firstChild != null ? firstChild.getValue() : null;
+    }
+
+    public String firstChildValue(String... names) {
+        Node firstChild = this.firstChild(names);
+        return firstChild != null ? firstChild.getValue() : null;
+    }
+
     public Type getType() {
         if (this.isPrimitive()) {
             return Type.PRIMITIVE;
@@ -361,6 +388,21 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
 
     public boolean isTree() {
         return !this.isEmpty();
+    }
+
+    public String lastChildValue() {
+        Node lastChild = this.lastChild();
+        return lastChild != null ? lastChild.getValue() : null;
+    }
+
+    public String lastChildValue(Iterable<String> names) {
+        Node lastChild = this.lastChild(names);
+        return lastChild != null ? lastChild.getValue() : null;
+    }
+
+    public String lastChildValue(String... names) {
+        Node lastChild = this.lastChild(names);
+        return lastChild != null ? lastChild.getValue() : null;
     }
 
     @Override
@@ -415,18 +457,18 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
     // Helper Methods
     //
 
-    private void attach(Child<Node> child) {
+    private void attach(AdoptableChild<Node> child) {
         child.setParent(this);
     }
 
-    private boolean resetPrimitive() {
+    boolean resetPrimitive() {
         boolean ok = this.isPrimitive();
         this.setValue(null);
 
         return ok;
     }
 
-    private boolean resetTree() {
+    boolean resetTree() {
         boolean ok = this.isTree();
         this.clearChildren();
 
@@ -440,6 +482,10 @@ public final class Node extends Element implements Locatable, Parent<Node>, Prop
     //
     // Instancing
     //
+
+    public static ImmutableNode empty() {
+        return ImmutableNode.of("EmptyNode");
+    }
 
     public static Node of(String name) {
         return new Node(name);

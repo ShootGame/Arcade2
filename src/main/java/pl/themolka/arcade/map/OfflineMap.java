@@ -15,6 +15,7 @@ public class OfflineMap implements Paginationable {
     public static final int NAME_MIN_LENGTH = 3;
     public static final int NAME_MAX_LENGTH = 32;
 
+    private final MapFileVersion fileVersion;
     private final String name;
     private final MapVersion version;
     private final String description;
@@ -24,8 +25,9 @@ public class OfflineMap implements Paginationable {
     private File directory;
     private File settings;
 
-    public OfflineMap(String name, MapVersion version, String description,
-                      List<Author> authors, List<Changelog> changelogs) {
+    public OfflineMap(MapFileVersion fileVersion, String name, MapVersion version,
+                      String description, List<Author> authors, List<Changelog> changelogs) {
+        this.fileVersion = fileVersion;
         this.name = name;
         this.version = version;
         this.description = description;
@@ -72,6 +74,10 @@ public class OfflineMap implements Paginationable {
         }
 
         return result;
+    }
+
+    public MapFileVersion getFileVersion() {
+        return this.fileVersion;
     }
 
     public String getName() {

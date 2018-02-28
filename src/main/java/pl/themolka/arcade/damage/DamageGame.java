@@ -8,15 +8,19 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jdom2.Element;
+import pl.themolka.arcade.config.IConfig;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.util.Percentage;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DamageGame extends GameModule {
     private final List<DamageRule> rules = new ArrayList<>();
@@ -46,22 +50,39 @@ public class DamageGame extends GameModule {
                 continue;
             }
 
-            DamageRule rule = new DamageRule(entityFilter, playerFilter);
-            rule.setMultiplier(XMLParser.parseDouble(xml.getAttributeValue("multiplier"), DamageRule.ZERO));
+            Percentage multiplier = Percentage.finite(XMLParser.parseDouble(
+                    xml.getAttributeValue("multiplier"), Percentage.DONE.getValue()));
 
             String value = xml.getValue();
-            boolean deny = !XMLParser.parseBoolean(value, true);
             double damage = XMLParser.parseDouble(value, -1D);
 
-            if (deny || damage == DamageRule.ZERO) {
-                rule.setCanceled(true);
-            } else if (!rule.hasMultiplier() && damage < DamageRule.ZERO) {
-                continue;
-            } else {
-                rule.setDamage(damage);
+            boolean deny = !XMLParser.parseBoolean(value, true);
+            if (deny) {
+                damage = DamageRule.DENY_DAMAGE;
             }
+            final double finalDamage = damage;
 
-            this.rules.add(rule);
+            this.rules.add(new DamageRule(new DamageRule.Config() {
+                @Override
+                public Ref<Filter> entityFilter() {
+                    return Ref.ofProvided(entityFilter);
+                }
+
+                @Override
+                public Ref<Filter> playerFilter() {
+                    return Ref.ofProvided(playerFilter);
+                }
+
+                @Override
+                public double damage() {
+                    return finalDamage;
+                }
+
+                @Override
+                public Percentage multiplier() {
+                    return multiplier;
+                }
+            }));
         }
     }
 
@@ -139,5 +160,9 @@ public class DamageGame extends GameModule {
 
     public static boolean isValid(EntityDamageEvent.DamageCause cause) {
         return !cause.equals(EntityDamageEvent.DamageCause.VOID);
+    }
+
+    public interface Config extends IConfig<DamageGame> {
+        Set<DamageRule.Config> rules();
     }
 }

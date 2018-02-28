@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class ConfigContext {
-    private final Map<String, SimpleConfig> configMap = new LinkedHashMap<>();
+    private final Map<String, IConfig<?>> configMap = new LinkedHashMap<>();
 
     // TODO: We shouldn't use the world name generator.
     private final WorldNameGenerator idGenerator = new WorldNameGenerator();
 
-    public boolean contains(SimpleConfig config) {
+    public boolean contains(IConfig<?> config) {
         return this.configMap.containsValue(config);
     }
 
@@ -22,15 +22,15 @@ public class ConfigContext {
         return this.configMap.containsKey(id);
     }
 
-    public SimpleConfig getConfig(String id) {
+    public IConfig<?> getConfig(String id) {
         return this.getConfig(id, null);
     }
 
-    public SimpleConfig getConfig(String id, SimpleConfig def) {
+    public IConfig<?> getConfig(String id, IConfig<?> def) {
         return this.configMap.getOrDefault(id, def);
     }
 
-    public Collection<SimpleConfig> getConfigs() {
+    public Collection<IConfig<?>> getConfigs() {
         return this.configMap.values();
     }
 
@@ -51,12 +51,8 @@ public class ConfigContext {
         return uniqueId;
     }
 
-    public boolean register(SimpleConfig config) {
-        return this.configMap.putIfAbsent(config.getId(), config) == null;
-    }
-
-    public boolean unregister(SimpleConfig config) {
-        return this.unregister(config.getId());
+    public boolean register(String id, IConfig<?> config) {
+        return this.configMap.putIfAbsent(id, config) == null;
     }
 
     public boolean unregister(String id) {

@@ -7,14 +7,14 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Produces(UUID.class)
 public class UUIDParser extends ElementParser<UUID> {
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("an UUID");
+    public Set<Object> expect() {
+        return Collections.singleton("an UUID");
     }
 
     @Override

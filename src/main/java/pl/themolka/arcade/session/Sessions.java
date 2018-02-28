@@ -110,7 +110,7 @@ public class Sessions implements Listener {
             pl.themolka.arcade.respawn.PlayerRespawnEvent respawnEvent =
                     new pl.themolka.arcade.respawn.PlayerRespawnEvent(
                             this.plugin, player);
-            respawnEvent.setRespawnPosition(game.getMap().getSpawn());
+            respawnEvent.setRespawnPosition(game.getMap().getManifest().getWorld().getSpawn());
 
             this.postEvent(respawnEvent);
             if (respawnEvent.getRespawnPosition() != null) {
@@ -181,7 +181,7 @@ public class Sessions implements Listener {
     private Location fetchSpawn() {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            return game.getMap().getSpawn();
+            return game.getMap().getManifest().getWorld().getSpawn();
         }
 
         return null;

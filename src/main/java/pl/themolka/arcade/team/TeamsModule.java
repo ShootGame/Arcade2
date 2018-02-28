@@ -34,11 +34,6 @@ import java.util.Collection;
 @ModuleVersion("1.0")
 @FormatModule
 public class TeamsModule extends Module<TeamsGame> {
-    /** Stores {@link Team} in a {@link pl.themolka.arcade.game.GamePlayer} */
-    public static final String METADATA_TEAM = "Team";
-    /** Stores {@link TeamsGame} in a {@link Game} */
-    public static final String METADATA_TEAMS = "Teams";
-
     /** Permission node which allow to edit teams in runtime. */
     public static final String TEAMS_MANAGE_PERMISSION = "arcade.command.teams.manage";
 

@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser.number;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Double.class)
 public class DoubleParser extends NumberParser<Double> {
@@ -11,8 +11,8 @@ public class DoubleParser extends NumberParser<Double> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a decimal (double)");
+    public Set<Object> expect() {
+        return Collections.singleton("a decimal (double)");
     }
 
     @Override

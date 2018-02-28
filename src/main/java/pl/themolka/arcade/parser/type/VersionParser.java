@@ -8,13 +8,13 @@ import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.util.Version;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Version.class)
 public class VersionParser extends ElementParser<Version> {
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a semantic version (read https://semver.org/)");
+    public Set<Object> expect() {
+        return Collections.singleton("a semantic version (read " + Version.SPEC_URL + ")");
     }
 
     @Override

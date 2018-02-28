@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser.number;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Byte.class)
 public class ByteParser extends NumberParser<Byte> {
@@ -11,8 +11,8 @@ public class ByteParser extends NumberParser<Byte> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a real number between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (byte)");
+    public Set<Object> expect() {
+        return Collections.singleton("a real number between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE + " (byte)");
     }
 
     @Override

@@ -87,7 +87,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         this.getMatch().setPlayWindow(this.getWindow());
 
         this.getMatch().setObserverHandler(this);
-        this.getGame().setMetadata(TeamsModule.class, TeamsModule.METADATA_TEAMS, this.getTeams().toArray(new Team[this.getTeams().size()]));
 
         // cache
         for (GamePlayer observer : matchGame.getObservers().getOnlineMembers()) {

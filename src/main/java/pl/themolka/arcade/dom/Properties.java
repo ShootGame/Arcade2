@@ -49,10 +49,12 @@ public class Properties implements Cloneable, Propertable {
         List<Property> properties = new ArrayList<>();
 
         if (names != null) {
-            for (Property property : this.properties) {
-                for (String name : names) {
-                    if (name != null && property.getName().equals(name)) {
-                        properties.add(property);
+            for (String name : names) {
+                if (name != null) {
+                    for (Property property : this.properties) {
+                        if (property.getName().equals(name)) {
+                            properties.add(property);
+                        }
                     }
                 }
             }
@@ -64,10 +66,12 @@ public class Properties implements Cloneable, Propertable {
     @Override
     public Property property(Iterable<String> names) {
         if (names != null) {
-            for (Property property : this.properties) {
-                for (String name : names) {
-                    if (name != null && property.getName().equals(name)) {
-                        return property;
+            for (String name : names) {
+                if (name != null) {
+                    for (Property property : this.properties) {
+                        if (property.getName().equals(name)) {
+                            return property;
+                        }
                     }
                 }
             }

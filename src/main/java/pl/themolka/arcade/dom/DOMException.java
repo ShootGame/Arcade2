@@ -41,7 +41,9 @@ public class DOMException extends Exception {
         if (element != null) {
             if (element.isSelectable()) {
                 Selection selection = element.select();
-                builder.append(", at line ").append(selection);
+                if (selection != null) {
+                    builder.append(", at line ").append(selection);
+                }
             }
 
             String near = element.toShortString();

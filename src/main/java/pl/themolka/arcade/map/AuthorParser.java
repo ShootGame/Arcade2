@@ -10,7 +10,7 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Produces(Author.class)
@@ -28,8 +28,8 @@ public class AuthorParser extends NodeParser<Author>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("an author");
+    public Set<Object> expect() {
+        return Collections.singleton("an author");
     }
 
     @Override

@@ -1,24 +1,23 @@
 package pl.themolka.arcade.map;
 
 import net.engio.mbassy.listener.Handler;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.repository.RepositoriesModule;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-/**
- * @deprecated uses JDOM, rewrite
- */
-@Deprecated
 @ModuleInfo(id = "Map-Loader",
         loadBefore = {
                 RepositoriesModule.class})
@@ -26,25 +25,25 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
     private final List<File> worldFiles = new ArrayList<>();
 
     @Override
-    public void onEnable(Element global) throws JDOMException {
-        for (Element directory : global.getChildren("directory")) {
-            String path = directory.getAttributeValue("path");
-            List<Element> exclude = directory.getChildren("exclude");
-            List<Element> include = directory.getChildren("include");
+    public void onEnable(Node options) throws DOMException {
+        for (Node directory : options.children("directory")) {
+            String path = directory.propertyValue("path");
+            List<Node> exclude = directory.children("exclude");
+            List<Node> include = directory.children("include");
 
             FilenameFilter filter = new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
                     if (!exclude.isEmpty()) {
-                        for (Element element : exclude) {
-                            if (name.equals(element.getValue())) {
+                        for (Node node : exclude) {
+                            if (name.equals(node.getValue())) {
                                 return false;
                             }
                         }
                         return true;
                     } else if (!include.isEmpty()) {
-                        for (Element element : include) {
-                            if (name.equals(element.getValue())) {
+                        for (Node node : include) {
+                            if (name.equals(node.getValue())) {
                                 return true;
                             }
                         }
@@ -86,13 +85,15 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
                     container.register(map);
                     registeredNames.add(map.getName());
                 }
+            } catch (DOMException ex) {
+                this.getLogger().log(Level.SEVERE, "Could not load map '" + worldDirectory.getName() + "': " + ex.toString());
             } catch (Throwable th) {
                 String message = th.getMessage();
                 if (message == null) {
                     message = th.getClass().getName();
                 }
 
-                this.getLogger().log(Level.SEVERE, "Could not load map " + worldDirectory.getName() + ": " + message);
+                this.getLogger().log(Level.SEVERE, "Could not load map '" + worldDirectory.getName() + "': " + message);
             }
         }
 
@@ -104,25 +105,22 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
         event.addMapLoader(this);
     }
 
-    private OfflineMap readMapDirectory(File worldDirectory) throws IOException, MapParserException {
-        MapParser.Technology technology = this.getPlugin().getMaps().getParser();
-        File file = new File(worldDirectory, technology.getDefaultFilename());
+    private OfflineMap readMapDirectory(File worldDirectory) throws DOMException, IOException {
+        File file = new File(worldDirectory, "map.xml");
         if (!file.exists()) {
-            return null;
+            throw new FileNotFoundException("Missing " + file.getName());
         }
 
-        MapParser parser = technology.newInstance();
-        parser.readFile(file);
-
-        try {
-            OfflineMap map = parser.parseOfflineMap(this.getPlugin());
-            map.setDirectory(worldDirectory);
-            map.setSettings(file);
-            return map;
-        } catch (MapParserException ex) {
-            this.getLogger().log(Level.CONFIG, "Could not load '" + file.getName() + "': " + ex.getMessage());
-            return null;
+        DOMEngine engine = this.getPlugin().getDomEngines().forFile(file);
+        Parser<OfflineMap> parser = this.getPlugin().getParsers().forType(OfflineMap.class);
+        if (parser == null) {
+            throw new RuntimeException("No " + OfflineMap.class.getSimpleName() + " parser installed");
         }
+
+        OfflineMap map = parser.parse(engine.read(file)).orFail();
+        map.setDirectory(worldDirectory);
+        map.setSettings(file);
+        return map;
     }
 
 }

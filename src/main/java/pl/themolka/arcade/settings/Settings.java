@@ -1,6 +1,7 @@
 package pl.themolka.arcade.settings;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.util.Vector;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
@@ -22,6 +23,7 @@ public class Settings {
     private Document document;
     private boolean enabled;
     private final File file;
+    private Vector spawn;
 
     public Settings(ArcadePlugin plugin) {
         this(plugin, new File(plugin.getDataFolder(), DEFAULT_FILE));
@@ -71,6 +73,10 @@ public class Settings {
         return this.file;
     }
 
+    public Vector getSpawn() {
+        return this.spawn;
+    }
+
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -98,5 +104,6 @@ public class Settings {
 
     private void setup(Node root) throws ParserException {
         this.enabled = this.context.type(Boolean.class).parse(root.property("enable", "enabled")).orFail();
+        this.spawn = this.context.type(Vector.class).parse(root.child("spawn")).orFail();
     }
 }

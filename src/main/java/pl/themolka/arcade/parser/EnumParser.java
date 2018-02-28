@@ -4,8 +4,10 @@ import pl.themolka.arcade.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Simple and easy {@link Enum} parsing.
@@ -18,8 +20,8 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
     }
 
     @Override
-    public List<Object> expect() {
-        List<Object> expect = new ArrayList<>();
+    public Set<Object> expect() {
+        Set<Object> expect = new HashSet<>();
 
         T[] constants = this.type.getEnumConstants();
         for (T constant : constants) {
@@ -30,8 +32,8 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
     }
 
     @Override
-    public List<Object> expectCompact() {
-        return Collections.singletonList(this.type.getSimpleName() + " constant");
+    public Set<Object> expectCompact() {
+        return Collections.singleton(this.type.getSimpleName() + " constant");
     }
 
     @Override

@@ -114,6 +114,8 @@ public class GameModule extends SimpleGameListener
     public final void destroy() {
         this.cancelAllTasks();
 
+        this.onDisable();
+
         this.unregisterListenerObject(this);
         for (Object listener : this.getListenerObjects()) {
             this.unregisterListenerObject(listener);
@@ -216,7 +218,12 @@ public class GameModule extends SimpleGameListener
     }
 
     public void setEnabled(boolean enabled) {
+        boolean wasEnabled = this.enabled;
         this.enabled = enabled;
+
+        if (wasEnabled && !enabled) {
+            this.destroy();
+        }
     }
 
     public boolean unregisterListenerObject(Object object) {

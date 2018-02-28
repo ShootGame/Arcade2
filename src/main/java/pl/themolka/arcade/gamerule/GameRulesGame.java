@@ -22,8 +22,6 @@ public class GameRulesGame extends GameModule {
 
             world.setGameRuleValue(rule.getType().getKey(), rule.getValue());
         }
-
-        this.getGame().setMetadata(GameRulesModule.class, GameRulesModule.METADATA_GAMERULES, this.getRules());
     }
 
     public List<GameRule> getRules() {

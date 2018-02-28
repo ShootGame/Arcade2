@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser.number;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Short.class)
 public class ShortParser extends NumberParser<Short> {
@@ -11,8 +11,8 @@ public class ShortParser extends NumberParser<Short> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a real number between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (short)");
+    public Set<Object> expect() {
+        return Collections.singleton("a real number between " + Short.MIN_VALUE + " and " + Short.MAX_VALUE + " (short)");
     }
 
     @Override

@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser;
 import pl.themolka.arcade.dom.Element;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * This the default parser behavior. We are using {@link ElementParser} for it,
@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class TextParser extends ElementParser<String> {
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a text");
+    public Set<Object> expect() {
+        return Collections.singleton("a text");
     }
 
     @Override

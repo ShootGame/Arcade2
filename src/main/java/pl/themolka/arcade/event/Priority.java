@@ -7,8 +7,9 @@ package pl.themolka.arcade.event;
  *
  * https://github.com/bennidi/mbassador/blob/master/src/main/java/net/engio/mbassy/listener/Handler.java#L42-L47
  */
-public final class Priority {
-    private Priority() {
+public class Priority {
+    // This class can be inherited.
+    protected Priority() {
     }
 
     /**

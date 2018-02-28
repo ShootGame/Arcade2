@@ -2,8 +2,7 @@ package pl.themolka.arcade.map;
 
 import net.engio.mbassy.listener.Handler;
 import org.apache.commons.io.FileUtils;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameDestroyEvent;
 import pl.themolka.arcade.game.GameDestroyedEvent;
@@ -13,10 +12,6 @@ import pl.themolka.arcade.module.SimpleGlobalModule;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @deprecated uses JDOM, rewrite
- */
-@Deprecated
 @ModuleInfo(id = "Archive")
 public class ArchiveModule extends SimpleGlobalModule {
     public static final String DEFAULT_DIRECTORY_NAME = "./archive";
@@ -24,17 +19,17 @@ public class ArchiveModule extends SimpleGlobalModule {
     private File directory;
 
     @Override
-    public void onEnable(Element global) throws JDOMException {
-        if (global == null) {
+    public void onEnable(Node options) {
+        if (options == null) {
             return;
         }
 
-        Element directoryElement = global.getChild("directory");
-        if (directoryElement == null) {
-            directoryElement = new Element("directory").setText(DEFAULT_DIRECTORY_NAME);
+        Node directoryNode = options.firstChild("directory");
+        if (directoryNode == null) {
+            directoryNode = Node.ofPrimitive("directory", DEFAULT_DIRECTORY_NAME);
         }
 
-        File file = new File(directoryElement.getValue());
+        File file = new File(directoryNode.getValue());
         if (!file.isDirectory()) {
             FileUtils.deleteQuietly(file);
         } else if (!file.exists()) {

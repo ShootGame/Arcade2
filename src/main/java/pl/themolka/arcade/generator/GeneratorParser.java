@@ -11,14 +11,14 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.util.PluginInstallable;
 
-import java.util.List;
+import java.util.Set;
 
 @Produces(Generator.class)
 public class GeneratorParser extends NodeParser<Generator>
                              implements InstallableParser, PluginInstallable {
     private ArcadePlugin plugin;
 
-    private Parser<GeneratorType> typeParser;
+    private Parser<GeneratorType> generatorTypeParser;
 
     @Override
     public void installPlugin(ArcadePlugin plugin) {
@@ -27,17 +27,17 @@ public class GeneratorParser extends NodeParser<Generator>
 
     @Override
     public void install(ParserContext context) {
-        this.typeParser = context.enumType(GeneratorType.class);
+        this.generatorTypeParser = context.enumType(GeneratorType.class);
     }
 
     @Override
-    public List<Object> expect() {
-        return this.typeParser.expect();
+    public Set<Object> expect() {
+        return this.generatorTypeParser.expect();
     }
 
     @Override
     protected ParserResult<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
-        GeneratorType type = this.typeParser.parseWithDefinition(node, name, value).orFail();
+        GeneratorType type = this.generatorTypeParser.parseWithDefinition(node, name, value).orFail();
         return ParserResult.fine(node, name, value, type.create(this.plugin, node));
     }
 }

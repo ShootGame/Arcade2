@@ -11,7 +11,7 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
-import java.util.List;
+import java.util.Set;
 
 @Produces(EntityType.class)
 public class EntityTypeParser extends ElementParser<EntityType>
@@ -26,7 +26,7 @@ public class EntityTypeParser extends ElementParser<EntityType>
     }
 
     @Override
-    public List<Object> expect() {
+    public Set<Object> expect() {
         return this.entityTypeParser.expect();
     }
 

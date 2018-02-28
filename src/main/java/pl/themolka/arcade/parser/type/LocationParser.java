@@ -13,30 +13,32 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Location.class)
 public class LocationParser extends NodeParser<Location>
                             implements InstallableParser {
-    private Parser<Float> floatParser;
     private Parser<Vector> vectorParser;
+    private Parser<Float> yawParser;
+    private Parser<Float> pitchParser;
 
     @Override
     public void install(ParserContext context) {
-        this.floatParser = context.type(Float.class);
         this.vectorParser = context.type(Vector.class);
+        this.yawParser = context.type(Float.class);
+        this.pitchParser = context.type(Float.class);
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a location");
+    public Set<Object> expect() {
+        return Collections.singleton("a location");
     }
 
     @Override
     protected ParserResult<Location> parseNode(Node node, String name, String value) throws ParserException {
         Vector vector = this.vectorParser.parseWithDefinition(node, name, value).orFail();
-        float yaw = this.floatParser.parse(node.property("yaw", "horizontal")).orDefault(180F); // north
-        float pitch = this.floatParser.parse(node.property("pitch", "vertical")).orDefault(0F); // forward
+        float yaw = this.yawParser.parse(node.property("yaw", "horizontal")).orDefault(180F); // north
+        float pitch = this.pitchParser.parse(node.property("pitch", "vertical")).orDefault(0F); // forward
         return ParserResult.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
     }
 }

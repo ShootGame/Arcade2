@@ -1,16 +1,16 @@
 package pl.themolka.arcade.game;
 
+import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.map.ArcadeMap;
-import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.map.queue.MapQueue;
 
 import java.io.IOException;
 
 public interface GameManager {
-    Game createGame(ArcadeMap map) throws IOException;
+    Game createGame(ArcadeMap map) throws DOMException, IOException;
 
-    Game createGame(OfflineMap map) throws IOException, MapParserException;
+    Game createGame(OfflineMap map) throws DOMException, IOException;
 
     void cycle(OfflineMap target);
 

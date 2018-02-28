@@ -7,13 +7,13 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(MapVersion.class)
 public class MapVersionParser extends ElementParser<MapVersion> {
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a semantic map version (read https://semver.org/)");
+    public Set<Object> expect() {
+        return Collections.singleton("a semantic map version (read " + MapVersion.SPEC_URL + ")");
     }
 
     @Override

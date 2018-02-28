@@ -1,14 +1,10 @@
 package pl.themolka.arcade.dom;
 
-public final class Property extends Element implements Locatable {
+public class Property extends Element implements Locatable {
     private Selection location;
     private Node parent;
 
-    private Property(String name) {
-        this(name, null); // super would make value null
-    }
-
-    private Property(String name, String value) {
+    protected Property(String name, String value) {
         super(name, normalizeValue(value));
     }
 
@@ -37,7 +33,7 @@ public final class Property extends Element implements Locatable {
 
     @Override
     public boolean isSelectable() {
-        return this.location != null || (this.hasParent() && this.getParent().isSelectable());
+        return this.location != null || (this.parent != null && this.parent.isSelectable());
     }
 
     @Override
@@ -88,8 +84,12 @@ public final class Property extends Element implements Locatable {
     // Instancing
     //
 
+    public static ImmutableProperty empty() {
+        return ImmutableProperty.of("EmptyProperty");
+    }
+
     public static Property of(String name) {
-        return new Property(name);
+        return of(name, null);
     }
 
     public static Property of(String name, String value) {

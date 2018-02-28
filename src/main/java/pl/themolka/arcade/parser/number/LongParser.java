@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser.number;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Long.class)
 public class LongParser extends NumberParser<Long> {
@@ -11,8 +11,8 @@ public class LongParser extends NumberParser<Long> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a real number (long)");
+    public Set<Object> expect() {
+        return Collections.singleton("a real number (long)");
     }
 
     @Override

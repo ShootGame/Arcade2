@@ -1,15 +1,21 @@
 package pl.themolka.arcade.parser;
 
+import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Element;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Something that can or cannot parse T.
  * <b>The result cannot be {@code null}!</b>
  */
 public interface Parser<T> {
-    List<Object> expect();
+    Set<Object> expect();
+
+    default ParserResult<T> parse(Document document) {
+        return document != null && document.hasRoot() ? this.parse(document.getRoot())
+                                                      : ParserResult.empty();
+    }
 
     default ParserResult<T> parse(Element element) {
         return element != null ? this.parseWithDefinition(element, element.getName(), element.getValue())

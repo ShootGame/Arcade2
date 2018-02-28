@@ -1,7 +1,7 @@
 package pl.themolka.arcade.repository;
 
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
 
@@ -15,7 +15,7 @@ public class RepositoriesModule extends SimpleGlobalModule {
     private final Map<String, RepositoryParser<?>> parsers = new HashMap<>();
 
     @Override
-    public void onEnable(Element global) throws JDOMException {
+    public void onEnable(Node options) throws DOMException {
         this.addDefaultParsers();
     }
 

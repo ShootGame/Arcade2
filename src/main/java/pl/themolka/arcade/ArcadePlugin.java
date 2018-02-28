@@ -1,8 +1,5 @@
 package pl.themolka.arcade;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.HumanEntity;
@@ -12,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.jdom2.JDOMException;
+import org.bukkit.util.Vector;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.command.ConsoleSender;
@@ -23,7 +20,6 @@ import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.engine.EngineManager;
 import pl.themolka.arcade.environment.Environment;
-import pl.themolka.arcade.environment.EnvironmentType;
 import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.PluginFreshEvent;
@@ -40,8 +36,6 @@ import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
 import pl.themolka.arcade.map.MapManager;
-import pl.themolka.arcade.map.XMLMapParser;
-import pl.themolka.arcade.metadata.ManifestFile;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
@@ -53,13 +47,6 @@ import pl.themolka.arcade.parser.ParserManager;
 import pl.themolka.arcade.parser.ParsersFile;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
-import pl.themolka.arcade.permission.ClientPermissionStorage;
-import pl.themolka.arcade.permission.Group;
-import pl.themolka.arcade.permission.PermissionListeners;
-import pl.themolka.arcade.permission.PermissionManager;
-import pl.themolka.arcade.permission.PermissionsReloadEvent;
-import pl.themolka.arcade.permission.PermissionsReloadedEvent;
-import pl.themolka.arcade.permission.XMLPermissions;
 import pl.themolka.arcade.scoreboard.ScoreboardListeners;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
@@ -69,20 +56,14 @@ import pl.themolka.arcade.task.SimpleTaskListener;
 import pl.themolka.arcade.task.SimpleTaskManager;
 import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.ManifestFile;
 import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.window.WindowListeners;
 import pl.themolka.arcade.window.WindowRegistry;
-import pl.themolka.arcade.xml.JDOM;
-import pl.themolka.arcade.xml.XMLLocation;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -109,14 +90,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
-    private final Gson gson = new GsonBuilder().serializeNulls()
-                                               .setPrettyPrinting()
-                                               .create();
-    private final ManifestFile manifest = new ManifestFile();
+    private ManifestFile manifest;
     private MapManager maps;
     private final ModuleContainer modules = new ModuleContainer();
     private ParserManager parsers;
-    private PermissionManager permissions;
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private boolean running;
     private String serverName = DEFAULT_SERVER_NAME;
@@ -151,15 +128,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.running = true;
         this.startTime = Time.now();
 
-        this.manifest.readManifestFile();
+        this.loadParsers();
+
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ManifestFile.DEFAULT_FILE)) {
+            this.manifest = new ManifestFile(this.domEngines.forFile(ManifestFile.DEFAULT_FILE).read(input));
+        }
+
         this.eventBus = new EventBus(this);
 
         this.console = new ConsoleSender(this);
 
         this.commands = new BukkitCommands(this, this.getName());
         this.commands.setPrefix(BukkitCommands.BUKKIT_COMMAND_PREFIX);
-
-        this.loadParsers(); // Must be loaded before settings
 
         this.settings = new Settings(this);
         this.reloadConfig();
@@ -175,13 +155,11 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         try {
             this.loadEnvironment();
             this.getEnvironment().onEnable();
-        } catch (Throwable th) {
-            this.getLogger().log(Level.SEVERE, "Could not enable the environment.", th);
-            th.printStackTrace();
+        } catch (DOMException ex) {
+            this.getLogger().log(Level.SEVERE, "Could not enable the environment: " + ex.toString());
             return;
         }
 
-        this.loadPermissions();
         this.loadCommands();
         this.loadModules();
         this.loadMaps();
@@ -195,9 +173,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // begin the plugin logic
         this.getServer().getScheduler().runTaskLater(this, () -> {
-            Location spawn = XMLLocation.parse(JDOM.from(this.getSettings().getData().child("spawn")));
-
             World defaultWorld = this.getServer().getWorlds().get(0);
+            Vector spawn = this.getSettings().getSpawn();
             defaultWorld.setSpawnLocation(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ());
 
             if (this.beginLogic()) {
@@ -328,14 +305,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getGames().cycleNext();
             return true;
         } else {
-            this.getLogger().severe("Could not cycle because the map queue is empty.");
+            this.getLogger().severe("Could not cycle because map queue is empty.");
             return false;
-        }
-    }
-
-    public <T> T deserializeJsonFile(File file, Class<T> object) throws IOException {
-        try (Reader reader = new FileReader(file)) {
-            return this.getGson().fromJson(reader, object);
         }
     }
 
@@ -374,10 +345,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.games;
     }
 
-    public Gson getGson() {
-        return this.gson;
-    }
-
     public ManifestFile getManifest() {
         return this.manifest;
     }
@@ -392,10 +359,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public ParserManager getParsers() {
         return this.parsers;
-    }
-
-    public PermissionManager getPermissions() {
-        return this.permissions;
     }
 
     public ArcadePlayer getPlayer(HumanEntity human) {
@@ -486,47 +449,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
-    public void reloadPermissions() {
-        PermissionManager permissions = this.getPermissions();
-
-        try {
-            permissions.setDocument(permissions.readPermissionsFile());
-            this.getEventBus().publish(new PermissionsReloadEvent(this, permissions));
-
-            permissions.clearGroups();
-            permissions.setDefaultGroup(null);
-
-            XMLPermissions xml = new XMLPermissions(JDOM.from(permissions.getDocument()));
-
-            // groups
-            for (Group group : xml.readGroups()) {
-                permissions.addGroup(group);
-
-                if (group.isDefault()) {
-                    if (permissions.getDefaultGroup() != null) {
-                        this.getLogger().log(Level.CONFIG, "Duplicate of default permission group found: " + group.getId());
-                    } else {
-                        permissions.setDefaultGroup(group);
-                    }
-                }
-            }
-
-            if (permissions.getDefaultGroup() == null) {
-                this.getLogger().log(Level.CONFIG, "No default permission group found.");
-                permissions.setDefaultGroup(new Group(Group.DEFAULT_FAMILY));
-            }
-
-            // players
-            ClientPermissionStorage permissionStorage = xml.readPlayers(
-                    new ArrayList<>(permissions.getGroups()), permissions.getDefaultGroup());
-            permissions.setPermissionStorage(permissionStorage);
-
-            this.getEventBus().publish(new PermissionsReloadedEvent(this, permissions));
-        } catch (DOMException | IOException | JDOMException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public void removePlayer(ArcadePlayer player) {
         this.removePlayer(player.getUuid());
     }
@@ -537,12 +459,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public boolean removeTickable(Tickable tickable) {
         return this.tickableList.remove(tickable);
-    }
-
-    public void serializeJsonFile(File file, Serializable object) throws IOException {
-        try (Writer writer = new FileWriter(file)) {
-            this.getGson().toJson(object, writer);
-        }
     }
 
     public void setEnvironment(Environment environment) {
@@ -578,11 +494,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
     }
 
-    private void loadEnvironment() throws JDOMException {
+    private void loadEnvironment() throws DOMException {
         Node node = this.getSettings().getData().child("environment");
-        EnvironmentType type = EnvironmentType.forName(node.propertyValue("type"));
 
-        this.environment = type.buildEnvironment(JDOM.from(node));
+        Parser<Environment> parser = this.parsers.forType(Environment.class);
+        if (parser == null) {
+            throw new RuntimeException("No " + Environment.class.getSimpleName() + " parser installed");
+        }
+
+        this.environment = parser.parse(node).orFail();
         this.environment.initialize(this);
     }
 
@@ -593,7 +513,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadMaps() {
         this.maps = new MapManager(this);
-        this.maps.setParser(new XMLMapParser.XMLParserTechnology(this)); // map XML parser
         this.maps.setWorldContainer(new File(this.getSettings().getData().child("world-container").getValue()));
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
@@ -611,7 +530,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadModules() {
         Node ignoredModules = this.getSettings().getData().child("ignored-modules");
         if (ignoredModules == null) {
-            ignoredModules = Node.of("ignored-modules");
+            ignoredModules = Node.empty();
         }
 
         List<String> ignoredModuleList = new ArrayList<>();
@@ -660,7 +579,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         Node globalModules = this.getSettings().getData().child("modules");
         if (globalModules == null) {
-            globalModules = Node.of("modules");
+            globalModules = Node.empty();
         }
 
         for (Module<?> module : this.getModules().getModules()) {
@@ -669,7 +588,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 module.setGlobal(moduleNode != null);
 
                 module.registerListeners();
-                module.onEnable(JDOM.from(moduleNode));
+                module.onEnable(moduleNode);
             } catch (Throwable th) {
                 this.getLogger().log(Level.SEVERE, "Could not enable module '" + module.getId() + "': " + th.getMessage(), th);
             }
@@ -685,6 +604,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             ParsersFile file = new ParsersFile(this, input);
 
             int done = 0;
+            int doneSilent = 0;
+
             ParserContainer container = new ParserContainer();
             for (Class<? extends Parser<?>> parser : file.getParsers()) {
                 try {
@@ -694,11 +615,15 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                     Silent silent = parser.getAnnotation(Silent.class);
                     Produces produces = parser.getAnnotation(Produces.class);
 
-                    if (silent == null && produces != null) {
+                    if (produces == null) {
+                        throw new ReflectiveOperationException(parser.getSimpleName() + " is not @Produces decorated!");
+                    } else if (silent == null) {
                         Class<?> producesType = produces.value();
                         if (producesType != null) {
                             this.parsers.registerType(producesType, parser);
                         }
+                    } else {
+                        doneSilent++;
                     }
                 } catch (ReflectiveOperationException ex) {
                     ex.printStackTrace();
@@ -706,7 +631,13 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
 
             this.parsers.getContainer().register(container);
-            this.getLogger().info("Registered " + done + " parsers.");
+
+            String silentString = "";
+            if (doneSilent > 0) {
+                silentString = " (" + doneSilent + " of them " + (doneSilent == 1 ? "was" : "were") + " silent)";
+            }
+
+            this.getLogger().info("Registered " + done + " parsers" + silentString + ".");
         } catch (DOMException | IOException ex) {
             ex.printStackTrace();
         }
@@ -714,15 +645,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.parsers.install(); // Install parser dependencies
     }
 
-    private void loadPermissions() {
-        this.permissions = new PermissionManager(this);
-        this.reloadPermissions();
-    }
-
     private void loadServer() {
         Node node = this.getSettings().getData().child("server");
         if (node == null) {
-            node = Node.of("server");
+            node = Node.empty();
         }
 
         String name = node.propertyValue("name");
@@ -736,9 +662,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));
-
-        // permissions
-        this.registerListenerObject(new PermissionListeners(this));
 
         // scoreboards
         this.registerListenerObject(new ScoreboardListeners(this));

@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser.number;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(Float.class)
 public class FloatParser extends NumberParser<Float> {
@@ -11,8 +11,8 @@ public class FloatParser extends NumberParser<Float> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a decimal (float)");
+    public Set<Object> expect() {
+        return Collections.singleton("a decimal (float)");
     }
 
     @Override

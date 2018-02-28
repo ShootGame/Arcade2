@@ -1,0 +1,40 @@
+package pl.themolka.arcade.environment;
+
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.NodeParser;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
+
+import java.util.Collections;
+import java.util.Set;
+
+@Produces(Environment.class)
+public class EnvironmentParser extends NodeParser<Environment>
+                               implements InstallableParser {
+    private Parser<EnvironmentType> environmentTypeParser;
+
+    @Override
+    public void install(ParserContext context) {
+        this.environmentTypeParser = context.enumType(EnvironmentType.class);
+    }
+
+    @Override
+    public Set<Object> expect() {
+        return Collections.singleton("an environment");
+    }
+
+    @Override
+    protected ParserResult<Environment> parseNode(Node node, String name, String value) throws ParserException {
+        EnvironmentType type = this.environmentTypeParser.parse(node.property("type", "of")).orDefault(Environment.DEFAULT_TYPE);
+        try {
+            return ParserResult.fine(node, name, value, type.buildEnvironment(node));
+        } catch (DOMException ex) {
+            throw this.fail(node, name, value, "Could not build environment", ex);
+        }
+    }
+}

@@ -57,7 +57,6 @@ public class MatchGame extends GameModule {
         this.getObservers().setBukkit(bukkit);
 
         this.getGame().addVisiblityFilter(new MatchVisibilityFilter(this.getMatch())); // visibility filter
-        this.getGame().setMetadata(MatchModule.class, MatchModule.METADATA_MATCH, this.getMatch());
 
         for (ArcadePlayer player : this.getPlugin().getPlayers()) {
             if (player.getGamePlayer() != null) {

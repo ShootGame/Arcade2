@@ -6,7 +6,7 @@ import org.bukkit.WorldType;
 import org.bukkit.generator.ChunkGenerator;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.Propertable;
-import pl.themolka.arcade.map.WorldInfoParser;
+import pl.themolka.arcade.map.WorldInfo;
 
 import java.util.Random;
 
@@ -31,7 +31,7 @@ public class VoidGenerator extends ChunkGenerator implements Generator {
 
     @Override
     public Location getFixedSpawnLocation(World world, Random random) {
-        return WorldInfoParser.DEFAULT_SPAWN;
+        return WorldInfo.DEFAULT_SPAWN;
     }
 
     public static class Parser implements GeneratorCreator<VoidGenerator> {

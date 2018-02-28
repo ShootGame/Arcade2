@@ -17,9 +17,6 @@ import pl.themolka.arcade.kit.KnockbackContent;
 import pl.themolka.arcade.kit.SaturationContent;
 import pl.themolka.arcade.kit.WalkSpeedContent;
 import pl.themolka.arcade.match.MatchWinner;
-import pl.themolka.arcade.metadata.Metadata;
-import pl.themolka.arcade.metadata.MetadataContainer;
-import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 
@@ -39,7 +36,7 @@ import java.util.UUID;
  * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
  * secure to store game related data.
  */
-public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
+public class GamePlayer implements GameHolder, MatchWinner, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
     private ChatChannel channel;
@@ -47,7 +44,6 @@ public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
     private String displayName;
     private final Game game;
     private final List<Goal> goals = new ArrayList<>();
-    private final MetadataContainer metadata = new MetadataContainer();
     private boolean participating;
     // Pointer to the ArcadePlayer instance, or null if the players is offline.
     private Reference<ArcadePlayer> player;
@@ -119,17 +115,6 @@ public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
         } else {
             return DEFAULT_LOCALE;
         }
-    }
-
-    @Override
-    public Object getMetadata(Class<? extends Module<?>> owner,
-                              String key, Object def) {
-        return this.metadata.getMetadata(owner, key, def);
-    }
-
-    @Override
-    public Set<String> getMetadataKeys() {
-        return this.metadata.getMetadataKeys();
     }
 
     @Override
@@ -217,12 +202,6 @@ public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
     }
 
     @Override
-    public void setMetadata(Class<? extends Module<?>> owner,
-                            String key, Object metadata) {
-        this.metadata.setMetadata(owner, key, metadata);
-    }
-
-    @Override
     public void setParticipating(boolean participating) {
         if (this.canParticipate()) {
             this.participating = participating;
@@ -231,16 +210,12 @@ public class GamePlayer implements GameHolder, MatchWinner, Metadata, Sender {
 
     public boolean canSee(GamePlayer target) {
         Game game = this.getGame();
-        return this.isOnline() && target.isOnline() &&
-                game != null && game.canSee(this, target);
+        return this.isOnline() && target.isOnline() && game != null && game.canSee(this, target);
     }
 
     public Player getBukkit() {
-        if (this.isOnline()) {
-            return this.getPlayer().getBukkit();
-        } else {
-            return null;
-        }
+        ArcadePlayer player = this.getPlayer();
+        return player != null ? player.getBukkit() : null;
     }
 
     public ChatColor getChatColor() {

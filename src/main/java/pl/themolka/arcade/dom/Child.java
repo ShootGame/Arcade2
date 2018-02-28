@@ -3,14 +3,12 @@ package pl.themolka.arcade.dom;
 /**
  * Something that can hold a parent.
  */
-public interface Child<E> {
+public interface Child<T> {
     boolean detach();
 
-    E getParent();
+    T getParent();
 
     default boolean hasParent() {
         return this.getParent() != null;
     }
-
-    E setParent(E parent);
 }

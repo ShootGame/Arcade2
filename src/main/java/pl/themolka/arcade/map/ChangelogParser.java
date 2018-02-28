@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Produces(Changelog.class)
 public class ChangelogParser extends NodeParser<Changelog>
@@ -29,8 +30,8 @@ public class ChangelogParser extends NodeParser<Changelog>
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a changelog");
+    public Set<Object> expect() {
+        return Collections.singleton("a changelog");
     }
 
     @Override

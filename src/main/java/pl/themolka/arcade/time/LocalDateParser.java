@@ -10,15 +10,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @Produces(LocalDate.class)
 public class LocalDateParser extends ElementParser<LocalDate> {
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a date, such as '2011-12-03'");
+    public Set<Object> expect() {
+        return Collections.singleton("a date, such as '2011-12-03'");
     }
 
     @Override

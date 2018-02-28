@@ -6,6 +6,9 @@ public class Percentage {
     public static final double MIN_VALUE = 0D;
     public static final double MAX_VALUE = 1D;
 
+    public static final Percentage ZERO = new Percentage(MIN_VALUE);
+    public static final Percentage DONE = new Percentage(MAX_VALUE);
+
     public static final char SYMBOL = '%';
 
     private final double value;
@@ -33,8 +36,20 @@ public class Percentage {
         return Objects.hash(this.value);
     }
 
+    public boolean isDone() {
+        return this.value == MAX_VALUE;
+    }
+
     public boolean isNormalized() {
         return this.value >= MIN_VALUE && this.value <= MAX_VALUE;
+    }
+
+    public boolean isZero() {
+        return this.value == MIN_VALUE;
+    }
+
+    public double preprocess(double input) {
+        return input * this.value;
     }
 
     @Override

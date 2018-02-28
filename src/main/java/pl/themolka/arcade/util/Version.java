@@ -2,6 +2,7 @@ package pl.themolka.arcade.util;
 
 public class Version {
     public static final Version DEFAULT = new Version(1, 0);
+    public static final String SPEC_URL = "https://semver.org";
 
     private final int major;
     private final int minor;
@@ -103,9 +104,12 @@ public class Version {
                 patch = Integer.parseInt(parts[2]);
             }
 
-            return new Version(major, minor, patch);
-        } catch (Throwable th) {
-            return null;
+            if (major >= 0 && minor >= 0 && patch >= 0) {
+                return new Version(major, minor, patch);
+            }
+        } catch (NumberFormatException ignored) {
         }
+
+        return null;
     }
 }

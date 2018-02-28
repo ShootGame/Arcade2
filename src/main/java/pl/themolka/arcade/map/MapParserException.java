@@ -3,7 +3,7 @@ package pl.themolka.arcade.map;
 import pl.themolka.arcade.module.Module;
 
 /**
- * Legacy parser exception
+ * Legacy parser exception. Will be removed after we move to new module parsers.
  * @deprecated {@link pl.themolka.arcade.parser.ParserException}
  */
 @Deprecated

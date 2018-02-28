@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Produces(Boolean.class)
 public class BooleanParser extends ElementParser<Boolean> {
@@ -36,8 +36,8 @@ public class BooleanParser extends ElementParser<Boolean> {
     }
 
     @Override
-    public List<Object> expect() {
-        return Collections.singletonList("a boolean");
+    public Set<Object> expect() {
+        return Collections.singleton("a boolean");
     }
 
     @Override

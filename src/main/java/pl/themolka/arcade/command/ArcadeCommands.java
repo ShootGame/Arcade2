@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
-import pl.themolka.arcade.metadata.ManifestFile;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
+import pl.themolka.arcade.util.ManifestFile;
 
 import java.io.IOException;
 

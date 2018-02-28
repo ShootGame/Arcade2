@@ -45,7 +45,7 @@ public class ScoreboardContext {
     }
 
     private String getScoreboardTitle(Game game) {
-        String name = game.getMap().getScoreboardTitle();
+        String name = game.getMap().getManifest().getScoreboard().getTitle();
         if (name != null) {
             return name;
         }

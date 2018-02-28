@@ -5,16 +5,19 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapManager;
-import pl.themolka.arcade.map.MapParser;
-import pl.themolka.arcade.map.MapParserException;
+import pl.themolka.arcade.map.MapManifest;
 import pl.themolka.arcade.map.OfflineMap;
+import pl.themolka.arcade.map.WorldNameGenerator;
 import pl.themolka.arcade.map.queue.MapQueue;
 import pl.themolka.arcade.map.queue.MapQueueFillEvent;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -51,7 +54,7 @@ public class SimpleGameManager implements GameManager {
     }
 
     @Override
-    public Game createGame(ArcadeMap map) throws IOException {
+    public Game createGame(ArcadeMap map) throws DOMException, IOException {
         MapManager maps = this.plugin.getMaps();
 
         this.plugin.getLogger().info("Accessing the '" + map.getMapInfo().getDirectory().getName() + "' directory...");
@@ -81,23 +84,12 @@ public class SimpleGameManager implements GameManager {
         Game game = new Game(this.plugin, this.gameId++, map, world);
         map.setGame(game);
 
-        map.getSpawn().setWorld(world);
+        map.getManifest().getWorld().getSpawn().setWorld(world);
 
         String mapErrors = null;
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.setGamePlayer(new GamePlayer(game, player));
             game.addPlayer(player.getGamePlayer());
-
-            if (game.hasErrors()) {
-                if (mapErrors == null) {
-                    mapErrors = "Oh noo... this map contains some errors - please fix them!";
-                    for (int i = 0; i < game.getErrors().size(); i++) {
-                        mapErrors += "\nError #" + (i + 1) + ": " + game.getErrors().get(i).toString();
-                    }
-                }
-
-                player.sendError(mapErrors);
-            }
         }
 
         this.resetPlayers(game);
@@ -105,11 +97,20 @@ public class SimpleGameManager implements GameManager {
     }
 
     @Override
-    public Game createGame(OfflineMap map) throws IOException, MapParserException {
-        MapParser parser = this.plugin.getMaps().getParser().newInstance();
-        parser.readFile(map.getSettings());
+    public Game createGame(OfflineMap map) throws DOMException, IOException {
+        File file = map.getSettings();
+        DOMEngine engine = this.plugin.getDomEngines().forFile(file);
 
-        return this.createGame(parser.parseArcadeMap(this.plugin, map));
+        Parser<MapManifest> parser = this.plugin.getParsers().forType(MapManifest.class);
+        if (parser == null) {
+            throw new RuntimeException("No " + MapManifest.class.getSimpleName() + " parser installed");
+        }
+
+        ArcadeMap realMap = new ArcadeMap(map, parser.parse(engine.read(file)).orFail());
+
+        WorldNameGenerator worldNameGenerator = new WorldNameGenerator(map);
+        realMap.setWorldName(worldNameGenerator.nextWorldName());
+        return this.createGame(realMap);
     }
 
     @Override
@@ -146,13 +147,8 @@ public class SimpleGameManager implements GameManager {
             if (this.getGameId() >= this.getMaxGameId()) {
                 this.setNextRestart(true);
             }
-        } catch (MapParserException ex) {
-            Game game = this.getCurrentGame();
-            this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "': " + ex.getMessage());
-
-            if (game != null) {
-                game.addError(ex);
-            }
+        } catch (DOMException ex) {
+            this.plugin.getLogger().log(Level.SEVERE, "Could not cycle to '" + target.getName() + "': " + ex.toString());
 
             this.cycleNext();
             return;
@@ -213,7 +209,7 @@ public class SimpleGameManager implements GameManager {
     public void fillDefaultQueue() {
         Node node = this.plugin.getSettings().getData().child("queue");
         if (node == null) {
-            node = Node.of("queue");
+            node = Node.empty();
         }
 
         for (Node mapNode : node.children("map")) {
@@ -278,7 +274,7 @@ public class SimpleGameManager implements GameManager {
             }
 
             player.reset();
-            player.getBukkit().teleport(newGame.getMap().getSpawn());
+            player.getBukkit().teleport(newGame.getMap().getManifest().getWorld().getSpawn());
         }
     }
 

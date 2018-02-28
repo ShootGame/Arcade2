@@ -1,14 +1,13 @@
 package pl.themolka.arcade.module;
 
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
+import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Node;
 
 import java.util.List;
 
 public class SimpleModuleListener implements ModuleListener {
     @Override
-    public final void onEnable() {
-        throw new UnsupportedOperationException("Not supported here!");
+    public void onEnable() {
     }
 
     @Override
@@ -20,6 +19,7 @@ public class SimpleModuleListener implements ModuleListener {
         return null;
     }
 
-    public void onEnable(Element global) throws JDOMException {
+    public void onEnable(Node options) throws DOMException {
+        this.onEnable();
     }
 }
