@@ -37,31 +37,29 @@ public final class BossBarUtils {
     }
 
     public static BarColor color(DyeColor dye, BarColor def) {
-        if (dye != null) {
-            switch (dye) {
-                case PINK:
-                    return BarColor.PINK;
-                case BLUE:
-                case CYAN:
-                case LIGHT_BLUE:
-                    return BarColor.BLUE;
-                case RED:
-                    return BarColor.RED;
-                case GREEN:
-                case LIME:
-                    return BarColor.GREEN;
-                case ORANGE:
-                case YELLOW:
-                    return BarColor.YELLOW;
-                case WHITE:
-                    return BarColor.WHITE;
-                case MAGENTA:
-                case PURPLE:
-                    return BarColor.PURPLE;
-            }
+        switch (dye) {
+            case PINK:
+                return BarColor.PINK;
+            case BLUE:
+            case CYAN:
+            case LIGHT_BLUE:
+                return BarColor.BLUE;
+            case RED:
+                return BarColor.RED;
+            case GREEN:
+            case LIME:
+                return BarColor.GREEN;
+            case ORANGE:
+            case YELLOW:
+                return BarColor.YELLOW;
+            case WHITE:
+                return BarColor.WHITE;
+            case MAGENTA:
+            case PURPLE:
+                return BarColor.PURPLE;
+            default:
+                return def;
         }
-
-        return def;
     }
 
     public static BarColor color(Participator participator, BarColor def) {

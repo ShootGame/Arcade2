@@ -18,10 +18,14 @@ public class RefParser extends ElementParser<Ref> {
 
     @Override
     protected ParserResult<Ref> parseElement(Element element, String name, String value) throws ParserException {
-        return ParserResult.fine(element, name, value, Ref.of(this.validateId(value)));
+        if (!this.validId(value)) {
+            throw this.fail(element, name, value, "Invalid ID syntax");
+        }
+
+        return ParserResult.fine(element, name, value, Ref.of(value));
     }
 
-    private String validateId(String id) throws ParserException {
-        return id;
+    private boolean validId(String id) throws ParserException {
+        return Ref.ID_PATTERN.matcher(id).matches();
     }
 }

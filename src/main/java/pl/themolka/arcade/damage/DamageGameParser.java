@@ -2,7 +2,6 @@ package pl.themolka.arcade.damage;
 
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
-import pl.themolka.arcade.map.MapFileVersion;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
@@ -11,7 +10,6 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Produces(DamageGame.Config.class)
@@ -24,8 +22,8 @@ public class DamageGameParser extends GameModuleParser<DamageGame, DamageGame.Co
     }
 
     @Override
-    public List<Node> define(MapFileVersion version, Node source) {
-        return source.children("damage-rules", "damagerules");
+    public Node define(Node source) {
+        return source.firstChild("damage-rules", "damagerules");
     }
 
     @Override

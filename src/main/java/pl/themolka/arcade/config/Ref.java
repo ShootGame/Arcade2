@@ -6,11 +6,14 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * String ID reference to an object.
  */
 public class Ref<T> {
+    public static final Pattern ID_PATTERN = Pattern.compile("^[A-Za-z0-9\\-_]{3,}$");
+
     private final String id;
     private transient Reference<T> definition;
 

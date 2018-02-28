@@ -11,6 +11,10 @@ public enum FilterResult {
         this.value = value;
     }
 
+    public boolean abstain() {
+        return this == ABSTAIN;
+    }
+
     public FilterResult getOpposite() {
         switch (this) {
             case ALLOW: return DENY;
@@ -25,6 +29,10 @@ public enum FilterResult {
 
     public boolean isDenied() {
         return this == DENY;
+    }
+
+    public boolean isNotAllowed() {
+        return this != ALLOW;
     }
 
     public boolean isNotDenied() {

@@ -3,12 +3,12 @@ package pl.themolka.arcade.parser;
 import pl.themolka.arcade.util.Container;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class ParserContainer implements Container<Parser> {
-    private final Map<Class<? extends Parser>, Parser<?>> parsers = new HashMap<>();
+    private final Map<Class<? extends Parser>, Parser<?>> parsers = new LinkedHashMap<>();
 
     public ParserContainer() {
         this.parsers.put(TextParser.class, new TextParser()); // text is default

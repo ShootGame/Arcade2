@@ -8,22 +8,34 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jdom2.Element;
-import pl.themolka.arcade.config.IConfig;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.util.Percentage;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class DamageGame extends GameModule {
-    private final List<DamageRule> rules = new ArrayList<>();
+    private final Set<DamageRule> rules = new LinkedHashSet<>();
+
+    @Deprecated
+    public DamageGame() {
+    }
+
+    public DamageGame(Game game, Config config) {
+        for (DamageRule.Config rule : config.rules()) {
+            this.rules.add(rule.create(game));
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -62,7 +74,7 @@ public class DamageGame extends GameModule {
             }
             final double finalDamage = damage;
 
-            this.rules.add(new DamageRule(new DamageRule.Config() {
+            this.rules.add(new DamageRule(this.getGame(), new DamageRule.Config() {
                 @Override
                 public Ref<Filter> entityFilter() {
                     return Ref.ofProvided(entityFilter);
@@ -162,7 +174,12 @@ public class DamageGame extends GameModule {
         return !cause.equals(EntityDamageEvent.DamageCause.VOID);
     }
 
-    public interface Config extends IConfig<DamageGame> {
+    public interface Config extends IGameModuleConfig<DamageGame> {
         Set<DamageRule.Config> rules();
+
+        @Override
+        default DamageGame create(Game game) {
+            return new DamageGame(game, this);
+        }
     }
 }
