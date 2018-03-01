@@ -1,11 +1,10 @@
 package pl.themolka.arcade.damage;
 
+import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.parser.InstallableParser;
-import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -18,7 +17,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Produces(DamageRule.Config.class)
-public class DamageRuleParser extends NodeParser<DamageRule.Config>
+public class DamageRuleParser extends ConfigParser<DamageRule.Config>
                               implements InstallableParser {
     private Parser<Ref> entityFilterParser;
     private Parser<Ref> playerFilterParser;
@@ -28,6 +27,7 @@ public class DamageRuleParser extends NodeParser<DamageRule.Config>
 
     @Override
     public void install(ParserContext context) {
+        super.install(context);
         this.entityFilterParser = context.type(Ref.class);
         this.playerFilterParser = context.type(Ref.class);
         this.denyParser = context.type(Boolean.class);
@@ -42,14 +42,16 @@ public class DamageRuleParser extends NodeParser<DamageRule.Config>
 
     @Override
     protected ParserResult<DamageRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-        Ref<Filter> entityFilter = this.entityFilterParser.parse(node.property("entity-filter", "filter")).or(Ref.ofProvided(Filters.undefined()));
-        Ref<Filter> playerFilter = this.playerFilterParser.parse(node.property("player-filter", "filter")).or(Ref.ofProvided(Filters.undefined()));
+        String id = this.parseOptionalId(node);
+        Ref<Filter> entityFilter = this.entityFilterParser.parse(node.property("entity-filter", "filter")).orDefaultNull();
+        Ref<Filter> playerFilter = this.playerFilterParser.parse(node.property("player-filter", "filter")).orDefaultNull();
 
         boolean notDenied = this.denyParser.parse(node).orDefault(true);
         double damage = notDenied ? this.damageParser.parse(node).orFail() : DamageRule.DENY_DAMAGE;
         Percentage multiplier = this.multiplierParser.parse(node.property("multiplier", "multiply")).orDefault(Percentage.DONE);
 
         return ParserResult.fine(node, name, value, new DamageRule.Config() {
+            public String id() { return id; }
             public Ref<Filter> entityFilter() { return entityFilter; }
             public Ref<Filter> playerFilter() { return playerFilter; }
             public double damage() { return damage; }

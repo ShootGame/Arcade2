@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.respawn.AutoRespawnModule;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.PlayerEvent;
 import pl.themolka.arcade.time.Time;
@@ -15,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class PlayerDeathEvent extends PlayerEvent {
-    public static final Time DEFAULT_AUTO_RESPAWN_COOLDOWN = AutoRespawnModule.DEFAULT_COOLDOWN;
+    public static final Time DEFAULT_AUTO_RESPAWN_COOLDOWN = Time.SECOND;
 
     private final GamePlayer killer;
     private String deathMessage;
@@ -49,6 +48,10 @@ public class PlayerDeathEvent extends PlayerEvent {
         return this.addDropItems(Arrays.asList(items));
     }
 
+    public void clearDropItems() {
+        this.dropItems.clear();
+    }
+
     public GamePlayer getVictim() {
         return this.getGamePlayer();
     }
@@ -74,7 +77,7 @@ public class PlayerDeathEvent extends PlayerEvent {
         return this.dropExp;
     }
 
-    public List<ItemStack> getDroppedItems() {
+    public List<ItemStack> getDropItems() {
         return new ArrayList<>(this.dropItems);
     }
 

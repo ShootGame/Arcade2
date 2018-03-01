@@ -12,6 +12,7 @@ public class ParserContainer implements Container<Parser> {
 
     public ParserContainer() {
         this.parsers.put(TextParser.class, new TextParser()); // text is default
+        this.parsers.put(IdParser.class, new IdParser());
     }
 
     @Override
@@ -25,6 +26,10 @@ public class ParserContainer implements Container<Parser> {
 
     public boolean containsParser(Parser<?> parser) {
         return this.parsers.containsValue(parser);
+    }
+
+    public IdParser getIdParser() {
+        return this.getParser(IdParser.class);
     }
 
     public <T extends Parser<?>> T getParser(Class<T> clazz) {

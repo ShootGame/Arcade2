@@ -74,7 +74,7 @@ public class DamageGame extends GameModule {
             }
             final double finalDamage = damage;
 
-            this.rules.add(new DamageRule(this.getGame(), new DamageRule.Config() {
+            this.rules.add(new DamageRule(new DamageRule.Config() {
                 @Override
                 public Ref<Filter> entityFilter() {
                     return Ref.ofProvided(entityFilter);

@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import pl.themolka.arcade.bossbar.BossBarContext;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
@@ -39,6 +40,7 @@ import java.util.UUID;
 public class GamePlayer implements GameHolder, MatchWinner, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
+    private final BossBarContext bossBarContext;
     private ChatChannel channel;
     private ChatColor chatColor;
     private String displayName;
@@ -60,6 +62,8 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         this.game = game;
         this.username = username;
         this.uuid = uuid;
+
+        this.bossBarContext = new BossBarContext(this);
     }
 
     @Override
@@ -162,8 +166,6 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         return false;
     }
 
-
-
     @Override
     public boolean isParticipating() {
         return this.canParticipate() && this.participating;
@@ -211,6 +213,10 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     public boolean canSee(GamePlayer target) {
         Game game = this.getGame();
         return this.isOnline() && target.isOnline() && game != null && game.canSee(this, target);
+    }
+
+    public BossBarContext getBossBarContext() {
+        return this.bossBarContext;
     }
 
     public Player getBukkit() {
@@ -379,7 +385,6 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         bukkit.resetPlayerWeather();
         bukkit.resetTitle();
 
-        // This doesn't work... I have no idea why......
         for (PotionEffectType effect : PotionEffectType.values()) {
             bukkit.removePotionEffect(effect);
         }

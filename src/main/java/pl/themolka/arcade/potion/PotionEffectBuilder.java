@@ -6,22 +6,23 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class PotionEffectBuilder implements Builder<PotionEffect> {
+    public static final int DURATION_INFINITY = Integer.MAX_VALUE;
+
     private boolean ambient = true;
-    private int amplifier;
+    private int amplifier = 0; // effect power of I
     private Color color;
-    private int duration;
+    private int duration = DURATION_INFINITY;
     private boolean particles = true;
     private PotionEffectType type;
 
     @Override
     public PotionEffect build() {
-        return new PotionEffect(
-                this.type(),
-                this.duration(),
-                this.amplifier(),
-                this.ambient(),
-                this.particles(),
-                this.color());
+        return new PotionEffect(this.type(),
+                                this.duration(),
+                                this.amplifier(),
+                                this.ambient(),
+                                this.particles(),
+                                this.color());
     }
 
     public boolean ambient() {

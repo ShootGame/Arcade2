@@ -86,7 +86,6 @@ public class SimpleGameManager implements GameManager {
 
         map.getManifest().getWorld().getSpawn().setWorld(world);
 
-        String mapErrors = null;
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.setGamePlayer(new GamePlayer(game, player));
             game.addPlayer(player.getGamePlayer());

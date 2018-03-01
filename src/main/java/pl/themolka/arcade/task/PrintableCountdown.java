@@ -1,6 +1,8 @@
 package pl.themolka.arcade.task;
 
-import org.bukkit.boss.BossBar;
+import pl.themolka.arcade.bossbar.BossBar;
+import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.time.Duration;
 
@@ -53,6 +55,20 @@ public class PrintableCountdown extends Countdown {
         }
 
         return false;
+    }
+
+    public void removeBossBars(Iterable<ArcadePlayer> online) {
+        BossBar bossBar = this.getBossBar();
+        if (bossBar == null) {
+            return;
+        }
+
+        for (ArcadePlayer onlinePlayer : online) {
+            GamePlayer player = onlinePlayer.getGamePlayer();
+            if (player != null) {
+                player.getBossBarContext().removeBossBar(bossBar);
+            }
+        }
     }
 
     public void setBossBar(BossBar boss) {

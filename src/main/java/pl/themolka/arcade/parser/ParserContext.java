@@ -15,6 +15,10 @@ public class ParserContext {
         return this.parsers.getContainer();
     }
 
+    public IdParser id() {
+        return this.getContainer().getIdParser();
+    }
+
     public <T extends Parser<?>> T of(Class<T> clazz) {
         return this.getContainer().getParser(clazz);
     }

@@ -21,9 +21,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PotionEffectAddEvent;
-import org.bukkit.event.entity.PotionEffectExtendEvent;
-import org.bukkit.event.entity.PotionEffectRemoveEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -42,6 +39,7 @@ import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.command.Command;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
@@ -50,7 +48,6 @@ import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
-import pl.themolka.arcade.time.Time;
 
 /**
  * Listeners related to manipulate observers. Observers are the unique players
@@ -58,7 +55,6 @@ import pl.themolka.arcade.time.Time;
  * Observers are defined with a {@link Observers} class instance.
  */
 public class ObserverListeners implements Listener {
-    public static final Time AUTO_RESPAWN = PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN;
     public static final int BORDER_Y = 32;
     public static final String PLAY_COMMAND = "join";
     public static final PlayerTeleportEvent.TeleportCause TELEPORT_CAUSE =
@@ -133,10 +129,8 @@ public class ObserverListeners implements Listener {
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerLeaveObservers(ObserversLeaveEvent event) {
-        if (event.getGamePlayer().isOnline() &&
-                this.game.getMatch().isRunning()) {
-            event.getGamePlayer().refreshVisibilityArcadePlayer(
-                    this.game.getPlugin().getPlayers());
+        if (event.getGamePlayer().isOnline() && this.game.getMatch().isRunning()) {
+            event.getGamePlayer().refreshVisibilityArcadePlayer(this.game.getPlugin().getPlayers());
         }
     }
 
@@ -182,34 +176,59 @@ public class ObserverListeners implements Listener {
             Command command = commands.getCommand(PLAY_COMMAND);
 
             if (command != null) {
-                commands.handleCommand(player, command,
-                        command.getCommand(), null);
+                commands.handleCommand(player, command, command.getCommand(), null);
                 return;
             }
 
-            player.sendError("Could not join the match right now. " +
-                    "Did you defined format module?");
+            player.sendError("Could not join the match right now. Did you defined format module?");
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (this.isObserving(event.getVictimBukkit())) {
-            event.setAutoRespawn(true, AUTO_RESPAWN);
+            event.setAutoRespawn(true);
         }
     }
 
     @Handler(priority = Priority.NORMAL)
     public void onPlayerVoidTeleport(PlayerMoveEvent event) {
-        if (!event.isCanceled() && this.isObserving(event.getPlayer().getBukkit())) {
+        Player bukkit = event.getBukkitPlayer();
+        if (!event.isCanceled() && this.isObserving(bukkit)) {
             ArcadeMap map = this.game.getGame().getMap();
             int y = event.getTo().getBlockY();
 
-            // teleport observers when they are in the void
-            if (y < 0 - BORDER_Y || y > map.getWorld()
-                    .getMaxHeight() + BORDER_Y) {
-                event.getPlayer().getBukkit().teleport(map.getManifest().getWorld().getSpawn(),
-                                                       TELEPORT_CAUSE);
+            // Teleport observers when they are in the void.
+            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
+                event.getPlayer().getBukkit().teleport(map.getManifest().getWorld().getSpawn(), TELEPORT_CAUSE);
+            }
+        }
+    }
+
+    //
+    // Fix night vision effect when observers are in the void.
+    //
+
+    @Handler(priority = Priority.NORMAL)
+    public void fixVoidNightVision(PlayerMoveEvent event) {
+        if (!event.isCanceled()) {
+            this.handleFixVoidNightVision(event.getBukkitPlayer(),
+                    event.getFrom().getBlockY(), event.getTo().getBlockY());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void fixVoidNightVision(PlayerTeleportEvent event) {
+        this.handleFixVoidNightVision(event.getPlayer(),
+                event.getFrom().getBlockY(), event.getTo().getBlockY());
+    }
+
+    private void handleFixVoidNightVision(Player bukkit, int from, int to) {
+        if (this.isObserving(bukkit)) {
+            if (from < 0 && to >= 0) {
+                bukkit.addPotionEffect(ObserversKit.NIGHT_VISION, true);
+            } else if (from >= 0 && to < 0) {
+                bukkit.removePotionEffect(PotionEffectType.NIGHT_VISION);
             }
         }
     }
@@ -356,27 +375,6 @@ public class ObserverListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPotionEffectAdd(PotionEffectAddEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPotionEffectExtend(PotionEffectExtendEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPotionEffectRemove(PotionEffectRemoveEvent event) {
-        if (this.isObserving(event.getEntity())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event) {
         for (LivingEntity entity : event.getAffectedEntities()) {
             if (this.isObserving(entity)) {
@@ -411,7 +409,6 @@ public class ObserverListeners implements Listener {
     }
 
     private boolean isObserving(Player player) {
-        return this.game.getMatch().isObserving(
-                this.game.getGame().getPlayer(player));
+        return this.game.getMatch().isObserving(this.game.getGame().getPlayer(player));
     }
 }

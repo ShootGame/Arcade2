@@ -133,10 +133,14 @@ public class Match implements DynamicWinnable, GameHolder {
             player.setParticipating(false);
             player.reset();
 
-            player.getBukkit().getInventory().setItem(0, ObserversKit.NAVIGATION);
-            player.getBukkit().getInventory().setHeldItemSlot(0);
-            player.getBukkit().setGameMode(ObserversKit.GAME_MODE);
-            player.getBukkit().setAllowFlight(true);
+            Player bukkit = player.getBukkit();
+            bukkit.getInventory().setItem(0, ObserversKit.NAVIGATION);
+            bukkit.getInventory().setHeldItemSlot(0);
+            bukkit.setGameMode(ObserversKit.GAME_MODE);
+            bukkit.setAllowFlight(true);
+
+            bukkit.addPotionEffect(ObserversKit.SPEED, true);
+            bukkit.addPotionEffect(ObserversKit.NIGHT_VISION, true);
         }
 
         this.plugin.getEventBus().publish(new MatchEndedEvent(this.plugin, this, winner, force));
@@ -388,7 +392,7 @@ public class Match implements DynamicWinnable, GameHolder {
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             GamePlayer player = online.getGamePlayer();
-            if (player == null || this.isObserving(player)) {
+            if (player == null || this.getObservers().hasPlayer(player)) {
                 continue;
             }
 

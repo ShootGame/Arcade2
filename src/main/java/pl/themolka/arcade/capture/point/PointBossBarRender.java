@@ -3,23 +3,23 @@ package pl.themolka.arcade.capture.point;
 import net.engio.mbassy.listener.Handler;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import pl.themolka.arcade.bossbar.BarPriority;
+import pl.themolka.arcade.bossbar.BossBar;
 import pl.themolka.arcade.bossbar.BossBarUtils;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.capture.point.state.PointState;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.game.GameStopEvent;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.team.TeamEditEvent;
 import pl.themolka.arcade.util.Color;
+import pl.themolka.arcade.util.Percentage;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -27,8 +27,8 @@ import java.util.WeakHashMap;
 public class PointBossBarRender implements Listener {
     public static final BarColor BAR_COLOR = BossBarUtils.color(Point.DEFAULT_NEUTRAL_COLOR);
     public static final BarFlag[] BAR_FLAGS = {};
+    public static final int BAR_PRIORITY = BarPriority.LOWER;
     public static final BarStyle BAR_STYLE = BarStyle.SOLID;
-    public static final BaseComponent BAR_TEXT = new TextComponent();
 
     private final CaptureGame game;
 
@@ -36,10 +36,6 @@ public class PointBossBarRender implements Listener {
 
     public PointBossBarRender(CaptureGame game) {
         this.game = game;
-    }
-
-    public BossBar createBossBar() {
-        return this.game.getServer().createBossBar(BAR_TEXT, BAR_COLOR, BAR_STYLE, BAR_FLAGS);
     }
 
     //
@@ -61,33 +57,32 @@ public class PointBossBarRender implements Listener {
     public BossBar renderBossBar(Point point, Color pointColor, double progress, Color progressColor) {
         BossBar bossBar = this.bossBars.get(point);
         if (bossBar == null) {
-            this.bossBars.put(point, bossBar = this.createBossBar());
+            this.bossBars.put(point, bossBar = new BossBar(BAR_COLOR, BAR_STYLE, BAR_FLAGS));
         }
 
-        bossBar.setColor(BossBarUtils.color(progressColor, BAR_COLOR));
-        bossBar.setProgress(progress);
-        bossBar.setTitle(this.createBarTitle(point.getName(), pointColor, progress, progressColor));
-        bossBar.setVisible(true);
+        bossBar.setColor(BossBarUtils.color(pointColor, BAR_COLOR));
+        bossBar.setProgress(Percentage.finite(progress));
+        bossBar.setText(this.createBarTitle(point.getName(), pointColor, progress, progressColor));
         return bossBar;
     }
 
-    public BossBar renderBossBar(Point point, Player bukkit) {
-        return this.renderBossBar(point, point.getState(), bukkit);
+    public BossBar renderBossBar(Point point, GamePlayer player) {
+        return this.renderBossBar(point, point.getState(), player);
     }
 
-    public BossBar renderBossBar(Point point, PointState state, Player bukkit) {
-        return this.renderBossBar(point, state.getColor(), state.getProgress(), bukkit);
+    public BossBar renderBossBar(Point point, PointState state, GamePlayer player) {
+        return this.renderBossBar(point, state.getColor(), state.getProgress(), player);
     }
 
-    public BossBar renderBossBar(Point point, Color pointColor, double progress, Player bukkit) {
-        return this.renderBossBar(point, pointColor, progress, point.getNeutralColor(), bukkit);
+    public BossBar renderBossBar(Point point, Color pointColor, double progress, GamePlayer player) {
+        return this.renderBossBar(point, pointColor, progress, point.getNeutralColor(), player);
     }
 
-    public BossBar renderBossBar(Point point, Color pointColor, double progress, Color progressColor, Player bukkit) {
-        if (bukkit != null) {
+    public BossBar renderBossBar(Point point, Color pointColor, double progress, Color progressColor, GamePlayer player) {
+        if (player != null) {
             BossBar bossBar = this.renderBossBar(point, pointColor, progress, progressColor);
             if (bossBar != null) {
-                bossBar.addPlayer(bukkit);
+                player.getBossBarContext().addBossBar(bossBar, BAR_PRIORITY);
             }
 
             return bossBar;
@@ -100,31 +95,16 @@ public class PointBossBarRender implements Listener {
     // Removing
     //
 
-    public void removeBossBar(Point point, Player bukkit) {
+    public void removeBossBar(Point point, GamePlayer player) {
         BossBar bossBar = this.bossBars.get(point);
         if (bossBar != null) {
-            try {
-                bossBar.removePlayer(bukkit);
-            } catch (NullPointerException ignored) {
-                // Strange Bukkit bug in CraftBossBar.removePlayer(CraftBossBar.java:190)
-            }
+            player.getBossBarContext().removeBossBar(bossBar);
         }
     }
 
     //
     // Listening
     //
-
-    @Handler(priority = Priority.LAST)
-    public void gameOver(GameStopEvent event) {
-        for (BossBar bossBar : this.bossBars.values()) {
-            // We need need to send the "REMOVE" packet to all members
-            // of this boss bar to remove it from their views.
-            bossBar.removeAll();
-        }
-
-        this.bossBars.clear();
-    }
 
     @Handler(priority = Priority.LAST)
     public void participatorEdit(TeamEditEvent event) {
@@ -135,15 +115,23 @@ public class PointBossBarRender implements Listener {
         }
     }
 
+    //
+    // Player Tracking
+    //
+
     @Handler(priority = Priority.LAST)
     public void playerEnter(PointPlayerEnterEvent event) {
-        this.renderBossBar(event.getPoint(), event.getPlayer().getBukkit());
+        this.renderBossBar(event.getPoint(), event.getPlayer());
     }
 
     @Handler(priority = Priority.LAST)
     public void playerLeave(PointPlayerLeaveEvent event) {
-        this.removeBossBar(event.getPoint(), event.getPlayer().getBukkit());
+        this.removeBossBar(event.getPoint(), event.getPlayer());
     }
+
+    //
+    // Changing States
+    //
 
     @Handler(priority = Priority.LAST)
     public void stateChange(PointCapturedEvent event) {
@@ -177,7 +165,7 @@ public class PointBossBarRender implements Listener {
     // Helper Methods
     //
 
-    private BaseComponent createBarTitle(String pointName, Color pointColor, double progress, Color progressColor) {
+    private BaseComponent[] createBarTitle(String pointName, Color pointColor, double progress, Color progressColor) {
         String progressPretty = Math.round(progress * 100D) + "%";
 
         net.md_5.bungee.api.ChatColor realPointColor = pointColor.toComponent();
@@ -186,10 +174,10 @@ public class PointBossBarRender implements Listener {
         // Create spaces to TRY to center pointName on the boss bar.
         String prefix = CommandUtils.createLine((int) Math.round(progressPretty.length() * 1.5D), " ");
 
-        return new TextComponent(new ComponentBuilder(prefix + "   ") // +3 spaces
+        return new ComponentBuilder(prefix + "   ") // +3 spaces
                 .append(pointName).color(realPointColor).bold(true)
                 .append("   ") // 3 spaces
                 .append(progressPretty).color(realDefaultColor).bold(false)
-                .create());
+                .create();
     }
 }

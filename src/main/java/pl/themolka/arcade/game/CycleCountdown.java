@@ -5,6 +5,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.bossbar.BarPriority;
+import pl.themolka.arcade.bossbar.BossBar;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.PrintableCountdown;
@@ -14,6 +16,7 @@ import java.time.Duration;
 public class CycleCountdown extends PrintableCountdown {
     public static final Duration DEFAULT_DURATION = Duration.ofSeconds(15);
     public static final String FIELD_MAP_NAME = "%MAP_NAME%";
+    public static final int BAR_PRIORITY = BarPriority.FIRST;
 
     private final ArcadePlugin plugin;
 
@@ -22,23 +25,18 @@ public class CycleCountdown extends PrintableCountdown {
 
         this.plugin = plugin;
 
-        this.setBossBar(plugin.getServer().createBossBar(new TextComponent(), BarColor.BLUE, BarStyle.SOLID));
+        this.setBossBar(new BossBar(BarColor.BLUE, BarStyle.SOLID));
     }
 
     @Override
     public void onCancel() {
-        OfflineMap nextMap = this.plugin.getGames().getQueue().getNextMap();
-        if (nextMap == null) {
-            return;
-        }
-
-        this.getBossBar().setVisible(false);
+        this.removeBossBars(this.plugin.getPlayers());
     }
 
     @Override
     public void onDone() {
+        this.removeBossBars(this.plugin.getPlayers());
         this.plugin.getGames().cycle(null);
-        this.getBossBar().setVisible(false);
     }
 
     @Override
@@ -60,8 +58,11 @@ public class CycleCountdown extends PrintableCountdown {
         this.getBossBar().setProgress(this.getProgress());
         this.getBossBar().setTitle(new TextComponent(message));
 
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            this.getBossBar().addPlayer(player.getBukkit());
+        for (ArcadePlayer online : this.plugin.getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+            if (player != null) {
+                player.getBossBarContext().addBossBar(this.getBossBar(), BAR_PRIORITY);
+            }
         }
 
         this.getBossBar().setVisible(true);

@@ -10,6 +10,7 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.bossbar.BossBarListeners;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.command.ConsoleSender;
@@ -659,6 +660,9 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
+
+        // boss bars
+        this.registerListenerObject(new BossBarListeners(this));
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));

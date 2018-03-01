@@ -15,6 +15,7 @@ public class ModulesInfo implements Cloneable {
      * TODO: Consider about using "configs" with pre-defined module settings.
      * The configs should ONLY store references to other modules, or features.
      * The configs could then be converted into fine GameModule objects.
+     * @deprecated Legacy
      */
     @Deprecated
     private final List<Node> modules = new ArrayList<>();

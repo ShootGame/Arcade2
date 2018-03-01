@@ -57,6 +57,16 @@ public class Percentage {
         return Double.toString(this.value * 100D) + SYMBOL;
     }
 
+    public Percentage trim() {
+        if (this.value < MIN_VALUE) {
+            return new Percentage(MIN_VALUE);
+        } else if (this.value > MAX_VALUE) {
+            return new Percentage(MAX_VALUE);
+        }
+
+        return this;
+    }
+
     //
     // Instancing
     //

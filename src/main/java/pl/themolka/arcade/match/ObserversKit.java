@@ -4,34 +4,48 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.kit.ClearInventoryContent;
+import pl.themolka.arcade.kit.EffectContent;
 import pl.themolka.arcade.kit.GameModeContent;
 import pl.themolka.arcade.kit.HeldSlotContent;
 import pl.themolka.arcade.kit.ItemStackContent;
 import pl.themolka.arcade.kit.Kit;
+import pl.themolka.arcade.potion.PotionEffectBuilder;
 
 public class ObserversKit extends Kit {
     public static final String OBSERVERS_KIT_ID = "_observers-kit";
 
     public static final GameMode GAME_MODE = GameMode.CREATIVE;
 
-    // navigation
-    public static final String NAVIGATION_NAME = ChatColor.AQUA + ChatColor.BOLD.toString() + "Navigation";
+    // items
     public static final ItemStack NAVIGATION = new ItemStackBuilder()
             .type(Material.COMPASS)
-            .displayName(NAVIGATION_NAME)
+            .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Navigation")
             .description(ChatColor.YELLOW + "Left click to teleport to point",
                     ChatColor.YELLOW + "Right click to teleport to highest point")
             .build();
-
-    // play
-    public static final String PLAY_NAME = ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game";
     public static final ItemStack PLAY = new ItemStackBuilder()
             .type(Material.NETHER_STAR)
-            .displayName(PLAY_NAME)
+            .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game")
             .description(ChatColor.YELLOW + "Click to join the game")
+            .build();
+
+    // effects
+    public static final PotionEffect SPEED = new PotionEffectBuilder()
+            .type(PotionEffectType.SPEED)
+            .duration(PotionEffectBuilder.DURATION_INFINITY)
+            .amplifier(1)
+            .particles(false)
+            .build();
+    public static final PotionEffect NIGHT_VISION = new PotionEffectBuilder()
+            .type(PotionEffectType.NIGHT_VISION)
+            .duration(PotionEffectBuilder.DURATION_INFINITY)
+            .amplifier(0)
+            .particles(false)
             .build();
 
     public ObserversKit(ArcadePlugin plugin) {
@@ -48,6 +62,9 @@ public class ObserversKit extends Kit {
         this.addContent(this.createPlayItem()); // 2
 
         this.addContent(new HeldSlotContent(0));
+
+        this.addContent(new EffectContent(SPEED));
+        this.addContent(new EffectContent(NIGHT_VISION));
     }
 
     public ItemStackContent createNavigationItem() {

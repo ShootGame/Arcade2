@@ -5,62 +5,93 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.filter.Filter;
+import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.util.Percentage;
 
-import java.util.Objects;
-
 public class DamageRule implements Cancelable {
     public static final double DENY_DAMAGE = 0D;
 
-    private final Game game;
-    private final Config config;
+    public static final double DEFAULT_DAMAGE = DENY_DAMAGE;
+    public static final Percentage DEFAULT_MULTIPLIER = Percentage.DONE;
 
-    public DamageRule(Game game, Config config) {
-        this.game = Objects.requireNonNull(game, "game cannot be null");
-        this.config = Objects.requireNonNull(config, "config cannot be null");
+    private final Filter entityFilter;
+    private final Filter playerFilter;
+    private double damage = DEFAULT_DAMAGE;
+    private Percentage multiplier = DEFAULT_MULTIPLIER;
+
+    public DamageRule(Config config) {
+        this(config.entityFilter().get(), config.playerFilter().get());
+        this.setDamage(config.damage());
+        this.setMultiplier(config.multiplier());
+    }
+
+    protected DamageRule(Filter filter) {
+        this(filter, filter);
+    }
+
+    protected DamageRule(Filter entityFilter, Filter playerFilter) {
+        this.entityFilter = Filters.secure(entityFilter);
+        this.playerFilter = Filters.secure(playerFilter);
     }
 
     @Override
     public boolean isCanceled() {
-        return this.config.damage() <= DENY_DAMAGE;
+        return this.damage <= DENY_DAMAGE;
     }
 
     @Override
     public void setCanceled(boolean cancel) {
+        this.damage = cancel ? DENY_DAMAGE : 1D;
     }
 
-    public Config getConfig() {
-        return this.config;
+    public Filter getEntityFilter() {
+        return this.entityFilter;
+    }
+
+    public Filter getPlayerFilter() {
+        return this.playerFilter;
     }
 
     public double getDamage() {
-        return this.isCanceled() ? DENY_DAMAGE : this.config.damage();
+        return this.isCanceled() ? DENY_DAMAGE : this.damage;
     }
 
     public double getDamage(double firstDamage) {
-        return this.config.multiplier().preprocess(firstDamage + this.getDamage());
+        return this.multiplier.preprocess(firstDamage + this.getDamage());
+    }
+
+    public Percentage getMultiplier() {
+        return this.multiplier;
     }
 
     public boolean matches(Entity entity, EntityDamageEvent.DamageCause cause) {
-        return !entity.isDead() && this.config.entityFilter().get().filter(entity, cause).isAllowed();
+        return !entity.isDead() && this.entityFilter.filter(entity, cause).isAllowed();
     }
 
     public boolean matches(GamePlayer player, EntityDamageEvent.DamageCause cause) {
-        return player != null && player.isOnline() && this.config.playerFilter().get().filter(player, cause).isAllowed();
+        return player != null && player.isOnline() && this.playerFilter.filter(player, cause).isAllowed();
+    }
+
+    public void setDamage(double damage) {
+        this.damage = damage;
+    }
+
+    public void setMultiplier(Percentage multiplier) {
+        this.multiplier = multiplier != null ? multiplier : DEFAULT_MULTIPLIER;
     }
 
     public interface Config extends IGameConfig<DamageRule> {
-        Ref<Filter> entityFilter();
-        Ref<Filter> playerFilter();
-        default double damage() { return DENY_DAMAGE; }
-        default Percentage multiplier() { return Percentage.DONE; }
+        default Ref<Filter> entityFilter() { return Ref.ofProvided(Filters.undefined()); }
+        default Ref<Filter> playerFilter() { return Ref.ofProvided(Filters.undefined()); }
+        default double damage() { return DEFAULT_DAMAGE; }
+        default Percentage multiplier() { return DEFAULT_MULTIPLIER; }
 
         @Override
         default DamageRule create(Game game) {
-            return new DamageRule(game, this);
+            return new DamageRule(this);
         }
     }
 }

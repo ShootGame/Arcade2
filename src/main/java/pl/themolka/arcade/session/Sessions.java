@@ -18,6 +18,8 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 
+import java.util.ArrayList;
+
 public class Sessions implements Listener {
     private final ArcadePlugin plugin;
 
@@ -71,7 +73,7 @@ public class Sessions implements Listener {
                             killer != null ? killer.getGamePlayer() : null,
                             event.getDeathMessage(),
                             event.getDroppedExp(),
-                            event.getDrops());
+                            new ArrayList<>(event.getDrops()));
             deathEvent.setKeepInventory(event.getKeepInventory());
             deathEvent.setKeepLevel(event.getKeepLevel());
             deathEvent.setNewExp(event.getNewExp());
@@ -80,7 +82,7 @@ public class Sessions implements Listener {
             this.postEvent(deathEvent);
 
             event.getDrops().clear();
-            event.getDrops().addAll(deathEvent.getDroppedItems());
+            event.getDrops().addAll(deathEvent.getDropItems());
 
             event.setDeathMessage(deathEvent.getDeathMessage());
             event.setDroppedExp(deathEvent.getDropExp());

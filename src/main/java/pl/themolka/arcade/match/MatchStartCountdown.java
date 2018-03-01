@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.bossbar.BarPriority;
+import pl.themolka.arcade.bossbar.BossBar;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -15,6 +17,8 @@ import pl.themolka.arcade.task.PrintableCountdown;
 import java.time.Duration;
 
 public class MatchStartCountdown extends PrintableCountdown {
+    public static final int BAR_PRIORITY = BarPriority.HIGHEST;
+
     private final ArcadePlugin plugin;
 
     private boolean cannotStart;
@@ -25,18 +29,18 @@ public class MatchStartCountdown extends PrintableCountdown {
         this.plugin = plugin;
 
         this.match = match;
-        this.setBossBar(plugin.getServer().createBossBar(new TextComponent(), BarColor.GREEN, BarStyle.SOLID));
+        this.setBossBar(new BossBar(BarColor.GREEN, BarStyle.SOLID));
     }
 
     @Override
     public void onCancel() {
-        this.getBossBar().setVisible(false);
+        this.removeBossBars(this.plugin.getPlayers());
     }
 
     @Override
     public void onDone() {
+        this.removeBossBars(this.plugin.getPlayers());
         this.getMatch().start(false);
-        this.getBossBar().setVisible(false);
     }
 
     @Override
@@ -52,8 +56,11 @@ public class MatchStartCountdown extends PrintableCountdown {
         this.getBossBar().setProgress(this.getProgress());
         this.getBossBar().setTitle(new TextComponent(message));
 
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            this.getBossBar().addPlayer(player.getBukkit());
+        for (ArcadePlayer online : this.plugin.getPlayers()) {
+            GamePlayer player = online.getGamePlayer();
+            if (player != null) {
+                player.getBossBarContext().addBossBar(this.getBossBar(), BAR_PRIORITY);
+            }
         }
 
         this.getBossBar().setVisible(true);

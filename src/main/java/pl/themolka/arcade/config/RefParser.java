@@ -1,6 +1,8 @@
 package pl.themolka.arcade.config;
 
+import pl.themolka.arcade.dom.Cursor;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.dom.Selection;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
@@ -13,7 +15,7 @@ import java.util.Set;
 public class RefParser extends ElementParser<Ref> {
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("an ID");
+        return Collections.singleton("an ID reference");
     }
 
     @Override
@@ -22,7 +24,22 @@ public class RefParser extends ElementParser<Ref> {
             throw this.fail(element, name, value, "Invalid ID syntax");
         }
 
-        return ParserResult.fine(element, name, value, Ref.of(value));
+        Ref<?> ref = Ref.of(value);
+
+        Cursor start = null;
+        Cursor end = null;
+
+        if (ref.isSelectable()) {
+            Selection selection = ref.select();
+            start = selection.getStart();
+            end = selection.getEnd();
+        }
+
+        if (start != null && end != null) {
+            ref.locate(start, end);
+        }
+
+        return ParserResult.fine(element, name, value, ref);
     }
 
     private boolean validId(String id) throws ParserException {

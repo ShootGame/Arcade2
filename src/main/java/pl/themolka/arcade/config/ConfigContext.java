@@ -51,8 +51,9 @@ public class ConfigContext {
         return uniqueId;
     }
 
-    public boolean register(String id, IConfig<?> config) {
-        return this.configMap.putIfAbsent(id, config) == null;
+    public boolean register(IConfig<?> config) {
+        String id = config.id();
+        return id != null && this.configMap.putIfAbsent(id, config) == null;
     }
 
     public boolean unregister(String id) {

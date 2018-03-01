@@ -72,6 +72,11 @@ public class Module<T> extends SimpleModuleListener
         return this.id;
     }
 
+    /**
+     * Legacy way to instantiate {@link pl.themolka.arcade.game.GameModule}s.
+     * @deprecated The modern way is to use {@link pl.themolka.arcade.game.IGameConfig#create(Game)}.
+     */
+    @Deprecated
     public T buildGameModule(Element xml, Game game) throws JDOMException {
         return null;
     }

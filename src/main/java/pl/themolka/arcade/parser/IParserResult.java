@@ -1,5 +1,7 @@
 package pl.themolka.arcade.parser;
 
+import pl.themolka.arcade.util.OptionalProvider;
+
 import java.util.Optional;
 
 /**
@@ -49,7 +51,7 @@ import java.util.Optional;
  *   </tr>
  * </table>
  */
-public interface IParserResult<T> {
+public interface IParserResult<T> extends OptionalProvider<T> {
     /**
      * Get the result, never null.
      * @throws NullPointerException if there is no result.
