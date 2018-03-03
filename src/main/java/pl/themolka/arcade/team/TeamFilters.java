@@ -43,7 +43,7 @@ public class TeamFilters {
             if (team == null) {
                 return FilterResult.ABSTAIN;
             } else if (object instanceof ArcadePlayer) {
-                return FilterResult.of(teams.getTeam(teams.getGame().getPlayer((ArcadePlayer) object)).equals(this.team));
+                return this.filter(((ArcadePlayer) object).getGamePlayer());
             } else if (object instanceof GamePlayer) {
                 return FilterResult.of(teams.getTeam((GamePlayer) object).equals(this.team));
             } else if (object instanceof Player) {

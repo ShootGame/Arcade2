@@ -24,22 +24,23 @@ public class RefParser extends ElementParser<Ref> {
             throw this.fail(element, name, value, "Invalid ID syntax");
         }
 
-        Ref<?> ref = Ref.of(value);
+        return ParserResult.fine(element, name, value, this.createRef(value));
+    }
 
-        Cursor start = null;
-        Cursor end = null;
+    private Ref<?> createRef(String id) {
+        Ref<?> ref = Ref.of(id);
 
         if (ref.isSelectable()) {
             Selection selection = ref.select();
-            start = selection.getStart();
-            end = selection.getEnd();
+            Cursor start = selection.getStart();
+            Cursor end = selection.getEnd();
+
+            if (start != null && end != null) {
+                ref.locate(start, end);
+            }
         }
 
-        if (start != null && end != null) {
-            ref.locate(start, end);
-        }
-
-        return ParserResult.fine(element, name, value, ref);
+        return ref;
     }
 
     private boolean validId(String id) throws ParserException {

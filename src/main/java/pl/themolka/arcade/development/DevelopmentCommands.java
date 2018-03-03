@@ -5,7 +5,7 @@ import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.Sender;
-import pl.themolka.arcade.game.CycleStartEvent;
+import pl.themolka.arcade.cycle.CycleStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.task.Countdown;

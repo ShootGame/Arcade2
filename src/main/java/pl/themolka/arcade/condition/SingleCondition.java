@@ -1,20 +1,20 @@
 package pl.themolka.arcade.condition;
 
-public abstract class SingleCondition implements Condition {
-    private final Condition condition;
+public abstract class SingleCondition<T> implements Condition<T> {
+    private final Condition<T> condition;
 
-    public SingleCondition(Condition condition) {
+    public SingleCondition(Condition<T> condition) {
         this.condition = condition;
     }
 
     @Override
-    public boolean test() {
-        return this.test(this.condition);
+    public boolean test(T t) {
+        return this.test(t, this.condition);
     }
 
-    public Condition getCondition() {
+    public Condition<T> getCondition() {
         return this.condition;
     }
 
-    public abstract boolean test(Condition condition);
+    public abstract boolean test(T t, Condition<T> condition);
 }

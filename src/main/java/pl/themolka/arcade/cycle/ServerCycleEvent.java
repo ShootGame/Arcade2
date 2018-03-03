@@ -1,6 +1,7 @@
-package pl.themolka.arcade.game;
+package pl.themolka.arcade.cycle;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.ArcadeMap;
 
 public class ServerCycleEvent extends CycleEvent {

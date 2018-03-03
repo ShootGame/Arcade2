@@ -2,7 +2,7 @@ package pl.themolka.arcade.util;
 
 import java.util.Objects;
 
-public class NamedValue<K, V> implements INamedValue<K, V> {
+public class NamedValue<K, V> implements Cloneable, INamedValue<K, V> {
     private K name;
     private V value;
 
@@ -13,6 +13,19 @@ public class NamedValue<K, V> implements INamedValue<K, V> {
     public NamedValue(K name, V value) {
         this.name = Objects.requireNonNull(name, "name cannot be null");
         this.value = value;
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            NamedValue<K, V> clone = (NamedValue<K, V>) super.clone();
+            clone.name = this.name;
+            clone.value = this.value;
+            // ^ I hope that both name and value are primitive...
+            return clone;
+        } catch (CloneNotSupportedException clone) {
+            throw new Error(clone);
+        }
     }
 
     @Override

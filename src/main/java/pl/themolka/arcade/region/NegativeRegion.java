@@ -2,16 +2,26 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
 
 import java.util.Random;
 
 public class NegativeRegion extends AbstractRegion {
-    private final Region region;
+    private final UnionRegion region;
 
-    public NegativeRegion(Region region) {
-        super(region.getGame(), region.getId());
+    public NegativeRegion(UnionRegion region) {
+        this(region.getId(), region);
+    }
+
+    public NegativeRegion(String id, UnionRegion region) {
+        super(region.getGame(), id);
 
         this.region = region;
+    }
+
+    public NegativeRegion(NegativeRegion original) {
+        this(original.getId(), original.getRegion());
     }
 
     @Override
@@ -49,7 +59,16 @@ public class NegativeRegion extends AbstractRegion {
         return this.getRegion().getRandomVector(random, limit);
     }
 
-    public Region getRegion() {
+    public UnionRegion getRegion() {
         return this.region;
+    }
+
+    interface Config extends AbstractRegion.Config<NegativeRegion> {
+        Ref<UnionRegion.Config> region();
+
+        @Override
+        default NegativeRegion create(Game game) {
+            return new NegativeRegion(this.id(), this.region().get().create(game));
+        }
     }
 }

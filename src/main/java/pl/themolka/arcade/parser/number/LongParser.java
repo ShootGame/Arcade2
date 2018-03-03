@@ -19,4 +19,14 @@ public class LongParser extends NumberParser<Long> {
     protected Long parse(String input) throws NumberFormatException {
         return Long.parseLong(input);
     }
+
+    @Override
+    protected Long positiveInfinity() {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
+    protected Long negativeInfinity() {
+        return Long.MIN_VALUE;
+    }
 }

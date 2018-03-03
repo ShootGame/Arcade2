@@ -4,15 +4,14 @@ import net.engio.mbassy.listener.Handler;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.Team;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.game.CycleCountdown;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.RestartCountdown;
@@ -52,9 +51,6 @@ public class MatchGame extends GameModule {
 
         this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.getMatch());
         this.getStartCountdown().setGame(this.getGame());
-
-        Team bukkit = Observers.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), this.getObservers());
-        this.getObservers().setBukkit(bukkit);
 
         this.getGame().addVisiblityFilter(new MatchVisibilityFilter(this.getMatch())); // visibility filter
 

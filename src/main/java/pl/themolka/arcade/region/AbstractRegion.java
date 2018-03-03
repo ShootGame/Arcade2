@@ -6,20 +6,18 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
 public abstract class AbstractRegion implements Region {
     private static final Random random = new Random();
 
-    private final Map<RegionEventType, Filter> filters = new HashMap<>();
     private final Game game;
     private final String id;
 
@@ -34,7 +32,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public boolean contains(Block block) {
-        return this.contains(block.getLocation().toBlockVector());
+        return this.getWorld().equals(block.getWorld()) && this.contains(block.getLocation().toBlockVector());
     }
 
     @Override
@@ -44,7 +42,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public boolean contains(Location location) {
-        return this.contains(location.toVector());
+        return this.getWorld().equals(location.getWorld()) && this.contains(location.toVector());
     }
 
     @Override
@@ -79,10 +77,11 @@ public abstract class AbstractRegion implements Region {
         Vector min = bounds.getMin();
         Vector max = bounds.getMax();
 
+        World world = this.getWorld();
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    Block block = this.getWorld().getBlockAt(x, y, z);
+                    Block block = world.getBlockAt(x, y, z);
 
                     if (this.contains(block)) {
                         results.add(block);
@@ -92,16 +91,6 @@ public abstract class AbstractRegion implements Region {
         }
 
         return results;
-    }
-
-    @Override
-    public Filter getFilter(RegionEventType event) {
-        return this.getFilter(event, null);
-    }
-
-    @Override
-    public Filter getFilter(RegionEventType event, Filter def) {
-        return this.filters.getOrDefault(event, def);
     }
 
     @Override
@@ -144,21 +133,6 @@ public abstract class AbstractRegion implements Region {
     }
 
     @Override
-    public boolean hasFilter(RegionEventType event) {
-        return this.filters.containsKey(event);
-    }
-
-    @Override
-    public void removeFilter(RegionEventType event) {
-        this.filters.remove(event);
-    }
-
-    @Override
-    public void setFilter(RegionEventType event, Filter filter) {
-        this.filters.put(event, filter);
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return obj instanceof AbstractRegion && ((AbstractRegion) obj).getId().equals(this.getId());
     }
@@ -172,5 +146,9 @@ public abstract class AbstractRegion implements Region {
 
     protected boolean isYPresent(Vector vector) {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;
+    }
+
+    interface Config<T> extends IGameConfig<T>, StringId {
+        String id();
     }
 }

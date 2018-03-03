@@ -1,11 +1,13 @@
 package pl.themolka.arcade.game;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.map.ArcadeMap;
@@ -13,7 +15,6 @@ import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
@@ -22,24 +23,19 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * A game representation of the currently playing map.
  */
-public class Game implements PlayerVisibilityFilter {
+public class Game implements Messageable, PlayerVisibilityFilter {
     private final ArcadePlugin plugin;
 
     private final int gameId;
     private final ArcadeMap map;
     private final GameModuleContainer modules = new GameModuleContainer();
-    private final List<GamePlayerListener> playerListeners = new ArrayList<>();
-    private final Map<UUID, GamePlayer> players = new HashMap<>();
-    private final ScoreboardContext scoreboard;
+    private final GamePlayerManager players = new GamePlayerManager();
     private Instant startTime;
     private final List<Task> taskList = new ArrayList<>();
     private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>();
@@ -58,7 +54,6 @@ public class Game implements PlayerVisibilityFilter {
 
         this.gameId = gameId;
         this.map = map;
-        this.scoreboard = new ScoreboardContext(plugin, this);
         this.windowRegistry = new GameWindowRegistry(this);
         this.world = new WeakReference<>(world);
 
@@ -89,6 +84,30 @@ public class Game implements PlayerVisibilityFilter {
         return def;
     }
 
+    @Override
+    public void send(String message) {
+        this.plugin.getLogger().info("[Game] " + ChatColor.stripColor(message));
+        for (GamePlayer player : this.players.getOnlinePlayers()) {
+            player.send(message);
+        }
+    }
+
+    @Override
+    public void sendAction(String action) {
+        this.plugin.getLogger().info("[Game/Action] " + ChatColor.stripColor(action));
+        for (GamePlayer player : this.players.getOnlinePlayers()) {
+            player.sendAction(action);
+        }
+    }
+
+    @Override
+    public void sendChat(String chat) {
+        this.plugin.getLogger().info("[Game/Chat] " + ChatColor.stripColor(chat));
+        for (GamePlayer player : this.players.getOnlinePlayers()) {
+            player.sendChat(chat);
+        }
+    }
+
     public int addAsyncTask(Task task) {
         int id = Task.DEFAULT_TASK_ID;
         if (!task.isTaskRunning() && this.taskList.add(task)) {
@@ -97,22 +116,6 @@ public class Game implements PlayerVisibilityFilter {
         }
 
         return id;
-    }
-
-    public void addPlayer(GamePlayer player) {
-        for (GamePlayerListener notify : this.playerListeners) {
-            notify.notifyRegister();
-        }
-
-        this.players.put(player.getUuid(), player);
-
-        for (GamePlayerListener notify : this.playerListeners) {
-            notify.notifyRegistered();
-        }
-    }
-
-    public boolean addPlayerListener(GamePlayerListener listener) {
-        return this.playerListeners.add(listener);
     }
 
     public int addSyncTask(Task task) {
@@ -177,11 +180,7 @@ public class Game implements PlayerVisibilityFilter {
 
     public GamePlayer findPlayer(String query) {
         ArcadePlayer player = this.plugin.findPlayer(query);
-        if (player != null) {
-            return player.getGamePlayer();
-        }
-
-        return null;
+        return player != null ? player.getGamePlayer() : null;
     }
 
     public List<Countdown> getCountdowns() {
@@ -215,54 +214,20 @@ public class Game implements PlayerVisibilityFilter {
         return this.modules;
     }
 
-    public GamePlayer getPlayer(ArcadePlayer player) {
-        if (player != null) {
-            return this.getPlayer(player.getUuid());
-        }
-
-        return null;
-    }
-
     public GamePlayer getPlayer(GamePlayerSnapshot snapshot) {
-        if (snapshot != null) {
-            return this.getPlayer(snapshot.getUuid());
-        }
-
-        return null;
+        return snapshot != null ? this.getPlayer(snapshot.getUuid()) : null;
     }
 
     public GamePlayer getPlayer(Player bukkit) {
-        if (bukkit != null) {
-            return this.getPlayer(bukkit.getUniqueId());
-        }
-
-        return null;
+        return bukkit != null ? this.getPlayer(bukkit.getUniqueId()) : null;
     }
 
-    public GamePlayer getPlayer(String username) {
-        ArcadePlayer player = this.plugin.getPlayer(username);
-        if (player != null) {
-            return player.getGamePlayer();
-        }
-
-        return null;
+    public GamePlayer getPlayer(UUID uniqueId) {
+        return uniqueId != null ? this.players.getPlayer(uniqueId) : null;
     }
 
-    public GamePlayer getPlayer(UUID uuid) {
-        if (uuid != null) {
-            return this.players.get(uuid);
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a {@link Collection} of players <bold>ever</bold> played in this game.
-     * @deprecated Use {@link ArcadePlugin#getPlayers()} for online players instead.
-     */
-    @Deprecated
-    public Collection<GamePlayer> getPlayers() {
-        return this.players.values();
+    public GamePlayerManager getPlayers() {
+        return this.players;
     }
 
     public ArcadePlugin getPlugin() {
@@ -289,10 +254,6 @@ public class Game implements PlayerVisibilityFilter {
         }
 
         return results;
-    }
-
-    public ScoreboardContext getScoreboard() {
-        return this.scoreboard;
     }
 
     public Server getServer() {
@@ -363,34 +324,20 @@ public class Game implements PlayerVisibilityFilter {
         this.readGlobalModules();
     }
 
-    public void removePlayer(GamePlayer player) {
-        this.removePlayer(player.getUuid());
-    }
-
-    public void removePlayer(UUID uuid) {
-        if (this.players.containsKey(uuid)) {
-            for (GamePlayerListener notify : this.playerListeners) {
-                notify.notifyUnregister();
-            }
-
-            this.players.remove(uuid);
-
-            for (GamePlayerListener notify : this.playerListeners) {
-                notify.notifyUnregistered();
-            }
-        }
-    }
-
-    public boolean removePlayerListener(GamePlayerListener listener) {
-        return this.playerListeners.remove(listener);
-    }
-
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
     }
 
     public boolean removeVisiblityFilter(PlayerVisibilityFilter filter) {
         return this.visibilityFilters.remove(filter);
+    }
+
+    public void sendGoalMessage(String message) {
+        this.plugin.getLogger().info("[Goal] " + ChatColor.stripColor(message));
+        for (GamePlayer player : this.players.getOnlinePlayers()) {
+            player.send(ChatColor.YELLOW + message);
+            player.sendAction(ChatColor.YELLOW + message);
+        }
     }
 
     public void start() {

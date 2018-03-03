@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Arcade parsers **sorted in alphabetical order** -->
-<parsers>
+<>
     <parser class="pl.themolka.arcade.config.RefParser" />
     <parser class="pl.themolka.arcade.damage.DamageGameParser" />
     <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
     <parser class="pl.themolka.arcade.environment.EnvironmentParser" />
     <parser class="pl.themolka.arcade.generator.GeneratorParser" />
+    <parser class="pl.themolka.arcade.item.EnchantmentParser" />
+    <parser class="pl.themolka.arcade.item.ItemEnchantmentParser" />
+    <parser class="pl.themolka.arcade.item.ItemStackParser" />
+    <parser class="pl.themolka.arcade.lobby.LobbyGameParser" />
     <parser class="pl.themolka.arcade.map.AuthorParser" />
     <parser class="pl.themolka.arcade.map.ChangelogParser" />
     <parser class="pl.themolka.arcade.map.MapManifestParser" />
@@ -25,6 +29,7 @@
     <parser class="pl.themolka.arcade.parser.number.LongParser" />
     <parser class="pl.themolka.arcade.parser.number.ShortParser" />
     <parser class="pl.themolka.arcade.parser.type.BooleanParser" />
+    <parser class="pl.themolka.arcade.parser.type.ColorParser" />
     <parser class="pl.themolka.arcade.parser.type.DifficultyParser" />
     <parser class="pl.themolka.arcade.parser.type.GameModeParser" />
     <parser class="pl.themolka.arcade.parser.type.LocationParser" />
@@ -36,6 +41,16 @@
     <parser class="pl.themolka.arcade.parser.type.UUIDParser" />
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
     <parser class="pl.themolka.arcade.parser.type.VersionParser" />
+    <parser class="pl.themolka.arcade.potion.PotionEffectParser" />
+    <parser class="pl.themolka.arcade.potion.PotionEffectTypeParser" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Auto" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Cuboid" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Cylinder" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Global" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Negative" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Point" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Sphere" />
+    <parser class="pl.themolka.arcade.region.RegionParser$Union" />
     <parser class="pl.themolka.arcade.respawn.AutoRespawnGameParser" />
     <parser class="pl.themolka.arcade.time.LocalDateParser" />
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />

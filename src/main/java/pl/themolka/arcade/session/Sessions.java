@@ -140,7 +140,7 @@ public class Sessions implements Listener {
             player.setGamePlayer(gamePlayer);
 
             // register
-            game.addPlayer(gamePlayer);
+            game.getPlayers().playerJoin(gamePlayer);
 
             gamePlayer.setParticipating(false); // I don't know ;d
             gamePlayer.reset();

@@ -27,11 +27,10 @@ import java.util.Set;
 public class DamageGame extends GameModule {
     private final Set<DamageRule> rules = new LinkedHashSet<>();
 
-    @Deprecated
     public DamageGame() {
     }
 
-    public DamageGame(Game game, Config config) {
+    protected DamageGame(Game game, Config config) {
         for (DamageRule.Config rule : config.rules()) {
             this.rules.add(rule.create(game));
         }

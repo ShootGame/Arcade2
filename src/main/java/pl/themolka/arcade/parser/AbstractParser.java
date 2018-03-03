@@ -101,6 +101,18 @@ public abstract class AbstractParser<T> implements Parser<T> {
     // Return Methods
     //
 
+    protected ParserException fail(Element element, String fail) {
+        return this.fail(element, element.getName(), element.getValue(), fail);
+    }
+
+    protected ParserException fail(Element element, Throwable cause) {
+        return this.fail(element, element.getName(), element.getValue(), cause);
+    }
+
+    protected ParserException fail(Element element, String fail, Throwable cause) {
+        return this.fail(element, element.getName(), element.getValue(), fail, cause);
+    }
+
     protected ParserException fail(Element element, String name, String value) {
         return this.fail(element, name, value, null, null);
     }

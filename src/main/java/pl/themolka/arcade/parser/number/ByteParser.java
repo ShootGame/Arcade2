@@ -19,4 +19,14 @@ public class ByteParser extends NumberParser<Byte> {
     protected Byte parse(String input) throws NumberFormatException {
         return Byte.valueOf(input);
     }
+
+    @Override
+    protected Byte positiveInfinity() {
+        return Byte.MAX_VALUE;
+    }
+
+    @Override
+    protected Byte negativeInfinity() {
+        return Byte.MIN_VALUE;
+    }
 }

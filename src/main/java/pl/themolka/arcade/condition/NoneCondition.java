@@ -2,12 +2,8 @@ package pl.themolka.arcade.condition;
 
 import java.util.Collection;
 
-public class NoneCondition extends AnyCondition {
-    public NoneCondition(Condition... none) {
-        super(none);
-    }
-
-    public NoneCondition(Collection<Condition> none) {
+public class NoneCondition<T> extends AnyCondition<T> {
+    public NoneCondition(Collection<Condition<T>> none) {
         super(none);
     }
 
@@ -17,7 +13,7 @@ public class NoneCondition extends AnyCondition {
     }
 
     @Override
-    public Result test(Condition condition) {
-        return condition.test() ? Result.FALSE : Result.ABSTAIN;
+    public Result test(T t, Condition<T> condition) {
+        return condition.test(t) ? Result.FALSE : Result.ABSTAIN;
     }
 }

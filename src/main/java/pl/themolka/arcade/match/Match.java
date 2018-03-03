@@ -335,21 +335,14 @@ public class Match implements DynamicWinnable, GameHolder {
         this.winnerMap.put(winner.getId(), winner);
     }
 
+    @Deprecated
     public void send(String message) {
-        this.plugin.getLogger().info("[Match] " + ChatColor.stripColor(message));
-
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.send(message);
-        }
+        this.game.send(message);
     }
 
+    @Deprecated
     public void sendGoalMessage(String message) {
-        this.plugin.getLogger().info("[Goal] " + ChatColor.stripColor(message));
-
-        for (ArcadePlayer player : this.plugin.getPlayers()) {
-            player.send(ChatColor.YELLOW + message);
-            player.sendAction(ChatColor.YELLOW + message);
-        }
+        this.game.sendGoalMessage(message);
     }
 
     public void setForceEnd(boolean forceEnd) {

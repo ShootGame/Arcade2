@@ -28,8 +28,8 @@ public class GameWindowRegistry extends WindowRegistry {
 
     @Override
     public void removeWindow(Inventory view) {
-        super.removeWindow(view);
         this.getParent().removeWindow(view);
+        super.removeWindow(view);
     }
 
     private WindowRegistry getParent() {

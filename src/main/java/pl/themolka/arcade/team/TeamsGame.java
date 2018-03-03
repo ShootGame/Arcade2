@@ -59,7 +59,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             Team team = XMLTeam.parse(this.getGame().getMap(), teamElement, this.getPlugin(),
                                       kitsGame, spawnsGame);
             if (team != null) {
-                team.setBukkit(Team.createBukkitTeam(this.getGame().getScoreboard().getScoreboard(), team));
                 teams.add(team);
             }
         }

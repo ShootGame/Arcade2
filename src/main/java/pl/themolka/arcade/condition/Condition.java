@@ -1,5 +1,6 @@
 package pl.themolka.arcade.condition;
 
-public interface Condition {
-    boolean test();
+import java.util.function.Predicate;
+
+public interface Condition<T> extends Predicate<T> {
 }

@@ -119,7 +119,7 @@ public class RegionListeners implements Listener {
             return FilterResult.ABSTAIN;
         }
 
-        Filter filter = region.getFilter(type);
+        Filter filter = null;
         if (filter == null) {
             return FilterResult.ABSTAIN;
         }

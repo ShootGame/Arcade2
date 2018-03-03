@@ -10,6 +10,10 @@ import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.xml.XMLColor;
 import pl.themolka.arcade.xml.XMLParser;
 
+/**
+ * @deprecated {@link PotionEffectParser}
+ */
+@Deprecated
 public class XMLPotionEffect extends XMLParser {
     public static PotionEffect parse(Element xml) {
         PotionEffectBuilder builder = new PotionEffectBuilder()

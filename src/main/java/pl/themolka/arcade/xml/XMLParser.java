@@ -4,6 +4,7 @@ import org.jdom2.Element;
 import pl.themolka.arcade.dom.EmptyElement;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.TextParser;
 import pl.themolka.arcade.parser.number.ByteParser;
 import pl.themolka.arcade.parser.number.DoubleParser;
@@ -23,8 +24,10 @@ import java.util.List;
  */
 @Deprecated
 public class XMLParser {
-    public static final String SPLIT_KEY = ",";
-
+    /**
+     * @deprecated {@link pl.themolka.arcade.dom.Node#children(String...)}
+     */
+    @Deprecated
     public static List<Element> children(Element element, String... children) {
         List<Element> results = new ArrayList<>();
         for (String child : children) {
@@ -34,26 +37,26 @@ public class XMLParser {
         return results;
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.parser.ParserUtils#array(String)}
+     */
+    @Deprecated
     public static List<String> parseArray(String value) {
-        return parseArray(value, SPLIT_KEY);
+        return ParserUtils.array(value);
     }
 
-    public static List<String> parseArray(String value, String key) {
-        List<String> results = new ArrayList<>();
-        for (String split : value.split(key)) {
-            String trim = split.trim();
-            if (!trim.isEmpty()) {
-                results.add(trim);
-            }
-        }
-
-        return results;
-    }
-
+    /**
+     * @deprecated {@link BooleanParser}
+     */
+    @Deprecated
     public static boolean parseBoolean(String input) {
         return parseBoolean(input, false);
     }
 
+    /**
+     * @deprecated {@link BooleanParser}
+     */
+    @Deprecated
     public static boolean parseBoolean(String input, boolean def) {
         try {
             return Parsers.booleanParser()
@@ -64,10 +67,18 @@ public class XMLParser {
         }
     }
 
+    /**
+     * @deprecated {@link DoubleParser}
+     */
+    @Deprecated
     public static double parseDouble(String input) {
         return parseDouble(input, 0.0D);
     }
 
+    /**
+     * @deprecated {@link DoubleParser}
+     */
+    @Deprecated
     public static double parseDouble(String input, double def) {
         try {
             return Parsers.doubleParser()
@@ -78,6 +89,10 @@ public class XMLParser {
         }
     }
 
+    /**
+     * @deprecated {@link EnumParser}
+     */
+    @Deprecated
     public static String parseEnumValue(String key) {
         if (key != null) {
             key = key.trim();
@@ -90,10 +105,18 @@ public class XMLParser {
         return null;
     }
 
+    /**
+     * @deprecated {@link FloatParser}
+     */
+    @Deprecated
     public static float parseFloat(String input) {
         return parseFloat(input, 0.0F);
     }
 
+    /**
+     * @deprecated {@link FloatParser}
+     */
+    @Deprecated
     public static float parseFloat(String input, float def) {
         try {
             return Parsers.floatParser()
@@ -104,10 +127,18 @@ public class XMLParser {
         }
     }
 
+    /**
+     * @deprecated {@link IntegerParser}
+     */
+    @Deprecated
     public static int parseInt(String input) {
         return parseInt(input, 0);
     }
 
+    /**
+     * @deprecated {@link IntegerParser}
+     */
+    @Deprecated
     public static int parseInt(String input, int def) {
         try {
             return Parsers.integerParser()
@@ -118,10 +149,18 @@ public class XMLParser {
         }
     }
 
+    /**
+     * @deprecated {@link LongParser}
+     */
+    @Deprecated
     public static long parseLong(String input) {
         return parseLong(input, 0L);
     }
 
+    /**
+     * @deprecated {@link LongParser}
+     */
+    @Deprecated
     public static long parseLong(String input, long def) {
         try {
             return Parsers.longParser()
@@ -132,6 +171,10 @@ public class XMLParser {
         }
     }
 
+    /**
+     * @deprecated {@link MessageParser}
+     */
+    @Deprecated
     public static String parseMessage(String message) {
         try {
             return Parsers.messageParser()
@@ -147,6 +190,7 @@ public class XMLParser {
  * Temporary fast and easy access to the numeric and standard parsers.
  * @deprecated This class is temporary and should be never used.
  */
+// These parsers cannot have dependencies. These parsers are non-installable.
 @Deprecated
 final class Parsers {
     private Parsers() {
@@ -195,7 +239,7 @@ final class Parsers {
         return booleanParser;
     }
 
-    public static <E extends Enum<E>> EnumParser<E> enumParser(Class<E> type) {
+    public static <T extends Enum<T>> EnumParser<T> enumParser(Class<T> type) {
         return new EnumParser(type);
     }
 

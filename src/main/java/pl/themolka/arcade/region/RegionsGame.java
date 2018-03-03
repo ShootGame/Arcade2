@@ -5,9 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import org.jdom2.Attribute;
 import org.jdom2.Element;
-import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.GameModule;
@@ -31,7 +29,7 @@ public class RegionsGame extends GameModule {
             Region region = XMLRegion.parse(this.getGame(), child);
 
             if (region != null) {
-                this.addRegion(this.parseFilters(child, region));
+                this.addRegion(region);
             }
         }
     }
@@ -123,25 +121,5 @@ public class RegionsGame extends GameModule {
 
     public Region fetch(int x, int y, int z) {
         return this.fetch(new BlockVector(x, y, z));
-    }
-
-    private Region parseFilters(Element xml, Region region) {
-        if (this.filters == null) {
-            return region;
-        }
-
-        for (RegionEventType event : RegionEventType.values()) {
-            Attribute attribute = xml.getAttribute(event.getAttribute());
-            if (attribute == null) {
-                continue;
-            }
-
-            Filter filter = this.filters.filterOrDefault(xml.getAttributeValue(event.getAttribute()), null);
-            if (filter != null) {
-                region.setFilter(event, filter);
-            }
-        }
-
-        return region;
     }
 }

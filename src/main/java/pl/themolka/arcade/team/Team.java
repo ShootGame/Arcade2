@@ -1,5 +1,6 @@
 package pl.themolka.arcade.team;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -14,7 +15,6 @@ import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchWinner;
-import pl.themolka.arcade.scoreboard.ScoreboardContext;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.util.Color;
 
@@ -423,27 +423,23 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     private void updateBukkitTeam() {
-        if (this.getBukkit() != null) {
-            this.getBukkit().setAllowFriendlyFire(this.isFriendlyFire());
-            this.getBukkit().setCanSeeFriendlyInvisibles(true);
-            this.getBukkit().setOption(
+        org.bukkit.scoreboard.Team bukkit = this.getBukkit();
+        if (bukkit != null) {
+            bukkit.setAllowFriendlyFire(this.isFriendlyFire());
+            bukkit.setCanSeeFriendlyInvisibles(true);
+            bukkit.setOption(
                     org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
                     org.bukkit.scoreboard.Team.OptionStatus.NEVER);
         }
     }
 
-    public static org.bukkit.scoreboard.Team createBukkitTeam(
-            Scoreboard scoreboard, Team team) {
-        String id = team.getId();
-        if (id.length() > ScoreboardContext.TEAM_MAX_LENGTH) {
-            id = id.substring(0, ScoreboardContext.TEAM_MAX_LENGTH);
-        }
+    public static org.bukkit.scoreboard.Team createBukkitTeam(Scoreboard scoreboard, Team team) {
+        String id = StringUtils.substring(team.getId(), 0, 16);
 
         org.bukkit.scoreboard.Team bukkit = scoreboard.registerNewTeam(id);
         bukkit.setPrefix(team.getChatColor().toString());
         bukkit.setDisplayName(team.getName());
         bukkit.setSuffix(ChatColor.RESET.toString());
-
         return bukkit;
     }
 }

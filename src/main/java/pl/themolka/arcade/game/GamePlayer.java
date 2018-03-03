@@ -294,15 +294,15 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
             return;
         }
 
+        Player bukkit = this.getBukkit();
         boolean participating = this.isParticipating();
         if (!participating) {
-            this.getBukkit().leaveVehicle();
+            bukkit.leaveVehicle();
         }
 
-        this.getBukkit().setAffectsSpawning(participating);
-        this.getBukkit().setCollidable(participating);
-        this.getBukkit().setCollidesWithEntities(participating);
-        this.getBukkit().showInvisibles(!participating);
+        bukkit.setAffectsSpawning(participating);
+        bukkit.setCollidesWithEntities(participating);
+        bukkit.showInvisibles(!participating);
     }
 
     public void refreshVisibilityArcadePlayer(Iterable<ArcadePlayer> viewers) {
@@ -429,7 +429,7 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE)
                 .append("uuid", this.uuid)
-                .append("online", this.isOnline())
+                .append("isOnline", this.isOnline())
                 .append("username", this.username)
                 .build();
     }

@@ -11,7 +11,7 @@ public class KillReward implements PlayerApplicable {
     private final Kit kit;
 
     public KillReward(Filter filter, Kit kit) {
-        this.filter = filter != null ? filter : Filters.undefined();
+        this.filter = Filters.secure(filter);
         this.kit = kit;
     }
 

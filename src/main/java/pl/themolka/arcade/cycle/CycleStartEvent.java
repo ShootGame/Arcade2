@@ -1,4 +1,4 @@
-package pl.themolka.arcade.game;
+package pl.themolka.arcade.cycle;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.map.OfflineMap;

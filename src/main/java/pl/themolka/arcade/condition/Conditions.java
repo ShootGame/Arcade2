@@ -6,31 +6,19 @@ public final class Conditions {
     private Conditions() {
     }
 
-    public static AllCondition all(Condition... all) {
-        return new AllCondition(all);
+    public static <T> AllCondition<T> all(Collection<Condition<T>> all) {
+        return new AllCondition<>(all);
     }
 
-    public static AllCondition all(Collection<Condition> all) {
-        return new AllCondition(all);
+    public static <T> AnyCondition<T> any(Collection<Condition<T>> any) {
+        return new AnyCondition<>(any);
     }
 
-    public static AnyCondition any(Condition... any) {
-        return new AnyCondition(any);
+    public static <T> NoneCondition<T> none(Collection<Condition<T>> none) {
+        return new NoneCondition<>(none);
     }
 
-    public static AnyCondition any(Collection<Condition> any) {
-        return new AnyCondition(any);
-    }
-
-    public static NoneCondition none(Condition... none) {
-        return new NoneCondition(none);
-    }
-
-    public static NoneCondition none(Collection<Condition> none) {
-        return new NoneCondition(none);
-    }
-
-    public static NotCondition not(Condition not) {
-        return new NotCondition(not);
+    public static <T> NotCondition<T> not(Condition<T> not) {
+        return new NotCondition<>(not);
     }
 }

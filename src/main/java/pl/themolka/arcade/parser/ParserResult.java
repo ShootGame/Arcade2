@@ -68,7 +68,7 @@ public abstract class ParserResult<T> implements IParserResult<T> {
         return new FineResult<>(
                 Objects.requireNonNull(element, "element cannot be null (use maybe(...) instead?)"),
                 Objects.requireNonNull(name, "name cannot be null (use maybe(...) instead?)"),
-                value,
+                value, // value is null when eg. NodeParser.parseTree is used.
                 Objects.requireNonNull(result, "result cannot be null (use maybe(...) instead?)"));
     }
 

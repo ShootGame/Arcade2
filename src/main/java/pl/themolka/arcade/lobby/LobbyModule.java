@@ -10,6 +10,8 @@ import pl.themolka.arcade.module.ModuleInfo;
 public class LobbyModule extends Module<LobbyGame> {
     @Override
     public LobbyGame buildGameModule(Element xml, Game game) throws JDOMException {
-        return new LobbyGame();
+        return new LobbyGame(new LobbyGame.Config() {
+            public boolean enabled() { return true; }
+        });
     }
 }

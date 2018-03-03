@@ -2,12 +2,8 @@ package pl.themolka.arcade.condition;
 
 import java.util.Collection;
 
-public class AllCondition extends MultiCondition {
-    public AllCondition(Condition... all) {
-        super(all);
-    }
-
-    public AllCondition(Collection<Condition> all) {
+public class AllCondition<T> extends MultiCondition<T> {
+    public AllCondition(Collection<Condition<T>> all) {
         super(all);
     }
 
@@ -17,7 +13,7 @@ public class AllCondition extends MultiCondition {
     }
 
     @Override
-    public Result test(Condition condition) {
-        return condition.test() ? Result.ABSTAIN : Result.FALSE;
+    public Result test(T t, Condition<T> condition) {
+        return condition.test(t) ? Result.ABSTAIN : Result.FALSE;
     }
 }

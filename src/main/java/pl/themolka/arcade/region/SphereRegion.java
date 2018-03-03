@@ -24,6 +24,10 @@ public class SphereRegion extends AbstractRegion {
         this(original.getGame(), original.getId(), original.getCenter(), original.getRadius());
     }
 
+    protected SphereRegion(Game game, Config config) {
+        this(game, config.id(), config.center(), config.radius());
+    }
+
     @Override
     public boolean contains(BlockVector vector) {
         return this.containsRound(vector);
@@ -75,5 +79,15 @@ public class SphereRegion extends AbstractRegion {
         return new RegionBounds(this,
                 this.getCenter().clone().subtract(radius, radius, radius),
                 this.getCenter().clone().add(radius, radius, radius));
+    }
+
+    interface Config extends AbstractRegion.Config<SphereRegion> {
+        Vector center();
+        double radius();
+
+        @Override
+        default SphereRegion create(Game game) {
+            return new SphereRegion(game, this);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package pl.themolka.arcade.game;
+package pl.themolka.arcade.cycle;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
@@ -7,9 +7,12 @@ import org.bukkit.boss.BarStyle;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.bossbar.BarPriority;
 import pl.themolka.arcade.bossbar.BossBar;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.PrintableCountdown;
+import pl.themolka.arcade.util.Percentage;
 
 import java.time.Duration;
 
@@ -55,8 +58,8 @@ public class CycleCountdown extends PrintableCountdown {
         }
 
         String message = this.getPrintMessage(this.getCycleMessage(nextMap.getName()));
-        this.getBossBar().setProgress(this.getProgress());
-        this.getBossBar().setTitle(new TextComponent(message));
+        this.getBossBar().setProgress(Percentage.finite(this.getProgress()));
+        this.getBossBar().setText(new TextComponent(message));
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             GamePlayer player = online.getGamePlayer();

@@ -19,4 +19,14 @@ public class ShortParser extends NumberParser<Short> {
     protected Short parse(String input) throws NumberFormatException {
         return Short.parseShort(input);
     }
+
+    @Override
+    protected Short positiveInfinity() {
+        return Short.MAX_VALUE;
+    }
+
+    @Override
+    protected Short negativeInfinity() {
+        return Short.MIN_VALUE;
+    }
 }

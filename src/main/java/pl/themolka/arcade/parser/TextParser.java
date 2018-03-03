@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * This the default parser behavior. We are using {@link ElementParser} for it,
- * so the {@code value} parameter is never {@code null}.
+ * This is the default parser behavior. We are using {@link ElementParser} for
+ * it, so the {@code value} parameter is never {@code null}.
  */
 public class TextParser extends ElementParser<String> {
     @Override

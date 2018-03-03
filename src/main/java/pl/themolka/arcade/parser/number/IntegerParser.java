@@ -19,4 +19,14 @@ public class IntegerParser extends NumberParser<Integer> {
     protected Integer parse(String input) throws NumberFormatException {
         return Integer.parseInt(input);
     }
+
+    @Override
+    protected Integer positiveInfinity() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    protected Integer negativeInfinity() {
+        return Integer.MIN_VALUE;
+    }
 }

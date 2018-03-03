@@ -16,6 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @deprecated {@link ItemStackParser}
+ */
+@Deprecated
 public class XMLItemStack extends XMLParser {
     public static ItemStack parse(Element xml) throws DataConversionException {
         if (xml == null) {
@@ -27,7 +31,7 @@ public class XMLItemStack extends XMLParser {
                 .description(parseDescription(xml))
                 .displayName(parseDisplayName(xml))
                 .durability(parseDurability(xml))
-                .enchantments(parseEnchantments(xml))
+                .enchantmentsLegacy(parseEnchantments(xml))
                 .flags(parseFlags(xml))
                 .type(parseType(xml))
                 .unbreakable(parseUnbreakable(xml));

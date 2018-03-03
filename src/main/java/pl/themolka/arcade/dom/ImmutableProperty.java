@@ -1,7 +1,7 @@
 package pl.themolka.arcade.dom;
 
-public class ImmutableProperty extends Property {
-    private ImmutableProperty(String name, String value) {
+public final class ImmutableProperty extends Property {
+    protected ImmutableProperty(String name, String value) {
         super(name, value);
     }
 

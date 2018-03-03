@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     private final List<String> description = new ArrayList<>();
     private String displayName;
     private short durability;
-    private Map<Enchantment, Integer> enchantments = new HashMap<>();
+    private final List<ItemEnchantment> enchantments = new ArrayList<>();
     private final List<ItemFlag> flags = new ArrayList<>();
     private Material type = Material.AIR;
     private boolean unbreakable;
@@ -26,7 +25,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     @Override
     public ItemStack build() {
         ItemStack stack = new ItemStack(this.type);
-        stack.addUnsafeEnchantments(this.enchantments);
+        stack.addUnsafeEnchantments(this.enchantmentsLegacy());
         stack.setAmount(this.amount);
         stack.setDurability(this.durability);
         stack.setItemMeta(this.buildMeta(stack.getItemMeta()));
@@ -86,17 +85,34 @@ public class ItemStackBuilder implements Builder<ItemStack> {
         return this;
     }
 
-    public ItemStackBuilder enchantment(Enchantment enchantment, int level) {
-        this.enchantments.put(enchantment, level);
+    public ItemStackBuilder enchantment(ItemEnchantment enchantment) {
+        this.enchantments.add(enchantment);
         return this;
     }
 
-    public Map<Enchantment, Integer> enchantments() {
-        return new HashMap<>(this.enchantments);
+    public ItemStackBuilder enchantment(Enchantment enchantment, int level) {
+        return this.enchantment(new ItemEnchantment(enchantment, level));
     }
 
-    public ItemStackBuilder enchantments(Map<Enchantment, Integer> enchantments) {
-        this.enchantments.putAll(enchantments);
+    public List<ItemEnchantment> enchantments() {
+        return new ArrayList<>(this.enchantments);
+    }
+
+    public ItemStackBuilder enchantments(List<ItemEnchantment> enchantments) {
+        this.enchantments.addAll(enchantments);
+        return this;
+    }
+
+    public Map<Enchantment, Integer> enchantmentsLegacy() {
+        return EnchantmentUtils.toLegacy(this.enchantments);
+    }
+
+    /**
+     * @deprecated {@link #enchantments(List)}
+     */
+    @Deprecated
+    public ItemStackBuilder enchantmentsLegacy(Map<Enchantment, Integer> enchantments) {
+        this.enchantments.addAll(EnchantmentUtils.fromLegacy(enchantments));
         return this;
     }
 

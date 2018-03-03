@@ -120,7 +120,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
 
     @Handler(priority = Priority.LOWEST)
     public void matchEmpty(MatchEmptyEvent event) {
-        // The match may not end if its empty by default.
+        // The match may not end if it's empty.
         event.setCanceled(true);
     }
 

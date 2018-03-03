@@ -48,7 +48,6 @@ import pl.themolka.arcade.parser.ParserManager;
 import pl.themolka.arcade.parser.ParsersFile;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
-import pl.themolka.arcade.scoreboard.ScoreboardListeners;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
@@ -666,9 +665,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));
-
-        // scoreboards
-        this.registerListenerObject(new ScoreboardListeners(this));
 
         // sessions
         this.registerListenerObject(new Sessions(this));

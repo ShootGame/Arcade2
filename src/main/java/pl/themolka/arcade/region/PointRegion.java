@@ -28,6 +28,10 @@ public class PointRegion extends AbstractRegion {
         this(original.getGame(), original.getId(), original.getPoint());
     }
 
+    protected PointRegion(Game game, Config config) {
+        this(game, config.id(), config.point());
+    }
+
     @Override
     public boolean contains(BlockVector vector) {
         return this.containsZero(vector);
@@ -82,5 +86,14 @@ public class PointRegion extends AbstractRegion {
 
     private RegionBounds createBounds() {
         return new RegionBounds(this, this.point, this.point);
+    }
+
+    interface Config extends AbstractRegion.Config<PointRegion> {
+        Vector point();
+
+        @Override
+        default PointRegion create(Game game) {
+            return new PointRegion(game, this);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.game;
 
+import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.OfflineMap;

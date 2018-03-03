@@ -16,6 +16,8 @@ import java.util.Set;
 @Produces(Material.class)
 public class MaterialParser extends ElementParser<Material>
                             implements InstallableParser {
+    public static final String[] MATERIAL_ELEMENT_NAMES = {"material", "type", "kind", "of"};
+
     private Parser<Material> materialParser;
 
     @Override

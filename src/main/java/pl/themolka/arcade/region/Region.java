@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.util.StringId;
 
@@ -46,10 +45,6 @@ public interface Region extends GameHolder, StringId {
 
     Vector getCenter();
 
-    Filter getFilter(RegionEventType event);
-
-    Filter getFilter(RegionEventType event, Filter def);
-
     double getHighestY();
 
     Vector getRandomVector();
@@ -61,12 +56,6 @@ public interface Region extends GameHolder, StringId {
     Vector getRandomVector(Random random, int limit);
 
     World getWorld();
-
-    boolean hasFilter(RegionEventType event);
-
-    void removeFilter(RegionEventType event);
-
-    void setFilter(RegionEventType event, Filter filter);
 
     //
     // BlockVector Comparison

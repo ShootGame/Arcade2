@@ -2,6 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class UnionRegion extends AbstractRegion {
 
     @Override
     public boolean contains(BlockVector vector) {
-        for (Region region : this.getRegions()) {
+        for (Region region : this.regions) {
             if (region.contains(vector)) {
                 return true;
             }
@@ -41,7 +42,7 @@ public class UnionRegion extends AbstractRegion {
 
     @Override
     public boolean contains(Region region) {
-        for (Region member : this.getRegions()) {
+        for (Region member : this.regions) {
             if (member.contains(region)) {
                 return true;
             }
@@ -52,7 +53,7 @@ public class UnionRegion extends AbstractRegion {
 
     @Override
     public boolean contains(Vector vector) {
-        for (Region member : this.getRegions()) {
+        for (Region member : this.regions) {
             if (member.contains(vector)) {
                 return true;
             }
@@ -69,17 +70,13 @@ public class UnionRegion extends AbstractRegion {
     @Override
     public Vector getCenter() {
         RegionBounds bounds = this.getBounds();
-        if (bounds != null) {
-            return bounds.getCenter();
-        }
-
-        return null;
+        return bounds != null ? bounds.getCenter() : null;
     }
 
     @Override
     public double getHighestY() {
         double y = 0D;
-        for (Region region : this.getRegions()) {
+        for (Region region : this.regions) {
             double regionY = region.getHighestY();
             if (regionY > y) {
                 y = regionY;
@@ -92,7 +89,7 @@ public class UnionRegion extends AbstractRegion {
     @Override
     public Vector getRandom(Random random, int limit) {
         for (int i = 0; i < limit; i++) {
-            Vector vector = this.getRegions()[random.nextInt(this.getRegions().length)].getRandomVector(random, limit);
+            Vector vector = this.regions[random.nextInt(this.regions.length)].getRandomVector(random, limit);
             if (vector != null) {
                 return vector;
             }
@@ -110,7 +107,7 @@ public class UnionRegion extends AbstractRegion {
     }
 
     public boolean hasRegion(String id) {
-        for (Region region : this.getRegions()) {
+        for (Region region : this.regions) {
             if (region.getId().equals(id)) {
                 return true;
             }
@@ -127,7 +124,7 @@ public class UnionRegion extends AbstractRegion {
         Vector min = null;
         Vector max = null;
 
-        for (Region member : this.getRegions()) {
+        for (Region member : this.regions) {
             RegionBounds bounds = member.getBounds();
             if (bounds == null) {
                 continue;
@@ -198,5 +195,25 @@ public class UnionRegion extends AbstractRegion {
         }
 
         return builder.append("]").toString();
+    }
+
+    interface Config extends AbstractRegion.Config<UnionRegion> {
+        List<Ref<AbstractRegion.Config<AbstractRegion>>> regions();
+
+        @Override
+        default UnionRegion create(Game game) {
+            List<Region> regions = new ArrayList<>();
+            for (Ref<AbstractRegion.Config<AbstractRegion>> region : this.regions()) {
+                regions.add(region.get().create(game));
+            }
+            Region[] regionsArray = regions.toArray(new Region[regions.size()]);
+
+            String id = this.id();
+            if (id == null) {
+                id = generateId(regionsArray);
+            }
+
+            return new UnionRegion(game, id, regionsArray);
+        }
     }
 }

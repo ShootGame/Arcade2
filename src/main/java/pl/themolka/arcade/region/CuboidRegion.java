@@ -29,6 +29,10 @@ public class CuboidRegion extends AbstractRegion {
         this(original.getGame(), original.getId(), original.getMax(), original.getMin());
     }
 
+    protected CuboidRegion(Game game, Config config) {
+        this(game, config.id(), config.min(), config.max());
+    }
+
     @Override
     public boolean contains(BlockVector vector) {
         return this.containsZero(vector);
@@ -93,5 +97,15 @@ public class CuboidRegion extends AbstractRegion {
 
     private double nextCoordinate(Random random, double min, double max) {
         return (max - min) * random.nextDouble() + min;
+    }
+
+    interface Config extends AbstractRegion.Config<CuboidRegion> {
+        Vector min();
+        Vector max();
+
+        @Override
+        default CuboidRegion create(Game game) {
+            return new CuboidRegion(game, this);
+        }
     }
 }

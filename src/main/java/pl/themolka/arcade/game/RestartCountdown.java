@@ -9,6 +9,7 @@ import pl.themolka.arcade.bossbar.BarPriority;
 import pl.themolka.arcade.bossbar.BossBar;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.PrintableCountdown;
+import pl.themolka.arcade.util.Percentage;
 
 import java.time.Duration;
 
@@ -48,8 +49,8 @@ public class RestartCountdown extends PrintableCountdown {
         }
 
         String message = this.getPrintMessage(this.getRestartMessage());
-        this.getBossBar().setProgress(this.getProgress());
-        this.getBossBar().setTitle(new TextComponent(message));
+        this.getBossBar().setProgress(Percentage.finite(this.getProgress()));
+        this.getBossBar().setText(new TextComponent(message));
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             GamePlayer player = online.getGamePlayer();

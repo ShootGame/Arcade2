@@ -18,11 +18,7 @@ public abstract class Element extends NamedValue<String, String>
 
     @Override
     public Element clone() {
-        try {
-            return (Element) super.clone();
-        } catch (CloneNotSupportedException clone) {
-            throw new Error(clone);
-        }
+        return (Element) super.clone();
     }
 
     public String toShortString() {

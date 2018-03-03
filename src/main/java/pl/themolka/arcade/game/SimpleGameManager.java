@@ -5,6 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.cycle.CycleCountdown;
+import pl.themolka.arcade.cycle.CycleRestartEvent;
+import pl.themolka.arcade.cycle.ServerCycleEvent;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
@@ -88,7 +91,7 @@ public class SimpleGameManager implements GameManager {
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             player.setGamePlayer(new GamePlayer(game, player));
-            game.addPlayer(player.getGamePlayer());
+            game.getPlayers().playerJoin(player.getGamePlayer());
         }
 
         this.resetPlayers(game);
@@ -267,13 +270,11 @@ public class SimpleGameManager implements GameManager {
 
     @Override
     public void resetPlayers(Game newGame) {
-        for (GamePlayer player : newGame.getPlayers()) {
-            if (!player.isOnline()) {
-                continue;
+        for (GamePlayer player : newGame.getPlayers().getOnlinePlayers()) {
+            if (player.isOnline()) {
+                player.reset();
+                player.getBukkit().teleport(newGame.getMap().getManifest().getWorld().getSpawn());
             }
-
-            player.reset();
-            player.getBukkit().teleport(newGame.getMap().getManifest().getWorld().getSpawn());
         }
     }
 

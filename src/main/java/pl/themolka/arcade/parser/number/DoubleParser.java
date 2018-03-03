@@ -19,4 +19,14 @@ public class DoubleParser extends NumberParser<Double> {
     protected Double parse(String input) throws NumberFormatException {
         return Double.parseDouble(input);
     }
+
+    @Override
+    protected Double positiveInfinity() {
+        return Double.MAX_VALUE;
+    }
+
+    @Override
+    protected Double negativeInfinity() {
+        return Double.MIN_VALUE;
+    }
 }

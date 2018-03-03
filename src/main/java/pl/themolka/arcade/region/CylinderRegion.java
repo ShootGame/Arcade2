@@ -9,21 +9,25 @@ import java.util.Random;
 public class CylinderRegion extends AbstractRegion {
     private final RegionBounds bounds;
     private final Vector center;
-    private final double height;
     private final double radius;
+    private final double height;
 
-    public CylinderRegion(Game game, String id, Vector center, double height, double radius) {
+    public CylinderRegion(Game game, String id, Vector center, double radius, double height) {
         super(game, id);
 
         this.center = center;
-        this.height = height;
         this.radius = radius;
+        this.height = height;
 
         this.bounds = this.createBounds();
     }
 
     public CylinderRegion(CylinderRegion original) {
-        this(original.getGame(), original.getId(), original.getCenter(), original.getHeight(), original.getRadius());
+        this(original.getGame(), original.getId(), original.getCenter(), original.getRadius(), original.getHeight());
+    }
+
+    protected CylinderRegion(Game game, Config config) {
+        this(game, config.id(), config.center(), config.radius(), config.height());
     }
 
     @Override
@@ -75,6 +79,10 @@ public class CylinderRegion extends AbstractRegion {
         return null;
     }
 
+    public double getRadius() {
+        return this.radius;
+    }
+
     public double getDiameter() {
         return this.getRadius() * 2;
     }
@@ -83,14 +91,21 @@ public class CylinderRegion extends AbstractRegion {
         return this.height;
     }
 
-    public double getRadius() {
-        return this.radius;
-    }
-
     private RegionBounds createBounds() {
         double radius = this.getRadius();
         return new RegionBounds(this,
                 this.getCenter().clone().subtract(radius, 0, radius),
                 this.getCenter().clone().add(radius, this.getHeight(), radius));
+    }
+
+    interface Config extends AbstractRegion.Config<CylinderRegion> {
+        Vector center();
+        double radius();
+        default double height() { return Region.MAX_HEIGHT; }
+
+        @Override
+        default CylinderRegion create(Game game) {
+            return new CylinderRegion(game, this);
+        }
     }
 }

@@ -58,7 +58,7 @@ public class WoolChestTracker implements Listener {
 
         ChestImage image = this.getChestImage(block);
         if (image != null && image.woolChest) {
-            GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
+            GamePlayer player = event.getGamePlayer();
 
             WoolChestBreakEvent breakEvent = new WoolChestBreakEvent(this.game.getPlugin(), block, player);
             breakEvent.setCanceled(true); // This event is canceled by default.

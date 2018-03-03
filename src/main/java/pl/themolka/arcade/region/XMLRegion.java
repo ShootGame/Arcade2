@@ -11,6 +11,10 @@ import pl.themolka.arcade.xml.XMLParser;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated {@link RegionParser}
+ */
+@Deprecated
 public class XMLRegion extends XMLParser {
     public static Region parse(Game game, Element xml) {
         try {
@@ -45,7 +49,7 @@ public class XMLRegion extends XMLParser {
             height = Double.parseDouble(heightAttribute);
         }
 
-        return new CylinderRegion(game, parseId(xml), center, height, radius);
+        return new CylinderRegion(game, parseId(xml), center, radius, height);
     }
 
     public static GlobalRegion parseGlobal(Game game) {
@@ -54,9 +58,7 @@ public class XMLRegion extends XMLParser {
 
     public static NegativeRegion parseNegative(Game game, Element xml) throws NumberFormatException {
         try {
-            Element regionElement = xml.getChildren().get(0);
-            Region region = parse(game, regionElement);
-
+            UnionRegion region = parseUnion(game, xml);
             if (region != null) {
                 return new NegativeRegion(region);
             }

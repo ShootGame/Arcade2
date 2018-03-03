@@ -19,4 +19,14 @@ public class FloatParser extends NumberParser<Float> {
     protected Float parse(String input) throws NumberFormatException {
         return Float.parseFloat(input);
     }
+
+    @Override
+    protected Float positiveInfinity() {
+        return Float.MAX_VALUE;
+    }
+
+    @Override
+    protected Float negativeInfinity() {
+        return Float.MIN_VALUE;
+    }
 }
