@@ -30,6 +30,10 @@ import pl.themolka.arcade.xml.XMLParser;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @deprecated {@link ItemMetaParser}
+ */
+@Deprecated
 public class XMLItemMeta extends XMLParser {
     public static ItemMeta parse(Element xml, ItemMeta source) {
         if (source instanceof BannerMeta) {

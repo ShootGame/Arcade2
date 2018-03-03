@@ -12,6 +12,7 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.time.TimeUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -55,6 +56,6 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
         }
 
         return ParserResult.fine(node, name, value, new PotionEffect(
-                type, (int) duration.toTicks(), amplifier, ambient, particles, color));
+                type, TimeUtils.toTicksInt(duration), amplifier, ambient, particles, color));
     }
 }

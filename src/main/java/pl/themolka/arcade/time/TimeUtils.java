@@ -5,7 +5,19 @@ import org.bukkit.ChatColor;
 import java.time.Duration;
 
 public final class TimeUtils {
+    public static final int TICKS_INT_OFFSET = Integer.MAX_VALUE;
+
     private TimeUtils() {
+    }
+
+    public static int toTicksInt(Time time) {
+        return toTicksInt(time, TICKS_INT_OFFSET);
+    }
+
+    public static int toTicksInt(Time time, int offset) {
+        long ticks = time.toTicks();
+        int ticksInt = (int) ticks;
+        return ticks != ticksInt ? offset : ticksInt;
     }
 
     public static String prettyDuration(Duration duration, String primary, String secondary) {

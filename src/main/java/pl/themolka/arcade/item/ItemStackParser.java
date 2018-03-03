@@ -24,6 +24,8 @@ import java.util.Set;
 @Produces(ItemStack.class)
 public class ItemStackParser extends NodeParser<ItemStack>
                              implements InstallableParser {
+    private ItemMetaParser itemMetaParser;
+
     private Parser<MaterialData> typeParser;
     private Parser<Integer> amountParser;
     private Parser<String> displayNameParser;
@@ -37,6 +39,9 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     @Override
     public void install(ParserContext context) {
+        this.itemMetaParser = new ItemMetaParser();
+        this.itemMetaParser.install(context);
+
         this.typeParser = context.type(MaterialData.class);
         this.amountParser = context.type(Integer.class);
         this.displayNameParser = context.type(String.class);
@@ -95,9 +100,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         itemMeta.setUnbreakable(unbreakable);
         itemMeta.addItemFlags(flags.toArray(new ItemFlag[flags.size()]));
 
-        // TODO: parse custom item meta
-
-        itemStack.setItemMeta(itemMeta);
+        itemStack.setItemMeta(this.itemMetaParser.parse(node, itemStack, itemMeta));
         return ParserResult.fine(node, name, itemStack);
     }
 
@@ -107,7 +110,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     private List<String> parseDescription(Node root) throws ParserException {
         Node description = root.firstChild("description", "lore");
-        return description != null ? this.parseDescription0(description) : this.parseDescription0(root);
+        return description != null ? this.parseDescription0(description)
+                                   : this.parseDescription0(root);
     }
 
     private List<String> parseDescription0(Node node) throws ParserException {
@@ -125,7 +129,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     private List<ItemEnchantment> parseEnchantments(Node root) throws ParserException {
         Node enchantments = root.firstChild("enchantments");
-        return enchantments != null ? this.parseEnchantments0(enchantments) : this.parseEnchantments0(root);
+        return enchantments != null ? this.parseEnchantments0(enchantments)
+                                    : this.parseEnchantments0(root);
     }
 
     private List<ItemEnchantment> parseEnchantments0(Node node) throws ParserException {
@@ -143,7 +148,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     private List<ItemFlag> parseFlags(Node root) throws ParserException {
         Node flags = root.firstChild("flags", "item-flags", "itemflags");
-        return flags != null ? this.parseFlags0(flags) : this.parseFlags0(root);
+        return flags != null ? this.parseFlags0(flags)
+                             : this.parseFlags0(root);
     }
 
     private List<ItemFlag> parseFlags0(Node node) throws ParserException {
@@ -161,12 +167,13 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     private List<Material> parseDestroy(Node root) throws ParserException {
         Node group = root.firstChild("can-destroy");
-        return group != null ? this.parseDestroy0(group) : this.parseDestroy0(root);
+        return group != null ? this.parseDestroy0(group, MaterialParser.MATERIAL_ELEMENT_NAMES)
+                             : this.parseDestroy0(root, "destroy", "can-destroy");
     }
 
-    private List<Material> parseDestroy0(Node node) throws ParserException {
+    private List<Material> parseDestroy0(Node node, String... names) throws ParserException {
         List<Material> materials = new ArrayList<>();
-        for (Node material : node.children(MaterialParser.MATERIAL_ELEMENT_NAMES)) {
+        for (Node material : node.children(names)) {
             materials.add(this.canDestroyParser.parse(material).orFail());
         }
 
@@ -179,12 +186,13 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
     private List<Material> parseCanPlaceOn(Node root) throws ParserException {
         Node group = root.firstChild("can-place-on");
-        return group != null ? this.parseCanPlaceOn0(group) : this.parseCanPlaceOn0(root);
+        return group != null ? this.parseCanPlaceOn0(group, MaterialParser.MATERIAL_ELEMENT_NAMES)
+                             : this.parseCanPlaceOn0(root, "place-on", "on", "can-place");
     }
 
-    private List<Material> parseCanPlaceOn0(Node node) throws ParserException {
+    private List<Material> parseCanPlaceOn0(Node node, String... names) throws ParserException {
         List<Material> materials = new ArrayList<>();
-        for (Node material : node.children("material", "type", "kind", "of")) {
+        for (Node material : node.children(names)) {
             materials.add(this.canPlaceOnParser.parse(material).orFail());
         }
 

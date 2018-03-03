@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Arcade parsers **sorted in alphabetical order** -->
-<>
+<!--
+Arcade parsers **sorted in alphabetical order**
+
+Note: These are not all existing parsers, some of
+them are registered in the ParserContainer class
+-->
+<parsers>
     <parser class="pl.themolka.arcade.config.RefParser" />
     <parser class="pl.themolka.arcade.damage.DamageGameParser" />
     <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
     <parser class="pl.themolka.arcade.environment.EnvironmentParser" />
+    <parser class="pl.themolka.arcade.firework.FireworkEffectParser" />
     <parser class="pl.themolka.arcade.generator.GeneratorParser" />
+    <parser class="pl.themolka.arcade.item.BannerPatternParser" />
     <parser class="pl.themolka.arcade.item.EnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemEnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemStackParser" />

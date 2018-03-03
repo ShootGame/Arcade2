@@ -5,7 +5,6 @@ import pl.themolka.arcade.dom.EmptyElement;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserUtils;
-import pl.themolka.arcade.parser.TextParser;
 import pl.themolka.arcade.parser.number.ByteParser;
 import pl.themolka.arcade.parser.number.DoubleParser;
 import pl.themolka.arcade.parser.number.FloatParser;
@@ -239,17 +238,8 @@ final class Parsers {
         return booleanParser;
     }
 
-    public static <T extends Enum<T>> EnumParser<T> enumParser(Class<T> type) {
-        return new EnumParser(type);
-    }
-
     private static final MessageParser messageParser = new MessageParser();
     public static MessageParser messageParser() {
         return messageParser;
-    }
-
-    private static final TextParser textParser = new TextParser();
-    public static TextParser textParser() {
-        return textParser;
     }
 }

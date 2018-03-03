@@ -188,9 +188,9 @@ public class Wool extends Capturable implements Listener {
         }
 
         if (!WoolUtils.isWool(block, this.getColor())) {
-            // We need to prevent "Only X may be placed here" message if it is a
-            // correct wool. The wool should be handled by the correct listener
-            // in the correct Wool instance.
+            // We need to prevent "Only X may be placed here" message if this is
+            // the  correct wool. The wool should be handled by the correct
+            // listener in the correct Wool class instance.
 
             for (Capturable otherCapturable : this.game.getCapturables()) {
                 if (otherCapturable instanceof Wool) {
