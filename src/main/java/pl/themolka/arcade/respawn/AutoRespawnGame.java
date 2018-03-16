@@ -21,8 +21,8 @@ public class AutoRespawnGame extends GameModule {
         this.cooldown = PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN;
     }
 
-    public AutoRespawnGame(Config config) {
-        this.filter = Filters.secure(config.filter().get());
+    protected AutoRespawnGame(Config config) {
+        this.filter = Filters.secure(config.filter().getIfPresent());
         this.cooldown = config.cooldown();
     }
 
@@ -41,7 +41,7 @@ public class AutoRespawnGame extends GameModule {
         }
     }
 
-    interface Config extends IGameModuleConfig<AutoRespawnGame> {
+    public interface Config extends IGameModuleConfig<AutoRespawnGame> {
         default Ref<Filter> filter() { return Ref.ofProvided(Filters.undefined()); }
         default Time cooldown() { return PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN; }
 

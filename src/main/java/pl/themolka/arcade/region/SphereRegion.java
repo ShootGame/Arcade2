@@ -81,7 +81,7 @@ public class SphereRegion extends AbstractRegion {
                 this.getCenter().clone().add(radius, radius, radius));
     }
 
-    interface Config extends AbstractRegion.Config<SphereRegion> {
+    public interface Config extends AbstractRegion.Config<SphereRegion> {
         Vector center();
         double radius();
 

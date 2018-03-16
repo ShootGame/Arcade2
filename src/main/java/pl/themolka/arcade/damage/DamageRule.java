@@ -23,7 +23,7 @@ public class DamageRule implements Cancelable {
     private Percentage multiplier = DEFAULT_MULTIPLIER;
 
     public DamageRule(Config config) {
-        this(config.entityFilter().get(), config.playerFilter().get());
+        this(config.entityFilter().getIfPresent(), config.playerFilter().getIfPresent());
         this.setDamage(config.damage());
         this.setMultiplier(config.multiplier());
     }
@@ -84,8 +84,8 @@ public class DamageRule implements Cancelable {
     }
 
     public interface Config extends IGameConfig<DamageRule> {
-        default Ref<Filter> entityFilter() { return Ref.ofProvided(Filters.undefined()); }
-        default Ref<Filter> playerFilter() { return Ref.ofProvided(Filters.undefined()); }
+        default Ref<Filter> entityFilter() { return Ref.empty(); }
+        default Ref<Filter> playerFilter() { return Ref.empty(); }
         default double damage() { return DEFAULT_DAMAGE; }
         default Percentage multiplier() { return DEFAULT_MULTIPLIER; }
 

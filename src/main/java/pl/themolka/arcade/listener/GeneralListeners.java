@@ -44,8 +44,8 @@ import pl.themolka.arcade.session.PlayerMoveEvent;
  *                  could add a fix which could override ender chests to be
  *                  per-world compatible.
  * Portals:         Other dimensions like Nether or The End are not supported.
- *                  Players should only play on the world loaded from their XML
- *                  files.
+ *                  Players should only play on the world loaded from their map
+ *                  manifest files.
  * Commands:        Some commands are not supported and should never be used.
  * Weather:         We are not supporting weather changed dynamically by the
  *                  server itself. Modules are responsible for what and when

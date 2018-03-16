@@ -17,7 +17,8 @@ public class LeggingsContent extends BaseArmorContent {
         inventory.setLeggings(this.getResult());
     }
 
-    public static class Parser implements KitContentParser<LeggingsContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<LeggingsContent> {
         @Override
         public LeggingsContent parse(Element xml) throws DataConversionException {
             return new LeggingsContent(XMLItemStack.parse(xml));

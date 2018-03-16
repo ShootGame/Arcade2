@@ -17,7 +17,7 @@ public class GameRulesModule extends Module<GameRulesGame> {
     public GameRulesGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<GameRule> rules = new ArrayList<>();
         for (Element element : xml.getChildren()) {
-            GameRuleType type = GameRuleType.forName(element.getName());
+            GameRuleType type = GameRuleType.byKey(element.getName());
 
             if (type != null) {
                 rules.add(new GameRule(type, element.getValue()));

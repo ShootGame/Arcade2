@@ -32,7 +32,10 @@ public class DamageGame extends GameModule {
 
     protected DamageGame(Game game, Config config) {
         for (DamageRule.Config rule : config.rules()) {
-            this.rules.add(rule.create(game));
+            DamageRule value = rule.create(game);
+            if (value != null) {
+                this.rules.add(value);
+            }
         }
     }
 

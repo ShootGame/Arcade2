@@ -26,7 +26,7 @@ public class ArchiveModule extends SimpleGlobalModule {
 
         Node directoryNode = options.firstChild("directory");
         if (directoryNode == null) {
-            directoryNode = Node.ofPrimitive("directory", DEFAULT_DIRECTORY_NAME);
+            directoryNode = Node.ofPrimitive(null, "directory", DEFAULT_DIRECTORY_NAME);
         }
 
         File file = new File(directoryNode.getValue());

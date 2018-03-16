@@ -10,7 +10,7 @@ import pl.themolka.arcade.session.PlayerQuitEvent;
 public class LobbyGame extends GameModule {
     private boolean enabled;
 
-    public LobbyGame(Config config) {
+    protected LobbyGame(Config config) {
         this.enabled = config.enabled();
     }
 
@@ -28,7 +28,7 @@ public class LobbyGame extends GameModule {
         }
     }
 
-    interface Config extends IGameModuleConfig<LobbyGame> {
+    public interface Config extends IGameModuleConfig<LobbyGame> {
         default boolean enabled() { return true; }
 
         @Override

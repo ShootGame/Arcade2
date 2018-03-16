@@ -10,10 +10,13 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.filter.matcher.SpawnReasonMatcher;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -22,8 +25,14 @@ public class MobsGame extends GameModule {
     private final List<MobSpawnRule> rules = new ArrayList<>();
     private final boolean denyNatural;
 
+    @Deprecated
     public MobsGame(boolean denyNatural) {
         this.denyNatural = denyNatural;
+    }
+
+    protected MobsGame(Config config) {
+        this.rules.addAll(config.rules());
+        this.denyNatural = config.denyNatural();
     }
 
     @Override
@@ -71,5 +80,15 @@ public class MobsGame extends GameModule {
         }
 
         return null;
+    }
+
+    public interface Config extends IGameModuleConfig<MobsGame> {
+        default List<MobSpawnRule> rules() { return Collections.emptyList(); }
+        default boolean denyNatural() { return false; }
+
+        @Override
+        default MobsGame create(Game game) {
+            return new MobsGame(this);
+        }
     }
 }

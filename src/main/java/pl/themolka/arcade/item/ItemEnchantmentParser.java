@@ -38,7 +38,7 @@ public class ItemEnchantmentParser extends NodeParser<ItemEnchantment>
         Property levelProperty = node.property("level", "lvl");
         int level = this.levelParser.parse(levelProperty).orDefault(1);
         if (level <= 0) {
-            throw this.fail(node, name, value, "Level must be positive (greater than 0)");
+            throw this.fail(levelProperty, "Level must be positive (greater than 0)");
         }
 
         return ParserResult.fine(node, name, value, new ItemEnchantment(type, level));

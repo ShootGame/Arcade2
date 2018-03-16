@@ -27,18 +27,21 @@ public class GoalFireworkHandler extends FireworkHandler {
     }
 
     public Firework fireComplete(Location at, org.bukkit.Color color) {
-        FireworkEffect effect = FireworkEffect.builder()
-                .with(FireworkEffect.Type.BALL)
-                .withColor(color)
-                .withFade(color)
-                .withFlicker()
-                .build();
-
-        return FireworkUtils.spawn(at, FIREWORK_POWER, effect);
+        return FireworkUtils.spawn(at, FIREWORK_POWER,
+                FireworkEffect.builder().with(FireworkEffect.Type.STAR)
+                                        .withColor(color)
+                                        .withFlicker()
+                                        .withTrail()
+                                        .build(),
+                FireworkEffect.builder().with(FireworkEffect.Type.BALL_LARGE)
+                                        .withColor(color)
+                                        .withFlicker()
+                                        .withTrail()
+                                        .build());
     }
 
-    public Firework fireComplete(Location at, Participator competitor) {
-        return this.fireComplete(at, competitor.getColor());
+    public Firework fireComplete(Location at, Participator participator) {
+        return this.fireComplete(at, participator.getColor());
     }
 
     public List<Location> getRegionCorners(CuboidRegion region) {

@@ -60,7 +60,9 @@ public class FlagFactory implements CapturableFactory<Flag> {
         }
 
         // setup
-        flag.getItem().transferMetaFrom(banner);
+        FlagItem flagItem = flag.getItem();
+        flagItem.setItemMeta(flagItem.transferMetaFrom(banner));
+
         flag.setObjective(XMLParser.parseInt(xml.getAttributeValue("objective"), Flag.NOT_OBJECTIVE));
         return flag;
     }

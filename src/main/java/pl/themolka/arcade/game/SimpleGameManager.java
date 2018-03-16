@@ -87,6 +87,7 @@ public class SimpleGameManager implements GameManager {
         Game game = new Game(this.plugin, this.gameId++, map, world);
         map.setGame(game);
 
+        // Don't forget to setup the world object!
         map.getManifest().getWorld().getSpawn().setWorld(world);
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {

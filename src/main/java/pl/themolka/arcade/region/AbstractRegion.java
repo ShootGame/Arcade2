@@ -148,7 +148,7 @@ public abstract class AbstractRegion implements Region {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;
     }
 
-    interface Config<T> extends IGameConfig<T>, StringId {
+    public interface Config<T extends AbstractRegion> extends IGameConfig<T>, StringId {
         String id();
     }
 }

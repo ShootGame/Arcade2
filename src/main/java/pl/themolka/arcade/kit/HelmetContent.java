@@ -17,7 +17,8 @@ public class HelmetContent extends BaseArmorContent {
         inventory.setHelmet(this.getResult());
     }
 
-    public static class Parser implements KitContentParser<HelmetContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<HelmetContent> {
         @Override
         public HelmetContent parse(Element xml) throws DataConversionException {
             return new HelmetContent(XMLItemStack.parse(xml));

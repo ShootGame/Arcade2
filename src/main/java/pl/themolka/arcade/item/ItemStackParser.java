@@ -7,6 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.item.meta.ItemMetaParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
@@ -79,7 +80,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
             throw this.fail(amountProperty, "Amount must be positive (greater than 0)");
         } else if (type.getData() != 0 && durability != 0) {
             // Notch made a huge mistake here... :(
-            throw this.fail(durabilityProperty, "Sorry! Durability conflicts and cannot be combined with material data!");
+            throw this.fail(durabilityProperty, "Sorry! Durability cannot be combined with material data!");
         }
 
         ItemStack itemStack = new ItemStack(type, amount);

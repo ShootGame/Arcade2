@@ -30,8 +30,8 @@ public class Comment implements Locatable, NestedContent<Content> {
     }
 
     @Override
-    public void locate(Cursor start, Cursor end) {
-        this.location = Selection.between(start, end);
+    public void locate(Selection selection) {
+        this.location = selection;
     }
 
     @Override
@@ -65,5 +65,10 @@ public class Comment implements Locatable, NestedContent<Content> {
         this.text = text;
 
         return oldText;
+    }
+
+    @Override
+    public String toShortString() {
+        return "#" + (this.text != null ? " " + this.text : "");
     }
 }

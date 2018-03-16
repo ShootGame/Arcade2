@@ -1,8 +1,8 @@
 package pl.themolka.arcade.dom;
 
 public final class ImmutableProperty extends Property {
-    protected ImmutableProperty(String name, String value) {
-        super(name, value);
+    protected ImmutableProperty(Namespace namespace, String name, String value) {
+        super(namespace, name, value);
     }
 
     @Override
@@ -17,6 +17,10 @@ public final class ImmutableProperty extends Property {
 
     @Override
     public void locate(Cursor start, Cursor end) {
+    }
+
+    @Override
+    public void locate(Selection selection) {
     }
 
     @Override
@@ -38,11 +42,11 @@ public final class ImmutableProperty extends Property {
     // Instancing
     //
 
-    public static ImmutableProperty of(String name) {
-        return of(name, null);
+    public static ImmutableProperty of(Namespace namespace, String name) {
+        return of(namespace, name, null);
     }
 
-    public static ImmutableProperty of(String name, String value) {
-        return new ImmutableProperty(name, value);
+    public static ImmutableProperty of(Namespace namespace, String name, String value) {
+        return new ImmutableProperty(namespace, name, value);
     }
 }

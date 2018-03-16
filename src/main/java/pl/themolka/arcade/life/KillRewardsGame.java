@@ -10,8 +10,10 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.kit.KitsGame;
 import pl.themolka.arcade.kit.KitsModule;
@@ -25,6 +27,14 @@ import java.util.UUID;
 public class KillRewardsGame extends GameModule {
     private final List<KillReward> rewards = new ArrayList<>();
     private final Multimap<UUID, KillReward> queuedRewards = ArrayListMultimap.create();
+
+    @Deprecated
+    public KillRewardsGame() {
+    }
+
+    protected KillRewardsGame(Config config) {
+        this.rewards.addAll(config.rewards());
+    }
 
     @Override
     public void onEnable() {
@@ -114,5 +124,14 @@ public class KillRewardsGame extends GameModule {
                 }
             }
         }, Time.TICK.toTicks());
+    }
+
+    public interface Config extends IGameModuleConfig<KillRewardsGame> {
+        List<KillReward> rewards();
+
+        @Override
+        default KillRewardsGame create(Game game) {
+            return new KillRewardsGame(this);
+        }
     }
 }

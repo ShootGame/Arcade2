@@ -11,8 +11,9 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
     <parser class="pl.themolka.arcade.environment.EnvironmentParser" />
     <parser class="pl.themolka.arcade.firework.FireworkEffectParser" />
+    <parser class="pl.themolka.arcade.gamerule.GameRuleParser" />
+    <parser class="pl.themolka.arcade.gamerule.GameRuleTypeParser" />
     <parser class="pl.themolka.arcade.generator.GeneratorParser" />
-    <parser class="pl.themolka.arcade.item.BannerPatternParser" />
     <parser class="pl.themolka.arcade.item.EnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemEnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemStackParser" />
@@ -35,6 +36,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.number.IntegerParser" />
     <parser class="pl.themolka.arcade.parser.number.LongParser" />
     <parser class="pl.themolka.arcade.parser.number.ShortParser" />
+    <parser class="pl.themolka.arcade.parser.type.BannerPatternParser" />
     <parser class="pl.themolka.arcade.parser.type.BooleanParser" />
     <parser class="pl.themolka.arcade.parser.type.ColorParser" />
     <parser class="pl.themolka.arcade.parser.type.DifficultyParser" />
@@ -43,6 +45,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.type.MaterialDataParser" />
     <parser class="pl.themolka.arcade.parser.type.MaterialParser" />
     <parser class="pl.themolka.arcade.parser.type.MessageParser" />
+    <parser class="pl.themolka.arcade.parser.type.PathParser" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />
     <parser class="pl.themolka.arcade.parser.type.UUIDParser" />

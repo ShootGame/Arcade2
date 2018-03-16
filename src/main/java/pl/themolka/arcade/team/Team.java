@@ -1,11 +1,9 @@
 package pl.themolka.arcade.team;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.game.Game;
@@ -34,7 +32,6 @@ public class Team implements GameHolder, MatchWinner {
     private final ArcadePlugin plugin;
 
     private final TeamApplyContext applyContext;
-    private org.bukkit.scoreboard.Team bukkit;
     private final TeamChannel channel;
     private ChatColor chatColor;
     private DyeColor dyeColor;
@@ -61,7 +58,6 @@ public class Team implements GameHolder, MatchWinner {
     public Team(Team original) {
         this(original.plugin, original.getId());
 
-        this.setBukkit(original.getBukkit());
         this.setChatColor(original.getChatColor());
         this.setDyeColor(original.getDyeColor());
         this.setFriendlyFire(original.isFriendlyFire());
@@ -170,10 +166,6 @@ public class Team implements GameHolder, MatchWinner {
         return this.applyContext;
     }
 
-    public org.bukkit.scoreboard.Team getBukkit() {
-        return this.bukkit;
-    }
-
     public TeamChannel getChannel() {
         return this.channel;
     }
@@ -191,11 +183,7 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     public int getMaxPlayers() {
-        if (this.maxPlayers >= this.slots) {
-            return this.maxPlayers;
-        }
-
-        return this.slots;
+        return this.maxPlayers >= this.slots ? this.maxPlayers : this.slots;
     }
 
     public Collection<GamePlayer> getMembers() {
@@ -215,11 +203,7 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     public int getSlots() {
-        if (this.slots <= this.maxPlayers) {
-            return this.slots;
-        }
-
-        return this.maxPlayers;
+        return this.slots <= this.maxPlayers ? this.slots : this.maxPlayers;
     }
 
     @Override
@@ -283,7 +267,6 @@ public class Team implements GameHolder, MatchWinner {
         // handle
         this.members.add(player);
         this.onlineMembers.add(player);
-        this.getBukkit().addPlayer(player.getBukkit());
 
         player.setChatColor(this.getChatColor());
         player.setCurrentChannel(this.getCurrentChannel());
@@ -328,7 +311,6 @@ public class Team implements GameHolder, MatchWinner {
         // handle
         this.members.remove(player);
         this.onlineMembers.remove(player);
-        this.getBukkit().removePlayer(player.getBukkit());
 
         player.setChatColor(null);
         player.setCurrentChannel(null);
@@ -350,10 +332,6 @@ public class Team implements GameHolder, MatchWinner {
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
 
-        if (player.getBukkit() != null) {
-            this.getBukkit().removePlayer(player.getBukkit());
-        }
-
         this.plugin.getLogger().info(player.getUsername() + " left team '" +
                 this.getName() + "' (" + this.getId() + ") <server quit>");
     }
@@ -362,12 +340,6 @@ public class Team implements GameHolder, MatchWinner {
         for (GamePlayer player : this.getOnlineMembers()) {
             player.getPlayer().send(message);
         }
-    }
-
-    public void setBukkit(org.bukkit.scoreboard.Team bukkit) {
-        this.bukkit = bukkit;
-
-        this.updateBukkitTeam();
     }
 
     public void setChatColor(ChatColor chatColor) {
@@ -415,31 +387,6 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     private ChatChannel getCurrentChannel() {
-        if (this.getMatch().isRunning()) {
-            return this.getChannel();
-        } else {
-            return null;
-        }
-    }
-
-    private void updateBukkitTeam() {
-        org.bukkit.scoreboard.Team bukkit = this.getBukkit();
-        if (bukkit != null) {
-            bukkit.setAllowFriendlyFire(this.isFriendlyFire());
-            bukkit.setCanSeeFriendlyInvisibles(true);
-            bukkit.setOption(
-                    org.bukkit.scoreboard.Team.Option.COLLISION_RULE,
-                    org.bukkit.scoreboard.Team.OptionStatus.NEVER);
-        }
-    }
-
-    public static org.bukkit.scoreboard.Team createBukkitTeam(Scoreboard scoreboard, Team team) {
-        String id = StringUtils.substring(team.getId(), 0, 16);
-
-        org.bukkit.scoreboard.Team bukkit = scoreboard.registerNewTeam(id);
-        bukkit.setPrefix(team.getChatColor().toString());
-        bukkit.setDisplayName(team.getName());
-        bukkit.setSuffix(ChatColor.RESET.toString());
-        return bukkit;
+        return this.match.isRunning() ? this.channel : null;
     }
 }

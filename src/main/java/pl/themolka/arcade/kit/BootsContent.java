@@ -17,7 +17,8 @@ public class BootsContent extends BaseArmorContent {
         inventory.setBoots(this.getResult());
     }
 
-    public static class Parser implements KitContentParser<BootsContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<BootsContent> {
         @Override
         public BootsContent parse(Element xml) throws DataConversionException {
             return new BootsContent(XMLItemStack.parse(xml));

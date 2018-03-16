@@ -386,7 +386,7 @@ public class Game implements Messageable, PlayerVisibilityFilter {
     }
 
     private void readMapModules() {
-        Node parent = Node.ofChildren("legacy", this.map.getManifest().getModules().getModules());
+        Node parent = Node.ofChildren(null, "legacy", this.map.getManifest().getModules().getModules());
 
         if (parent == null || parent.isEmpty()) {
             this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");

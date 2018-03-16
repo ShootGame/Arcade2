@@ -7,6 +7,8 @@ import pl.themolka.arcade.dom.Node;
  * {@link OfflineMap}.
  */
 public class MapManifest {
+    public static final String FILENAME = "map.xml";
+
     private final ModulesInfo modules;
     private final ScoreboardInfo scoreboard;
     private final Node source;

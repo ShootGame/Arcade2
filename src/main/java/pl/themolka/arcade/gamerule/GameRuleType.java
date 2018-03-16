@@ -1,5 +1,8 @@
 package pl.themolka.arcade.gamerule;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * See http://minecraft.gamepedia.com/Commands#gamerule
  */
@@ -118,6 +121,16 @@ public enum GameRuleType {
     SPECTATORS_GENERATE_CHUNKS("spectatorsGenerateChunks", true),
     ;
 
+    private static final Map<String, GameRuleType> byKey = new LinkedHashMap<>();
+
+    static {
+        for (GameRuleType value : values()) {
+            if (value.key != null) {
+                byKey.putIfAbsent(value.key, value);
+            }
+        }
+    }
+
     private final String key;
     private final Object defaultValue;
     private final boolean applicable;
@@ -153,15 +166,7 @@ public enum GameRuleType {
         return this.getKey();
     }
 
-    public static GameRuleType forName(String name) {
-        if (name != null) {
-            for (GameRuleType rule : values()) {
-                if (rule.getKey().equalsIgnoreCase(name)) {
-                    return rule;
-                }
-            }
-        }
-
-        return null;
+    public static GameRuleType byKey(String key) {
+        return byKey.get(key);
     }
 }

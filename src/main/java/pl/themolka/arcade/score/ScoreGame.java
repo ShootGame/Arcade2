@@ -79,7 +79,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         KitsGame kits = (KitsGame) this.getGame().getModule(KitsModule.class);
         SpawnsGame spawns = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
 
-        for (Element xml : XMLParser.children(this.getSettings(), "scorebox", "score-box")) {
+        for (Element xml : this.getSettings().getChildren("scorebox")) {
             double points = XMLParser.parseDouble(xml.getAttributeValue("points"), ScoreBox.POINTS);
 
             ScoreBox scoreBox = XMLScoreBox.parse(this.getGame(), xml,

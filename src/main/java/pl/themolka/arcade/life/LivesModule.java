@@ -14,14 +14,12 @@ import pl.themolka.arcade.xml.XMLSound;
         dependency = {
                 MatchModule.class})
 public class LivesModule extends Module<LivesGame> {
-    public static final Sound DEFAULT_SOUND = Sound.ENTITY_IRONGOLEM_DEATH;
-
     @Override
     public LivesGame buildGameModule(Element xml, Game game) throws JDOMException {
         int lives = XMLParser.parseInt(xml.getValue(), 1);
         if (lives > 0) {
             boolean broadcast = XMLParser.parseBoolean(xml.getAttributeValue("broadcast"), true);
-            Sound sound = XMLSound.parse(xml.getAttributeValue("sound"), DEFAULT_SOUND);
+            Sound sound = XMLSound.parse(xml.getAttributeValue("sound"), LivesGame.DEFAULT_SOUND);
 
             return new LivesGame(lives, broadcast, sound);
         }

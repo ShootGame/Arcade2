@@ -54,7 +54,7 @@ public class GlobalRegion extends CuboidRegion {
         return new Vector(random.nextDouble(), RandomUtils.nextDouble(MIN_HEIGHT, MAX_HEIGHT), random.nextDouble());
     }
 
-    interface Config extends AbstractRegion.Config<GlobalRegion> {
+    public interface Config extends AbstractRegion.Config<GlobalRegion> {
         default String id() { return REGION_ID; }
 
         @Override

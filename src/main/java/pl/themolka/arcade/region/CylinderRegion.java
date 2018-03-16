@@ -98,7 +98,7 @@ public class CylinderRegion extends AbstractRegion {
                 this.getCenter().clone().add(radius, this.getHeight(), radius));
     }
 
-    interface Config extends AbstractRegion.Config<CylinderRegion> {
+    public interface Config extends AbstractRegion.Config<CylinderRegion> {
         Vector center();
         double radius();
         default double height() { return Region.MAX_HEIGHT; }

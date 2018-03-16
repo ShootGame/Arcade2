@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
 public class Ref<T> implements OptionalProvider<T>, Locatable {
     public static final Pattern ID_PATTERN = Pattern.compile("^[A-Za-z0-9\\-_]{3,}$");
 
+    private static final Ref<?> empty = new EmptyRef();
+
     private final String id;
     private transient Reference<T> provider;
     private Selection location;
@@ -35,8 +37,8 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
     }
 
     @Override
-    public void locate(Cursor start, Cursor end) {
-        this.location = Selection.between(start, end);
+    public void locate(Selection selection) {
+        this.location = selection;
     }
 
     @Override
@@ -74,6 +76,14 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
         }
 
         return this.provider.get();
+    }
+
+    public T getIfPresent() {
+        return this.getOrDefault(null);
+    }
+
+    public T getOrDefault(T def) {
+        return this.isProvided() ? this.get() : def;
     }
 
     public String getId() {
@@ -125,6 +135,10 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
     // Instancing
     //
 
+    public static <T> Ref<T> empty() {
+        return (Ref<T>) empty;
+    }
+
     public static <T> Ref<T> of(String id) {
         return ofProvided(id, null);
     }
@@ -137,5 +151,49 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
         Ref<T> ref = new Ref<>(id);
         ref.provide(provider);
         return ref;
+    }
+}
+
+final class EmptyRef extends Ref<Object> {
+    protected EmptyRef() {
+        super("EmptyRef");
+    }
+
+    @Override
+    public boolean clear() {
+        return false;
+    }
+
+    @Override
+    public boolean isProvided() {
+        return false;
+    }
+
+    @Override
+    public boolean isSelectable() {
+        return false;
+    }
+
+    @Override
+    public void locate(Cursor start, Cursor end) {
+    }
+
+    @Override
+    public void locate(Selection selection) {
+    }
+
+    @Override
+    public Optional<Object> optional() {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean provide(Object provider) {
+        return false;
+    }
+
+    @Override
+    public Selection select() {
+        throw new UnsupportedOperationException("Empty reference may not be selected");
     }
 }

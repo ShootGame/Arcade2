@@ -8,12 +8,16 @@ import pl.themolka.arcade.util.NamedValue;
  */
 public abstract class Element extends NamedValue<String, String>
                               implements Cloneable, NestedContent<Node> {
-    public Element(String name) {
+    private final Namespace namespace;
+    
+    public Element(Namespace namespace, String name) {
         super(name);
+        this.namespace = namespace != null ? namespace : Namespace.getDefault();
     }
 
-    public Element(String name, String value) {
+    public Element(Namespace namespace, String name, String value) {
         super(name, value);
+        this.namespace = namespace != null ? namespace : Namespace.getDefault();
     }
 
     @Override
@@ -21,7 +25,7 @@ public abstract class Element extends NamedValue<String, String>
         return (Element) super.clone();
     }
 
-    public String toShortString() {
-        return this.toString();
+    public Namespace getNamespace() {
+        return this.namespace;
     }
 }

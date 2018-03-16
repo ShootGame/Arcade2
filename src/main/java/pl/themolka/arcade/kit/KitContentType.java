@@ -152,27 +152,27 @@ public enum KitContentType implements KitContentParser<KitContent<?>> {
     },
     ;
 
-    public static final BootsContent.Parser BOOTS_PARSER = new BootsContent.Parser();
-    public static final ChestplateContent.Parser CHESTPLATE_PARSER = new ChestplateContent.Parser();
-    public static final ClearInventoryContent.Parser CLEAR_INVENTORY_PARSER = new ClearInventoryContent.Parser();
-    public static final EffectContent.Parser EFFECT_PARSER = new EffectContent.Parser();
-    public static final FlyContent.Parser FLY_PARSER = new FlyContent.Parser();
-    public static final FlySpeedContent.Parser FLY_SPEED_PARSER = new FlySpeedContent.Parser();
-    public static final FoodLevelContent.Parser FOOD_LEVEL_PARSER = new FoodLevelContent.Parser();
-    public static final GameModeContent.Parser GAME_MODE_PARSER = new GameModeContent.Parser();
-    public static final HealthContent.Parser HEALTH_PARSER = new HealthContent.Parser();
-    public static final HeldSlotContent.Parser HELD_SLOT_PARSER = new HeldSlotContent.Parser();
-    public static final HelmetContent.Parser HELMET_PARSER = new HelmetContent.Parser();
-    public static final ItemStackContent.Parser ITEM_STACK_PARSER = new ItemStackContent.Parser();
-    public static final KillContent.Parser KILL_PARSER = new KillContent.Parser();
-    public static final KnockbackContent.Parser KNOCKBACK_PARSER = new KnockbackContent.Parser();
-    public static final LeggingsContent.Parser LEGGINGS_PARSER = new LeggingsContent.Parser();
-    public static final LivesContent.Parser LIVES_PARSER = new LivesContent.Parser();
-    public static final MaxHealthContent.Parser MAX_HEALTH_PARSER = new MaxHealthContent.Parser();
-    public static final MessageContent.Parser MESSAGE_PARSER = new MessageContent.Parser();
-    public static final SaturationContent.Parser SATURATION_PARSER = new SaturationContent.Parser();
-    public static final SoundContent.Parser SOUND_PARSER = new SoundContent.Parser();
-    public static final WalkSpeedContent.Parser WALK_SPEED_PARSER = new WalkSpeedContent.Parser();
+    public static final BootsContent.LegacyParser BOOTS_PARSER = new BootsContent.LegacyParser();
+    public static final ChestplateContent.LegacyParser CHESTPLATE_PARSER = new ChestplateContent.LegacyParser();
+    public static final ClearInventoryContent.LegacyParser CLEAR_INVENTORY_PARSER = new ClearInventoryContent.LegacyParser();
+    public static final EffectContent.LegacyParser EFFECT_PARSER = new EffectContent.LegacyParser();
+    public static final FlyContent.LegacyParser FLY_PARSER = new FlyContent.LegacyParser();
+    public static final FlySpeedContent.LegacyParser FLY_SPEED_PARSER = new FlySpeedContent.LegacyParser();
+    public static final FoodLevelContent.LegacyParser FOOD_LEVEL_PARSER = new FoodLevelContent.LegacyParser();
+    public static final GameModeContent.LegacyParser GAME_MODE_PARSER = new GameModeContent.LegacyParser();
+    public static final HealthContent.LegacyParser HEALTH_PARSER = new HealthContent.LegacyParser();
+    public static final HeldSlotContent.LegacyParser HELD_SLOT_PARSER = new HeldSlotContent.LegacyParser();
+    public static final HelmetContent.LegacyParser HELMET_PARSER = new HelmetContent.LegacyParser();
+    public static final ItemStackContent.LegacyParser ITEM_STACK_PARSER = new ItemStackContent.LegacyParser();
+    public static final KillContent.LegacyParser KILL_PARSER = new KillContent.LegacyParser();
+    public static final KnockbackContent.LegacyParser KNOCKBACK_PARSER = new KnockbackContent.LegacyParser();
+    public static final LeggingsContent.LegacyParser LEGGINGS_PARSER = new LeggingsContent.LegacyParser();
+    public static final LivesContent.LegacyParser LIVES_PARSER = new LivesContent.LegacyParser();
+    public static final MaxHealthContent.LegacyParser MAX_HEALTH_PARSER = new MaxHealthContent.LegacyParser();
+    public static final MessageContent.LegacyParser MESSAGE_PARSER = new MessageContent.LegacyParser();
+    public static final SaturationContent.LegacyParser SATURATION_PARSER = new SaturationContent.LegacyParser();
+    public static final SoundContent.LegacyParser SOUND_PARSER = new SoundContent.LegacyParser();
+    public static final WalkSpeedContent.LegacyParser WALK_SPEED_PARSER = new WalkSpeedContent.LegacyParser();
 
     private final String[] name;
 

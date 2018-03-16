@@ -4,8 +4,8 @@ public class Property extends Element implements Locatable {
     private Selection location;
     private Node parent;
 
-    protected Property(String name, String value) {
-        super(name, normalizeValue(value));
+    protected Property(Namespace namespace, String name, String value) {
+        super(namespace, name, normalizeValue(value));
     }
 
     @Override
@@ -37,8 +37,8 @@ public class Property extends Element implements Locatable {
     }
 
     @Override
-    public void locate(Cursor start, Cursor end) {
-        this.location = Selection.between(start, end);
+    public void locate(Selection selection) {
+        this.location = selection;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Property extends Element implements Locatable {
 
     @Override
     public String toString() {
-        return this.getName() + "=\"" + (this.hasValue() ? this.getValue() : "") + "\"";
+        return this.getNamespace().format(this) + "=\"" + (this.hasValue() ? this.getValue() : "") + "\"";
     }
 
     /**
@@ -85,14 +85,14 @@ public class Property extends Element implements Locatable {
     //
 
     public static ImmutableProperty empty() {
-        return ImmutableProperty.of("EmptyProperty");
+        return ImmutableProperty.of(Namespace.getDefault(), "EmptyProperty");
     }
 
-    public static Property of(String name) {
-        return of(name, null);
+    public static Property of(Namespace namespace, String name) {
+        return of(namespace, name, null);
     }
 
-    public static Property of(String name, String value) {
-        return new Property(name, value);
+    public static Property of(Namespace namespace, String name, String value) {
+        return new Property(namespace, name, value);
     }
 }

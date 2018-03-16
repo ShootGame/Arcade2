@@ -3,19 +3,23 @@ package pl.themolka.arcade.kit;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.NestedParserName;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class SaturationContent implements RemovableKitContent<Integer> {
-    public static final int DEFAULT_SATURATION = 5;
+public class SaturationContent implements RemovableKitContent<Float> {
+    public static final float DEFAULT_SATURATION = 5F;
 
-    private final int result;
+    private final float result;
 
     public SaturationContent(float result) {
-        this((int) result * 2);
-    }
-
-    public SaturationContent(int result) {
         this.result = result;
     }
 
@@ -25,25 +29,26 @@ public class SaturationContent implements RemovableKitContent<Integer> {
     }
 
     @Override
-    public void attach(GamePlayer player, Integer value) {
+    public void attach(GamePlayer player, Float value) {
         player.getBukkit().setSaturation(value);
     }
 
     @Override
-    public Integer defaultValue() {
+    public Float defaultValue() {
         return DEFAULT_SATURATION;
     }
 
     @Override
-    public Integer getResult() {
+    public Float getResult() {
         return this.result;
     }
 
-    public static class Parser implements KitContentParser<SaturationContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<SaturationContent> {
         @Override
         public SaturationContent parse(Element xml) throws DataConversionException {
             Attribute attribute = xml.getAttribute("reset");
-            if (attribute != null && XMLParser.parseBoolean(attribute.getValue())) {
+            if (attribute != null && XMLParser.parseBoolean(attribute.getValue(), false)) {
                 return new SaturationContent(DEFAULT_SATURATION);
             }
 
@@ -52,6 +57,30 @@ public class SaturationContent implements RemovableKitContent<Integer> {
             } catch (NumberFormatException ex) {
                 return null;
             }
+        }
+    }
+
+    @NestedParserName("saturation")
+    @Produces(SaturationContent.class)
+    public static class ContentParser extends BaseRemovableContentParser<SaturationContent>
+                                      implements InstallableParser {
+        private Parser<Float> saturationParser;
+
+        @Override
+        public void install(ParserContext context) {
+            super.install(context);
+            this.saturationParser = context.type(Float.class);
+        }
+
+        @Override
+        protected ParserResult<SaturationContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+            if (this.reset(node)) {
+                return ParserResult.fine(node, name, value, new SaturationContent(DEFAULT_SATURATION));
+            }
+
+            float saturation = this.saturationParser.parse(node).orFail();
+            // TODO test if saturation can be negative
+            return ParserResult.fine(node, name, value, new SaturationContent(saturation));
         }
     }
 }

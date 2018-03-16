@@ -88,7 +88,7 @@ public class PointRegion extends AbstractRegion {
         return new RegionBounds(this, this.point, this.point);
     }
 
-    interface Config extends AbstractRegion.Config<PointRegion> {
+    public interface Config extends AbstractRegion.Config<PointRegion> {
         Vector point();
 
         @Override

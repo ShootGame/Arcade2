@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Settings {
     public static final String DEFAULT_FILE = "settings.xml";
@@ -23,7 +24,9 @@ public class Settings {
     private Document document;
     private boolean enabled;
     private final File file;
+    private Path includeRepository;
     private Vector spawn;
+    private Path worldContainer;
 
     public Settings(ArcadePlugin plugin) {
         this(plugin, new File(plugin.getDataFolder(), DEFAULT_FILE));
@@ -73,8 +76,16 @@ public class Settings {
         return this.file;
     }
 
+    public Path getIncludeRepository() {
+        return this.includeRepository;
+    }
+
     public Vector getSpawn() {
         return this.spawn;
+    }
+
+    public Path getWorldContainer() {
+        return this.worldContainer;
     }
 
     public boolean isEnabled() {
@@ -104,6 +115,8 @@ public class Settings {
 
     private void setup(Node root) throws ParserException {
         this.enabled = this.context.type(Boolean.class).parse(root.property("enable", "enabled")).orFail();
+        this.includeRepository = this.context.type(Path.class).parse(root.firstChild("include-repository")).orFail();
         this.spawn = this.context.type(Vector.class).parse(root.child("spawn")).orFail();
+        this.worldContainer = this.context.type(Path.class).parse(root.child("world-container")).orFail();
     }
 }

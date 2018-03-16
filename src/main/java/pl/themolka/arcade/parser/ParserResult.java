@@ -109,7 +109,7 @@ class FailResult<T> extends ParserResult<T> {
     final ParserException fail;
 
     FailResult(ParserException fail, String name, String value) {
-        super(fail.getElement(), name, value);
+        super(fail.getContent(), name, value);
 
         this.fail = Objects.requireNonNull(fail, "fail cannot be null (use EmptyResult instead?)");
     }

@@ -1,14 +1,18 @@
 package pl.themolka.arcade.dom;
 
+import java.nio.file.Path;
+
 /**
  * 500th class :D
  */
 public class Document implements Content, Locatable {
+    private Path path;
     private Node root;
 
     private Selection location;
 
-    protected Document() {
+    protected Document(Path path) {
+        this.path = path;
     }
 
     @Override
@@ -17,8 +21,8 @@ public class Document implements Content, Locatable {
     }
 
     @Override
-    public void locate(Cursor start, Cursor end) {
-        this.location = Selection.between(start, end);
+    public void locate(Selection selection) {
+        this.location = selection;
     }
 
     @Override
@@ -32,8 +36,16 @@ public class Document implements Content, Locatable {
         return null;
     }
 
+    public Path getPath() {
+        return this.path;
+    }
+
     public Node getRoot() {
         return this.root;
+    }
+
+    public boolean hasPath() {
+        return this.path != null;
     }
 
     public boolean hasRoot() {
@@ -48,6 +60,17 @@ public class Document implements Content, Locatable {
     }
 
     @Override
+    public String toShortString() {
+        if (this.hasRoot()) {
+            return this.getRoot().toShortString();
+        } else if (this.hasPath()) {
+            return "<#document at '" + this.getPath().toString() + "'>";
+        }
+
+        return "<#document>";
+    }
+
+    @Override
     public String toString() {
         return this.hasRoot() ? this.getRoot().toString() : super.toString();
     }
@@ -56,12 +79,12 @@ public class Document implements Content, Locatable {
     // Instancing
     //
 
-    public static Document create() {
-        return new Document();
+    public static Document create(Path path) {
+        return new Document(path);
     }
 
-    public static Document create(Node root) {
-        Document document = create();
+    public static Document create(Path path, Node root) {
+        Document document = create(path);
         document.setRoot(root);
         return document;
     }

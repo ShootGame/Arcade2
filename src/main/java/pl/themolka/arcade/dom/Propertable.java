@@ -45,8 +45,8 @@ public interface Propertable {
 
     Property setProperty(Property property);
 
-    default Property setProperty(String name, String value) {
-        return name != null ? this.setProperty(Property.of(name, value))
+    default Property setProperty(Namespace namespace, String name, String value) {
+        return name != null ? this.setProperty(Property.of(namespace, name, value))
                             : null;
     }
 

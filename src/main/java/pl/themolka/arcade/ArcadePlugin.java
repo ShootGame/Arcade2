@@ -20,6 +20,9 @@ import pl.themolka.arcade.command.MapCommands;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.engine.EngineManager;
+import pl.themolka.arcade.dom.preprocess.Import;
+import pl.themolka.arcade.dom.preprocess.Include;
+import pl.themolka.arcade.dom.preprocess.Preprocessor;
 import pl.themolka.arcade.environment.Environment;
 import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
@@ -81,12 +84,16 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             Author.plain("2b5f34f6-fb05-4852-a86c-2e03bccbdf89", "TheMolkaPL")
     };
 
+    public static final String PROJECT_WEBSITE = "https://github.com/ShootGame/Arcade2";
+    public static final String PROJECT_BUG_TRACKER = PROJECT_WEBSITE + "/issues";
+
     public static final String DEFAULT_SERVER_NAME = "The server";
     public static final String YAML_NOT_SUPPORTED = "YAML is not supported!";
 
     private BukkitCommands commands;
     private ConsoleSender console;
     private EngineManager domEngines;
+    private Preprocessor domPreprocessor;
     private Environment environment;
     private EventBus eventBus;
     private GameManager games;
@@ -333,6 +340,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         return this.domEngines;
     }
 
+    public Preprocessor getDomPreprocessor() {
+        return this.domPreprocessor;
+    }
+
     public Environment getEnvironment() {
         return this.environment;
     }
@@ -513,7 +524,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     private void loadMaps() {
         this.maps = new MapManager(this);
-        this.maps.setWorldContainer(new File(this.getSettings().getData().child("world-container").getValue()));
+        this.maps.setWorldContainer(this.settings.getWorldContainer().toFile());
 
         MapContainerFillEvent fillEvent = new MapContainerFillEvent(this);
         this.getEventBus().publish(fillEvent);
@@ -598,6 +609,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadParsers() {
         this.domEngines = new EngineManager();
         this.domEngines.registerDefault();
+
+        this.domPreprocessor = new Preprocessor();
+        this.domPreprocessor.install(new Import(this.domEngines, this.domPreprocessor));
+        this.domPreprocessor.install(new Include(this.domEngines, this.domPreprocessor, this.settings.getIncludeRepository()));
 
         this.parsers = new ParserManager(this);
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {

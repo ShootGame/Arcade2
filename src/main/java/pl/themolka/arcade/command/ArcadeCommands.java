@@ -30,9 +30,6 @@ public class ArcadeCommands {
             return;
         }
 
-        String website = "https://github.com/ShootGame/Arcade2";
-        String issues = website + "/issues";
-
         ManifestFile manifest = this.plugin.getManifest();
 
         CommandUtils.sendTitleMessage(sender, manifest.getFieldName(), manifest.getFieldVersion());
@@ -41,8 +38,8 @@ public class ArcadeCommands {
         sender.send(this.arcadeKeyValue("Last Commit", manifest.getFieldGitCommit()));
         sender.send(this.arcadeKeyValue("Author(s)", StringUtils.join(ArcadePlugin.COPYRIGHTS, ", ")));
         sender.send(this.arcadeKeyValue("Apache Maven ID", manifest.getFieldGroupId() + ":" + manifest.getFieldArtifactId()));
-        sender.send(this.arcadeKeyValue("Website", website));
-        sender.send(this.arcadeKeyValue("Issues? Bugs?", issues));
+        sender.send(this.arcadeKeyValue("Website", ArcadePlugin.PROJECT_WEBSITE));
+        sender.send(this.arcadeKeyValue("Issues? Bugs?", ArcadePlugin.PROJECT_BUG_TRACKER));
     }
 
     private String arcadeKeyValue(String key, String value) {

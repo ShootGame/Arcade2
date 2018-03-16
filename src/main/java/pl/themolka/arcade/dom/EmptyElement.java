@@ -2,11 +2,11 @@ package pl.themolka.arcade.dom;
 
 public final class EmptyElement extends Element {
     private EmptyElement(String name) {
-        super(name);
+        super(Namespace.getDefault(), name);
     }
 
     private EmptyElement(String name, String value) {
-        super(name, value);
+        super(Namespace.getDefault(), name, value);
     }
 
     @Override

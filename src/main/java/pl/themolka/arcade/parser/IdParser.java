@@ -11,7 +11,7 @@ import java.util.Set;
 public class IdParser extends PropertyParser<String> {
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("a unique ID");
+        return Collections.singleton("a unique ID matching " + Ref.ID_PATTERN.pattern());
     }
 
     @Override

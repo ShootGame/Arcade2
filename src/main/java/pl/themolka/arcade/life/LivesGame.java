@@ -6,8 +6,10 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -21,6 +23,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class LivesGame extends GameModule {
+    public static final Sound DEFAULT_SOUND = Sound.ENTITY_IRONGOLEM_DEATH;
+
     public static final int DEATH_REVOKE = -1;
     public static final int ZERO = 0;
 
@@ -32,10 +36,17 @@ public class LivesGame extends GameModule {
 
     private final Map<GamePlayer, Integer> remaining = new WeakHashMap<>();
 
+    @Deprecated
     public LivesGame(int lives, boolean broadcast, Sound sound) {
         this.lives = lives;
         this.broadcast = broadcast;
         this.sound = sound;
+    }
+
+    protected LivesGame(Config config) {
+        this.lives = config.lives();
+        this.broadcast = config.broadcast();
+        this.sound = config.sound();
     }
 
     @Override
@@ -183,6 +194,17 @@ public class LivesGame extends GameModule {
 
         void play(Sound sound, Location at) {
             at.getWorld().playSound(at, sound, 1F, 1F);
+        }
+    }
+
+    public interface Config extends IGameModuleConfig<LivesGame> {
+        default int lives() { return 1; }
+        default boolean broadcast() { return true; }
+        default Sound sound() { return DEFAULT_SOUND; }
+
+        @Override
+        default LivesGame create(Game game) {
+            return new LivesGame(this);
         }
     }
 }

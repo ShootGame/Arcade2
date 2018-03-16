@@ -99,7 +99,7 @@ public class CuboidRegion extends AbstractRegion {
         return (max - min) * random.nextDouble() + min;
     }
 
-    interface Config extends AbstractRegion.Config<CuboidRegion> {
+    public interface Config extends AbstractRegion.Config<CuboidRegion> {
         Vector min();
         Vector max();
 

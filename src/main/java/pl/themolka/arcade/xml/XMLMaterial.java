@@ -3,6 +3,7 @@ package pl.themolka.arcade.xml;
 import org.bukkit.Material;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
+import pl.themolka.arcade.parser.ParserUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class XMLMaterial extends XMLParser {
     public static List<Material> parseArray(Attribute attribute, Material def) {
         List<Material> results = new ArrayList<>();
         if (attribute != null) {
-            List<String> rawList = parseArray(attribute.getValue());
+            List<String> rawList = ParserUtils.array(attribute.getValue());
             for (String raw : rawList) {
                 if (raw.isEmpty()) {
                     continue;

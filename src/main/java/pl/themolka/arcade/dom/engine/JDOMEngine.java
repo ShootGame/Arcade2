@@ -1,9 +1,6 @@
 package pl.themolka.arcade.dom.engine;
 
-import org.jdom2.Attribute;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.SAXEngine;
 import org.jdom2.input.sax.SAXHandlerFactory;
@@ -15,6 +12,7 @@ import org.xml.sax.SAXException;
 import pl.themolka.arcade.dom.Cursor;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
+import pl.themolka.arcade.dom.Namespace;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 
@@ -22,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URL;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +49,7 @@ public class JDOMEngine extends LocatedJDOMFactory
     @Override
     public Document read(File file) throws DOMException, IOException {
         try {
-            return this.read(this.sax.build(file));
+            return this.read(file.toPath(), this.sax.build(file));
         } catch (JDOMException jdom) {
             throw new DOMException(null, jdom.getMessage(), jdom);
         }
@@ -58,7 +58,7 @@ public class JDOMEngine extends LocatedJDOMFactory
     @Override
     public Document read(InputSource source) throws DOMException, IOException {
         try {
-            return this.read(this.sax.build(source));
+            return this.read(null, this.sax.build(source));
         } catch (JDOMException jdom) {
             throw new DOMException(null, jdom.getMessage(), jdom);
         }
@@ -67,7 +67,7 @@ public class JDOMEngine extends LocatedJDOMFactory
     @Override
     public Document read(InputStream stream) throws DOMException, IOException {
         try {
-            return this.read(this.sax.build(stream));
+            return this.read(null, this.sax.build(stream));
         } catch (JDOMException jdom) {
             throw new DOMException(null, jdom.getMessage(), jdom);
         }
@@ -76,16 +76,16 @@ public class JDOMEngine extends LocatedJDOMFactory
     @Override
     public Document read(Reader reader) throws DOMException, IOException {
         try {
-            return this.read(this.sax.build(reader));
+            return this.read(null, this.sax.build(reader));
         } catch (JDOMException jdom) {
             throw new DOMException(null, jdom.getMessage(), jdom);
         }
     }
 
     @Override
-    public Document read(URL url) throws DOMException, IOException {
+    public Document read(URI uri) throws DOMException, IOException {
         try {
-            return this.read(this.sax.build(url));
+            return this.read(Paths.get(uri), this.sax.build(uri.toURL()));
         } catch (JDOMException jdom) {
             throw new DOMException(null, jdom.getMessage(), jdom);
         }
@@ -95,17 +95,17 @@ public class JDOMEngine extends LocatedJDOMFactory
         return this.sax;
     }
 
-    private Document read(org.jdom2.Document jdom) throws DOMException {
+    private Document read(Path path, org.jdom2.Document jdom) throws DOMException {
         if (!jdom.hasRootElement()) {
             throw new DOMException(null, "The root node is not defined.");
         }
 
-        return Document.create(this.convert(jdom.getRootElement()));
+        return Document.create(path, this.convert(jdom.getRootElement()));
     }
 
     private Node convert(org.jdom2.Element jdom) {
         List<org.jdom2.Element> children = jdom.getChildren();
-        Node node = Node.of(jdom.getName());
+        Node node = Node.of(this.convert(jdom.getNamespace()), jdom.getName());
 
         String maybeValue = jdom.getValue();
         if (children.isEmpty() && maybeValue != null) {
@@ -114,7 +114,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         } else {
             // children
             List<Node> parsed = new ArrayList<>();
-            for (Element child : children) {
+            for (org.jdom2.Element child : children) {
                 parsed.add(this.convert(child));
             }
 
@@ -122,8 +122,8 @@ public class JDOMEngine extends LocatedJDOMFactory
         }
 
         // properties
-        for (Attribute attribute : jdom.getAttributes()) {
-            node.setProperty(Property.of(attribute.getName(), attribute.getValue()));
+        for (org.jdom2.Attribute attribute : jdom.getAttributes()) {
+            node.setProperty(this.convert(attribute));
         }
 
         // location
@@ -141,27 +141,35 @@ public class JDOMEngine extends LocatedJDOMFactory
         return node;
     }
 
+    private Namespace convert(org.jdom2.Namespace namespace) {
+        return Namespace.of(namespace.getPrefix(), namespace.getURI());
+    }
+
+    private Property convert(org.jdom2.Attribute attribute) {
+        return Property.of(this.convert(attribute.getNamespace()), attribute.getName(), attribute.getValue());
+    }
+
     //
     // JDOMFactory
     //
 
     @Override
-    public Element element(int line, int col, String name, Namespace namespace) {
+    public org.jdom2.Element element(int line, int col, String name, org.jdom2.Namespace namespace) {
         return new JDOMElement(name, namespace);
     }
 
     @Override
-    public Element element(int line, int col, String name) {
+    public org.jdom2.Element element(int line, int col, String name) {
         return new JDOMElement(name);
     }
 
     @Override
-    public Element element(int line, int col, String name, String uri) {
+    public org.jdom2.Element element(int line, int col, String name, String uri) {
         return new JDOMElement(name, uri);
     }
 
     @Override
-    public Element element(int line, int col, String name, String prefix, String uri) {
+    public org.jdom2.Element element(int line, int col, String name, String prefix, String uri) {
         return new JDOMElement(name, prefix, uri);
     }
 
@@ -183,7 +191,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
             super.startElement(namespaceURI, localName, qName, atts);
 
-            Element element = this.getCurrentElement();
+            org.jdom2.Element element = this.getCurrentElement();
             if (element instanceof JDOMElement) {
                 ((JDOMElement) element).setStartCursor(this.createCursor(this.getDocumentLocator()));
             }
@@ -191,7 +199,7 @@ public class JDOMEngine extends LocatedJDOMFactory
 
         @Override
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-            Element element = this.getCurrentElement();
+            org.jdom2.Element element = this.getCurrentElement();
             if (element instanceof JDOMElement) {
                 ((JDOMElement) element).setEndCursor(this.createCursor(this.getDocumentLocator()));
             }

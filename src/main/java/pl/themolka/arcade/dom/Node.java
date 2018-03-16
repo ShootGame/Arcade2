@@ -11,15 +11,20 @@ import java.util.List;
 
 public class Node extends Element implements Locatable, Parent<Node>, Propertable {
     enum Type {
-        PRIMITIVE, TREE, UNKNOWN
+        /** Holds a primitive value. */
+        PRIMITIVE,
+        /** Holds children. */
+        TREE,
+        /** No primitive value given, no children attached. */
+        UNKNOWN
     }
 
-    protected Node(String name) {
-        super(name);
+    protected Node(Namespace namespace, String name) {
+        super(namespace, name);
     }
 
-    protected Node(String name, String value) {
-        super(name, value);
+    protected Node(Namespace namespace, String name, String value) {
+        super(namespace, name, value);
     }
 
     private final Properties properties = new Properties();
@@ -166,8 +171,8 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     }
 
     @Override
-    public void locate(Cursor start, Cursor end) {
-        this.location = Selection.between(start, end);
+    public void locate(Selection selection) {
+        this.location = selection;
     }
 
     @Override
@@ -327,6 +332,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
 
                 if (this.isPrimitive()) {
                     // Primitive types cannot hold children.
+                    this.setValue(toAppend.getValue());
                     continue;
                 }
 
@@ -372,6 +378,10 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
         return firstChild != null ? firstChild.getValue() : null;
     }
 
+    /**
+     * @deprecated Use {@link #isPrimitive()} or {@link #isTree()} instead.
+     */
+    @Deprecated
     public Type getType() {
         if (this.isPrimitive()) {
             return Type.PRIMITIVE;
@@ -415,7 +425,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     }
 
     public String toString(boolean properties, boolean children) {
-        String nodeName = this.getName();
+        String nodeName = this.getNamespace().format(this);
 
         // starting tag
         String starting = nodeName;
@@ -457,7 +467,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     // Helper Methods
     //
 
-    private void attach(AdoptableChild<Node> child) {
+    void attach(AdoptableChild<Node> child) {
         child.setParent(this);
     }
 
@@ -475,7 +485,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
         return ok;
     }
 
-    private String toStringTag(boolean closing, String tag) {
+    String toStringTag(boolean closing, String tag) {
         return (closing ? "</" : "<") + tag + ">";
     }
 
@@ -484,37 +494,37 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     //
 
     public static ImmutableNode empty() {
-        return ImmutableNode.of("EmptyNode");
+        return ImmutableNode.of(Namespace.getDefault(), "EmptyNode");
     }
 
-    public static Node of(String name) {
-        return new Node(name);
+    public static Node of(Namespace namespace, String name) {
+        return new Node(namespace, name);
     }
 
-    public static Node of(String name, List<Property> properties) {
-        Node node = of(name);
+    public static Node of(Namespace namespace, String name, List<Property> properties) {
+        Node node = of(namespace, name);
         node.setProperties(properties);
         return node;
     }
 
-    public static Node ofPrimitive(String name, String value) {
-        return new Node(name, value);
+    public static Node ofPrimitive(Namespace namespace, String name, String value) {
+        return new Node(namespace, name, value);
     }
 
-    public static Node ofPrimitive(String name, List<Property> properties, String value) {
-        Node node = ofPrimitive(name, value);
+    public static Node ofPrimitive(Namespace namespace, String name, List<Property> properties, String value) {
+        Node node = ofPrimitive(namespace, name, value);
         node.setProperties(properties);
         return node;
     }
 
-    public static Node ofChildren(String name, List<Node> children) {
-        Node node = of(name);
+    public static Node ofChildren(Namespace namespace, String name, List<Node> children) {
+        Node node = of(namespace, name);
         node.add(children);
         return node;
     }
 
-    public static Node ofChildren(String name, List<Property> properties, List<Node> children) {
-        Node node = ofChildren(name, children);
+    public static Node ofChildren(Namespace namespace, String name, List<Property> properties, List<Node> children) {
+        Node node = ofChildren(namespace, name, children);
         node.setProperties(properties);
         return node;
     }

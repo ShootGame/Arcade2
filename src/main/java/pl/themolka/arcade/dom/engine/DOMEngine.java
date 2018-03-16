@@ -9,14 +9,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URL;
+import java.net.URI;
 
 /**
  * Something that can read DOM content and convert it into a {@link Document}.
  */
 public interface DOMEngine {
     default Document read(File file) throws DOMException, IOException {
-        return this.read(file.getAbsoluteFile().toURI().toURL());
+        return this.read(file.getAbsoluteFile().toURI());
     }
 
     default Document read(InputStream stream) throws DOMException, IOException {
@@ -29,7 +29,7 @@ public interface DOMEngine {
         return this.read(new StringReader(dom));
     }
 
-    default Document read(URL url) throws DOMException, IOException {
-        return this.read(url.openStream());
+    default Document read(URI uri) throws DOMException, IOException {
+        return this.read(uri.toURL().openStream());
     }
 }

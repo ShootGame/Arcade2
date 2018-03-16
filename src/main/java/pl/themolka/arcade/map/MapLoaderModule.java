@@ -2,6 +2,7 @@ package pl.themolka.arcade.map;
 
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.event.Priority;
@@ -106,7 +107,7 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
     }
 
     private OfflineMap readMapDirectory(File worldDirectory) throws DOMException, IOException {
-        File file = new File(worldDirectory, "map.xml");
+        File file = new File(worldDirectory, MapManifest.FILENAME);
         if (!file.exists()) {
             throw new FileNotFoundException("Missing " + file.getName());
         }
@@ -117,7 +118,10 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
             throw new RuntimeException("No " + OfflineMap.class.getSimpleName() + " parser installed");
         }
 
-        OfflineMap map = parser.parse(engine.read(file)).orFail();
+        Document document = engine.read(file);
+        this.getPlugin().getDomPreprocessor().preprocess(document);
+
+        OfflineMap map = parser.parse(document).orFail();
         map.setDirectory(worldDirectory);
         map.setSettings(file);
         return map;

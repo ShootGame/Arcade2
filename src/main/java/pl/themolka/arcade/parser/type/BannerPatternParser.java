@@ -1,4 +1,4 @@
-package pl.themolka.arcade.item;
+package pl.themolka.arcade.parser.type;
 
 import org.bukkit.DyeColor;
 import org.bukkit.block.banner.Pattern;

@@ -5,12 +5,12 @@ import java.util.Comparator;
 import java.util.List;
 
 public final class ImmutableNode extends Node {
-    protected ImmutableNode(String name) {
-        super(name);
+    protected ImmutableNode(Namespace namespace, String name) {
+        super(namespace, name);
     }
 
-    protected ImmutableNode(String name, String value) {
-        super(name, value);
+    protected ImmutableNode(Namespace namespace, String name, String value) {
+        super(namespace, name, value);
     }
 
     @Override
@@ -43,6 +43,10 @@ public final class ImmutableNode extends Node {
 
     @Override
     public void locate(Cursor start, Cursor end) {
+    }
+
+    @Override
+    public void locate(Selection selection) {
     }
 
     @Override
@@ -124,34 +128,34 @@ public final class ImmutableNode extends Node {
     // Instancing
     //
 
-    public static ImmutableNode of(String name) {
-        return new ImmutableNode(name);
+    public static ImmutableNode of(Namespace namespace, String name) {
+        return new ImmutableNode(namespace, name);
     }
 
-    public static ImmutableNode of(String name, List<Property> properties) {
-        ImmutableNode node = of(name);
+    public static ImmutableNode of(Namespace namespace, String name, List<Property> properties) {
+        ImmutableNode node = of(namespace, name);
         node.setProperties(properties);
         return node;
     }
 
-    public static ImmutableNode ofPrimitive(String name, String value) {
-        return new ImmutableNode(name, value);
+    public static ImmutableNode ofPrimitive(Namespace namespace, String name, String value) {
+        return new ImmutableNode(namespace, name, value);
     }
 
-    public static ImmutableNode ofPrimitive(String name, List<Property> properties, String value) {
-        ImmutableNode node = ofPrimitive(name, value);
+    public static ImmutableNode ofPrimitive(Namespace namespace, String name, List<Property> properties, String value) {
+        ImmutableNode node = ofPrimitive(namespace, name, value);
         node.setProperties(properties);
         return node;
     }
 
-    public static ImmutableNode ofChildren(String name, List<Node> children) {
-        ImmutableNode node = of(name);
+    public static ImmutableNode ofChildren(Namespace namespace, String name, List<Node> children) {
+        ImmutableNode node = of(namespace, name);
         node.add(children);
         return node;
     }
 
-    public static ImmutableNode ofChildren(String name, List<Property> properties, List<Node> children) {
-        ImmutableNode node = ofChildren(name, children);
+    public static ImmutableNode ofChildren(Namespace namespace, String name, List<Property> properties, List<Node> children) {
+        ImmutableNode node = ofChildren(namespace, name, children);
         node.setProperties(properties);
         return node;
     }

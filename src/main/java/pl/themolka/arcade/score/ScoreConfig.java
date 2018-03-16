@@ -87,10 +87,10 @@ public class ScoreConfig extends SimpleConfig<ScoreConfig> {
     public static ScoreConfig parse(Element xml, ScoreConfig def) {
         String id = xml.getAttributeValue("id");
         String name = XMLParser.parseMessage(xml.getAttributeValue("name"));
-        Double initialScore = XMLParser.parseDouble(xml.getAttributeValue("initial-score"));
-        Double killReward = XMLParser.parseDouble(xml.getAttributeValue("kill-reward"));
-        Double deathLoss = XMLParser.parseDouble(xml.getAttributeValue("death-loss"));
-        Double limit = XMLParser.parseDouble(xml.getAttributeValue("limit"));
+        Double initialScore = XMLParser.parseDouble(xml.getAttributeValue("initial-score"), Score.ZERO);
+        Double killReward = XMLParser.parseDouble(xml.getAttributeValue("kill-reward"), Score.ZERO);
+        Double deathLoss = XMLParser.parseDouble(xml.getAttributeValue("death-loss"), Score.ZERO);
+        Double limit = XMLParser.parseDouble(xml.getAttributeValue("limit"), NULL_LIMIT);
 
         return new ScoreConfig(id, def, name, initialScore, killReward, deathLoss, limit);
     }

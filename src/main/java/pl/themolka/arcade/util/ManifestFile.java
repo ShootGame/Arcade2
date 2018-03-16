@@ -1,7 +1,6 @@
 package pl.themolka.arcade.util;
 
 import pl.themolka.arcade.dom.Document;
-import pl.themolka.arcade.dom.ImmutableNode;
 import pl.themolka.arcade.dom.Node;
 
 public class ManifestFile {
@@ -15,7 +14,7 @@ public class ManifestFile {
     public static final String FIELD_MAIN_CLASS = "mainClass";
     public static final String FIELD_GIT_COMMIT = "gitCommit";
 
-    private final Node root = ImmutableNode.of("root");
+    private final Node emptyRoot = Node.empty();
     private final Document document;
 
     public ManifestFile(Document document) {
@@ -23,7 +22,7 @@ public class ManifestFile {
     }
 
     public Node getContent() {
-        return this.document.hasRoot() ? this.document.getRoot() : this.root;
+        return this.document.hasRoot() ? this.document.getRoot() : this.emptyRoot;
     }
 
     public String getFieldName() {

@@ -1,5 +1,7 @@
 package pl.themolka.arcade.gamerule;
 
+import java.util.Objects;
+
 public class GameRule {
     private final GameRuleType type;
     private String value;
@@ -9,7 +11,7 @@ public class GameRule {
     }
 
     public GameRule(GameRuleType type, String value) {
-        this.type = type;
+        this.type = Objects.requireNonNull(type, "type cannot be null");
         this.value = value;
     }
 

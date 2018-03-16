@@ -63,12 +63,22 @@ public class NegativeRegion extends AbstractRegion {
         return this.region;
     }
 
-    interface Config extends AbstractRegion.Config<NegativeRegion> {
+    public interface Config extends AbstractRegion.Config<NegativeRegion> {
         Ref<UnionRegion.Config> region();
 
         @Override
         default NegativeRegion create(Game game) {
-            return new NegativeRegion(this.id(), this.region().get().create(game));
+            UnionRegion.Config region = this.region().getIfPresent();
+            if (region == null) {
+                return null;
+            }
+
+            UnionRegion union = region.create(game);
+            if (union == null) {
+                return null;
+            }
+
+            return new NegativeRegion(this.id(), union);
         }
     }
 }

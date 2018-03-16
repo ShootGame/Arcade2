@@ -19,10 +19,8 @@
     <!-- This overrides Bukkit's `world-container` in the `bukkit.yml` file. -->
     <world-container>./worlds</world-container>
 
-    <!-- Plugin properties -->
-    <properties>
-        <XMLPreProcessor.include.global>./maps/global-xml</XMLPreProcessor.include.global>
-    </properties>
+    <!-- Directory where global configuration files will be stored -->
+    <include-repository>./plugins/${project.name}/include</include-repository>
 
     <!-- Default map queue -->
     <queue restart-after="15">

@@ -17,7 +17,8 @@ public class ChestplateContent extends BaseArmorContent {
         inventory.setChestplate(this.getResult());
     }
 
-    public static class Parser implements KitContentParser<ChestplateContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<ChestplateContent> {
         @Override
         public ChestplateContent parse(Element xml) throws DataConversionException {
             return new ChestplateContent(XMLItemStack.parse(xml));

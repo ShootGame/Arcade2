@@ -4,6 +4,7 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class XMLKit extends XMLParser {
@@ -27,7 +28,7 @@ public class XMLKit extends XMLParser {
 
         Attribute inheritAttribute = xml.getAttribute("inherit");
         if (inheritAttribute != null) {
-            for (String inherit : parseArray(inheritAttribute.getValue())) {
+            for (String inherit : ParserUtils.array(inheritAttribute.getValue())) {
                 kit.addInherit(inherit);
             }
         }

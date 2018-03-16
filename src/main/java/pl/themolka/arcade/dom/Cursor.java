@@ -10,8 +10,8 @@ public class Cursor {
     private final int column;
 
     public Cursor(int line, int column) {
-        this.line = line < 0 ? 0 : line;
-        this.column = column < 0 ? 0 : column;
+        this.line = Math.max(1, line);
+        this.column = Math.max(1, column);
     }
 
     @Override

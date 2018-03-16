@@ -1,29 +1,29 @@
 package pl.themolka.arcade.dom;
 
 public class DOMException extends Exception {
-    private final Element element;
+    private final Content content;
 
-    public DOMException(Element element) {
-        this.element = element;
+    public DOMException(Content content) {
+        this.content = content;
     }
 
-    public DOMException(Element element, String message) {
+    public DOMException(Content content, String message) {
         super(message);
-        this.element = element;
+        this.content = content;
     }
 
-    public DOMException(Element element, String message, Throwable cause) {
+    public DOMException(Content content, String message, Throwable cause) {
         super(message, cause);
-        this.element = element;
+        this.content = content;
     }
 
-    public DOMException(Element element, Throwable cause) {
+    public DOMException(Content content, Throwable cause) {
         super(cause);
-        this.element = element;
+        this.content = content;
     }
 
-    public Element getElement() {
-        return this.element;
+    public Content getContent() {
+        return this.content;
     }
 
     @Override
@@ -37,23 +37,20 @@ public class DOMException extends Exception {
             builder.append("Unknown error");
         }
 
-        Element element = this.getElement();
-        if (element != null) {
-            if (element.isSelectable()) {
-                Selection selection = element.select();
+        if (this.content != null) {
+            if (this.content.isSelectable()) {
+                Selection selection = this.content.select();
                 if (selection != null) {
-                    builder.append(", at line ").append(selection);
+                    builder.append(" at line ").append(selection);
                 }
             }
 
-            String near = element.toShortString();
+            String near = this.content.toShortString();
             if (near != null) {
                 builder.append(" in '").append(near).append("'");
-            } else {
-                builder.append(".");
             }
         }
 
-        return builder.toString();
+        return builder.append(".").toString();
     }
 }

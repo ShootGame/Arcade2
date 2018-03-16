@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import pl.themolka.arcade.item.meta.XMLItemMeta;
 import pl.themolka.arcade.xml.XMLMaterial;
 import pl.themolka.arcade.xml.XMLParser;
 
@@ -150,6 +151,6 @@ public class XMLItemStack extends XMLParser {
 
     private static boolean parseUnbreakable(Element xml) {
         Element element = xml.getChild("unbreakable");
-        return element != null && XMLParser.parseBoolean(element.getValue());
+        return element != null && XMLParser.parseBoolean(element.getValue(), false);
     }
 }

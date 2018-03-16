@@ -16,6 +16,10 @@ import java.util.List;
  */
 @Deprecated
 public class XMLRegion extends XMLParser {
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Auto}
+     */
+    @Deprecated
     public static Region parse(Game game, Element xml) {
         try {
             switch (xml.getName().toLowerCase()) {
@@ -33,12 +37,20 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Cuboid}
+     */
+    @Deprecated
     public static CuboidRegion parseCuboid(Game game, Element xml) throws NumberFormatException {
         Vector min = parseVector(game, "min", Region.MIN_HEIGHT, xml);
         Vector max = parseVector(game, "max", Region.MAX_HEIGHT, xml);
         return new CuboidRegion(game, parseId(xml), min, max);
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Cylinder}
+     */
+    @Deprecated
     public static CylinderRegion parseCylinder(Game game, Element xml) throws NumberFormatException {
         Vector center = parseVector(game, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
@@ -52,10 +64,18 @@ public class XMLRegion extends XMLParser {
         return new CylinderRegion(game, parseId(xml), center, radius, height);
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Global}
+     */
+    @Deprecated
     public static GlobalRegion parseGlobal(Game game) {
         return new GlobalRegion(game);
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Negative}
+     */
+    @Deprecated
     public static NegativeRegion parseNegative(Game game, Element xml) throws NumberFormatException {
         try {
             UnionRegion region = parseUnion(game, xml);
@@ -68,17 +88,29 @@ public class XMLRegion extends XMLParser {
         return null;
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Point}
+     */
+    @Deprecated
     public static PointRegion parsePoint(Game game, Element xml) throws NumberFormatException {
         Vector point = parseVector(game, null, Region.MIN_HEIGHT, xml);
         return new PointRegion(game, parseId(xml), point);
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Sphere}
+     */
+    @Deprecated
     public static SphereRegion parseSphere(Game game, Element xml) throws NumberFormatException {
         Vector center = parseVector(game, null, Region.MIN_HEIGHT, xml);
         double radius = Double.parseDouble(xml.getAttributeValue("radius"));
         return new SphereRegion(game, parseId(xml), center, radius);
     }
 
+    /**
+     * @deprecated {@link pl.themolka.arcade.region.RegionParser.Union}
+     */
+    @Deprecated
     public static UnionRegion parseUnion(Game game, Element xml) throws NumberFormatException {
         List<Region> regions = new ArrayList<>();
         if (xml != null) {

@@ -1,4 +1,4 @@
-package pl.themolka.arcade.item;
+package pl.themolka.arcade.item.meta;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;

@@ -57,7 +57,8 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack> implements
         this.slot = slot;
     }
 
-    public static class Parser implements KitContentParser<ItemStackContent> {
+    @KitContentLegacyParser
+    public static class LegacyParser implements KitContentParser<ItemStackContent> {
         @Override
         public ItemStackContent parse(Element xml) throws DataConversionException {
             ItemStackContent content = new ItemStackContent(XMLItemStack.parse(xml));

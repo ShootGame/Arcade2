@@ -19,4 +19,9 @@ public class ParserException extends DOMException {
     public ParserException(Element element, Throwable cause) {
         super(element, cause);
     }
+
+    @Override
+    public Element getContent() {
+        return (Element) super.getContent();
+    }
 }

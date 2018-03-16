@@ -5,15 +5,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameModuleConfig;
 
 public class HungerGame extends GameModule {
-    private Filter filter = Filters.undefined();
+    private Filter filter;
+
+    @Deprecated
+    public HungerGame() {
+        this.filter = Filters.undefined();
+    }
+
+    protected HungerGame(Config config) {
+        this.filter = Filters.secure(config.filter().getIfPresent());
+    }
 
     @Override
     public void onEnable() {
@@ -39,6 +51,15 @@ public class HungerGame extends GameModule {
         if (entity instanceof Player && this.cannotDeplete(this.getGame().getPlayer((Player) entity))) {
             event.setCancelled(true);
             event.setFoodLevel(((Player) entity).getFoodLevel());
+        }
+    }
+
+    public interface Config extends IGameModuleConfig<HungerGame> {
+        default Ref<Filter> filter() { return Ref.ofProvided(Filters.undefined()); }
+
+        @Override
+        default HungerGame create(Game game) {
+            return new HungerGame(this);
         }
     }
 }

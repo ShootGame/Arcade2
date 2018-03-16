@@ -197,14 +197,22 @@ public class UnionRegion extends AbstractRegion {
         return builder.append("]").toString();
     }
 
-    interface Config extends AbstractRegion.Config<UnionRegion> {
+    public interface Config extends AbstractRegion.Config<UnionRegion> {
         List<Ref<AbstractRegion.Config<AbstractRegion>>> regions();
 
         @Override
         default UnionRegion create(Game game) {
             List<Region> regions = new ArrayList<>();
             for (Ref<AbstractRegion.Config<AbstractRegion>> region : this.regions()) {
-                regions.add(region.get().create(game));
+                AbstractRegion.Config<?> config = region.getIfPresent();
+                if (config == null) {
+                    continue;
+                }
+
+                AbstractRegion value = config.create(game);
+                if (value != null) {
+                    regions.add(value);
+                }
             }
             Region[] regionsArray = regions.toArray(new Region[regions.size()]);
 
