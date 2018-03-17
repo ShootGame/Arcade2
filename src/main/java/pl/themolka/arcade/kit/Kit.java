@@ -2,6 +2,7 @@ package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.util.Applicable;
 import pl.themolka.arcade.util.StringId;
 

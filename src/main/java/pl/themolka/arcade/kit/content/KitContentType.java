@@ -1,9 +1,13 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
-public enum KitContentType implements KitContentParser<KitContent<?>> {
+/**
+ * @deprecated {@link RootContentParser}
+ */
+@Deprecated
+public enum KitContentType implements LegacyKitContentParser<KitContent<?>> {
     BOOTS("boots") {
         @Override
         public BootsContent parse(Element xml) throws DataConversionException {

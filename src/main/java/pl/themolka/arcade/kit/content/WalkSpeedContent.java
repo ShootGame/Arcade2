@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -50,8 +50,7 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<WalkSpeedContent> {
+    public static class LegacyParser implements LegacyKitContentParser<WalkSpeedContent> {
         @Override
         public WalkSpeedContent parse(Element xml) throws DataConversionException {
             Attribute reset = xml.getAttribute("reset");

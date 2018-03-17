@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -49,8 +49,7 @@ public class FoodLevelContent implements RemovableKitContent<Integer> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<FoodLevelContent> {
+    public static class LegacyParser implements LegacyKitContentParser<FoodLevelContent> {
         @Override
         public FoodLevelContent parse(Element xml) throws DataConversionException {
             Attribute reset = xml.getAttribute("reset");

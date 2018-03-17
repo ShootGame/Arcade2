@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.entity.Player;
 import org.jdom2.Attribute;
@@ -50,8 +50,7 @@ public class FlyContent implements RemovableKitContent<Boolean> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<FlyContent> {
+    public static class LegacyParser implements LegacyKitContentParser<FlyContent> {
         @Override
         public FlyContent parse(Element xml) throws DataConversionException {
             Attribute reset = xml.getAttribute("reset");

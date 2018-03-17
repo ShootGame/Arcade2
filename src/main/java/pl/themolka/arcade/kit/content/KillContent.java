@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -20,8 +20,7 @@ public class KillContent implements BaseVoidKitContent {
         player.kill();
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<KillContent> {
+    public static class LegacyParser implements LegacyKitContentParser<KillContent> {
         @Override
         public KillContent parse(Element xml) throws DataConversionException {
             return new KillContent();

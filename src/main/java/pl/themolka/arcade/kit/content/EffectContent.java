@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.potion.PotionEffect;
 import org.jdom2.DataConversionException;
@@ -36,8 +36,7 @@ public class EffectContent implements KitContent<PotionEffect> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<EffectContent> {
+    public static class LegacyParser implements LegacyKitContentParser<EffectContent> {
         @Override
         public EffectContent parse(Element xml) throws DataConversionException {
             return new EffectContent(XMLPotionEffect.parse(xml));

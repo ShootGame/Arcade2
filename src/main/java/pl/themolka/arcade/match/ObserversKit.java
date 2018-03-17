@@ -8,11 +8,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.item.ItemStackBuilder;
-import pl.themolka.arcade.kit.ClearInventoryContent;
-import pl.themolka.arcade.kit.EffectContent;
-import pl.themolka.arcade.kit.GameModeContent;
-import pl.themolka.arcade.kit.HeldSlotContent;
-import pl.themolka.arcade.kit.ItemStackContent;
+import pl.themolka.arcade.kit.content.ClearInventoryContent;
+import pl.themolka.arcade.kit.content.EffectContent;
+import pl.themolka.arcade.kit.content.GameModeContent;
+import pl.themolka.arcade.kit.content.HeldSlotContent;
+import pl.themolka.arcade.kit.content.ItemStackContent;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.potion.PotionEffectBuilder;
 

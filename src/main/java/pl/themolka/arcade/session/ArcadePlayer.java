@@ -17,8 +17,8 @@ import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.HealthContent;
-import pl.themolka.arcade.kit.MaxHealthContent;
+import pl.themolka.arcade.kit.content.HealthContent;
+import pl.themolka.arcade.kit.content.MaxHealthContent;
 import pl.themolka.arcade.time.Time;
 
 import java.lang.ref.Reference;

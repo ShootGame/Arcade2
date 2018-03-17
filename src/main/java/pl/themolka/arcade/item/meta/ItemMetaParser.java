@@ -12,10 +12,11 @@ import pl.themolka.arcade.parser.Produces;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 // No registration - no @Produces production.
 public class ItemMetaParser implements InstallableParser {
-    private static final ImmutableSet<Class<? extends Nested>> types = ImmutableSet.<Class<? extends Nested>>builder()
+    private static final Set<Class<? extends Nested>> types = ImmutableSet.<Class<? extends Nested>>builder()
             .add(BannerMetaParser.class)
             .add(BookMetaParser.class)
             .add(EnchantmentStorageMetaParser.class)

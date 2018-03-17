@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -49,8 +49,7 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<MaxHealthContent> {
+    public static class LegacyParser implements LegacyKitContentParser<MaxHealthContent> {
         @Override
         public MaxHealthContent parse(Element xml) throws DataConversionException {
             Attribute attribute = xml.getAttribute("reset");

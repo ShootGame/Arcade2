@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.PlayerInventory;
 import org.jdom2.DataConversionException;
@@ -31,8 +31,7 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
         inventory.setHeldItemSlot(this.getResult());
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<HeldSlotContent> {
+    public static class LegacyParser implements LegacyKitContentParser<HeldSlotContent> {
         @Override
         public HeldSlotContent parse(Element xml) throws DataConversionException {
             int slot = XMLParser.parseInt(xml.getValue(), -1);

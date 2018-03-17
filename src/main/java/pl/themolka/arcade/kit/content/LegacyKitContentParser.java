@@ -1,12 +1,12 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 /**
- * @deprecated Uses JDOM. Must be rewrited.
+ * @deprecated {@link BaseContentParser}
  */
 @Deprecated
-public interface KitContentParser<T> {
+public interface LegacyKitContentParser<T> {
     T parse(Element xml) throws DataConversionException;
 }

@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -43,8 +43,7 @@ public class SaturationContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<SaturationContent> {
+    public static class LegacyParser implements LegacyKitContentParser<SaturationContent> {
         @Override
         public SaturationContent parse(Element xml) throws DataConversionException {
             Attribute attribute = xml.getAttribute("reset");

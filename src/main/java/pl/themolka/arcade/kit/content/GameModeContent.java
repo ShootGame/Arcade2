@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.GameMode;
 import org.jdom2.DataConversionException;
@@ -36,8 +36,7 @@ public class GameModeContent implements KitContent<GameMode>  {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<GameModeContent> {
+    public static class LegacyParser implements LegacyKitContentParser<GameModeContent> {
         @Override
         public GameModeContent parse(Element xml) throws DataConversionException {
             return new GameModeContent(XMLGameMode.parse(xml.getValue()));

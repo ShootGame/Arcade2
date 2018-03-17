@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.game.GamePlayer;

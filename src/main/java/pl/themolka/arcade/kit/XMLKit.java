@@ -4,6 +4,8 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.kit.content.KitContent;
+import pl.themolka.arcade.kit.content.KitContentType;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.xml.XMLParser;
 

@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 public interface BaseVoidKitContent extends KitContent<Void> {
     @Override

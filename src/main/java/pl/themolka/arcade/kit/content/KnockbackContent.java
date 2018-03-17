@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -43,8 +43,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<KnockbackContent> {
+    public static class LegacyParser implements LegacyKitContentParser<KnockbackContent> {
         @Override
         public KnockbackContent parse(Element xml) throws DataConversionException {
             Attribute reset = xml.getAttribute("reset");

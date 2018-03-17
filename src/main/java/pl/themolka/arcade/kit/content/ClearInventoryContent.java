@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -35,8 +35,7 @@ public class ClearInventoryContent implements KitContent<Boolean> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<ClearInventoryContent> {
+    public static class LegacyParser implements LegacyKitContentParser<ClearInventoryContent> {
         @Override
         public ClearInventoryContent parse(Element xml) throws DataConversionException {
             boolean armor = XMLParser.parseBoolean(xml.getAttributeValue("armor"), false);

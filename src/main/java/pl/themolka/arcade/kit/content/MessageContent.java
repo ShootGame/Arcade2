@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -47,8 +47,7 @@ public class MessageContent implements KitContent<String> {
         return this.channel;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<MessageContent> {
+    public static class LegacyParser implements LegacyKitContentParser<MessageContent> {
         @Override
         public MessageContent parse(Element xml) throws DataConversionException {
             return new MessageContent(XMLParser.parseMessage(xml.getValue()), this.parseChannel(xml));

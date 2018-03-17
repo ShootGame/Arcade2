@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -47,8 +47,7 @@ public class LivesContent implements RemovableKitContent<Integer> {
         return this.result;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<LivesContent> {
+    public static class LegacyParser implements LegacyKitContentParser<LivesContent> {
         @Override
         public LivesContent parse(Element xml) throws DataConversionException {
             try {

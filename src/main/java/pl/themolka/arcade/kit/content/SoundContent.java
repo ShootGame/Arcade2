@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -75,8 +75,7 @@ public class SoundContent implements KitContent<Sound> {
         this.volume = volume;
     }
 
-    @KitContentLegacyParser
-    public static class LegacyParser implements KitContentParser<SoundContent> {
+    public static class LegacyParser implements LegacyKitContentParser<SoundContent> {
         @Override
         public SoundContent parse(Element xml) throws DataConversionException {
             Sound sound = XMLSound.parse(xml.getValue());

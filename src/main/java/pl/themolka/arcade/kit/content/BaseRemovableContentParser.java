@@ -1,4 +1,4 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;

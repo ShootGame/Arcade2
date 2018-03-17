@@ -1,6 +1,7 @@
-package pl.themolka.arcade.kit;
+package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.Removable;
 
 public interface RemovableKitContent<T> extends KitContent<T>, Removable {
     @Override
