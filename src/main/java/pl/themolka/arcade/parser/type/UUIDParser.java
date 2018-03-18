@@ -35,7 +35,7 @@ public class UUIDParser extends ElementParser<UUID> {
                 throw this.fail(element, name, value, "Unknown UUID format");
             }
         } catch (IllegalArgumentException ex) {
-            throw this.fail(element, name, value, "Illegal UUID code", ex);
+            throw this.fail(element, name, value, "Illegal UUID syntax", ex);
         }
 
         return ParserResult.fine(element, name, value, result);

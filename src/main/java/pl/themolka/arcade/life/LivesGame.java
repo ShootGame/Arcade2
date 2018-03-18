@@ -31,21 +31,21 @@ public class LivesGame extends GameModule {
     private Match match;
 
     private final int lives;
-    private final boolean broadcast;
+    private final boolean announce;
     private final Sound sound;
 
     private final Map<GamePlayer, Integer> remaining = new WeakHashMap<>();
 
     @Deprecated
-    public LivesGame(int lives, boolean broadcast, Sound sound) {
+    public LivesGame(int lives, boolean announce, Sound sound) {
         this.lives = lives;
-        this.broadcast = broadcast;
+        this.announce = announce;
         this.sound = sound;
     }
 
     protected LivesGame(Config config) {
         this.lives = config.lives();
-        this.broadcast = config.broadcast();
+        this.announce = config.announce();
         this.sound = config.sound();
     }
 
@@ -56,8 +56,8 @@ public class LivesGame extends GameModule {
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
-        if (this.broadcast()) {
-            register.add(new BroadcastListener());
+        if (this.announce()) {
+            register.add(new AnnounceListener());
         }
 
         if (this.sound() != null) {
@@ -71,8 +71,8 @@ public class LivesGame extends GameModule {
         return this.lives;
     }
 
-    public boolean broadcast() {
-        return this.broadcast;
+    public boolean announce() {
+        return this.announce;
     }
 
     public Sound sound() {
@@ -149,7 +149,7 @@ public class LivesGame extends GameModule {
     // Broadcasts
     //
 
-    private class BroadcastListener {
+    private class AnnounceListener {
         @Handler(priority = Priority.LAST)
         public void eliminate(PlayerEliminateEvent event) {
             // This listener is called BEFORE the actual elimination logic.
@@ -199,7 +199,7 @@ public class LivesGame extends GameModule {
 
     public interface Config extends IGameModuleConfig<LivesGame> {
         default int lives() { return 1; }
-        default boolean broadcast() { return true; }
+        default boolean announce() { return true; }
         default Sound sound() { return DEFAULT_SOUND; }
 
         @Override

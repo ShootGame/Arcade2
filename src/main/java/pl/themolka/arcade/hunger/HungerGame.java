@@ -55,7 +55,7 @@ public class HungerGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<HungerGame> {
-        default Ref<Filter> filter() { return Ref.ofProvided(Filters.undefined()); }
+        default Ref<Filter> filter() { return Ref.empty(); }
 
         @Override
         default HungerGame create(Game game) {

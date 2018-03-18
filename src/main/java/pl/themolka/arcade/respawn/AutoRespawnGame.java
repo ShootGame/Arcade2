@@ -42,7 +42,7 @@ public class AutoRespawnGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<AutoRespawnGame> {
-        default Ref<Filter> filter() { return Ref.ofProvided(Filters.undefined()); }
+        default Ref<Filter> filter() { return Ref.empty(); }
         default Time cooldown() { return PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN; }
 
         @Override

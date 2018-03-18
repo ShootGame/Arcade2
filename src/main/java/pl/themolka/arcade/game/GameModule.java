@@ -155,7 +155,7 @@ public class GameModule extends SimpleGameListener
     }
 
     public boolean isEnabled() {
-        return this.enabled;
+        return this.isLoaded() && this.enabled;
     }
 
     public boolean isLoaded() {

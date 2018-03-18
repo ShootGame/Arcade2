@@ -29,10 +29,6 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         this.result = result;
     }
 
-    public FlySpeedContent(int result) {
-        this((float) result);
-    }
-
     @Override
     public boolean isApplicable(GamePlayer player) {
         return KitContent.testBukkit(player);
@@ -62,7 +58,7 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
             }
 
             try {
-                return new FlySpeedContent(Integer.parseInt(xml.getValue()));
+                return new FlySpeedContent(Float.parseFloat(xml.getValue()));
             } catch (NumberFormatException ex) {
                 return null;
             }

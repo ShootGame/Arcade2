@@ -16,15 +16,8 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.xml.XMLParser;
 
-public class ItemStackContent extends BaseInventoryContent<ItemStack> {
-    enum Mode {
-        GIVE, TAKE;
-
-        static Mode fromBoolean(boolean mode) {
-            return mode ? GIVE : TAKE;
-        }
-    }
-
+public class ItemStackContent extends BaseInventoryContent<ItemStack>
+                              implements BaseModeContent {
     // armor
     public static final int SLOT_HELMET = 103;
     public static final int SLOT_CHESTPLATE = 102;
@@ -57,12 +50,18 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack> {
         }
     }
 
-    public int getSlot() {
-        return this.slot;
-    }
-
+    @Override
     public boolean give() {
         return this.mode.equals(Mode.GIVE);
+    }
+
+    @Override
+    public boolean take() {
+        return this.mode.equals(Mode.TAKE);
+    }
+
+    public int getSlot() {
+        return this.slot;
     }
 
     public boolean hasSlot() {
@@ -73,12 +72,9 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack> {
         this.setSlot(null);
     }
 
-    public void setSlot(Integer slot) {
+    public ItemStackContent setSlot(Integer slot) {
         this.slot = slot;
-    }
-
-    public boolean take() {
-        return this.mode.equals(Mode.TAKE);
+        return this;
     }
 
     public static class LegacyParser implements LegacyKitContentParser<ItemStackContent> {
@@ -100,22 +96,21 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack> {
     public static class ContentParser extends BaseContentParser<ItemStackContent>
                                       implements InstallableParser {
         private Parser<ItemStack> itemStackParser;
-        private Parser<Boolean> modeParser;
+        private Parser<Mode> modeParser;
         private Parser<Integer> slotParser;
 
         @Override
         public void install(ParserContext context) {
             this.itemStackParser = context.type(ItemStack.class);
-            this.modeParser = context.type(Boolean.class);
+            this.modeParser = context.type(Mode.class);
             this.slotParser = context.type(Integer.class);
         }
 
         @Override
         protected ParserResult<ItemStackContent> parseNode(Node node, String name, String value) throws ParserException {
             ItemStack itemStack = this.itemStackParser.parse(node).orFail();
-            Mode mode = Mode.fromBoolean(this.modeParser.parse(node.property("take", "remove")).orDefault(false));
 
-            ItemStackContent content = new ItemStackContent(itemStack, mode);
+            ItemStackContent content = new ItemStackContent(itemStack, this.modeParser.parse(node).orFail());
             content.setSlot(this.slotParser.parse(node.property("slot")).orDefaultNull());
             return ParserResult.fine(node, name, value, content);
         }

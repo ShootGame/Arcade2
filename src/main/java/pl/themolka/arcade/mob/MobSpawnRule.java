@@ -3,21 +3,31 @@ package pl.themolka.arcade.mob;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 
 public class MobSpawnRule implements Cancelable {
     private boolean cancel;
     private final Filter filter;
 
+    @Deprecated
     public MobSpawnRule(Filter filter) {
         this.filter = Filters.secure(filter);
     }
 
+    @Deprecated
     public MobSpawnRule(Filter filter, boolean cancel) {
         this(filter);
         this.cancel = cancel;
+    }
+
+    protected MobSpawnRule(Config config) {
+        this.filter = Filters.secure(config.filter().getIfPresent());
+        this.cancel = config.cancel();
     }
 
     @Override
@@ -36,5 +46,15 @@ public class MobSpawnRule implements Cancelable {
 
     public boolean matches(Entity entity, CreatureSpawnEvent.SpawnReason reason, Location location) {
         return this.getFilter().filter(entity, reason, location).isAllowed();
+    }
+
+    public interface Config extends IGameConfig<MobSpawnRule> {
+        default Ref<Filter> filter() { return Ref.empty(); }
+        default boolean cancel() { return false; }
+
+        @Override
+        default MobSpawnRule create(Game game) {
+            return new MobSpawnRule(this);
+        }
     }
 }

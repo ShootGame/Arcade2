@@ -7,6 +7,8 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
+import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.util.StringId;
 import pl.themolka.arcade.util.Version;
 
@@ -78,6 +80,10 @@ public class Module<T> extends SimpleModuleListener
      */
     @Deprecated
     public T buildGameModule(Element xml, Game game) throws JDOMException {
+        return null;
+    }
+
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) {
         return null;
     }
 

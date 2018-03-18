@@ -7,6 +7,7 @@ import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
 
@@ -133,14 +134,17 @@ public class Match implements DynamicWinnable, GameHolder {
             player.setParticipating(false);
             player.reset();
 
-            Player bukkit = player.getBukkit();
-            bukkit.getInventory().setItem(0, ObserversKit.NAVIGATION);
-            bukkit.getInventory().setHeldItemSlot(0);
-            bukkit.setGameMode(ObserversKit.GAME_MODE);
-            bukkit.setAllowFlight(true);
-
-            bukkit.addPotionEffect(ObserversKit.SPEED, true);
-            bukkit.addPotionEffect(ObserversKit.NIGHT_VISION, true);
+            for (KitContent<?> content : new KitContent[] {
+                    ObserversKit.GAME_MODE,
+                    ObserversKit.NAVIGATION_ITEM,
+                    ObserversKit.HELD_SLOT,
+                    ObserversKit.NIGHT_VISION_EFFECT,
+                    ObserversKit.FLY,
+                    ObserversKit.FLY_SPEED,
+                    ObserversKit.WALK_SPEED
+            }) {
+                content.applyIfApplicable(player);
+            }
         }
 
         this.plugin.getEventBus().publish(new MatchEndedEvent(this.plugin, this, winner, force));

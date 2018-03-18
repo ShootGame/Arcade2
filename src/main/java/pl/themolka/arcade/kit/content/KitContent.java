@@ -4,6 +4,12 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.PlayerApplicable;
 
 public interface KitContent<T> extends PlayerApplicable {
+    default void applyIfApplicable(GamePlayer player) {
+        if (this.isApplicable(player)) {
+            this.apply(player);
+        }
+    }
+
     T getResult();
 
     default boolean isApplicable(GamePlayer player) {

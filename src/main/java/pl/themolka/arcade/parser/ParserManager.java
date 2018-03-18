@@ -1,7 +1,6 @@
 package pl.themolka.arcade.parser;
 
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.util.PluginInstallable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,22 +38,22 @@ public class ParserManager {
         return this.byType.keySet();
     }
 
-    public void install() {
+    public int install() {
         if (this.installed) {
             throw new IllegalStateException("Already installed!");
         }
 
+        int done = 0;
         ParserContext context = this.createContext();
         for (Parser<?> parser : this.container.getParsers()) {
-            if (parser instanceof PluginInstallable) {
-                ((PluginInstallable) parser).installPlugin(this.plugin);
-            }
             if (parser instanceof InstallableParser) {
                 ((InstallableParser) parser).install(context);
+                done++;
             }
         }
 
         this.installed = true;
+        return done;
     }
 
     public void registerType(Class<?> type, Parser<?> parser) {

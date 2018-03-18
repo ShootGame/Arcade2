@@ -29,9 +29,7 @@ public class Kit implements Applicable<GamePlayer>, StringId {
 
         if (!event.isCanceled()) {
             for (KitContent<?> content : this.getContent()) {
-                if (content.isApplicable(player)) {
-                    content.apply(player);
-                }
+                content.applyIfApplicable(player);
             }
         }
     }

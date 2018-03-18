@@ -24,9 +24,13 @@ public class GameRulesGame extends GameModule {
     public void onEnable() {
         World world = this.getGame().getMap().getWorld();
         for (GameRule rule : this.rules) {
-            GameRuleType type = rule.getType();
-            if (type.isApplicable()) {
-                world.setGameRuleValue(type.getKey(), rule.getValue());
+            GameRuleType type = GameRuleType.byKey(rule.getKey());
+            if (type != null && !type.isApplicable()) {
+                continue;
+            }
+
+            if (rule.isApplicable()) {
+                world.setGameRuleValue(rule.getKey(), rule.getValueString());
             }
         }
     }

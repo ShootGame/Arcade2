@@ -104,8 +104,8 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     @Override
     public Node clone() {
         Node clone = (Node) super.clone();
-        for (Property property : this.properties.clone().properties()) {
-            clone.properties.appendProperties(property);
+        for (Property property : this.properties.properties()) {
+            clone.properties.appendProperties(property.clone());
         }
 
         for (Node original : this.children) {
@@ -487,6 +487,42 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
 
     String toStringTag(boolean closing, String tag) {
         return (closing ? "</" : "<") + tag + ">";
+    }
+
+    //
+    // Utilities
+    //
+
+    public static Node append(Node node, List<Node> children) {
+        if (node != null && children != null) {
+            node.children.addAll(children);
+        }
+
+        parent(node);
+        return node;
+    }
+
+    public static Node detach(Node node) {
+        if (node != null) {
+            Node parent = node.getParent();
+            if (parent != null) {
+                parent.remove(node);
+            }
+
+            node.detach();
+        }
+
+        return node;
+    }
+
+    public static Node parent(Node node) {
+        if (node != null) {
+            for (Node child : node.children()) {
+                child.setParent(node);
+            }
+        }
+
+        return node;
     }
 
     //

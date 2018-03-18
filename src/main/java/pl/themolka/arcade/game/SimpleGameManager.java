@@ -9,6 +9,7 @@ import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.cycle.CycleRestartEvent;
 import pl.themolka.arcade.cycle.ServerCycleEvent;
 import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.dom.engine.DOMEngine;
@@ -109,7 +110,10 @@ public class SimpleGameManager implements GameManager {
             throw new RuntimeException("No " + MapManifest.class.getSimpleName() + " parser installed");
         }
 
-        ArcadeMap realMap = new ArcadeMap(map, parser.parse(engine.read(file)).orFail());
+        Document document = engine.read(file);
+        this.plugin.getDomPreprocessor().preprocess(document);
+
+        ArcadeMap realMap = new ArcadeMap(map, parser.parse(document).orFail());
 
         WorldNameGenerator worldNameGenerator = new WorldNameGenerator(map);
         realMap.setWorldName(worldNameGenerator.nextWorldName());

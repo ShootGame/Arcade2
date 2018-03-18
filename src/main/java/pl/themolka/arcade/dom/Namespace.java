@@ -64,7 +64,8 @@ public class Namespace implements Content {
     }
 
     public static String format(String namespace, String name) {
-        return (namespace != null ? namespace + ":" : "") + Objects.requireNonNull(name, "name cannot be null");
+        String prefix = namespace != null && !namespace.isEmpty() ? ":" : "";
+        return prefix + Objects.requireNonNull(name, "name cannot be null");
     }
 
     //

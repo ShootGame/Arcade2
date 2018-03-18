@@ -1,43 +1,66 @@
 package pl.themolka.arcade.generator;
 
-import pl.themolka.arcade.ArcadePlugin;
+import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.NestedParserMap;
+import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.NodeParser;
-import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.util.PluginInstallable;
+import pl.themolka.arcade.parser.Silent;
 
+import java.util.Collections;
 import java.util.Set;
 
 @Produces(Generator.class)
 public class GeneratorParser extends NodeParser<Generator>
-                             implements InstallableParser, PluginInstallable {
-    private ArcadePlugin plugin;
+                             implements InstallableParser {
+    private static final Set<Class<?>> types = ImmutableSet.<Class<?>>builder()
+            .add(GeneratorParser.class)
+            .add(VanillaGenerator.class)
+            .add(VoidGenerator.class)
+            .build();
 
-    private Parser<GeneratorType> generatorTypeParser;
-
-    @Override
-    public void installPlugin(ArcadePlugin plugin) {
-        this.plugin = plugin;
-    }
+    private NestedParserMap<BaseGeneratorParser<?>> nested;
 
     @Override
     public void install(ParserContext context) {
-        this.generatorTypeParser = context.enumType(GeneratorType.class);
+        this.nested = new NestedParserMap<>(context);
+        for (Class<?> clazz : types) {
+            this.nested.scan(clazz);
+        }
     }
 
     @Override
     public Set<Object> expect() {
-        return this.generatorTypeParser.expect();
+        return Collections.singleton("world generator");
     }
 
     @Override
     protected ParserResult<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
-        GeneratorType type = this.generatorTypeParser.parseWithDefinition(node, name, value).orFail();
-        return ParserResult.fine(node, name, value, type.create(this.plugin, node));
+        BaseGeneratorParser<?> parser = this.nested.parse(value);
+        if (parser == null) {
+            throw this.fail(node, name, value, "Unknown world generator type");
+        }
+
+        return ParserResult.fine(node, name, value, parser.parse(node).orFail());
+    }
+
+    @NestedParserName("default")
+    @Produces(Generator.class)
+    @Silent
+    public static class Default extends BaseGeneratorParser<Generator> {
+        @Override
+        public Set<Object> expect() {
+            return Collections.singleton("default generator");
+        }
+
+        @Override
+        protected ParserResult<Generator> parseNode(Node node, String name, String value) throws ParserException {
+            return ParserResult.fine(node, name, value, Generator.DEFAULT_GENERATOR);
+        }
     }
 }

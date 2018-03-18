@@ -5,9 +5,11 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.capture.point.PointCaptureFireworks;
 import pl.themolka.arcade.capture.wool.WoolPlaceFireworks;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.leak.core.CoreLeakFireworks;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
@@ -23,5 +25,10 @@ public class FireworksModule extends Module<FireworksGame> {
         handlers.add(new WoolPlaceFireworks(XMLParser.parseBoolean("wool-place", true)));
 
         return new FireworksGame(handlers);
+    }
+
+    @Override
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) {
+        return context.of(FireworksGameParser.class);
     }
 }

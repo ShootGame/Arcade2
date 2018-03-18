@@ -43,7 +43,7 @@ public class GameModeContent implements KitContent<GameMode>  {
         }
     }
 
-    @NestedParserName({"gamemode", "game-mode", "mode"})
+    @NestedParserName({"gamemode", "game-mode", "gm"})
     @Produces(GameModeContent.class)
     public static class ContentParser extends BaseContentParser<GameModeContent>
                                       implements InstallableParser {

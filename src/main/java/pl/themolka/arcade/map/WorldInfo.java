@@ -4,12 +4,11 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.generator.Generator;
-import pl.themolka.arcade.generator.GeneratorType;
 
 public class WorldInfo implements Cloneable {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.EASY;
     public static final World.Environment DEFAULT_ENVIRONMENT = World.Environment.NORMAL;
-    public static final Generator DEFAULT_GENERATOR = GeneratorType.getDefaultGenerator();
+    public static final Generator DEFAULT_GENERATOR = Generator.DEFAULT_GENERATOR;
     public static final boolean DEFAULT_IS_PVP = true;
     public static final RandomSeed DEFAULT_RANDOM_SEED = new RandomSeed(RandomSeed.DEFAULT_SEED);
     public static final Location DEFAULT_SPAWN = new Location((World) null, 0.5D, 16D, 0.5D);

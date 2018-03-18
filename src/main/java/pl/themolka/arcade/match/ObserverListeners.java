@@ -39,7 +39,6 @@ import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.command.Command;
 import pl.themolka.arcade.command.Commands;
 import pl.themolka.arcade.event.Priority;
@@ -159,7 +158,7 @@ public class ObserverListeners implements Listener {
         }
 
         ItemStack item = event.getItem();
-        if (item != null && item.isSimilar(ObserversKit.PLAY)) {
+        if (item != null && item.isSimilar(ObserversKit.PLAY_ITEM.getResult())) {
             GamePlayer player = this.game.getGame().getPlayer(event.getPlayer());
             if (player == null) {
                 return;
@@ -226,9 +225,9 @@ public class ObserverListeners implements Listener {
     private void handleFixVoidNightVision(Player bukkit, int from, int to) {
         if (this.isObserving(bukkit)) {
             if (from < 0 && to >= 0) {
-                bukkit.addPotionEffect(ObserversKit.NIGHT_VISION, true);
+                bukkit.addPotionEffect(ObserversKit.NIGHT_VISION_EFFECT.getResult(), true);
             } else if (from >= 0 && to < 0) {
-                bukkit.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                bukkit.removePotionEffect(ObserversKit.NIGHT_VISION_EFFECT.getResult().getType());
             }
         }
     }

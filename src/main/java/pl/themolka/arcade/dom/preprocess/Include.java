@@ -31,6 +31,10 @@ public class Include extends NodePreprocess
         this.tree.preprocess(node);
     }
 
+    //
+    // TreePreprocessHandler
+    //
+
     @Override
     public List<Node> defineNode(Node parent) {
         return parent.children("include");
@@ -64,14 +68,7 @@ public class Include extends NodePreprocess
         // Preprocess the target document.
         this.preprocessor.preprocess(target);
 
-        // Remove the old <import> node.
-        parent.remove(node);
-        node.detach();
-
-        parent.add(target.getRoot().children()); // We don't support root node properties.
-        for (Node child : parent.children()) {
-            // Make sure that all Nodes have correct parent.
-            child.setParent(parent);
-        }
+        Node.detach(node); // Remove the old <include> node.
+        Node.append(parent, target.getRoot().children()); // We don't support root node properties.
     }
 }

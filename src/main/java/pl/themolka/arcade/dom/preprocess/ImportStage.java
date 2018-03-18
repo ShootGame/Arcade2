@@ -47,7 +47,8 @@ public class ImportStage implements TreePreprocessHandler {
 
         Document target;
         try {
-            target = readDocument(this.engines, node, this.document.getPath().resolve(targetPath).toUri());
+            Path directory = this.document.getPath().getParent();
+            target = readDocument(this.engines, node, directory.resolve(targetPath).toUri());
         } catch (InvalidPathException ex) {
             throw new PreprocessException(node, "Invalid document path: " + ex.getReason(), ex);
         }
@@ -68,15 +69,8 @@ public class ImportStage implements TreePreprocessHandler {
         // Preprocess the target document.
         this.preprocessor.preprocess(target);
 
-        // Remove the old <import> node.
-        parent.remove(node);
-        node.detach();
-
-        parent.add(target.getRoot().children()); // We don't support root node properties.
-        for (Node child : parent.children()) {
-            // Make sure that all Nodes have correct parent.
-            child.setParent(parent);
-        }
+        Node.detach(node); // Remove the old <import> node.
+        Node.append(parent, target.getRoot().children()); // We don't support root node properties.
     }
 
     protected static Document readDocument(EngineManager engines, Node node, URI uri) throws PreprocessException {

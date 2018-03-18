@@ -14,11 +14,17 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.potion.XMLPotionEffect;
 
-public class EffectContent implements KitContent<PotionEffect> {
+public class EffectContent implements KitContent<PotionEffect>, BaseModeContent {
     private final PotionEffect result;
+    private final Mode mode;
 
     public EffectContent(PotionEffect result) {
+        this(result, Mode.GIVE);
+    }
+
+    public EffectContent(PotionEffect result, Mode mode) {
         this.result = result;
+        this.mode = mode;
     }
 
     @Override
@@ -28,12 +34,26 @@ public class EffectContent implements KitContent<PotionEffect> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getBukkit().addPotionEffect(this.getResult(), true);
+        if (this.give()) {
+            player.getBukkit().addPotionEffect(this.getResult(), true);
+        } else if (this.take()) {
+            player.getBukkit().removePotionEffect(this.getResult().getType());
+        }
     }
 
     @Override
     public PotionEffect getResult() {
         return this.result;
+    }
+
+    @Override
+    public boolean give() {
+        return this.mode.equals(Mode.GIVE);
+    }
+
+    @Override
+    public boolean take() {
+        return this.mode.equals(Mode.TAKE);
     }
 
     public static class LegacyParser implements LegacyKitContentParser<EffectContent> {
@@ -48,16 +68,18 @@ public class EffectContent implements KitContent<PotionEffect> {
     public static class ContentParser extends BaseContentParser<EffectContent>
                                       implements InstallableParser {
         private Parser<PotionEffect> effectParser;
+        private Parser<Mode> modeParser;
 
         @Override
         public void install(ParserContext context) {
             this.effectParser = context.type(PotionEffect.class);
+            this.modeParser = context.type(Mode.class);
         }
 
         @Override
         protected ParserResult<EffectContent> parseNode(Node node, String name, String value) throws ParserException {
             PotionEffect effect = this.effectParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new EffectContent(effect));
+            return ParserResult.fine(node, name, value, new EffectContent(effect, this.modeParser.parse(node).orFail()));
         }
     }
 }

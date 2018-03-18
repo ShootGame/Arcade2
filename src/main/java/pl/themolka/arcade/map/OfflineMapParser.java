@@ -18,6 +18,9 @@ import java.util.Set;
 @Produces(OfflineMap.class)
 public class OfflineMapParser extends NodeParser<OfflineMap>
                               implements InstallableParser {
+    public static final String MISSING_NAME_VERSION = "Missing <name> and <version> elements. " +
+            "<name> and <version> are required in all map manifests!";
+
     private Parser<MapFileVersion> fileVersionParser;
     private Parser<String> nameParser;
     private Parser<MapVersion> versionParser;
@@ -48,7 +51,7 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
         Node nameNode = node.firstChild("name");
         Node versionNode = node.firstChild("version", "ver");
         if (nameNode == null || versionNode == null) {
-            throw this.fail(node, name, null, "<name> and <version> are required in all map manifests!");
+            throw new ParserException(node, MISSING_NAME_VERSION);
         }
 
         String mapName = this.nameParser.parse(nameNode).orFail();
@@ -58,7 +61,7 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
         int mapNameLength = mapName.length();
         if (mapNameLength < OfflineMap.NAME_MIN_LENGTH) {
             throw this.fail(nameNode, nameNode.getName(), nameNode.getValue(),
-                    "Map name is shorter than " +OfflineMap.NAME_MIN_LENGTH + " characters");
+                    "Map name is shorter than " + OfflineMap.NAME_MIN_LENGTH + " characters");
         } else if (mapNameLength > OfflineMap.NAME_MAX_LENGTH) {
             throw this.fail(nameNode, nameNode.getName(), nameNode.getValue(),
                     "Map name is longer than " + OfflineMap.NAME_MAX_LENGTH + " characters");

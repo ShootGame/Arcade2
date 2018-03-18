@@ -32,7 +32,7 @@ import pl.themolka.arcade.event.PluginStartEvent;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.SimpleGameManager;
-import pl.themolka.arcade.generator.GeneratorType;
+import pl.themolka.arcade.generator.Generator;
 import pl.themolka.arcade.listener.BlockTransformListeners;
 import pl.themolka.arcade.listener.GeneralListeners;
 import pl.themolka.arcade.listener.ProtectionListeners;
@@ -64,7 +64,6 @@ import pl.themolka.arcade.util.Tickable;
 import pl.themolka.arcade.window.WindowListeners;
 import pl.themolka.arcade.window.WindowRegistry;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -155,6 +154,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getLogger().log(Level.INFO, this.getName() + " isn't enabled in the settings file, skipped enabling...");
             return;
         }
+
+        this.domPreprocessor.install(new Include(this.domEngines, this.domPreprocessor, this.settings.getIncludeRepository()));
 
         this.getEventBus().publish(new PluginStartEvent(this));
         this.loadServer();
@@ -255,7 +256,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String world, String id) {
-        return GeneratorType.getDefaultGenerator().getChunkGenerator();
+        return Generator.DEFAULT_GENERATOR.getChunkGenerator();
     }
 
     @Override
@@ -612,7 +613,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
         this.domPreprocessor = new Preprocessor();
         this.domPreprocessor.install(new Import(this.domEngines, this.domPreprocessor));
-        this.domPreprocessor.install(new Include(this.domEngines, this.domPreprocessor, this.settings.getIncludeRepository()));
 
         this.parsers = new ParserManager(this);
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {
@@ -657,7 +657,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             ex.printStackTrace();
         }
 
-        this.parsers.install(); // Install parser dependencies
+        // Install parser dependencies
+        this.getLogger().info("Installed " + this.parsers.install() +  " parser dependencies.");
     }
 
     private void loadServer() {

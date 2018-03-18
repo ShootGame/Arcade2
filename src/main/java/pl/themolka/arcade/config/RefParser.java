@@ -13,7 +13,7 @@ import java.util.Set;
 public class RefParser extends ElementParser<Ref> {
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("an ID reference matching");
+        return Collections.singleton("an ID reference matching " + Ref.ID_PATTERN.pattern());
     }
 
     @Override

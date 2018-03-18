@@ -19,7 +19,7 @@ public class ChannelsGame extends GameModule {
         return register;
     }
 
-    public ChatChannel getChannel(Sender sender) {
+    public ChatChannel getChannelFor(Sender sender) {
         GamePlayer player = sender.getGamePlayer();
         if (player != null && player.getCurrentChannel() != null) {
             return player.getCurrentChannel();

@@ -3,7 +3,6 @@ package pl.themolka.arcade.kit.content;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.life.LivesGame;
 import pl.themolka.arcade.life.LivesModule;
@@ -31,9 +30,9 @@ public class LivesContent implements RemovableKitContent<Integer> {
 
     @Override
     public void attach(GamePlayer player, Integer value) {
-        GameModule module = player.getGame().getModule(LivesModule.class);
-        if (module != null && module.isEnabled() && module instanceof LivesGame) {
-            ((LivesGame) module).addLives(player, value);
+        LivesGame module = (LivesGame) player.getGame().getModule(LivesModule.class);
+        if (module != null && module.isEnabled()) {
+            module.addLives(player, value);
         }
     }
 

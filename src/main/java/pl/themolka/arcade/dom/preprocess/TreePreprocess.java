@@ -26,8 +26,12 @@ public class TreePreprocess extends NodePreprocess
         if (nodeDefinition != null) {
             for (Node definedChild : nodeDefinition) {
                 this.invokeNode(definedChild);
-                for (Property property : definedChild.properties()) {
-                    this.invokeProperty(property);
+
+                List<Property> propertyDefinition = this.defineProperty(definedChild);
+                if (propertyDefinition != null) {
+                    for (Property property : propertyDefinition) {
+                        this.invokeProperty(property);
+                    }
                 }
             }
         }
@@ -35,6 +39,21 @@ public class TreePreprocess extends NodePreprocess
         for (Node child : this.define(node)) {
             this.preprocess(child);
         }
+    }
+
+    //
+    // TreePreprocessHandler
+    //
+
+
+    @Override
+    public List<Node> defineNode(Node parent) {
+        return this.handler.defineNode(parent);
+    }
+
+    @Override
+    public List<Property> defineProperty(Node parent) {
+        return this.handler.defineProperty(parent);
     }
 
     @Override

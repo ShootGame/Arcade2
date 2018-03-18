@@ -22,12 +22,7 @@ public abstract class NodePreprocess implements DefinedPreprocess<Node, Parent<N
 
     @Override
     public final void preprocess(Node node) throws PreprocessException {
-        List<Node> definition = this.define(node);
-        if (definition != null) {
-            for (Node child : definition) {
-                this.invoke(child);
-            }
-        }
+        this.invoke(node);
     }
 
     @Override

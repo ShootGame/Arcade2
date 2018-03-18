@@ -16,10 +16,14 @@ import java.util.Set;
 public class GameRuleParser extends NodeParser<GameRule>
                             implements InstallableParser {
     private Parser<GameRuleType> typeParser;
+    private Parser<String> valueParser;
+    private Parser<String> keyParser;
 
     @Override
     public void install(ParserContext context) {
         this.typeParser = context.type(GameRuleType.class);
+        this.valueParser = context.text();
+        this.keyParser = context.text();
     }
 
     @Override
@@ -29,7 +33,14 @@ public class GameRuleParser extends NodeParser<GameRule>
 
     @Override
     protected ParserResult<GameRule> parsePrimitive(Node node, String name, String value) throws ParserException {
-        GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orFail(); // name is the value
-        return ParserResult.fine(node, name, value, new GameRule(type, value));
+        GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orDefaultNull(); // name is the value
+        String ruleValue = this.valueParser.parse(node).orFail();
+
+        if (type != null) {
+            return ParserResult.fine(node, name, value, new GameRule(type, ruleValue));
+        }
+
+        String ruleKey = this.keyParser.parseWithValue(node, name).orFail();
+        return ParserResult.fine(node, name, value, new GameRule(ruleKey, ruleValue));
     }
 }

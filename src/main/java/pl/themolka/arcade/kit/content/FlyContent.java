@@ -36,7 +36,7 @@ public class FlyContent implements RemovableKitContent<Boolean> {
         bukkit.setAllowFlight(value);
 
         if (!value) {
-            bukkit.setFlying(DEFAULT_FLYING);
+            bukkit.setFlying(false);
         }
     }
 
