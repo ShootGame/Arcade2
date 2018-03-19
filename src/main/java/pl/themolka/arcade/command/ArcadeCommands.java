@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.util.ManifestFile;
@@ -100,7 +101,7 @@ public class ArcadeCommands {
             this.plugin.getEventBus().publish(new SettingsReloadEvent(this.plugin, settings));
 
             sender.sendSuccess("Successfully reloaded settings file. Well done!");
-        } catch (DOMException | IOException ex) {
+        } catch (DOMException | IOException | ParserNotSupportedException ex) {
             ex.printStackTrace();
             throw new CommandException("Could not reload settings file: " + ex.getMessage());
         }

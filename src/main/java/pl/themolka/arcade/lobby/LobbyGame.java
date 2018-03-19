@@ -8,14 +8,7 @@ import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 
 public class LobbyGame extends GameModule {
-    private boolean enabled;
-
-    protected LobbyGame(Config config) {
-        this.enabled = config.enabled();
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
+    protected LobbyGame() {
     }
 
     /**
@@ -23,17 +16,13 @@ public class LobbyGame extends GameModule {
      */
     @Handler(priority = Priority.LAST)
     public void removeGamePlayer(PlayerQuitEvent event) {
-        if (this.isEnabled()) {
-            this.getGame().getPlayers().unregister(event.getGamePlayer());
-        }
+        this.getGame().getPlayers().unregister(event.getGamePlayer());
     }
 
     public interface Config extends IGameModuleConfig<LobbyGame> {
-        default boolean enabled() { return true; }
-
         @Override
         default LobbyGame create(Game game) {
-            return new LobbyGame(this);
+            return new LobbyGame();
         }
     }
 }

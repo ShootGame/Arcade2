@@ -8,6 +8,7 @@ import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(FireworkMeta.class)
@@ -16,7 +17,7 @@ class FireworkMetaParser extends ItemMetaParser.Nested<FireworkMeta> {
     private Parser<FireworkEffect> fireworkEffectParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.powerParser = context.type(Integer.class);
         this.fireworkEffectParser = context.type(FireworkEffect.class);
     }

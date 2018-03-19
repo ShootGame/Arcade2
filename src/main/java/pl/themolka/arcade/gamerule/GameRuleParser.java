@@ -6,6 +6,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -20,7 +21,7 @@ public class GameRuleParser extends NodeParser<GameRule>
     private Parser<String> keyParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.typeParser = context.type(GameRuleType.class);
         this.valueParser = context.text();
         this.keyParser = context.text();

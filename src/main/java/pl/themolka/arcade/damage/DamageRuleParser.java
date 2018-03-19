@@ -8,6 +8,7 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.type.PercentageParser;
@@ -26,7 +27,7 @@ public class DamageRuleParser extends ConfigParser<DamageRule.Config>
     private Parser<Percentage> multiplierParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         super.install(context);
         this.entityFilterParser = context.type(Ref.class);
         this.playerFilterParser = context.type(Ref.class);
@@ -43,8 +44,8 @@ public class DamageRuleParser extends ConfigParser<DamageRule.Config>
     @Override
     protected ParserResult<DamageRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
-        Ref<Filter> entityFilter = this.entityFilterParser.parse(node.property("entity-filter", "filter")).orDefaultNull();
-        Ref<Filter> playerFilter = this.playerFilterParser.parse(node.property("player-filter", "filter")).orDefaultNull();
+        Ref<Filter> entityFilter = this.entityFilterParser.parse(node.property("entity-filter", "filter")).orDefault(Ref.empty());
+        Ref<Filter> playerFilter = this.playerFilterParser.parse(node.property("player-filter", "filter")).orDefault(Ref.empty());
 
         boolean notDenied = this.denyParser.parse(node).orDefault(true);
         double damage = notDenied ? this.damageParser.parse(node).orFail() : DamageRule.DENY_DAMAGE;

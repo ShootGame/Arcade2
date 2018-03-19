@@ -30,8 +30,11 @@ public class MobsGame extends GameModule {
         this.denyNatural = denyNatural;
     }
 
-    protected MobsGame(Config config) {
-        this.rules.addAll(config.rules());
+    protected MobsGame(Game game, Config config) {
+        for (MobSpawnRule.Config ruleConfig : config.rules()) {
+            this.rules.add(ruleConfig.create(game));
+        }
+
         this.denyNatural = config.denyNatural();
     }
 
@@ -83,12 +86,12 @@ public class MobsGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<MobsGame> {
-        default List<MobSpawnRule> rules() { return Collections.emptyList(); }
+        default List<MobSpawnRule.Config> rules() { return Collections.emptyList(); }
         default boolean denyNatural() { return false; }
 
         @Override
         default MobsGame create(Game game) {
-            return new MobsGame(this);
+            return new MobsGame(game, this);
         }
     }
 }

@@ -50,9 +50,10 @@ public class Team implements GameHolder, MatchWinner {
         this.plugin = plugin;
 
         this.applyContext = new TeamApplyContext(this);
-        this.channel = new TeamChannel(plugin, this);
-        this.channel.setFormat(TeamChannel.TEAM_FORMAT);
         this.id = id;
+        this.channel = new TeamChannel(plugin, this);
+
+        this.channel.setFormat(TeamChannel.TEAM_FORMAT);
     }
 
     public Team(Team original) {

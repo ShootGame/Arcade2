@@ -5,6 +5,7 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.util.Objects;
 
@@ -42,7 +43,7 @@ public class SpawnReasonMatcher extends Matcher {
 
 class SpawnReasonParser implements MatcherParser<SpawnReasonMatcher> {
     @Override
-    public SpawnReasonMatcher parsePrimitive(Node node, ParserContext context) throws ParserException {
+    public SpawnReasonMatcher parsePrimitive(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         return new SpawnReasonMatcher(context.enumType(SpawnReason.class).parse(node).orFail());
     }
 }

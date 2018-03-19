@@ -9,6 +9,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -23,7 +24,7 @@ public class LocationParser extends NodeParser<Location>
     private Parser<Float> pitchParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.vectorParser = context.type(Vector.class);
         this.yawParser = context.type(Float.class);
         this.pitchParser = context.type(Float.class);

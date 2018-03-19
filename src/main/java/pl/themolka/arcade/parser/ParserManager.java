@@ -21,12 +21,25 @@ public class ParserManager {
         return new ParserContext(this);
     }
 
-    public <T> Parser<T> forType(Class<T> type) {
+    public <T> Parser<T> forType(Class<T> type) throws ParserNotSupportedException {
         Class<? extends Parser> clazz = this.forTypeClass(type);
-        return clazz != null ? this.container.getParser(clazz) : null;
+        if (clazz == null) {
+            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
+        }
+
+        Parser<T> parser = this.container.getParser(clazz);
+        if (parser == null) {
+            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
+        }
+
+        return parser;
     }
 
-    public Class<? extends Parser> forTypeClass(Class<?> type) {
+    public Class<? extends Parser> forTypeClass(Class<?> type) throws ParserNotSupportedException {
+        if (!this.byType.containsKey(type)) {
+            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
+        }
+
         return this.byType.get(type);
     }
 
@@ -38,7 +51,7 @@ public class ParserManager {
         return this.byType.keySet();
     }
 
-    public int install() {
+    public int install() throws ParserNotSupportedException {
         if (this.installed) {
             throw new IllegalStateException("Already installed!");
         }
@@ -62,6 +75,10 @@ public class ParserManager {
 
     public void registerType(Class<?> type, Class<? extends Parser> parser) {
         this.byType.put(type, parser);
+    }
+
+    public boolean supportsType(Class<?> type) {
+        return this.byType.containsKey(type);
     }
 
     public boolean unregisterType(Class<?> type) {

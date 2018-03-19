@@ -6,6 +6,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -18,7 +19,7 @@ public class ScoreboardInfoParser extends NodeParser<ScoreboardInfo>
     private Parser<String> titleParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.titleParser = context.type(String.class);
     }
 

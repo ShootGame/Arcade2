@@ -9,6 +9,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.xml.XMLParser;
@@ -50,7 +51,7 @@ public class ClearInventoryContent implements KitContent<Boolean> {
         private Parser<Boolean> armorParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             this.armorParser = context.type(Boolean.class);
         }
 

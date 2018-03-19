@@ -8,6 +8,7 @@ import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +105,7 @@ public class Settings {
         return this.plugin.getDomEngines().forFile(file).read(file);
     }
 
-    public void setDocument(Document document) throws ParserException {
+    public void setDocument(Document document) throws ParserException, ParserNotSupportedException {
         this.document = document;
 
         Node root = document.getRoot();
@@ -113,7 +114,7 @@ public class Settings {
         }
     }
 
-    private void setup(Node root) throws ParserException {
+    private void setup(Node root) throws ParserException, ParserNotSupportedException {
         this.enabled = this.context.type(Boolean.class).parse(root.property("enable", "enabled")).orFail();
         this.includeRepository = this.context.type(Path.class).parse(root.firstChild("include-repository")).orFail();
         this.spawn = this.context.type(Vector.class).parse(root.child("spawn")).orFail();

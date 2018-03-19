@@ -1,5 +1,5 @@
 package pl.themolka.arcade.parser;
 
 public interface InstallableParser {
-    void install(ParserContext context);
+    void install(ParserContext context) throws ParserNotSupportedException;
 }

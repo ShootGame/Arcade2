@@ -10,6 +10,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -28,7 +29,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     private Parser<MapTime> timeParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.difficultyParser = context.type(Difficulty.class);
         this.environmentParser = context.enumType(World.Environment.class);
         this.generatorParser = context.type(Generator.class);

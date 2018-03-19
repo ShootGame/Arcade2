@@ -11,6 +11,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -64,7 +65,7 @@ public class LivesContent implements RemovableKitContent<Integer> {
         private Parser<Integer> livesParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.livesParser = context.type(Integer.class);
         }

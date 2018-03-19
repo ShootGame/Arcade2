@@ -10,6 +10,7 @@ import pl.themolka.arcade.leak.core.CoreLeakFireworks;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class FireworksModule extends Module<FireworksGame> {
     }
 
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) {
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
         return context.of(FireworksGameParser.class);
     }
 }

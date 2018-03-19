@@ -7,6 +7,7 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -19,7 +20,7 @@ public class GameModeParser extends ElementParser<GameMode>
     private Parser<GameMode> gameModeParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.idParser = context.type(Integer.class);
         this.gameModeParser = context.enumType(GameMode.class);
     }

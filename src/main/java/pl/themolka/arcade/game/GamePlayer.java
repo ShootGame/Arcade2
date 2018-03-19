@@ -13,6 +13,7 @@ import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.kit.content.FlyContent;
 import pl.themolka.arcade.kit.content.FlySpeedContent;
 import pl.themolka.arcade.kit.content.FoodLevelContent;
+import pl.themolka.arcade.kit.content.GameModeContent;
 import pl.themolka.arcade.kit.content.HealthContent;
 import pl.themolka.arcade.kit.content.KnockbackContent;
 import pl.themolka.arcade.kit.content.SaturationContent;
@@ -47,7 +48,7 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     private final Game game;
     private final List<Goal> goals = new ArrayList<>();
     private boolean participating;
-    // Pointer to the ArcadePlayer instance, or null if the players is offline.
+    // Pointer to the ArcadePlayer instance, or null if the player is offline.
     private Reference<ArcadePlayer> player;
     private final String username;
     private final UUID uuid;
@@ -225,19 +226,11 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     }
 
     public ChatColor getChatColor() {
-        if (this.hasChatColor()) {
-            return this.chatColor;
-        }
-
-        return DEFAULT_CHAT_COLOR;
+        return this.hasChatColor() ? this.chatColor : DEFAULT_CHAT_COLOR;
     }
 
     public ChatChannel getCurrentChannel() {
-        if (this.isOnline()) {
-            return this.channel;
-        } else {
-            return null;
-        }
+        return this.isOnline() ? this.channel : null;
     }
 
     public String getDisplayName() {
@@ -251,19 +244,11 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     }
 
     public String getFullName() {
-        if (this.isOnline()) {
-            return this.getPlayer().getFullName();
-        } else {
-            return this.getDisplayName();
-        }
+        return this.isOnline() ? this.getPlayer().getFullName() : this.getDisplayName();
     }
 
     public EntityPlayer getMojang() {
-        if (this.isOnline()) {
-            return this.getPlayer().getMojang();
-        } else {
-            return null;
-        }
+        return this.isOnline() ? this.getPlayer().getMojang() : null;
     }
 
     public boolean hasChatColor() {
@@ -353,10 +338,8 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         Player bukkit = this.getBukkit();
         this.refresh();
 
-        this.getPlayer().clearInventory(true);
-        this.resetDisplayName();
-
         bukkit.closeInventory();
+        this.getPlayer().clearInventory(true);
 
         bukkit.setAbsorption(0F);
         bukkit.setAllowFlight(FlyContent.DEFAULT_ALLOW_FLYING);
@@ -368,6 +351,7 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         bukkit.setFlying(FlyContent.DEFAULT_FLYING);
         bukkit.setFlySpeed(FlySpeedContent.DEFAULT_SPEED);
         bukkit.setFoodLevel(FoodLevelContent.DEFAULT_LEVEL);
+        bukkit.setGameMode(GameModeContent.DEFAULT_GAME_MODE);
         bukkit.setGlowing(false);
         bukkit.setHealthScale(HealthContent.DEFAULT_HEALTH);
         bukkit.setHealth(HealthContent.DEFAULT_HEALTH);
@@ -388,6 +372,8 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
         for (PotionEffectType effect : PotionEffectType.values()) {
             bukkit.removePotionEffect(effect);
         }
+
+        this.getMojang().reset();
     }
 
     public void resetDisplayName() {

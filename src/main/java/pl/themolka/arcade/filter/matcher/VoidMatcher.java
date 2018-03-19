@@ -7,6 +7,7 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @MatcherId("void")
 public class VoidMatcher extends Matcher {
@@ -44,7 +45,7 @@ public class VoidMatcher extends Matcher {
 
 class VoidParser implements MatcherParser<VoidMatcher> {
     @Override
-    public VoidMatcher parse(Node node, ParserContext context) throws ParserException {
+    public VoidMatcher parse(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         return new VoidMatcher();
     }
 }

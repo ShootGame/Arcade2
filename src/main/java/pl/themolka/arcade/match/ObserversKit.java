@@ -32,14 +32,14 @@ public class ObserversKit extends Kit {
     public static final ItemStackContent NAVIGATION_ITEM = new ItemStackContent(new ItemStackBuilder()
             .type(Material.COMPASS)
             .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Navigation")
-            .description(ChatColor.YELLOW + "Left click to teleport to point",
-                    ChatColor.YELLOW + "Right click to teleport to highest point")
+            .description(ChatColor.YELLOW + "Left click to teleport to highest point",
+                    ChatColor.YELLOW + "Right click to teleport to point")
             .build(), BaseModeContent.Mode.GIVE).setSlot(0);
 
     public static final ItemStackContent PLAY_ITEM = new ItemStackContent(new ItemStackBuilder()
             .type(Material.NETHER_STAR)
             .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game")
-            .description(ChatColor.YELLOW + "Click to join the game")
+            .description(ChatColor.YELLOW + "Right click to join the game")
             .build(), BaseModeContent.Mode.GIVE).setSlot(2);
 
     public static final HeldSlotContent HELD_SLOT = new HeldSlotContent(0);
@@ -52,9 +52,9 @@ public class ObserversKit extends Kit {
             .build(), BaseModeContent.Mode.GIVE);
     public static final FlyContent FLY = new FlyContent(true);
 
-    public static final FlySpeedContent FLY_SPEED = new FlySpeedContent(FlySpeedContent.DEFAULT_SPEED * 1.75F);
+    public static final FlySpeedContent FLY_SPEED = new FlySpeedContent(FlySpeedContent.DEFAULT_SPEED * 1.35F);
 
-    public static final WalkSpeedContent WALK_SPEED = new WalkSpeedContent(WalkSpeedContent.DEFAULT_SPEED * 2.15F);
+    public static final WalkSpeedContent WALK_SPEED = new WalkSpeedContent(WalkSpeedContent.DEFAULT_SPEED * 1.85F);
 
     //
     // Object

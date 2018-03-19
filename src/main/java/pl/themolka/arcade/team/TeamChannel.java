@@ -11,8 +11,8 @@ import java.util.List;
 public class TeamChannel extends ChatChannel implements TeamHolder {
     public static final String TEAM_PERMISSION_NODE = "teamchat";
     public static final String TEAM_FORMAT = ChatColor.DARK_GRAY + "[" +
-            ChatColor.GRAY + "%s" + ChatColor.RESET + ChatColor.DARK_GRAY +
-            "] " + ChatColor.RESET + "%s" + ChatColor.DARK_GRAY + ": " +
+            ChatColor.GRAY + "TEAM" + ChatColor.RESET + ChatColor.DARK_GRAY +
+            "] " + ChatColor.YELLOW + "%s" + ChatColor.DARK_GRAY + ": " +
             ChatColor.WHITE + "%s";
 
     private final Team team;
@@ -26,14 +26,6 @@ public class TeamChannel extends ChatChannel implements TeamHolder {
     @Override
     public boolean addMember(Sender member) {
         return false;
-    }
-
-    @Override
-    public String formatMessage(String author, String message) {
-        return String.format(this.getFormat(),
-                this.getTeam().getPrettyName(),
-                author,
-                message);
     }
 
     @Override

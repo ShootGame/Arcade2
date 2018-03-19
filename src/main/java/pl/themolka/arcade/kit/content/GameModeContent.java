@@ -10,11 +10,14 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.xml.XMLGameMode;
 
 public class GameModeContent implements KitContent<GameMode>  {
+    public static final GameMode DEFAULT_GAME_MODE = GameMode.SURVIVAL;
+
     private final GameMode result;
 
     public GameModeContent(GameMode result) {
@@ -50,7 +53,7 @@ public class GameModeContent implements KitContent<GameMode>  {
         private Parser<GameMode> gameModeParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             this.gameModeParser = context.type(GameMode.class);
         }
 

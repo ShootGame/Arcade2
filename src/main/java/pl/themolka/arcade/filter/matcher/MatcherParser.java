@@ -3,14 +3,15 @@ package pl.themolka.arcade.filter.matcher;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 public interface MatcherParser<T extends Matcher> {
-    default T parse(Node node, ParserContext context) throws ParserException {
+    default T parse(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         return node.isPrimitive() ? this.parsePrimitive(node, context)
                                   : this.parseTree(node, context);
     }
 
-    default T parsePrimitive(Node node, ParserContext context) throws ParserException {
+    default T parsePrimitive(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         // Try again as the tree type if the value is
         // empty (eg. starting tag is closing tag).
         String value = node.getValue();
@@ -21,7 +22,7 @@ public interface MatcherParser<T extends Matcher> {
         }
     }
 
-    default T parseTree(Node node, ParserContext context) throws ParserException {
+    default T parseTree(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         throw new ParserException(node, "Node " + node.getName() + " is not tree type");
     }
 }

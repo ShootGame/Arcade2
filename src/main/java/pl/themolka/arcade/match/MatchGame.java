@@ -56,7 +56,7 @@ public class MatchGame extends GameModule {
 
         for (ArcadePlayer player : this.getPlugin().getPlayers()) {
             if (player.getGamePlayer() != null) {
-                this.getObservers().join(player.getGamePlayer(), false);
+                this.getObservers().join(player.getGamePlayer(), false, true);
             }
         }
     }

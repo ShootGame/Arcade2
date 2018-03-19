@@ -5,13 +5,14 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 public class BaseRemovableContentParser<T extends KitContent<?>> extends BaseContentParser<T>
                                                                  implements InstallableParser {
     private Parser<Boolean> resetParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.resetParser = context.type(Boolean.class);
     }
 

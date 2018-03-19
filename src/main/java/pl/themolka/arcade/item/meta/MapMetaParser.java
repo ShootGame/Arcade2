@@ -8,6 +8,7 @@ import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(MapMeta.class)
@@ -17,7 +18,7 @@ class MapMetaParser extends ItemMetaParser.Nested<MapMeta> {
     private Parser<Color> colorParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.scalingParser = context.type(Boolean.class);
         this.locationNameParser = context.type(String.class);
         this.colorParser = context.type(Color.class);

@@ -10,6 +10,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -72,7 +73,7 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         private Parser<Float> speedParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.speedParser = context.type(Float.class);
         }

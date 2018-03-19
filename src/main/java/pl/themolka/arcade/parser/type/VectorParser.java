@@ -7,6 +7,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -21,7 +22,7 @@ public class VectorParser extends NodeParser<Vector>
     private Parser<Double> zParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.xParser = context.type(Double.class);
         this.yParser = context.type(Double.class);
         this.zParser = context.type(Double.class);

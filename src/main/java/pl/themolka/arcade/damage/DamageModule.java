@@ -9,6 +9,7 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModuleVersion;
 import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Damage",
         dependency = {
@@ -21,7 +22,7 @@ public class DamageModule extends Module<DamageGame> {
     }
 
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) {
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
         return context.of(DamageGameParser.class);
     }
 }

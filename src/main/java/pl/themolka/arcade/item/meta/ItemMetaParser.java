@@ -7,6 +7,7 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserValidation;
 import pl.themolka.arcade.parser.Produces;
 
@@ -32,7 +33,7 @@ public class ItemMetaParser implements InstallableParser {
     private Map<Class<? extends ItemMeta>, Nested<?>> parsers;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.parsers = new HashMap<>();
         for (Class<? extends Nested> clazz : types) {
             Produces produces = clazz.getDeclaredAnnotation(Produces.class);

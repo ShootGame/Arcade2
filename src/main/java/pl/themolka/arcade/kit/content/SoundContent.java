@@ -12,6 +12,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.session.ArcadeSound;
@@ -110,7 +111,7 @@ public class SoundContent implements KitContent<Sound> {
         private Parser<Float> volumeParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             this.soundParser = context.enumType(Sound.class);
             this.locationParser = context.type(Location.class);
             this.pitchParser = context.type(Float.class);

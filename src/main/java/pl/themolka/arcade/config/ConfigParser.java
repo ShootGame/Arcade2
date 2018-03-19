@@ -7,13 +7,14 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 public abstract class ConfigParser<T extends IConfig> extends NodeParser<T>
                                                       implements InstallableParser {
     protected Parser<String> idParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.idParser = context.id();
     }
 

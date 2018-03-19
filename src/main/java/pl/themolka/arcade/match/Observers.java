@@ -122,8 +122,8 @@ public class Observers extends Team {
     }
 
     @Override
-    public boolean join(GamePlayer player, boolean message) {
-        boolean result = super.join(player, message);
+    public boolean join(GamePlayer player, boolean message, boolean force) {
+        boolean result = super.join(player, message, force);
         if (result) {
             player.getPlayer().clearInventory(true);
             player.setParticipating(false);

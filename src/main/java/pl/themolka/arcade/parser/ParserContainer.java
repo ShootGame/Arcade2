@@ -28,12 +28,17 @@ public class ParserContainer implements Container<Parser> {
         return this.parsers.containsValue(parser);
     }
 
-    public IdParser getIdParser() {
+    public IdParser getIdParser() throws ParserNotSupportedException {
         return this.getParser(IdParser.class);
     }
 
-    public <T extends Parser<?>> T getParser(Class<T> clazz) {
-        return (T) this.parsers.get(clazz);
+    public <T extends Parser<?>> T getParser(Class<T> clazz) throws ParserNotSupportedException {
+        T parser = (T) this.parsers.get(clazz);
+        if (parser == null) {
+            throw new ParserNotSupportedException(clazz.getSimpleName() + " is not supported");
+        }
+
+        return parser;
     }
 
     public Set<Class<? extends Parser>> getParserClasses() {
@@ -44,7 +49,7 @@ public class ParserContainer implements Container<Parser> {
         return this.parsers.values();
     }
 
-    public TextParser getTextParser() {
+    public TextParser getTextParser() throws ParserNotSupportedException {
         return this.getParser(TextParser.class);
     }
 

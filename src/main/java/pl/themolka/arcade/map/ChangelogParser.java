@@ -6,6 +6,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -23,7 +24,7 @@ public class ChangelogParser extends NodeParser<Changelog>
     private Parser<String> logParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.versionParser = context.type(MapVersion.class);
         this.releaseParser = context.type(LocalDate.class);
         this.logParser = context.text();

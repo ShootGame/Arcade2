@@ -7,6 +7,7 @@ import pl.themolka.arcade.item.ItemEnchantment;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(EnchantmentStorageMeta.class)
@@ -14,7 +15,7 @@ class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStor
     private Parser<ItemEnchantment> enchantmentParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.enchantmentParser = context.type(ItemEnchantment.class);
     }
 

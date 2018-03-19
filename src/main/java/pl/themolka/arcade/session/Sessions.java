@@ -42,6 +42,13 @@ public class Sessions implements Listener {
         DestroyedPlayerInfo info = this.destroySession(event.getPlayer());
         if (info != null && info.player != null) {
             this.removeSession(info);
+
+            // make GamePlayers offline
+            GamePlayer game = info.player.getGamePlayer();
+            if (game != null) {
+                game.setPlayer(null); // remove the pointer
+                game.setParticipating(false);
+            }
         }
     }
 
@@ -54,15 +61,20 @@ public class Sessions implements Listener {
         }
 
         if (i > 0) {
-            event.getPlugin().getLogger().info(
-                    "Registered " + i + " online player(s).");
+            event.getPlugin().getLogger().info("Registered " + i + " online player(s).");
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
         ArcadePlayer victim = this.plugin.getPlayer(event.getEntity());
-        ArcadePlayer killer = this.plugin.getPlayer(victim.getBukkit().getKiller());
+
+        Player victimBukkit = victim.getBukkit();
+        if (victimBukkit == null) {
+            return;
+        }
+
+        ArcadePlayer killer = this.plugin.getPlayer(victimBukkit.getKiller());
 
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
@@ -110,8 +122,7 @@ public class Sessions implements Listener {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
             pl.themolka.arcade.respawn.PlayerRespawnEvent respawnEvent =
-                    new pl.themolka.arcade.respawn.PlayerRespawnEvent(
-                            this.plugin, player);
+                    new pl.themolka.arcade.respawn.PlayerRespawnEvent(this.plugin, player);
             respawnEvent.setRespawnPosition(game.getMap().getManifest().getWorld().getSpawn());
 
             this.postEvent(respawnEvent);
@@ -160,24 +171,15 @@ public class Sessions implements Listener {
         // unregister from online players
         this.plugin.removePlayer(player);
 
-        // make GamePlayers offline
-        GamePlayer game = player.getGamePlayer();
-        if (game != null) {
-            game.setPlayer(null); // remove the pointer
-            game.setParticipating(false);
-        }
-
         return new DestroyedPlayerInfo(player);
     }
 
     public void insertSession(CreatedPlayerInfo info) {
-        this.postEvent(new pl.themolka.arcade.session
-                .PlayerJoinEvent(this.plugin, info.player, info.restored));
+        this.postEvent(new pl.themolka.arcade.session.PlayerJoinEvent(this.plugin, info.player, info.restored));
     }
 
     public void removeSession(DestroyedPlayerInfo info) {
-        this.postEvent(new pl.themolka.arcade.session
-                .PlayerQuitEvent(this.plugin, info.player));
+        this.postEvent(new pl.themolka.arcade.session.PlayerQuitEvent(this.plugin, info.player));
     }
 
     private Location fetchSpawn() {

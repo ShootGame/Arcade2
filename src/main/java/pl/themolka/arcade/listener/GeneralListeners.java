@@ -237,6 +237,13 @@ public class GeneralListeners implements Listener {
             return;
         }
 
+        World fromWorld = event.getFrom().getWorld();
+        World toWorld = event.getTo().getWorld();
+        if (fromWorld == null || !fromWorld.equals(toWorld) || !fromWorld.equals(game.getWorld())) {
+            // We are not interested in such events.
+            return;
+        }
+
         GamePlayer player = game.getPlayer(event.getPlayer());
         if (player == null) {
             return;

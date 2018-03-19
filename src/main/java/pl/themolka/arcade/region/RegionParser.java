@@ -11,6 +11,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -26,7 +27,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
     private Parser<Double> zParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         super.install(context);
         this.xParser = context.type(Double.class);
         this.yParser = context.type(Double.class);
@@ -51,11 +52,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
     //
 
     @Produces(AbstractRegion.Config.class)
-    public static class Auto extends RegionParser {
+    public static class Auto extends RegionParser
+                             implements InstallableParser {
         private NestedParserMap<RegionParser<?>> nested;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             this.nested = new NestedParserMap<>(context);
             this.nested.scan(RegionParser.class);
 
@@ -110,12 +112,13 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
 
     @NestedParserName("cylinder")
     @Produces(CylinderRegion.Config.class)
-    public static class Cylinder extends RegionParser<CylinderRegion.Config> {
+    public static class Cylinder extends RegionParser<CylinderRegion.Config>
+                                 implements InstallableParser {
         private Parser<Double> radiusParser;
         private Parser<Double> heightParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.radiusParser = context.type(Double.class);
             this.heightParser = context.type(Double.class);
@@ -170,11 +173,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
 
     @NestedParserName("negative")
     @Produces(NegativeRegion.Config.class)
-    public static class Negative extends RegionParser<NegativeRegion.Config> {
+    public static class Negative extends RegionParser<NegativeRegion.Config>
+                                 implements InstallableParser {
         private Parser<UnionRegion.Config> regionParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.regionParser = context.type(UnionRegion.Config.class);
         }
@@ -226,11 +230,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
 
     @NestedParserName("sphere")
     @Produces(SphereRegion.Config.class)
-    public static class Sphere extends RegionParser<SphereRegion.Config> {
+    public static class Sphere extends RegionParser<SphereRegion.Config>
+                               implements InstallableParser {
         private Parser<Double> radiusParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.radiusParser = context.type(Double.class);
         }
@@ -260,11 +265,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
 
     @NestedParserName("union")
     @Produces(UnionRegion.Config.class)
-    public static class Union extends RegionParser<UnionRegion.Config> {
+    public static class Union extends RegionParser<UnionRegion.Config>
+                              implements InstallableParser {
         private Parser<AbstractRegion.Config> regionParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.regionParser = context.type(AbstractRegion.Config.class);
         }

@@ -10,6 +10,7 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.util.Objects;
 
@@ -85,7 +86,7 @@ public class MaterialMatcher extends Matcher {
 
 class MaterialParser implements MatcherParser<MaterialMatcher> {
     @Override
-    public MaterialMatcher parsePrimitive(Node node, ParserContext context) throws ParserException {
+    public MaterialMatcher parsePrimitive(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
         return new MaterialMatcher(context.type(MaterialData.class).parse(node).orFail());
     }
 }

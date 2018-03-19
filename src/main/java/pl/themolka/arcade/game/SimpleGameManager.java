@@ -1,8 +1,12 @@
 package pl.themolka.arcade.game;
 
+import net.minecraft.server.PlayerList;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.cycle.CycleCountdown;
@@ -24,6 +28,7 @@ import pl.themolka.arcade.map.queue.MapQueueFillEvent;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.time.Time;
@@ -92,6 +97,9 @@ public class SimpleGameManager implements GameManager {
         map.getManifest().getWorld().getSpawn().setWorld(world);
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
+            GamePlayer gamePlayer = player.getGamePlayer();
+            gamePlayer.getBossBarContext().removeAll();
+
             player.setGamePlayer(new GamePlayer(game, player));
             game.getPlayers().playerJoin(player.getGamePlayer());
         }
@@ -105,8 +113,10 @@ public class SimpleGameManager implements GameManager {
         File file = map.getSettings();
         DOMEngine engine = this.plugin.getDomEngines().forFile(file);
 
-        Parser<MapManifest> parser = this.plugin.getParsers().forType(MapManifest.class);
-        if (parser == null) {
+        Parser<MapManifest> parser;
+        try {
+            parser = this.plugin.getParsers().forType(MapManifest.class);
+        } catch (ParserNotSupportedException ex) {
             throw new RuntimeException("No " + MapManifest.class.getSimpleName() + " parser installed");
         }
 
@@ -275,11 +285,21 @@ public class SimpleGameManager implements GameManager {
 
     @Override
     public void resetPlayers(Game newGame) {
+        PlayerList playerList = ((CraftServer) newGame.getServer()).getHandle();
+        int worldId = ((CraftWorld) newGame.getWorld()).getHandle().dimension;
+        Location spawn = newGame.getMap().getManifest().getWorld().getSpawn();
+
         for (GamePlayer player : newGame.getPlayers().getOnlinePlayers()) {
-            if (player.isOnline()) {
-                player.reset();
-                player.getBukkit().teleport(newGame.getMap().getManifest().getWorld().getSpawn());
+            if (!player.isOnline()) {
+                continue;
             }
+
+            // We have force player to respawn. The only way to do it is to
+            // teleport the player between worlds. Bukkit's Entity.teleport()
+            // will not teleport the player it is in the dead state. We must use
+            // NMS to teleport the player (and skip firing PlayerTeleportEvent).
+            playerList.moveToWorld(player.getMojang(), worldId, false, spawn, false);
+            player.reset(); // setHealth may break something in the moveToWorld
         }
     }
 
@@ -301,7 +321,7 @@ public class SimpleGameManager implements GameManager {
         try {
             ParserContext context = this.plugin.getParsers().createContext();
             this.setMaxGameId(context.type(Integer.class).parse(node.property("restart-after")).orFail());
-        } catch (ParserException ex) {
+        } catch (ParserNotSupportedException | ParserException ex) {
             ex.printStackTrace();
         }
     }

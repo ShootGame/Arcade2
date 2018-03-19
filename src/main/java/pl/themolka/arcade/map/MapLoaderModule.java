@@ -9,6 +9,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
 import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.repository.RepositoriesModule;
 
 import java.io.File;
@@ -113,8 +114,11 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
         }
 
         DOMEngine engine = this.getPlugin().getDomEngines().forFile(file);
-        Parser<OfflineMap> parser = this.getPlugin().getParsers().forType(OfflineMap.class);
-        if (parser == null) {
+
+        Parser<OfflineMap> parser;
+        try {
+            parser = this.getPlugin().getParsers().forType(OfflineMap.class);
+        } catch (ParserNotSupportedException ex) {
             throw new RuntimeException("No " + OfflineMap.class.getSimpleName() + " parser installed");
         }
 

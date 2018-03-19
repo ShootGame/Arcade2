@@ -20,16 +20,22 @@ public interface DOMEngine {
     }
 
     default Document read(InputStream stream) throws DOMException, IOException {
-        return this.read(new InputStreamReader(stream));
+        try (Reader reader = new InputStreamReader(stream)) {
+            return this.read(reader);
+        }
     }
 
     Document read(Reader reader) throws DOMException, IOException;
 
     default Document read(String dom) throws DOMException, IOException {
-        return this.read(new StringReader(dom));
+        try (Reader reader = new StringReader(dom)) {
+            return this.read(reader);
+        }
     }
 
     default Document read(URI uri) throws DOMException, IOException {
-        return this.read(uri.toURL().openStream());
+        try (InputStream stream = uri.toURL().openStream()) {
+            return this.read(stream);
+        }
     }
 }

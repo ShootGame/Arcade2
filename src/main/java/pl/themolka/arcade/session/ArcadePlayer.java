@@ -5,12 +5,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
-import net.minecraft.server.PacketPlayInClientCommand;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
@@ -217,6 +217,20 @@ public class ArcadePlayer implements Sender {
     }
 
     public void respawn() {
+        this.respawn(null);
+    }
+
+    /**
+     * @deprecated Will not fire {@link pl.themolka.arcade.respawn.PlayerRespawnEvent}
+     * and {@link org.bukkit.event.player.PlayerRespawnEvent}!
+     */
+    @Deprecated
+    public void respawn(Location at) {
+        int worldId = -1; // 'worldId' is not used if 'at' is null
+        if (at != null) {
+            worldId = ((CraftWorld) at.getWorld()).getHandle().dimension;
+        }
+
         Player bukkit = this.getBukkit();
         if (bukkit != null) {
             bukkit.setMaxHealth(MaxHealthContent.DEFAULT_HEALTH);
@@ -226,8 +240,7 @@ public class ArcadePlayer implements Sender {
 
         EntityPlayer mojang = this.getMojang();
         if (mojang != null) {
-            this.getMojang().playerConnection.a(new PacketPlayInClientCommand(
-                    PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+            mojang.server.getPlayerList().moveToWorld(mojang, worldId, false, at, false);
         }
     }
 

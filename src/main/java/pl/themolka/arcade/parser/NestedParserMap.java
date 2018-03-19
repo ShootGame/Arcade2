@@ -16,13 +16,13 @@ public class NestedParserMap<T extends Parser<?>> extends LinkedHashMap<String, 
         return this.get(name);
     }
 
-    public void scan(Class<?> clazz) {
+    public void scan(Class<?> clazz) throws ParserNotSupportedException {
         for (Class<?> nested : clazz.getDeclaredClasses()) {
             this.scanClass(nested);
         }
     }
 
-    protected void scanClass(Class<?> clazz) {
+    protected void scanClass(Class<?> clazz) throws ParserNotSupportedException {
         NestedParserName nameProvider = clazz.getDeclaredAnnotation(NestedParserName.class);
         if (nameProvider == null || !Parser.class.isAssignableFrom(clazz)) {
             return;

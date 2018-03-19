@@ -7,6 +7,7 @@ import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
     private Parser<String> pageParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.authorParser = context.type(String.class);
         this.generationParser = context.enumType(BookMeta.Generation.class);
         this.titleParser = context.type(String.class);

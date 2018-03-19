@@ -62,14 +62,12 @@ public class ChatChannel extends AbstractChannel {
             return empty;
         }
 
-        String name = author.getUsername();
+        String name;
         if (author.isConsole()) {
             name = ConsoleSender.getConsoleColoredName();
         } else {
             GamePlayer player = author.getGamePlayer();
-            if (player.hasDisplayName()) {
-                name = player.getFullName();
-            }
+            name = player.hasDisplayName() ? player.getFullName() : player.getUsername();
         }
 
         // event

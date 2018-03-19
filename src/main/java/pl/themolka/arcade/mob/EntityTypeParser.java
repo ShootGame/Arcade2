@@ -8,6 +8,7 @@ import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -20,7 +21,7 @@ public class EntityTypeParser extends ElementParser<EntityType>
     private Parser<String> textParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.entityTypeParser = context.enumType(EntityType.class);
         this.textParser = context.text();
     }

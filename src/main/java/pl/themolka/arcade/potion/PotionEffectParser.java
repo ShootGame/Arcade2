@@ -9,6 +9,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.time.Time;
@@ -28,7 +29,7 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     private Parser<PotionEffectType> typeParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.ambientParser = context.type(Boolean.class);
         this.amplifierParser = context.type(Integer.class);
         this.colorParser = context.type(Color.class);

@@ -9,6 +9,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.team.Team;
@@ -89,7 +90,7 @@ public class TeamContent implements RemovableKitContent<Ref<Team>> {
         private Parser<Ref> teamParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.announceParser = context.type(Boolean.class);
             this.teamParser = context.type(Ref.class);

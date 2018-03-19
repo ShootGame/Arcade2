@@ -10,6 +10,7 @@ import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -139,7 +140,7 @@ public class MessageContent implements KitContent<String> {
         private Parser<Channel> channelParser;
 
         @Override
-        public void install(ParserContext context) {
+        public void install(ParserContext context) throws ParserNotSupportedException {
             this.textParser = context.type(String.class);
             this.channelParser = context.enumType(Channel.class);
         }

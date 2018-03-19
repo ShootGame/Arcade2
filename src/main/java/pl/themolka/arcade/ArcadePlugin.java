@@ -10,7 +10,6 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-import pl.themolka.arcade.bossbar.BossBarListeners;
 import pl.themolka.arcade.command.ArcadeCommands;
 import pl.themolka.arcade.command.BukkitCommands;
 import pl.themolka.arcade.command.ConsoleSender;
@@ -48,6 +47,7 @@ import pl.themolka.arcade.module.ModulesLoadEvent;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContainer;
 import pl.themolka.arcade.parser.ParserManager;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParsersFile;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
@@ -264,7 +264,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         try {
             this.settings.setDocument(this.settings.readSettingsFile());
             this.getEventBus().publish(new SettingsReloadEvent(this, this.settings));
-        } catch (DOMException | IOException ex) {
+        } catch (DOMException | IOException | ParserNotSupportedException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -509,8 +509,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private void loadEnvironment() throws DOMException {
         Node node = this.getSettings().getData().child("environment");
 
-        Parser<Environment> parser = this.parsers.forType(Environment.class);
-        if (parser == null) {
+        Parser<Environment> parser;
+        try {
+            parser = this.parsers.forType(Environment.class);
+        } catch (ParserNotSupportedException ex) {
             throw new RuntimeException("No " + Environment.class.getSimpleName() + " parser installed");
         }
 
@@ -658,7 +660,14 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         }
 
         // Install parser dependencies
-        this.getLogger().info("Installed " + this.parsers.install() +  " parser dependencies.");
+        int done = 0;
+        try {
+            done = this.parsers.install();
+        } catch (ParserNotSupportedException ex) {
+            this.getLogger().log(Level.SEVERE, "Given parser is not supported", ex);
+        }
+
+        this.getLogger().info("Installed " + done + " parser dependencies.");
     }
 
     private void loadServer() {
@@ -675,9 +684,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.registerListenerObject(new BlockTransformListeners(this));
         this.registerListenerObject(new GeneralListeners(this));
         this.registerListenerObject(new ProtectionListeners(this));
-
-        // boss bars
-        this.registerListenerObject(new BossBarListeners(this));
 
         // dead events
         this.registerListenerObject(new DeadListeners(this));

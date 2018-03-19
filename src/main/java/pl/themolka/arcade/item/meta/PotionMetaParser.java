@@ -11,6 +11,7 @@ import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(PotionMeta.class)
@@ -22,7 +23,7 @@ class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta> {
     private Parser<PotionEffect> potionEffectParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.typeParser = context.enumType(PotionType.class);
         this.extendedParser = context.type(Boolean.class);
         this.upgradedParser = context.type(Boolean.class);

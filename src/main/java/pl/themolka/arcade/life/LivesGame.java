@@ -5,18 +5,21 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import pl.themolka.arcade.channel.Messageable;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.match.MatchEmptyEvent;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.PlayerQuitEvent;
+import pl.themolka.arcade.team.Team;
 
 import java.util.List;
 import java.util.Map;
@@ -31,20 +34,23 @@ public class LivesGame extends GameModule {
     private Match match;
 
     private final int lives;
+    private final Team fallbackTeam;
     private final boolean announce;
     private final Sound sound;
 
     private final Map<GamePlayer, Integer> remaining = new WeakHashMap<>();
 
     @Deprecated
-    public LivesGame(int lives, boolean announce, Sound sound) {
+    public LivesGame(int lives, Team fallbackTeam, boolean announce, Sound sound) {
         this.lives = lives;
+        this.fallbackTeam = fallbackTeam;
         this.announce = announce;
         this.sound = sound;
     }
 
     protected LivesGame(Config config) {
         this.lives = config.lives();
+        this.fallbackTeam = config.fallbackTeam().getIfPresent();
         this.announce = config.announce();
         this.sound = config.sound();
     }
@@ -71,6 +77,10 @@ public class LivesGame extends GameModule {
         return this.lives;
     }
 
+    public Team fallbackTeam() {
+        return this.fallbackTeam != null ? this.fallbackTeam : this.match.getObservers();
+    }
+
     public boolean announce() {
         return this.announce;
     }
@@ -85,12 +95,10 @@ public class LivesGame extends GameModule {
 
     public int addLives(GamePlayer player, int lives) {
         int newValue = this.calculate(player, lives);
+        this.remaining.put(player, newValue);
 
-        if (newValue > ZERO) {
-            // save the newValue if it is positive
-            this.remaining.put(player, newValue);
-        } else {
-            // eliminate the player if the newValue is zero or negative
+        // eliminate the player if the newValue is zero or negative
+        if (newValue <= ZERO) {
             this.eliminate(player, false);
         }
 
@@ -118,7 +126,7 @@ public class LivesGame extends GameModule {
 
             this.remaining.remove(event.getPlayer());
             if (!serverQuit) {
-                this.match.getObservers().join(event.getPlayer(), true);
+                this.fallbackTeam().join(event.getPlayer(), true, true);
             }
 
             // I don't know if it should be done here.
@@ -143,6 +151,12 @@ public class LivesGame extends GameModule {
         for (ArcadePlayer player : event.getPlugin().getPlayers()) {
             this.remaining.put(player.getGamePlayer(), this.lives());
         }
+    }
+
+    @Handler(priority = Priority.LOWEST)
+    public void matchEmpty(MatchEmptyEvent event) {
+        // The match may not end if it's empty.
+        event.setCanceled(true);
     }
 
     //
@@ -199,6 +213,7 @@ public class LivesGame extends GameModule {
 
     public interface Config extends IGameModuleConfig<LivesGame> {
         default int lives() { return 1; }
+        default Ref<Team> fallbackTeam() { return Ref.empty(); }
         default boolean announce() { return true; }
         default Sound sound() { return DEFAULT_SOUND; }
 

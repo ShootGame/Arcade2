@@ -6,6 +6,7 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
@@ -21,7 +22,7 @@ public class AuthorParser extends NodeParser<Author>
     private Parser<String> descriptionParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.usernameParser = context.text();
         this.uuidParser = context.type(UUID.class);
         this.descriptionParser = context.text();

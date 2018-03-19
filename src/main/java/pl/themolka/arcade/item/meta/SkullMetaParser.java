@@ -7,6 +7,7 @@ import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(SkullMeta.class)
@@ -14,7 +15,7 @@ class SkullMetaParser extends ItemMetaParser.Nested<SkullMeta> {
     private Parser<String> ownerParser;
 
     @Override
-    public void install(ParserContext context) {
+    public void install(ParserContext context) throws ParserNotSupportedException {
         this.ownerParser = context.text();
     }
 
