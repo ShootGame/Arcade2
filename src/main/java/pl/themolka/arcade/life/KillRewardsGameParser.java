@@ -8,6 +8,7 @@ import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ public class KillRewardsGameParser extends GameModuleParser<KillRewardsGame, Kil
         List<KillReward> rewards = new ArrayList<>();
         for (Node rewardNode : node.children("reward")) {
             rewards.add(this.killRewardParser.parse(rewardNode).orFail());
+        }
+
+        if (ParserUtils.ensureNotEmpty(rewards)) {
+            throw this.fail(node, name, null, "No rewards defined");
         }
 
         return ParserResult.fine(node, name, new KillRewardsGame.Config() {

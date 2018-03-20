@@ -47,6 +47,8 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.SoundContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.TeamContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.WalkSpeedContent$ContentParser" />
+    <parser class="pl.themolka.arcade.life.KillEnemiesParser" />
+    <parser class="pl.themolka.arcade.life.KillEnemiesGameParser" />
     <parser class="pl.themolka.arcade.life.KillRewardParser" />
     <parser class="pl.themolka.arcade.life.KillRewardsGame" />
     <parser class="pl.themolka.arcade.life.LivesGameParser" />

@@ -8,6 +8,7 @@ import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.LinkedHashSet;
@@ -39,7 +40,7 @@ public class DamageGameParser extends GameModuleParser<DamageGame, DamageGame.Co
             rules.add(this.ruleParser.parse(ruleNode).orFail());
         }
 
-        if (rules.isEmpty()) {
+        if (ParserUtils.ensureNotEmpty(rules)) {
             throw this.fail(node, name, null, "No rules defined");
         }
 

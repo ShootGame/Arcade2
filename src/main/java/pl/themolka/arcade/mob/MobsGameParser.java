@@ -8,6 +8,7 @@ import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.ArrayList;
@@ -43,8 +44,8 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
 
         boolean denyNatural = this.denyNautralParser.parse(node.property("deny-natural")).orDefault(false);
 
-        if (!denyNatural && rules.isEmpty()) {
-            ParserResult.empty(node, name);
+        if (!denyNatural && ParserUtils.ensureNotEmpty(rules)) {
+            throw this.fail(node, name, value, "No rules defined");
         }
 
         return ParserResult.fine(node, name, value, new MobsGame.Config() {

@@ -33,4 +33,8 @@ public final class ParserUtils {
 
         return array;
     }
+
+    public static boolean ensureNotEmpty(Iterable<?> array) {
+        return !array.iterator().hasNext();
+    }
 }

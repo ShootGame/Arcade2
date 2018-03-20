@@ -2,7 +2,9 @@ package pl.themolka.arcade.life;
 
 import net.engio.mbassy.listener.Handler;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.DynamicWinnable;
@@ -27,6 +29,22 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
 
     private Match match;
 
+    public KillEnemiesGame() {
+    }
+
+    protected KillEnemiesGame(Game game, Config config) {
+        Match match = ((MatchGame) game.getModule(MatchModule.class)).getMatch();
+        match.registerDynamicWinnable(this);
+
+        for (KillEnemies.Config objectiveConfig : config.objectives()) {
+            KillEnemies objective = objectiveConfig.create(game);
+            Participator owner = objective.getOwner();
+
+            owner.addGoal(objective);
+            this.byOwner.put(owner, objective);
+        }
+    }
+
     @Override
     public void onEnable() {
         GameModule module = this.getGame().getModule(MatchModule.class);
@@ -39,7 +57,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
 
         Collection<MatchWinner> winnerList = this.getMatch().getWinnerList();
         for (MatchWinner winner : winnerList) {
-            KillEnemies objective = new KillEnemies(this, winner, this.fetchEnemies(winnerList, winner));
+            KillEnemies objective = new KillEnemies(this.getGame(), winner, this.fetchEnemies(winnerList, winner));
 
             // Make sure that KillEnemies is only ONE per Participator
             if (objective.isCompletableBy(winner) && this.getObjective(winner) == null) {
@@ -132,5 +150,14 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     @Handler(priority = Priority.LOWEST)
     public void teamLeft(PlayerLeftTeamEvent event) {
         this.refreshObjectives(event.getGamePlayer());
+    }
+
+    public interface Config extends IGameModuleConfig<KillEnemiesGame> {
+        Set<KillEnemies.Config> objectives();
+
+        @Override
+        default KillEnemiesGame create(Game game) {
+            return new KillEnemiesGame(game, this);
+        }
     }
 }

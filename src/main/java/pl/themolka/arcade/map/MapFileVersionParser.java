@@ -23,6 +23,6 @@ public class MapFileVersionParser extends ElementParser<MapFileVersion> {
             return ParserResult.fine(element, name, value, version);
         }
 
-        throw this.fail(element, name, value, "Illegal map file version format");
+        throw this.fail(element, name, value, "Illegal map manifest file version format");
     }
 }
