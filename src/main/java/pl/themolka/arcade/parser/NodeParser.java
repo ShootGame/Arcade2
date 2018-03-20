@@ -28,9 +28,11 @@ public abstract class NodeParser<T> extends AbstractParser<T> {
 
         // ^ None of these - try anyway
 
-        ParserResult<T> primitive = this.parsePrimitive(node, name, value);
-        if (primitive != null) {
-            return primitive;
+        if (value != null) {
+            ParserResult<T> primitive = this.parsePrimitive(node, name, value);
+            if (primitive != null) {
+                return primitive;
+            }
         }
 
         ParserResult<T> tree = this.parseTree(node, name);
@@ -43,10 +45,10 @@ public abstract class NodeParser<T> extends AbstractParser<T> {
 
     /**
      * Primitive <b>or trimmed</b> {@link Node} type.
-     * NOTE: {@code value} can be {@code null}.
+     * NOTE: {@code value} cannot be {@code null}.
      */
     protected ParserResult<T> parsePrimitive(Node node, String name, String value) throws ParserException {
-        throw this.fail(node, name, value, "Node is not tree type");
+        return this.parseTree(node, name);
     }
 
     /**

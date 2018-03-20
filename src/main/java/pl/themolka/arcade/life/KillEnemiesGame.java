@@ -15,6 +15,7 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.team.PlayerJoinedTeamEvent;
 import pl.themolka.arcade.team.PlayerLeftTeamEvent;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.Collection;

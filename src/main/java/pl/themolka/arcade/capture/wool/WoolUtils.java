@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.util.Color;
 
 public final class WoolUtils {
@@ -124,12 +125,7 @@ public final class WoolUtils {
     }
 
     public static String name(DyeColor color) {
-        String[] name = StringUtils.split(color.toString(), '_');
-        for (int i = 0; i < name.length; i++) {
-            name[i] = StringUtils.capitalize(name[i].toLowerCase());
-        }
-
-        return StringUtils.join(name, ' ');
+        return EnumParser.toPrettyCapitalizedValue(color.name());
     }
 
     public static String name(org.bukkit.material.Wool wool) {

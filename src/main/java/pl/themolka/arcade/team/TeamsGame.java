@@ -319,7 +319,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
         }
 
         int min = team.getMinPlayers();
-        if (min != 0 && team.getOnlineMembers().size() < min) {
+        if (!this.match.isForceStart() && min != 0 && team.getOnlineMembers().size() < min) {
             team.getMatch().matchEmpty(team);
         }
     }

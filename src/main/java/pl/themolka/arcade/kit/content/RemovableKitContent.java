@@ -1,16 +1,16 @@
 package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.Removable;
+import pl.themolka.arcade.util.Removable;
 
-public interface RemovableKitContent<T> extends KitContent<T>, Removable {
+public interface RemovableKitContent<T> extends KitContent<T>, Removable<GamePlayer> {
     @Override
     default void apply(GamePlayer player) {
         this.attach(player, this.getResult());
     }
 
     @Override
-    default void revoke(GamePlayer player) {
+    default void remove(GamePlayer player) {
         this.attach(player, defaultValue());
     }
 

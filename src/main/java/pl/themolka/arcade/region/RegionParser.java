@@ -58,10 +58,9 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.nested = new NestedParserMap<>(context);
             this.nested.scan(RegionParser.class);
-
-            super.install(context);
         }
 
         @Override

@@ -20,6 +20,10 @@ public class KitApply implements PlayerApplicable {
         return this.kit;
     }
 
+    /**
+     * @deprecated Used in deprecated {@link pl.themolka.arcade.team.XMLTeam}
+     */
+    @Deprecated
     public static KitApply parse(String id, KitsGame kits) {
         if (id != null) {
             Kit kit = kits.getKit(id.trim());

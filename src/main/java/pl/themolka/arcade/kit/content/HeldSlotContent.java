@@ -48,6 +48,7 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.slotParser = context.type(Integer.class);
         }
 

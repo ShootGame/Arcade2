@@ -1,5 +1,6 @@
 package pl.themolka.arcade.parser;
 
+import org.apache.commons.lang3.StringUtils;
 import pl.themolka.arcade.dom.Element;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
 
         T[] constants = this.type.getEnumConstants();
         for (T constant : constants) {
-            expect.add(toPrettyValue(toPrettyValue(constant.name())));
+            expect.add(toEnumValue(constant.name()));
         }
 
         return expect;
@@ -73,6 +74,15 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
 
     public static String toPrettyValue(String input) {
         return input.toLowerCase().replace("_", " ");
+    }
+
+    public static String toPrettyCapitalizedValue(String input) {
+        String[] words = toPrettyValue(input).split(" ");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[0].length() == 1 ? words[0] : StringUtils.capitalize(words[0]);
+        }
+
+        return StringUtils.join(words, ' ');
     }
 
     public <T extends Enum<T>> List<Object> valueNames(Class<T> enumClass) {

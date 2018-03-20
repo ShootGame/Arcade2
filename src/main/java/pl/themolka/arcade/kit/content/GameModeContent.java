@@ -54,6 +54,7 @@ public class GameModeContent implements KitContent<GameMode>  {
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.gameModeParser = context.type(GameMode.class);
         }
 

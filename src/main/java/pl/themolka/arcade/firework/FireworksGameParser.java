@@ -26,6 +26,7 @@ public class FireworksGameParser extends GameModuleParser<FireworksGame, Firewor
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.enabledParser = context.type(Boolean.class);
     }
 

@@ -4,6 +4,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -11,7 +12,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(FireworkEffectMeta.class)
-class FireworkEffectMetaParser extends ItemMetaParser.Nested<FireworkEffectMeta> {
+class FireworkEffectMetaParser extends ItemMetaParser.Nested<FireworkEffectMeta>
+                               implements InstallableParser {
     private Parser<FireworkEffect> fireworkEffectParser;
 
     @Override

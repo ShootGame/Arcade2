@@ -13,6 +13,7 @@ public class BaseRemovableContentParser<T extends KitContent<?>> extends BaseCon
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.resetParser = context.type(Boolean.class);
     }
 

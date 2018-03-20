@@ -7,6 +7,7 @@ import org.jdom2.Element;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.item.XMLItemStack;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
@@ -34,7 +35,8 @@ public class LeggingsContent extends BaseArmorContent {
 
     @NestedParserName({"leggings", "armor-leggings", "armorleggings"})
     @Produces(LeggingsContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<LeggingsContent> {
+    public static class ContentParser extends BaseRemovableContentParser<LeggingsContent>
+                                      implements InstallableParser {
         private Parser<ItemStack> itemStackParser;
 
         @Override
@@ -44,7 +46,7 @@ public class LeggingsContent extends BaseArmorContent {
         }
 
         @Override
-        protected ParserResult<LeggingsContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<LeggingsContent> parseNode(Node node, String name, String value) throws ParserException {
             ItemStack leggings = this.reset(node) ? null : this.itemStackParser.parse(node).orFail();
             return ParserResult.fine(node, name, value, new LeggingsContent(leggings));
         }

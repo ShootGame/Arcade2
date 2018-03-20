@@ -29,7 +29,7 @@ import java.util.UUID;
 /**
  * A game representation of the currently playing map.
  */
-public class Game implements Messageable, PlayerVisibilityFilter {
+public class Game implements Messageable {
     private final ArcadePlugin plugin;
 
     private final int gameId;
@@ -38,7 +38,7 @@ public class Game implements Messageable, PlayerVisibilityFilter {
     private final GamePlayerManager players = new GamePlayerManager();
     private Instant startTime;
     private final List<Task> taskList = new ArrayList<>();
-    private final List<PlayerVisibilityFilter> visibilityFilters = new ArrayList<>();
+    private final VisibilityManager visibility = new VisibilityManager();
     private final GameWindowRegistry windowRegistry;
     private final Reference<World> world;
 
@@ -58,30 +58,6 @@ public class Game implements Messageable, PlayerVisibilityFilter {
         this.world = new WeakReference<>(world);
 
         this.readModules();
-    }
-
-    /**
-     * Filters <code>target</code>s visibility by the <code>viewer</code> in this game.
-     * @param viewer Viewer who can or cannot see the <code>target</code> player.
-     * @param target Player who can or cannot be viewed by the <code>viewer</code>.
-     * @return <code>true</code> if <code>target</code> is visible, <code>false</code> otherwise.
-     */
-    @Override
-    public boolean canSee(GamePlayer viewer, GamePlayer target) {
-        if (!viewer.isOnline() || !target.isOnline()) {
-            return false;
-        }
-
-        boolean def = PlayerVisibilityFilter.DEFAULT.canSee(viewer, target);
-        for (PlayerVisibilityFilter filter : this.visibilityFilters) {
-            boolean value = filter.canSee(viewer, target);
-
-            if (value != def) {
-                return value;
-            }
-        }
-
-        return def;
     }
 
     @Override
@@ -128,10 +104,6 @@ public class Game implements Messageable, PlayerVisibilityFilter {
         }
 
         return id;
-    }
-
-    public boolean addVisiblityFilter(PlayerVisibilityFilter filter) {
-        return this.visibilityFilters.add(filter);
     }
 
     public void enableModule(GameModule module) {
@@ -274,8 +246,8 @@ public class Game implements Messageable, PlayerVisibilityFilter {
         return this.taskList;
     }
 
-    public List<PlayerVisibilityFilter> getVisibilityFilters() {
-        return new ArrayList<>(this.visibilityFilters);
+    public VisibilityManager getVisibility() {
+        return this.visibility;
     }
 
     public GameWindowRegistry getWindowRegistry() {
@@ -326,10 +298,6 @@ public class Game implements Messageable, PlayerVisibilityFilter {
 
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
-    }
-
-    public boolean removeVisiblityFilter(PlayerVisibilityFilter filter) {
-        return this.visibilityFilters.remove(filter);
     }
 
     public void sendGoalMessage(String message) {

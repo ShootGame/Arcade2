@@ -38,8 +38,8 @@ public class XMLLocation extends XMLParser {
             double paramX = parseDouble(xml.getAttributeValue(ATTRIBUTE_X), x);
             double paramY = parseDouble(xml.getAttributeValue(ATTRIBUTE_Y), y);
             double paramZ = parseDouble(xml.getAttributeValue(ATTRIBUTE_Z), z);
-            float paramYaw = parseFloat(xml.getAttributeValue(ATTRIBUTE_YAW), yaw);
-            float paramPitch = parseFloat(xml.getAttributeValue(ATTRIBUTE_PITCH), pitch);
+            float paramYaw = (float) parseDouble(xml.getAttributeValue(ATTRIBUTE_YAW), yaw);
+            float paramPitch = (float) parseDouble(xml.getAttributeValue(ATTRIBUTE_PITCH), pitch);
 
             return new Location((World) null, paramX, paramY, paramZ, paramYaw, paramPitch);
         }

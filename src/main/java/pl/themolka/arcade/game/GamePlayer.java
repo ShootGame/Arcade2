@@ -213,7 +213,7 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
 
     public boolean canSee(GamePlayer target) {
         Game game = this.getGame();
-        return this.isOnline() && target.isOnline() && game != null && game.canSee(this, target);
+        return this.isOnline() && target.isOnline() && game != null && game.getVisibility().canSee(this, target);
     }
 
     public BossBarContext getBossBarContext() {

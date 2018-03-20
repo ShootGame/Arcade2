@@ -73,6 +73,7 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.effectParser = context.type(PotionEffect.class);
             this.modeParser = context.type(Mode.class);
         }

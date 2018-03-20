@@ -30,6 +30,7 @@ public class KillEnemiesGameParser extends GameModuleParser<KillEnemiesGame, Kil
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.objectiveParser = context.type(KillEnemies.Config.class);
     }
 

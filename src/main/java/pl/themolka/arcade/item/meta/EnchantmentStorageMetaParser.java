@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.item.ItemEnchantment;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -11,7 +12,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(EnchantmentStorageMeta.class)
-class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStorageMeta> {
+class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStorageMeta>
+                                   implements InstallableParser {
     private Parser<ItemEnchantment> enchantmentParser;
 
     @Override

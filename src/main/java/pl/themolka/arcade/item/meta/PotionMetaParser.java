@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -15,7 +16,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(PotionMeta.class)
-class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta> {
+class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta>
+                       implements InstallableParser {
     private Parser<PotionType> typeParser;
     private Parser<Boolean> extendedParser;
     private Parser<Boolean> upgradedParser;

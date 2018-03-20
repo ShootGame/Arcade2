@@ -1,13 +1,17 @@
 package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.util.Applicable;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class Kit implements Applicable<GamePlayer>, StringId {
     private final ArcadePlugin plugin;
@@ -16,10 +20,16 @@ public class Kit implements Applicable<GamePlayer>, StringId {
     private final String id;
     private final List<String> inherit = new ArrayList<>();
 
+    @Deprecated
     public Kit(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
 
         this.id = id;
+    }
+
+    protected Kit(Game game, Config config) {
+        this.plugin = game.getPlugin();
+        this.id = config.id();
     }
 
     @Override
@@ -71,5 +81,15 @@ public class Kit implements Applicable<GamePlayer>, StringId {
 
     public boolean removeContent(KitContent<?> content) {
         return this.content.remove(content);
+    }
+
+    public interface Config extends IGameConfig<Kit>, StringId {
+        List<KitContent<?>> contents();
+        default Set<String> inherit() { return Collections.emptySet(); }
+
+        @Override
+        default Kit create(Game game) {
+            return new Kit(game, this);
+        }
     }
 }

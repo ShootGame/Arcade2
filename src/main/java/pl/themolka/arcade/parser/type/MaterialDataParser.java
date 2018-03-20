@@ -36,8 +36,8 @@ public class MaterialDataParser extends ElementParser<MaterialData>
     protected ParserResult<MaterialData> parseElement(Element element, String name, String value) throws ParserException {
         String[] split = value.split(":", 2);
 
-        Material material = this.materialParser.parseWithValue(element, value).orFail();
-        byte data = this.dataParser.parseWithValue(element, split.length > 1 ? split[1] : null).orDefault((byte) 0);
+        Material material = this.materialParser.parseWithValue(element, split[0]).orFail();
+        byte data = split.length > 1 ? this.dataParser.parseWithValue(element, split[1]).orFail() : 0;
 
         return ParserResult.fine(element, name, value, new MaterialData(material, data));
     }

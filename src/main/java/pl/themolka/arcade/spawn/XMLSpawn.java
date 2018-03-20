@@ -44,12 +44,12 @@ public class XMLSpawn extends XMLParser {
 
         Attribute yawAttr = xml.getAttribute("yaw");
         if (yawAttr != null) {
-            spawn.setYaw(parseFloat(yawAttr.getValue(), 180F));
+            spawn.setYaw((float) parseDouble(yawAttr.getValue(), 180F));
         }
 
         Attribute pitchAttr = xml.getAttribute("pitch");
         if (pitchAttr != null) {
-            spawn.setPitch(parseFloat(pitchAttr.getValue(), 0F));
+            spawn.setPitch((float) parseDouble(pitchAttr.getValue(), 0F));
         }
 
         return spawn;

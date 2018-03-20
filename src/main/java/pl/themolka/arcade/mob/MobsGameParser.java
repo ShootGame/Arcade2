@@ -31,6 +31,7 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.ruleParser = context.type(MobSpawnRule.Config.class);
         this.denyNautralParser = context.type(Boolean.class);
     }

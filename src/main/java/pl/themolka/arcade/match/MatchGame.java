@@ -52,7 +52,7 @@ public class MatchGame extends GameModule {
         this.startCountdown = new MatchStartCountdown(this.getPlugin(), this.getMatch());
         this.getStartCountdown().setGame(this.getGame());
 
-        this.getGame().addVisiblityFilter(new MatchVisibilityFilter(this.getMatch())); // visibility filter
+        this.getGame().getVisibility().addFilter(new MatchVisibilityFilter(this.getMatch())); // visibility filter
 
         for (ArcadePlayer player : this.getPlugin().getPlayers()) {
             if (player.getGamePlayer() != null) {

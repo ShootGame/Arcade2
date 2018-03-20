@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -12,7 +13,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(SpawnEggMeta.class)
-class SpawnEggMetaParser extends ItemMetaParser.Nested<SpawnEggMeta> {
+class SpawnEggMetaParser extends ItemMetaParser.Nested<SpawnEggMeta>
+                         implements InstallableParser {
     private Parser<EntityType> spawnedTypeParser;
 
     @Override

@@ -31,6 +31,7 @@ public class AutoRespawnGameParser extends GameModuleParser<AutoRespawnGame, Aut
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.filterParser = context.type(Ref.class);
         this.cooldownParser = context.type(Time.class);
     }

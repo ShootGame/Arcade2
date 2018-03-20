@@ -141,6 +141,7 @@ public class MessageContent implements KitContent<String> {
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.textParser = context.type(String.class);
             this.channelParser = context.enumType(Channel.class);
         }

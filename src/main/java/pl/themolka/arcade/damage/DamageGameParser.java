@@ -30,6 +30,7 @@ public class DamageGameParser extends GameModuleParser<DamageGame, DamageGame.Co
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.ruleParser = context.type(DamageRule.Config.class);
     }
 

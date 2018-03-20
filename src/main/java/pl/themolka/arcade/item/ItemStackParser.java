@@ -84,8 +84,11 @@ public class ItemStackParser extends NodeParser<ItemStack>
             throw this.fail(durabilityProperty, "Sorry! Durability cannot be combined with material data!");
         }
 
-        ItemStack itemStack = new ItemStack(type, amount);
+        ItemStack itemStack = new ItemStack(type.getItemType());
+        itemStack.setData(type);
+        itemStack.setAmount(amount);
         itemStack.setDurability(durability);
+
         for (ItemEnchantment enchantment : enchantments) {
             enchantment.apply(itemStack);
         }
@@ -97,8 +100,14 @@ public class ItemStackParser extends NodeParser<ItemStack>
         if (!description.isEmpty()) {
             itemMeta.setLore(description);
         }
-        itemMeta.setCanDestroy(canDestroy);
-        itemMeta.setCanPlaceOn(canPlaceOn);
+
+        if (!canDestroy.isEmpty()) {
+            itemMeta.setCanDestroy(canDestroy);
+        }
+        if (!canPlaceOn.isEmpty()) {
+            itemMeta.setCanPlaceOn(canPlaceOn);
+        }
+
         itemMeta.setUnbreakable(unbreakable);
         itemMeta.addItemFlags(flags.toArray(new ItemFlag[flags.size()]));
 

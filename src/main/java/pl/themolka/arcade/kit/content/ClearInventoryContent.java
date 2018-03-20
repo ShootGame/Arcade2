@@ -52,6 +52,7 @@ public class ClearInventoryContent implements KitContent<Boolean> {
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.armorParser = context.type(Boolean.class);
         }
 

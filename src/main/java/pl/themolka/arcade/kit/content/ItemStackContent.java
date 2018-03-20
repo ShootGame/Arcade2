@@ -102,6 +102,7 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.itemStackParser = context.type(ItemStack.class);
             this.modeParser = context.type(Mode.class);
             this.slotParser = context.type(Integer.class);

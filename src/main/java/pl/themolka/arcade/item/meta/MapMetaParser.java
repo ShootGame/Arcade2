@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -12,7 +13,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 
 @Produces(MapMeta.class)
-class MapMetaParser extends ItemMetaParser.Nested<MapMeta> {
+class MapMetaParser extends ItemMetaParser.Nested<MapMeta>
+                    implements InstallableParser {
     private Parser<Boolean> scalingParser;
     private Parser<String> locationNameParser;
     private Parser<Color> colorParser;

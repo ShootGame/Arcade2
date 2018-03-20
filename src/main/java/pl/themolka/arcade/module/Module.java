@@ -7,7 +7,9 @@ import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
+import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.util.StringId;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-public class Module<T> extends SimpleModuleListener
+public class Module<GM extends GameModule> extends SimpleModuleListener
                        implements GameHolder, Listener, StringId {
     public static final String DEFAULT_VERSION_STRING = "1.0";
     public static final Version DEFAULT_VERSION = Version.valueOf(DEFAULT_VERSION_STRING);
@@ -80,8 +82,12 @@ public class Module<T> extends SimpleModuleListener
      * @deprecated The modern way is to use {@link pl.themolka.arcade.game.IGameConfig#create(Game)}.
      */
     @Deprecated
-    public T buildGameModule(Element xml, Game game) throws JDOMException {
+    public GM buildGameModule(Element xml, Game game) throws JDOMException {
         return null;
+    }
+
+    public GM createGameModule(Game game, IGameModuleConfig<GM> config) {
+        return config.create(game);
     }
 
     public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
@@ -99,10 +105,10 @@ public class Module<T> extends SimpleModuleListener
         return this.dependency;
     }
 
-    public T getGameModule() {
+    public GM getGameModule() {
         Game game = this.plugin.getGames().getCurrentGame();
         if (game != null) {
-            return (T) game.getModules().getModuleById(this.getId());
+            return (GM) game.getModules().getModuleById(this.getId());
         }
 
         return null;

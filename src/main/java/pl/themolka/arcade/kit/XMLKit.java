@@ -9,6 +9,10 @@ import pl.themolka.arcade.kit.content.KitContentType;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.xml.XMLParser;
 
+/**
+ * @deprecated {@link KitParser}
+ */
+@Deprecated
 public class XMLKit extends XMLParser {
     public static Kit parse(ArcadePlugin plugin, Element xml) {
         String id = xml.getAttributeValue("id");

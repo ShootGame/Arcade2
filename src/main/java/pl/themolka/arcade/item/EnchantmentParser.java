@@ -3,6 +3,7 @@ package pl.themolka.arcade.item;
 import org.bukkit.enchantments.Enchantment;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.ElementParser;
+import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
@@ -19,11 +20,15 @@ public class EnchantmentParser extends ElementParser<Enchantment> {
 
     @Override
     protected ParserResult<Enchantment> parseElement(Element element, String name, String value) throws ParserException {
-        Enchantment enchantment = Enchantment.getByName(value);
+        Enchantment enchantment = Enchantment.getByName(this.normalizeEnchantmentName(value));
         if (enchantment == null) {
             throw this.fail(element, name, value, "Unknown enchantment type");
         }
 
         return ParserResult.fine(element, name, value, enchantment);
+    }
+
+    protected String normalizeEnchantmentName(String input) {
+        return EnumParser.toEnumValue(input);
     }
 }

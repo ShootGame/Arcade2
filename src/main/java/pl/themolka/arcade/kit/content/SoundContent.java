@@ -112,6 +112,7 @@ public class SoundContent implements KitContent<Sound> {
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
             this.soundParser = context.enumType(Sound.class);
             this.locationParser = context.type(Location.class);
             this.pitchParser = context.type(Float.class);

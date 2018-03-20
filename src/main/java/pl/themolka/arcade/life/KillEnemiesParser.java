@@ -1,10 +1,10 @@
 package pl.themolka.arcade.life;
 
+import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.parser.InstallableParser;
-import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
@@ -18,7 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Produces(KillEnemies.Config.class)
-public class KillEnemiesParser extends NodeParser<KillEnemies.Config>
+public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
                                implements InstallableParser {
     private Parser<Ref> ownerParser;
     private Parser<Ref> enemyParser;
@@ -30,16 +30,19 @@ public class KillEnemiesParser extends NodeParser<KillEnemies.Config>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.ownerParser = context.type(Ref.class);
         this.enemyParser = context.type(Ref.class);
     }
 
     @Override
     protected ParserResult<KillEnemies.Config> parseNode(Node node, String name, String value) throws ParserException {
+        String id = this.parseId(node);
         Ref<Participator> owner = this.parseOwner(node);
         Set<Ref<Participator>> enemies = Collections.singleton(this.enemyParser.parse(node).orFail());
 
         return ParserResult.fine(node, name, value, new KillEnemies.Config() {
+            public String id() { return id; }
             public Ref<Participator> owner() { return owner; }
             public Set<Ref<Participator>> enemies() { return enemies; }
         });
@@ -47,18 +50,19 @@ public class KillEnemiesParser extends NodeParser<KillEnemies.Config>
 
     @Override
     protected ParserResult<KillEnemies.Config> parseTree(Node node, String name) throws ParserException {
+        String id = this.parseId(node);
         Ref<Participator> owner = this.parseOwner(node);
         Set<Ref<Participator>> enemies = this.parseEnemies(node, name, null);
 
         return ParserResult.fine(node, name, new KillEnemies.Config() {
-            public Ref<Participator> owner() {
-                return owner;
-            }
-
-            public Set<Ref<Participator>> enemies() {
-                return enemies;
-            }
+            public String id() { return id; }
+            public Ref<Participator> owner() { return owner; }
+            public Set<Ref<Participator>> enemies() { return enemies; }
         });
+    }
+
+    protected String parseId(Node node) throws ParserException {
+        return this.parseOptionalId(node);
     }
 
     protected Ref<Participator> parseOwner(Node node) throws ParserException {

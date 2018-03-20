@@ -28,6 +28,7 @@ public class HungerGameParser extends GameModuleParser<HungerGame, HungerGame.Co
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.filterParser = context.type(Ref.class);
     }
 

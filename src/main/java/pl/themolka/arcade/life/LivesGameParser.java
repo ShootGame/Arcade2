@@ -32,6 +32,7 @@ public class LivesGameParser extends GameModuleParser<LivesGame, LivesGame.Confi
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
         this.livesParser = context.type(Integer.class);
         this.fallbackParser = context.type(Ref.class);
         this.announceParser = context.type(Boolean.class);
