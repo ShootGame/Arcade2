@@ -35,6 +35,11 @@ public class PlayerTitleParser extends NodeParser<PlayerTitle>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        this.primaryParser = context.type(BaseComponent.class);
+        this.seconaryParser = context.type(BaseComponent.class);
+        this.fadeInParser = context.type(Time.class);
+        this.viewTimeParser = context.type(Time.class);
+        this.fadeOutParser = context.type(Time.class);
     }
 
     @Override
