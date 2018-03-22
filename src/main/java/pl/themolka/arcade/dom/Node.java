@@ -495,6 +495,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
 
     public static Node append(Node node, List<Node> children) {
         if (node != null && children != null) {
+            node.resetPrimitive();
             node.children.addAll(children);
         }
 

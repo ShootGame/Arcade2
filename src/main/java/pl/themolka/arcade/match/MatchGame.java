@@ -219,9 +219,9 @@ public class MatchGame extends GameModule {
         BaseComponent[] loserComponent = TextComponent.fromLegacyText(
                 ChatColor.RED + ChatColor.UNDERLINE.toString() + "Defeat!");
 
-        BaseComponent[] resultComponent;
         MatchWinner winner = event.getWinner();
 
+        BaseComponent[] resultComponent;
         if (winner != null) {
             resultComponent = TextComponent.fromLegacyText(winner.getMessage());
         } else {

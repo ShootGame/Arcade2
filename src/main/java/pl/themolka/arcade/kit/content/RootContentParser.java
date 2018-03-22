@@ -39,6 +39,7 @@ public class RootContentParser extends NodeParser<KitContent<?>>
             .add(SaturationContent.class)
             .add(SoundContent.class)
             .add(TeamContent.class)
+            .add(TitleContent.class)
             .add(WalkSpeedContent.class)
             .build();
 

@@ -8,32 +8,16 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 @Produces(Boolean.class)
 public class BooleanParser extends ElementParser<Boolean> {
-    public static final String[] TRUE = new String[] {
-            "true", "1", "+", "yes", "allow", "on", "enable", "enabled"};
-    public static final String[] FALSE = new String[] {
-            "false", "0", "-", "no", "deny", "off", "disable", "disabled"};
-
-    private static final Map<String, Boolean> values;
-
-    static {
-        Map<String, Boolean> factory = new LinkedHashMap<>();
-        collect(factory, TRUE, true);
-        collect(factory, FALSE, false);
-
-        values = ImmutableMap.copyOf(factory);
-    }
-
-    private static void collect(Map<String, Boolean> map, String[] array, boolean value) {
-        for (String key : array) {
-            map.put(key, value);
-        }
-    }
+    private static final Map<String, Boolean> values = ImmutableMap.<String, Boolean>builder()
+            .putAll(Types.TRUE.toMap())
+            .putAll(Types.FALSE.toMap())
+            .build();
 
     @Override
     public Set<Object> expect() {
@@ -48,5 +32,27 @@ public class BooleanParser extends ElementParser<Boolean> {
         }
 
         throw this.fail(element, name, value, "Unknown boolean property");
+    }
+
+    enum Types {
+        TRUE(true, "true", "1", "+", "yes", "allow", "on", "enable", "enabled"),
+        FALSE(false, "false", "0", "-", "no", "deny", "off", "disable", "disabled");
+
+        final boolean asBoolean;
+        final String[] values;
+
+        Types(boolean asBoolean, String... values) {
+            this.asBoolean = asBoolean;
+            this.values = values;
+        }
+
+        Map<String, Boolean> toMap() {
+            Map<String, Boolean> collect = new HashMap<>();
+            for (String value : this.values) {
+                collect.put(value, this.asBoolean);
+            }
+
+            return collect;
+        }
     }
 }

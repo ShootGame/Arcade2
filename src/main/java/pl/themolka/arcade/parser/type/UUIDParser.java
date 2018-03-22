@@ -19,25 +19,35 @@ public class UUIDParser extends ElementParser<UUID> {
 
     @Override
     protected ParserResult<UUID> parseElement(Element element, String name, String value) throws ParserException {
-        UUID result;
         try {
-            if (value.length() == 32) {
-                // trimmed format
-                result = UUID.fromString(value.substring(0, 8) + "-" +
-                                         value.substring(8, 12) + "-" +
-                                         value.substring(12, 16) + "-" +
-                                         value.substring(16, 20) + "-" +
-                                         value.substring(20, 32));
-            } else if (value.length() == 36) {
-                // standard format
-                result = UUID.fromString(value);
-            } else {
-                throw this.fail(element, name, value, "Unknown UUID format");
+            UUID result = this.parseUnknown(value);
+            if (result != null) {
+                return ParserResult.fine(element, name, value, result);
             }
+
+            throw this.fail(element, name, value, "Unknown UUID format");
         } catch (IllegalArgumentException ex) {
             throw this.fail(element, name, value, "Illegal UUID syntax", ex);
         }
+    }
 
-        return ParserResult.fine(element, name, value, result);
+    protected UUID parseUnknown(String input) throws IllegalArgumentException {
+        switch (input.length()) {
+            case 32: return this.parseTrimmed(input);
+            case 36: return this.parseStandard(input);
+            default: return null;
+        }
+    }
+
+    protected UUID parseTrimmed(String input) throws IllegalArgumentException {
+        return UUID.fromString(input.substring(0, 8) + "-" +
+                input.substring(8, 12) + "-" +
+                input.substring(12, 16) + "-" +
+                input.substring(16, 20) + "-" +
+                input.substring(20, 32));
+    }
+
+    protected UUID parseStandard(String input) throws IllegalArgumentException {
+        return UUID.fromString(input);
     }
 }

@@ -48,6 +48,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.SaturationContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SoundContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.TeamContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.TitleContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.WalkSpeedContent$ContentParser" />
     <parser class="pl.themolka.arcade.life.KillEnemiesParser" />
     <parser class="pl.themolka.arcade.life.KillEnemiesGameParser" />
@@ -78,6 +79,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.type.BannerPatternParser" />
     <parser class="pl.themolka.arcade.parser.type.BooleanParser" />
     <parser class="pl.themolka.arcade.parser.type.ColorParser" />
+    <parser class="pl.themolka.arcade.parser.type.ComponentParser" />
     <parser class="pl.themolka.arcade.parser.type.DifficultyParser" />
     <parser class="pl.themolka.arcade.parser.type.GameModeParser" />
     <parser class="pl.themolka.arcade.parser.type.LocationParser" />
@@ -87,6 +89,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.type.PathParser" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />
+    <parser class="pl.themolka.arcade.parser.type.PlayerTitleParser" />
     <parser class="pl.themolka.arcade.parser.type.UUIDParser" />
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
     <parser class="pl.themolka.arcade.parser.type.VersionParser" />
