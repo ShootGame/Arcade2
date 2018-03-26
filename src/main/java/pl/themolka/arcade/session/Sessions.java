@@ -126,8 +126,10 @@ public class Sessions implements Listener {
             respawnEvent.setRespawnPosition(game.getMap().getManifest().getWorld().getSpawn());
 
             this.postEvent(respawnEvent);
-            if (respawnEvent.getRespawnPosition() != null) {
-                event.setRespawnLocation(respawnEvent.getRespawnPosition());
+
+            Location respawnPosition = respawnEvent.getRespawnPosition();
+            if (respawnPosition != null) {
+                event.setRespawnLocation(respawnPosition);
             }
         }
     }

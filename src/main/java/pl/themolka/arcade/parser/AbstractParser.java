@@ -47,7 +47,12 @@ public abstract class AbstractParser<T> extends ParserValidation
             String normalizedValue = this.normalizeValue(value);
 
             if (normalizedName != null) {
-                return this.parse(element, normalizedName, normalizedValue);
+                ParserResult<T> result = this.parse(element, normalizedName, normalizedValue);
+                if (result != null) {
+                    return result;
+                }
+
+                throw new NullPointerException(this.getClass().getSimpleName() + " parser returned null");
             }
         } catch (ParserException cause) {
             return ParserResult.fail(cause, name, value);

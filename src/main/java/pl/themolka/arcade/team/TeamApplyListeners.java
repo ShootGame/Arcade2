@@ -94,7 +94,7 @@ public class TeamApplyListeners {
             if (content instanceof SpawnApply) {
                 SpawnApply spawnApply = (SpawnApply) content;
 
-                return spawnApply.getAgentCreator().createAgent(spawnApply.getSpawn(),
+                return spawnApply.getAgentFactory().createAgent(spawnApply.getSpawn(),
                                                                 player,
                                                                 player.getBukkit()).getLocation();
             }

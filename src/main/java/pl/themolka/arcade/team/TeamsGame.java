@@ -95,7 +95,6 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     @Override
     public List<Object> onListenersRegister(List<Object> register) {
-        register.add(new TeamFilters(this));
         register.add(new TeamApplyListeners(this));
         return register;
     }

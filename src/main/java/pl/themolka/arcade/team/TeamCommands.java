@@ -6,7 +6,7 @@ import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.Observers;
-import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,14 +148,7 @@ public class TeamCommands {
 
     public void paintCommand(Sender sender, String teamId, String paint) {
         Team team = this.fetchTeam(teamId);
-        ChatColor color = null;
-
-        if (paint != null && !paint.isEmpty()) {
-            try {
-                color = ChatColor.valueOf(XMLParser.parseEnumValue(paint));
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
+        ChatColor color = Color.parseChat(paint);
 
         if (color == null) {
             StringBuilder colors = new StringBuilder();

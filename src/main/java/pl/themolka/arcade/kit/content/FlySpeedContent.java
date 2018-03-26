@@ -1,9 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -15,8 +14,6 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class FlySpeedContent implements RemovableKitContent<Float> {
-    public static final float DEFAULT_SPEED = 0.1F;
-
     public static final float MIN_VALUE = -1F;
     public static final float MAX_VALUE = +1F;
 
@@ -26,8 +23,8 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
 
     private final float result;
 
-    public FlySpeedContent(float result) {
-        this.result = result;
+    protected FlySpeedContent(Config config) {
+        this.result = config.result().getOrDefault(this.defaultValue());
     }
 
     @Override
@@ -42,7 +39,7 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
 
     @Override
     public Float defaultValue() {
-        return DEFAULT_SPEED;
+        return Config.DEFAULT_SPEED;
     }
 
     @Override
@@ -50,25 +47,9 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<FlySpeedContent> {
-        @Override
-        public FlySpeedContent parse(Element xml) throws DataConversionException {
-            Attribute reset = xml.getAttribute("reset");
-            if (reset != null) {
-                return new FlySpeedContent(DEFAULT_SPEED);
-            }
-
-            try {
-                return new FlySpeedContent(Float.parseFloat(xml.getValue()));
-            } catch (NumberFormatException ex) {
-                return null;
-            }
-        }
-    }
-
     @NestedParserName({"fly-speed", "flyspeed"})
-    @Produces(FlySpeedContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<FlySpeedContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
         private Parser<Float> speedParser;
 
@@ -79,9 +60,11 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         }
 
         @Override
-        protected ParserResult<FlySpeedContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new FlySpeedContent(DEFAULT_SPEED));
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<Float> result() { return Ref.empty(); }
+                });
             }
 
             float speed = this.speedParser.parse(node).orFail();
@@ -91,7 +74,18 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
                 throw this.fail(node, name, value, "Fly speed is too fast (max " + MAX_VALUE + ")");
             }
 
-            return ParserResult.fine(node, name, value, new FlySpeedContent(speed));
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Float> result() { return Ref.ofProvided(speed); }
+            });
+        }
+    }
+
+    public interface Config extends RemovableKitContent.Config<FlySpeedContent, Float> {
+        float DEFAULT_SPEED = 0.1F;
+
+        @Override
+        default FlySpeedContent create(Game game) {
+            return new FlySpeedContent(this);
         }
     }
 }

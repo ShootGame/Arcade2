@@ -72,7 +72,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
         protected ParserResult<?> parseTree(Node node, String name) throws ParserException {
             RegionParser<?> parser = this.nested.parse(name);
             if (parser == null) {
-                throw this.fail(node, name, null, "Unknown region type");
+                throw this.fail(node, null, name, "Unknown region type");
             }
 
             return parser.parseWithName(node, name);
@@ -289,7 +289,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
             }
 
             if (regions.isEmpty()) {
-                throw this.fail(node, name, value, "No any union member regions defined");
+                throw this.fail(node, name, value, "No union region members defined");
             }
 
             return ParserResult.fine(node, name, value, new UnionRegion.Config() {

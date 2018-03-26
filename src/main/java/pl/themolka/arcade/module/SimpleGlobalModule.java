@@ -2,6 +2,7 @@ package pl.themolka.arcade.module;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GameModuleParser;
@@ -12,16 +13,20 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 public class SimpleGlobalModule extends Module<GameModule> {
     @Override
     public final GameModule buildGameModule(Element xml, Game game) throws JDOMException {
-        return super.buildGameModule(xml, game);
-    }
-
-    @Override
-    public final GameModule createGameModule(Game game, IGameModuleConfig<GameModule> config) {
-        return super.createGameModule(game, config);
+        return null;
     }
 
     @Override
     public final GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return super.getGameModuleParser(context);
+        return null;
+    }
+
+    @Override
+    public final void defineGameModule(Game game, IGameModuleConfig<GameModule> config, ConfigContext context) {
+    }
+
+    @Override
+    public final GameModule createGameModule(Game game, IGameModuleConfig<GameModule> config, ConfigContext context) {
+        return null;
     }
 }

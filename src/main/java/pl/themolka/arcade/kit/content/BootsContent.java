@@ -2,11 +2,9 @@ package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.item.XMLItemStack;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
@@ -17,25 +15,18 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class BootsContent extends BaseArmorContent {
-    public BootsContent(ItemStack result) {
-        super(result);
+    public BootsContent(Config config) {
+        super(config);
     }
 
     @Override
-    public void apply(GamePlayer player, PlayerInventory inventory) {
-        inventory.setBoots(this.getResult());
-    }
-
-    public static class LegacyParser implements LegacyKitContentParser<BootsContent> {
-        @Override
-        public BootsContent parse(Element xml) throws DataConversionException {
-            return new BootsContent(XMLItemStack.parse(xml));
-        }
+    public void attach(PlayerInventory inventory, ItemStack value) {
+        inventory.setBoots(value);
     }
 
     @NestedParserName({"boots", "armor-boots", "armorboots"})
-    @Produces(BootsContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<BootsContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
         private Parser<ItemStack> itemStackParser;
 
@@ -46,9 +37,25 @@ public class BootsContent extends BaseArmorContent {
         }
 
         @Override
-        protected ParserResult<BootsContent> parseNode(Node node, String name, String value) throws ParserException {
-            ItemStack boots = this.reset(node) ? null : this.itemStackParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new BootsContent(boots));
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            if (this.reset(node)) {
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<ItemStack> result() { return Ref.empty(); }
+                });
+            }
+
+            ItemStack boots = this.itemStackParser.parse(node).orFail();
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<ItemStack> result() { return Ref.ofProvided(boots); }
+            });
+        }
+    }
+
+    public interface Config extends BaseArmorContent.Config<BootsContent> {
+        @Override
+        default BootsContent create(Game game) {
+            return new BootsContent(this);
         }
     }
 }

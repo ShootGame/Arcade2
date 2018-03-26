@@ -41,10 +41,10 @@ public class UUIDParser extends ElementParser<UUID> {
 
     protected UUID parseTrimmed(String input) throws IllegalArgumentException {
         return UUID.fromString(input.substring(0, 8) + "-" +
-                input.substring(8, 12) + "-" +
-                input.substring(12, 16) + "-" +
-                input.substring(16, 20) + "-" +
-                input.substring(20, 32));
+                               input.substring(8, 12) + "-" +
+                               input.substring(12, 16) + "-" +
+                               input.substring(16, 20) + "-" +
+                               input.substring(20, 32));
     }
 
     protected UUID parseStandard(String input) throws IllegalArgumentException {

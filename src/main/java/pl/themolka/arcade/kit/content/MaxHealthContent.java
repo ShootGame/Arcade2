@@ -1,9 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -13,12 +12,9 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class MaxHealthContent implements RemovableKitContent<Double> {
-    public static final double DEFAULT_HEALTH = 20;
-
-    public static final double MIN_VALUE = 0.0;
+    public static final double MIN_VALUE = 0D;
 
     public static boolean testValue(double value) {
         return value > MIN_VALUE;
@@ -26,8 +22,8 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
 
     private final double result;
 
-    public MaxHealthContent(double result) {
-        this.result = result;
+    protected MaxHealthContent(Config config) {
+        this.result = config.result().getOrDefault(this.defaultValue());
     }
 
     @Override
@@ -42,7 +38,7 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
 
     @Override
     public Double defaultValue() {
-        return DEFAULT_HEALTH;
+        return Config.DEFAULT_MAX_HEALTH;
     }
 
     @Override
@@ -50,25 +46,9 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<MaxHealthContent> {
-        @Override
-        public MaxHealthContent parse(Element xml) throws DataConversionException {
-            Attribute attribute = xml.getAttribute("reset");
-            if (attribute != null && XMLParser.parseBoolean(attribute.getValue(), false)) {
-                return new MaxHealthContent(DEFAULT_HEALTH);
-            }
-
-            try {
-                return new MaxHealthContent(Double.parseDouble(xml.getValue()));
-            } catch (NumberFormatException ex) {
-                return null;
-            }
-        }
-    }
-
     @NestedParserName({"max-health", "maxhealth"})
-    @Produces(MaxHealthContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<MaxHealthContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
         private Parser<Double> maxHealthParser;
 
@@ -79,17 +59,30 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
         }
 
         @Override
-        protected ParserResult<MaxHealthContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new MaxHealthContent(DEFAULT_HEALTH));
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<Double> result() { return Ref.empty(); }
+                });
             }
 
             double maxHealth = this.maxHealthParser.parse(node).orFail();
             if (maxHealth <= MIN_VALUE) {
-                throw this.fail(node, name, value, "Max health cannot be negative (smaller than 0)");
+                throw this.fail(node, name, value, "Max health must be positive (greater than 0)");
             }
 
-            return ParserResult.fine(node, name, value, new MaxHealthContent(maxHealth));
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Double> result() { return Ref.ofProvided(maxHealth); }
+            });
+        }
+    }
+
+    public interface Config extends RemovableKitContent.Config<MaxHealthContent, Double> {
+        double DEFAULT_MAX_HEALTH = 20D;
+
+        @Override
+        default MaxHealthContent create(Game game) {
+            return new MaxHealthContent(this);
         }
     }
 }

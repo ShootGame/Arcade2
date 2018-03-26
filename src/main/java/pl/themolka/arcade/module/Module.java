@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GameModule;
@@ -86,12 +87,15 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
         return null;
     }
 
-    public GM createGameModule(Game game, IGameModuleConfig<GM> config) {
-        return config.create(game);
-    }
-
     public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
         return null;
+    }
+
+    public void defineGameModule(Game game, IGameModuleConfig<GM> config, ConfigContext context) {
+    }
+
+    public GM createGameModule(Game game, IGameModuleConfig<GM> config, ConfigContext context) {
+        return config != null ? config.create(game) : null;
     }
 
     public final void destroy() {

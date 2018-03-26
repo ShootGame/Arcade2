@@ -2,9 +2,10 @@ package pl.themolka.arcade.util;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import pl.themolka.arcade.xml.XMLChatColor;
-import pl.themolka.arcade.xml.XMLDyeColor;
-import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.dom.EmptyElement;
+import pl.themolka.arcade.parser.EnumParser;
+import pl.themolka.arcade.parser.Parser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -314,7 +315,7 @@ public enum Color {
      */
     public static Color parse(String color, Color def) {
         if (color != null) {
-            Color value = valueOf(XMLParser.parseEnumValue(color));
+            Color value = Parsers.color.parseWithValue(Parsers.element, color).orNull();
             if (value != null) {
                 return value;
             }
@@ -352,7 +353,7 @@ public enum Color {
      * @param def Default {@link ChatColor} value, if the result gives <code>null</code>
      */
     public static ChatColor parseChat(String chat, ChatColor def) {
-        return XMLChatColor.parse(chat, def);
+        return Parsers.chat.parseWithValue(Parsers.element, chat).or(def);
     }
 
     /**
@@ -369,8 +370,7 @@ public enum Color {
      * @param def Default component {@link net.md_5.bungee.api.ChatColor} value, if the result gives <code>null</code>
      */
     public static net.md_5.bungee.api.ChatColor parseComponent(String component, net.md_5.bungee.api.ChatColor def) {
-        ChatColor chat = XMLChatColor.parse(component, ofComponent(def).toChat());
-        return chat != null ? ofChat(chat).toComponent() : null;
+        return Parsers.component.parseWithValue(Parsers.element, component).or(def);
     }
 
     /**
@@ -387,7 +387,17 @@ public enum Color {
      * @param def Default {@link DyeColor} value, if the result gives <code>null</code>
      */
     public static DyeColor parseDye(String dye, DyeColor def) {
-        return XMLDyeColor.parse(dye, def);
+        return Parsers.dye.parseWithValue(Parsers.element, dye).or(def);
+    }
+
+    /** Internal parsers used to parse the color objects */
+    private static class Parsers {
+        static Parser<Color> color = new EnumParser<>(Color.class);
+        static Parser<ChatColor> chat = new EnumParser<>(ChatColor.class);
+        static Parser<net.md_5.bungee.api.ChatColor> component = new EnumParser<>(net.md_5.bungee.api.ChatColor.class);
+        static Parser<DyeColor> dye = new EnumParser<>(DyeColor.class);
+
+        static Element element = EmptyElement.empty();
     }
 
     //

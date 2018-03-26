@@ -1,9 +1,9 @@
 package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.PlayerInventory;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -13,7 +13,6 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class HeldSlotContent extends BaseInventoryContent<Integer> {
     public static final int MIN_VALUE = 0;
@@ -23,8 +22,8 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
         return value >= MIN_VALUE && value <= MAX_VALUE;
     }
 
-    public HeldSlotContent(int result) {
-        super(result);
+    protected HeldSlotContent(Config config) {
+        super(config);
     }
 
     @Override
@@ -32,17 +31,9 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
         inventory.setHeldItemSlot(this.getResult());
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<HeldSlotContent> {
-        @Override
-        public HeldSlotContent parse(Element xml) throws DataConversionException {
-            int slot = XMLParser.parseInt(xml.getValue(), -1);
-            return slot < 0 || slot > 8 ? null : new HeldSlotContent(slot);
-        }
-    }
-
     @NestedParserName({"held-slot", "heldslot", "held-item", "helditem", "held", "slot"})
-    @Produces(HeldSlotContent.class)
-    public static class ContentParser extends BaseContentParser<HeldSlotContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<Integer> slotParser;
 
@@ -53,13 +44,22 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
         }
 
         @Override
-        protected ParserResult<HeldSlotContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             int slot = this.slotParser.parse(node).orFail();
             if (slot < MIN_VALUE || slot > MAX_VALUE) {
                 throw this.fail(node, name, value, "Unknown slot number (not in " + MIN_VALUE + "-" + MAX_VALUE + " range)");
             }
 
-            return ParserResult.fine(node, name, value, new HeldSlotContent(slot));
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Integer> result() { return Ref.ofProvided(slot); }
+            });
+        }
+    }
+
+    public interface Config extends BaseInventoryContent.Config<HeldSlotContent, Integer> {
+        @Override
+        default HeldSlotContent create(Game game) {
+            return new HeldSlotContent(this);
         }
     }
 }

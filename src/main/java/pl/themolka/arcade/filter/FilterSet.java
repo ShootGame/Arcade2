@@ -1,18 +1,24 @@
 package pl.themolka.arcade.filter;
 
-import pl.themolka.arcade.util.StringId;
+import pl.themolka.arcade.config.Unique;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class FilterSet implements Filter, StringId {
+public class FilterSet implements UniqueFilter {
     private final List<Filter> filters = new ArrayList<>();
     private final String id;
 
+    @Deprecated
     public FilterSet(String id) {
         this(id, (Filter[]) null);
     }
 
+    @Deprecated
     public FilterSet(String id, Filter... filters) {
         this.id = id;
 
@@ -23,18 +29,28 @@ public class FilterSet implements Filter, StringId {
         }
     }
 
+    protected FilterSet(Config config) {
+        this.id = config.id();
+        this.filters.addAll(config.filters());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof UniqueFilter && ((FilterSet) obj).id.equals(this.id);
+    }
+
     @Override
     public FilterResult filter(Object... objects) {
-        for (Filter filter : this.getFilters()) {
-            if (filter != null) {
-                FilterResult result = filter.filter(objects);
-                if (!result.equals(FilterResult.ABSTAIN)) {
-                    return result;
-                }
+        FilterResult def = FilterResult.ABSTAIN;
+
+        for (Filter filter : this.filters) {
+            FilterResult result = filter.filter(objects);
+            if (!result.equals(def)) {
+                return result;
             }
         }
 
-        return FilterResult.ABSTAIN;
+        return def;
     }
 
     @Override
@@ -42,19 +58,33 @@ public class FilterSet implements Filter, StringId {
         return this.id;
     }
 
-    public void addFilter(Filter filter) {
-        this.filters.add(filter);
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
+    public boolean addFilter(Filter filter) {
+        return this.filters.add(Objects.requireNonNull(filter, "filter cannot be null"));
     }
 
     public List<Filter> getFilters() {
-        return this.filters;
+        return new ArrayList<>(this.filters);
     }
 
     public boolean isEmpty() {
         return this.filters.isEmpty();
     }
 
-    public void removeFilter(Filter filter) {
-        this.filters.remove(filter);
+    public boolean removeFilter(Filter filter) {
+        return this.filters.remove(filter);
+    }
+
+    public interface Config extends IGameConfig<FilterSet>, Unique {
+        default List<Filter> filters() { return Collections.emptyList(); }
+
+        @Override
+        default FilterSet create(Game game) {
+            return new FilterSet(this);
+        }
     }
 }

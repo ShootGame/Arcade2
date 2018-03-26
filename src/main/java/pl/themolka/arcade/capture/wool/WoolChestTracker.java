@@ -197,16 +197,7 @@ public class WoolChestTracker implements Listener {
             this.game.getPlugin().getEventBus().publish(event);
 
             if (!event.isCanceled()) {
-                for (int i = 0; i < inventory.getSize(); i++) {
-                    ItemStack snapshotItem = image.snapshot.get(i);
-                    if (snapshotItem == null) {
-                        continue;
-                    }
-
-                    // Copy the item to not edit the snapshot!
-                    inventory.setItem(i, snapshotItem.clone());
-                }
-
+                inventory.clear();
                 for (Map.Entry<Integer, ItemStack> entry : image.snapshot.entrySet()) {
                     inventory.setItem(entry.getKey(), entry.getValue().clone());
                 }

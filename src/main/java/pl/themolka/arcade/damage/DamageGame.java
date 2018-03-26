@@ -146,6 +146,7 @@ public class DamageGame extends GameModule {
             return;
         } else if (rule.isCanceled()) {
             event.setCancelled(true);
+            return;
         }
 
         event.setDamage(rule.getDamage(event.getDamage()));

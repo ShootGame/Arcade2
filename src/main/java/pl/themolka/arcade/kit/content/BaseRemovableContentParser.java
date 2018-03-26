@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
-public class BaseRemovableContentParser<T extends KitContent<?>> extends BaseContentParser<T>
-                                                                 implements InstallableParser {
+public class BaseRemovableContentParser<T extends RemovableKitContent.Config<? extends RemovableKitContent<?>, ?>>
+        extends BaseContentParser<T> implements InstallableParser {
     private Parser<Boolean> resetParser;
 
     @Override

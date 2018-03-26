@@ -69,6 +69,6 @@ public class Include extends NodePreprocess
         this.preprocessor.preprocess(target);
 
         Node.detach(node); // Remove the old <include> node.
-        Node.append(parent, target.getRoot().children()); // We don't support root node properties.
+        parent.add(target.getRoot().children()); // We don't support root node properties.
     }
 }

@@ -6,8 +6,8 @@ import pl.themolka.arcade.game.GamePlayer;
 public abstract class BaseInventoryContent<T> implements KitContent<T> {
     private final T result;
 
-    public BaseInventoryContent(T result) {
-        this.result = result;
+    protected BaseInventoryContent(Config<?, T> config) {
+        this.result = config.result().get();
     }
 
     @Override
@@ -26,4 +26,7 @@ public abstract class BaseInventoryContent<T> implements KitContent<T> {
     }
 
     public abstract void apply(GamePlayer player, PlayerInventory inventory);
+
+    public interface Config<T extends BaseInventoryContent<?>, R> extends KitContent.Config<T, R> {
+    }
 }

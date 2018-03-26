@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @deprecated Requires rewrite.
+ * @deprecated {@link FiltersGameParser}
  */
 @Deprecated
 public class XMLFilter extends XMLParser {
@@ -125,10 +125,7 @@ public class XMLFilter extends XMLParser {
     }
 
     private static Filter parseUnknown(ArcadePlugin plugin, Element xml) {
-        FilterParseEvent event = new FilterParseEvent(plugin, xml);
-        plugin.getEventBus().publish(event);
-
-        return event.getResult();
+        return null;
     }
 
     private static final Matcher voidMatcher = new VoidMatcher();

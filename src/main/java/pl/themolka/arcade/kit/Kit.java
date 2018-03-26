@@ -1,6 +1,7 @@
 package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
@@ -30,6 +31,10 @@ public class Kit implements Applicable<GamePlayer>, StringId {
     protected Kit(Game game, Config config) {
         this.plugin = game.getPlugin();
         this.id = config.id();
+
+        for (KitContent.Config<?, ?> content : config.contents()) {
+            this.content.add(content.create(game));
+        }
     }
 
     @Override
@@ -83,8 +88,8 @@ public class Kit implements Applicable<GamePlayer>, StringId {
         return this.content.remove(content);
     }
 
-    public interface Config extends IGameConfig<Kit>, StringId {
-        List<KitContent<?>> contents();
+    public interface Config extends IGameConfig<Kit>, Unique {
+        List<KitContent.Config<?, ?>> contents();
         default Set<String> inherit() { return Collections.emptySet(); }
 
         @Override

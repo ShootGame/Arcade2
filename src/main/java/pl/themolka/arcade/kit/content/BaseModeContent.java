@@ -62,4 +62,10 @@ public interface BaseModeContent {
             return ParserResult.fine(node, name, value, Mode.fromBoolean(!take));
         }
     }
+
+    interface Config {
+        Mode DEFAULT_MODE = Mode.getDefault();
+
+        default Mode mode() { return DEFAULT_MODE; }
+    }
 }

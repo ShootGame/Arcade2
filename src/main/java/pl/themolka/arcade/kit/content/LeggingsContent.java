@@ -2,11 +2,9 @@ package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.item.XMLItemStack;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
@@ -17,25 +15,18 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class LeggingsContent extends BaseArmorContent {
-    public LeggingsContent(ItemStack result) {
-        super(result);
+    protected LeggingsContent(Config config) {
+        super(config);
     }
 
     @Override
-    public void apply(GamePlayer player, PlayerInventory inventory) {
-        inventory.setLeggings(this.getResult());
-    }
-
-    public static class LegacyParser implements LegacyKitContentParser<LeggingsContent> {
-        @Override
-        public LeggingsContent parse(Element xml) throws DataConversionException {
-            return new LeggingsContent(XMLItemStack.parse(xml));
-        }
+    public void attach(PlayerInventory inventory, ItemStack value) {
+        inventory.setLeggings(value);
     }
 
     @NestedParserName({"leggings", "armor-leggings", "armorleggings"})
-    @Produces(LeggingsContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<LeggingsContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
         private Parser<ItemStack> itemStackParser;
 
@@ -46,9 +37,25 @@ public class LeggingsContent extends BaseArmorContent {
         }
 
         @Override
-        protected ParserResult<LeggingsContent> parseNode(Node node, String name, String value) throws ParserException {
-            ItemStack leggings = this.reset(node) ? null : this.itemStackParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new LeggingsContent(leggings));
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            if (this.reset(node)) {
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<ItemStack> result() { return Ref.empty(); }
+                });
+            }
+
+            ItemStack leggings = this.itemStackParser.parse(node).orFail();
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<ItemStack> result() { return Ref.ofProvided(leggings); }
+            });
+        }
+    }
+
+    public interface Config extends BaseArmorContent.Config<LeggingsContent> {
+        @Override
+        default LeggingsContent create(Game game) {
+            return new LeggingsContent(this);
         }
     }
 }

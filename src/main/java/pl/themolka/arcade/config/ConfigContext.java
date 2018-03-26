@@ -18,6 +18,18 @@ public class ConfigContext {
         return this.configMap.containsValue(config);
     }
 
+    public boolean define(IConfig<?> config) {
+        return this.define(null, config);
+    }
+
+    public boolean define(String id, IConfig<?> config) {
+        if (config instanceof Unique) {
+            id = ((Unique) config).id();
+        }
+
+        return id != null && this.configMap.putIfAbsent(id, config) == null;
+    }
+
     public boolean contains(String id) {
         return this.configMap.containsKey(id);
     }
@@ -51,12 +63,11 @@ public class ConfigContext {
         return uniqueId;
     }
 
-    public boolean register(IConfig<?> config) {
-        String id = config.id();
-        return id != null && this.configMap.putIfAbsent(id, config) == null;
+    public boolean unset(Unique unique) {
+        return unique != null && this.unset(unique.id());
     }
 
-    public boolean unregister(String id) {
-        return this.configMap.remove(id) != null;
+    public boolean unset(String id) {
+        return id != null && this.configMap.remove(id) != null;
     }
 }

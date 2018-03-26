@@ -3,7 +3,7 @@ package pl.themolka.arcade.parser;
 import java.util.LinkedHashMap;
 
 /**
- * A map holding nested parsers by their name given in {@link NestedParserMap}.
+ * A map holding nested parsers by their name given in the {@link NestedParserName}.
  */
 public class NestedParserMap<T extends Parser<?>> extends LinkedHashMap<String, T> {
     private final ParserContext context;

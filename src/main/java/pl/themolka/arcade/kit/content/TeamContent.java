@@ -2,6 +2,7 @@ package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -13,26 +14,14 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.team.Team;
-import pl.themolka.arcade.team.TeamsGame;
-import pl.themolka.arcade.team.TeamsModule;
 
-public class TeamContent implements RemovableKitContent<Ref<Team>> {
-    public static final Ref<Team> DEFAULT_TEAM = Ref.of(Observers.OBSERVERS_TEAM_ID);
-
-    private final Ref<Team> result;
+public class TeamContent implements RemovableKitContent<Team> {
+    private final Team result;
     private final boolean announce;
 
-    public TeamContent(String teamId, boolean announce) {
-        this(Ref.of(teamId), announce);
-    }
-
-    public TeamContent(Team team, boolean announce) {
-        this(Ref.ofProvided(team), announce);
-    }
-
-    private TeamContent(Ref<Team> result, boolean announce) {
-        this.result = result;
-        this.announce = announce;
+    protected TeamContent(Config config) {
+        this.result = config.result().getOrDefault(this.defaultValue());
+        this.announce = config.announce();
     }
 
     @Override
@@ -41,38 +30,19 @@ public class TeamContent implements RemovableKitContent<Ref<Team>> {
     }
 
     @Override
-    public void attach(GamePlayer player, Ref<Team> value) {
-        if (value.isProvided()) {
-            this.attachProvided(player, value.get());
-        } else {
-            this.attachId(player, value.getId());
+    public void attach(GamePlayer player, Team value) {
+        if (value != null) {
+            value.join(player, this.announce(), true);
         }
     }
 
-    private void attachId(GamePlayer player, String teamId) {
-        TeamsGame module = (TeamsGame) player.getGame().getModule(TeamsModule.class);
-        if (module != null && module.isEnabled()) {
-            Team team = module.getTeam(teamId);
-            if (team == null) {
-                player.getGame().getPlugin().getLogger().severe("No team found for ID '" + teamId + "'");
-                return;
-            }
-
-            this.attachProvided(player, team);
-        }
-    }
-
-    private void attachProvided(GamePlayer player, Team team) {
-        team.join(player, this.announce(), true);
+    @Override
+    public Team defaultValue() {
+        return null;
     }
 
     @Override
-    public Ref<Team> defaultValue() {
-        return DEFAULT_TEAM;
-    }
-
-    @Override
-    public Ref<Team> getResult() {
+    public Team getResult() {
         return this.result;
     }
 
@@ -81,11 +51,9 @@ public class TeamContent implements RemovableKitContent<Ref<Team>> {
     }
 
     @NestedParserName("team")
-    @Produces(TeamContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<TeamContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
-        public static final boolean DEFAULT_ANNOUNCE = true;
-
         private Parser<Boolean> announceParser;
         private Parser<Ref> teamParser;
 
@@ -97,10 +65,27 @@ public class TeamContent implements RemovableKitContent<Ref<Team>> {
         }
 
         @Override
-        protected ParserResult<TeamContent> parsePrimitive(Node node, String name, String value) throws ParserException {
-            boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(DEFAULT_ANNOUNCE);
-            Ref<Team> ref = this.reset(node) ? DEFAULT_TEAM : this.teamParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new TeamContent(ref, announce));
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            Ref<Team> team = this.reset(node) ? Config.DEFAULT_TEAM : this.teamParser.parse(node).orFail();
+            boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Team> result() { return team; }
+                public boolean announce() { return announce; }
+            });
+        }
+    }
+
+    public interface Config extends RemovableKitContent.Config<TeamContent, Team> {
+        Ref<Team> DEFAULT_TEAM = Ref.of(Observers.OBSERVERS_TEAM_ID);
+        boolean DEFAULT_ANNOUNCE = true;
+
+        default Ref<Team> result() { return DEFAULT_TEAM; }
+        default boolean announce() { return DEFAULT_ANNOUNCE; }
+
+        @Override
+        default TeamContent create(Game game) {
+            return new TeamContent(this);
         }
     }
 }

@@ -21,7 +21,7 @@ import java.util.Set;
 @Produces(Kit.Config.class)
 public class KitParser extends ConfigParser<Kit.Config>
                        implements InstallableParser {
-    private Parser<KitContent> contentParser;
+    private Parser<KitContent.Config> contentParser;
 
     @Override
     public Set<Object> expect() {
@@ -31,14 +31,14 @@ public class KitParser extends ConfigParser<Kit.Config>
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         super.install(context);
-        this.contentParser = context.type(KitContent.class);
+        this.contentParser = context.type(KitContent.Config.class);
     }
 
     @Override
     protected ParserResult<Kit.Config> parseTree(Node node, String name) throws ParserException {
         String id = this.parseRequiredId(node);
 
-        List<KitContent<?>> contents = new ArrayList<>();
+        List<KitContent.Config<?, ?>> contents = new ArrayList<>();
         for (Node contentNode : node.children()) {
             contents.add(this.contentParser.parse(contentNode).orFail());
         }
@@ -55,7 +55,7 @@ public class KitParser extends ConfigParser<Kit.Config>
 
         return ParserResult.fine(node, name, new Kit.Config() {
             public String id() { return id; }
-            public List<KitContent<?>> contents() { return contents; }
+            public List<KitContent.Config<?, ?>> contents() { return contents; }
             public Set<String> inherit() { return inherit; }
         });
     }

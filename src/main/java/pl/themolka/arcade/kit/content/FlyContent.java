@@ -1,10 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.bukkit.entity.Player;
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -14,16 +12,12 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class FlyContent implements RemovableKitContent<Boolean> {
-    public static final boolean DEFAULT_ALLOW_FLYING = false;
-    public static final boolean DEFAULT_FLYING = false;
-
     private final boolean result;
 
-    public FlyContent(boolean result) {
-        this.result = result;
+    public FlyContent(Config config) {
+        this.result = config.result().getOrDefault(this.defaultValue());
     }
 
     @Override
@@ -33,17 +27,12 @@ public class FlyContent implements RemovableKitContent<Boolean> {
 
     @Override
     public void attach(GamePlayer player, Boolean value) {
-        Player bukkit = player.getBukkit();
-        bukkit.setAllowFlight(value);
-
-        if (!value) {
-            bukkit.setFlying(false);
-        }
+        player.getBukkit().setFlying(value);
     }
 
     @Override
     public Boolean defaultValue() {
-        return DEFAULT_ALLOW_FLYING;
+        return Config.DEFAULT_FLY;
     }
 
     @Override
@@ -51,38 +40,40 @@ public class FlyContent implements RemovableKitContent<Boolean> {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<FlyContent> {
-        @Override
-        public FlyContent parse(Element xml) throws DataConversionException {
-            Attribute reset = xml.getAttribute("reset");
-            if (reset != null) {
-                return new FlyContent(DEFAULT_FLYING);
-            }
-
-            return new FlyContent(XMLParser.parseBoolean(xml.getValue(), DEFAULT_FLYING));
-        }
-    }
-
     @NestedParserName({"fly", "flying"})
-    @Produces(FlyContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<FlyContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
-        private Parser<Boolean> flyingParser;
+        private Parser<Boolean> flyParser;
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
-            this.flyingParser = context.type(Boolean.class);
+            this.flyParser = context.type(Boolean.class);
         }
 
         @Override
-        protected ParserResult<FlyContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new FlyContent(DEFAULT_FLYING));
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<Boolean> result() { return Ref.empty(); }
+                });
             }
 
-            boolean flying = this.flyingParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new FlyContent(flying));
+            boolean fly = this.flyParser.parse(node).orFail();
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Boolean> result() { return Ref.ofProvided(fly); }
+            });
+        }
+    }
+
+    public interface Config extends RemovableKitContent.Config<FlyContent, Boolean> {
+        boolean DEFAULT_FLY = false;
+
+        @Override
+        default FlyContent create(Game game) {
+            return new FlyContent(this);
         }
     }
 }

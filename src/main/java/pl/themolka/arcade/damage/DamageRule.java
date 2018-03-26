@@ -60,7 +60,7 @@ public class DamageRule implements Cancelable {
     }
 
     public double getDamage(double firstDamage) {
-        return this.multiplier.preprocess(firstDamage + this.getDamage());
+        return this.multiplier.calculate(firstDamage + this.getDamage());
     }
 
     public Percentage getMultiplier() {

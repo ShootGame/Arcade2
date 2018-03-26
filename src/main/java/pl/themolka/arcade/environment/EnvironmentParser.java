@@ -26,7 +26,7 @@ public class EnvironmentParser extends NodeParser<Environment>
 
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("an environment");
+        return Collections.singleton("environment");
     }
 
     @Override

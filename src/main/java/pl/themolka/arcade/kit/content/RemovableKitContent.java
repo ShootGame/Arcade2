@@ -17,4 +17,7 @@ public interface RemovableKitContent<T> extends KitContent<T>, Removable<GamePla
     void attach(GamePlayer player, T value);
 
     T defaultValue();
+
+    interface Config<T extends RemovableKitContent<?>, R> extends KitContent.Config<T, R> {
+    }
 }

@@ -2,9 +2,14 @@ package pl.themolka.arcade.filter;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
+import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,5 +72,14 @@ public class FiltersModule extends Module<FiltersGame> {
             results.put(id, new FilterSet(id, filter));
         }
         return results;
+    }
+
+    @Override
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
+        return super.getGameModuleParser(context);
+    }
+
+    @Override
+    public void defineGameModule(Game game, IGameModuleConfig<FiltersGame> config, ConfigContext context) {
     }
 }

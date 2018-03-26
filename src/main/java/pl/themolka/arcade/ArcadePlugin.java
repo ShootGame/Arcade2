@@ -633,7 +633,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                     Produces produces = parser.getAnnotation(Produces.class);
 
                     if (produces == null) {
-                        throw new ReflectiveOperationException(parser.getSimpleName() + " is not @Produces decorated!");
+                        throw new ReflectiveOperationException(parser.getName() + " is not @Produces decorated!");
                     } else if (silent == null) {
                         Class<?> producesType = produces.value();
                         if (producesType != null) {

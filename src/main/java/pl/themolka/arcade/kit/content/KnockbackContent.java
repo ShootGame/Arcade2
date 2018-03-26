@@ -1,9 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -13,15 +12,12 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class KnockbackContent implements RemovableKitContent<Float> {
-    public static float DEFAULT_KNOCKBACK = 0F;
-
     private final float result;
 
-    public KnockbackContent(float result) {
-        this.result = result;
+    protected KnockbackContent(Config config) {
+        this.result = config.result().getOrDefault(this.defaultValue());
     }
 
     @Override
@@ -36,7 +32,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
 
     @Override
     public Float defaultValue() {
-        return DEFAULT_KNOCKBACK;
+        return Config.DEFAULT_KNOCKBACK;
     }
 
     @Override
@@ -44,25 +40,9 @@ public class KnockbackContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<KnockbackContent> {
-        @Override
-        public KnockbackContent parse(Element xml) throws DataConversionException {
-            Attribute reset = xml.getAttribute("reset");
-            if (reset != null && XMLParser.parseBoolean(reset.getValue(), false)) {
-                return new KnockbackContent(DEFAULT_KNOCKBACK);
-            }
-
-            try {
-                return new KnockbackContent(Float.parseFloat(xml.getValue()));
-            } catch (NumberFormatException ex) {
-                return null;
-            }
-        }
-    }
-
     @NestedParserName({"knockback", "knockback-reduction", "knockbackreduction"})
-    @Produces(KnockbackContent.class)
-    public static class ContentParser extends BaseRemovableContentParser<KnockbackContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
         private Parser<Float> knockbackParser;
 
@@ -73,14 +53,28 @@ public class KnockbackContent implements RemovableKitContent<Float> {
         }
 
         @Override
-        protected ParserResult<KnockbackContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new KnockbackContent(DEFAULT_KNOCKBACK));
+                return ParserResult.fine(node, name, value, new Config() {
+                    public Ref<Float> result() { return Ref.empty(); }
+                });
             }
 
             float knockback = this.knockbackParser.parse(node).orFail();
             // TODO test if knockback can be negative
-            return ParserResult.fine(node, name, value, new KnockbackContent(knockback));
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Float> result() { return Ref.ofProvided(knockback); }
+            });
+        }
+    }
+
+    public interface Config extends RemovableKitContent.Config<KnockbackContent, Float> {
+        float DEFAULT_KNOCKBACK = 0F;
+
+        @Override
+        default KnockbackContent create(Game game) {
+            return new KnockbackContent(this);
         }
     }
 }

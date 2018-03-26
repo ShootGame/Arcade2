@@ -6,9 +6,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
-import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +148,6 @@ public abstract class AbstractRegion implements Region {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;
     }
 
-    public interface Config<T extends AbstractRegion> extends IGameConfig<T>, StringId {
-        String id();
+    public interface Config<T extends AbstractRegion> extends IGameConfig<T>, Unique {
     }
 }

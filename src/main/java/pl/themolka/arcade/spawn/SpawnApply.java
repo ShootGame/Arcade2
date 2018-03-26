@@ -7,11 +7,11 @@ import pl.themolka.arcade.game.PlayerApplicable;
 
 public class SpawnApply implements PlayerApplicable {
     private final Spawn spawn;
-    private final AgentCreator agentCreator;
+    private final AgentFactory agentFactory;
 
-    public SpawnApply(Spawn spawn, AgentCreator agentCreator) {
+    public SpawnApply(Spawn spawn, AgentFactory agentFactory) {
         this.spawn = spawn;
-        this.agentCreator = agentCreator;
+        this.agentFactory = agentFactory;
     }
 
     @Override
@@ -23,15 +23,15 @@ public class SpawnApply implements PlayerApplicable {
         return this.spawn;
     }
 
-    public AgentCreator getAgentCreator() {
-        return this.agentCreator;
+    public AgentFactory getAgentFactory() {
+        return this.agentFactory;
     }
 
     public Location spawn(GamePlayer player) {
         Player bukkit = player.getBukkit();
         if (bukkit != null && bukkit.isOnline()) {
-            AgentCreator agentCreator = this.getAgentCreator();
-            SpawnAgent agent = agentCreator.createAgent(this.getSpawn(), player, bukkit);
+            AgentFactory factory = this.getAgentFactory();
+            SpawnAgent agent = factory.createAgent(this.getSpawn(), player, bukkit);
 
             if (agent != null) {
                 return agent.spawn();
@@ -41,16 +41,16 @@ public class SpawnApply implements PlayerApplicable {
         return null;
     }
 
-    public static SpawnApply parse(String id, SpawnsGame spawns, AgentCreator agentCreator) {
+    public static SpawnApply parse(String id, SpawnsGame spawns, AgentFactory factory) {
         if (id != null) {
             Spawn spawn = spawns.getSpawn(id.trim());
-            return spawn != null ? new SpawnApply(spawn, agentCreator) : null;
+            return spawn != null ? new SpawnApply(spawn, factory) : null;
         }
 
         return null;
     }
 
-    public interface AgentCreator {
+    public interface AgentFactory {
         SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit);
     }
 }

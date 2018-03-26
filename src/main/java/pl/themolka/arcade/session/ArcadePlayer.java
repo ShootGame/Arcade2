@@ -18,7 +18,7 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.content.HealthContent;
-import pl.themolka.arcade.kit.content.MaxHealthContent;
+import pl.themolka.arcade.kit.content.HealthScaleContent;
 import pl.themolka.arcade.time.Time;
 
 import java.lang.ref.Reference;
@@ -233,9 +233,8 @@ public class ArcadePlayer implements Sender {
 
         Player bukkit = this.getBukkit();
         if (bukkit != null) {
-            bukkit.setMaxHealth(MaxHealthContent.DEFAULT_HEALTH);
-            bukkit.setHealthScale(MaxHealthContent.DEFAULT_HEALTH);
-            bukkit.setHealth(HealthContent.DEFAULT_HEALTH);
+            bukkit.setHealthScale(HealthScaleContent.Config.DEFAULT_SCALE);
+            bukkit.setHealth(HealthContent.Config.DEFAULT_HEALTH);
         }
 
         EntityPlayer mojang = this.getMojang();

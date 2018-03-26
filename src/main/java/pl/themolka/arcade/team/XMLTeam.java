@@ -228,7 +228,7 @@ public class XMLTeam extends XMLParser {
             case "kit":
                 return KitApply.parse(xml.getValue(), kits);
             case "spawn":
-                return SpawnApply.parse(xml.getValue(), spawns, new SpawnApply.AgentCreator() {
+                return SpawnApply.parse(xml.getValue(), spawns, new SpawnApply.AgentFactory() {
                     @Override
                     public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
                         return SpawnAgent.create(spawn, bukkit, SPAWN_DIRECTION, SPAWN_DIRECTION);

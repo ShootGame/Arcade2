@@ -27,6 +27,10 @@ public class Percentage {
         return false;
     }
 
+    public double calculate(double input) {
+        return input * this.value;
+    }
+
     public double getValue() {
         return this.value;
     }
@@ -46,10 +50,6 @@ public class Percentage {
 
     public boolean isZero() {
         return this.value == MIN_VALUE;
-    }
-
-    public double preprocess(double input) {
-        return input * this.value;
     }
 
     @Override

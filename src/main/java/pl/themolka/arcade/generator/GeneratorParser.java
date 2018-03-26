@@ -44,7 +44,7 @@ public class GeneratorParser extends NodeParser<Generator>
     protected ParserResult<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
         BaseGeneratorParser<?> parser = this.nested.parse(value);
         if (parser == null) {
-            throw this.fail(node, name, value, "Unknown world generator type");
+            throw this.fail(node, null, name, "Unknown world generator type");
         }
 
         return ParserResult.fine(node, name, value, parser.parse(node).orFail());

@@ -1,8 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -12,13 +12,12 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class ClearInventoryContent implements KitContent<Boolean> {
     private final boolean result;
 
-    public ClearInventoryContent(boolean result) {
-        this.result = result;
+    protected ClearInventoryContent(Config config) {
+        this.result = config.result().getOrDefault(false);
     }
 
     @Override
@@ -28,7 +27,7 @@ public class ClearInventoryContent implements KitContent<Boolean> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getPlayer().clearInventory(this.getResult());
+        player.getPlayer().clearInventory(this.result);
     }
 
     @Override
@@ -36,17 +35,9 @@ public class ClearInventoryContent implements KitContent<Boolean> {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<ClearInventoryContent> {
-        @Override
-        public ClearInventoryContent parse(Element xml) throws DataConversionException {
-            boolean armor = XMLParser.parseBoolean(xml.getAttributeValue("armor"), false);
-            return new ClearInventoryContent(armor);
-        }
-    }
-
     @NestedParserName({"clear-inventory", "clearinventory", "clear"})
-    @Produces(ClearInventoryContent.class)
-    public static class ContentParser extends BaseContentParser<ClearInventoryContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<Boolean> armorParser;
 
@@ -57,9 +48,19 @@ public class ClearInventoryContent implements KitContent<Boolean> {
         }
 
         @Override
-        protected ParserResult<ClearInventoryContent> parseNode(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
             boolean armor = this.armorParser.parse(node.property("armor", "full")).orDefault(false);
-            return ParserResult.fine(node, name, value, new ClearInventoryContent(armor));
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<Boolean> result() { return Ref.ofProvided(armor); }
+            });
+        }
+    }
+
+    public interface Config extends KitContent.Config<ClearInventoryContent, Boolean> {
+        @Override
+        default ClearInventoryContent create(Game game) {
+            return new ClearInventoryContent(this);
         }
     }
 }

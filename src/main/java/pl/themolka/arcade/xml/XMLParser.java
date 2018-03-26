@@ -15,12 +15,16 @@ import pl.themolka.arcade.parser.type.MessageParser;
  *
  * TODO:
  * - write simple module parsing with reference handling.
- * - write filter,
- *         observers,
+ * - write observers,
  *         portal,
  *         scorebox,
  *         spawn,
  *         team parsing
+ * - write core,
+ *         flag,
+ *         point,
+ *         score,
+ *         wool parsing
  */
 @Deprecated
 public class XMLParser {

@@ -1,10 +1,8 @@
 package pl.themolka.arcade.spawn;
 
-import pl.themolka.arcade.xml.XMLLocation;
-
 public interface Directional {
-    float DEFAULT_YAW = XMLLocation.YAW;
-    float DEFAULT_PITCH = XMLLocation.PITCH;
+    float DEFAULT_YAW = 180F; // north
+    float DEFAULT_PITCH = 0F; // forward
 
     default org.bukkit.geometry.Direction createDirection() {
         return org.bukkit.geometry.Direction.of(this.getYaw(), getPitch());

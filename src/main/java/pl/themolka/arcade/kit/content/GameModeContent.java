@@ -1,9 +1,9 @@
 package pl.themolka.arcade.kit.content;
 
 import org.bukkit.GameMode;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -13,15 +13,12 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLGameMode;
 
 public class GameModeContent implements KitContent<GameMode>  {
-    public static final GameMode DEFAULT_GAME_MODE = GameMode.SURVIVAL;
-
     private final GameMode result;
 
-    public GameModeContent(GameMode result) {
-        this.result = result;
+    protected GameModeContent(Config config) {
+        this.result = config.result().get();
     }
 
     @Override
@@ -39,16 +36,9 @@ public class GameModeContent implements KitContent<GameMode>  {
         return this.result;
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<GameModeContent> {
-        @Override
-        public GameModeContent parse(Element xml) throws DataConversionException {
-            return new GameModeContent(XMLGameMode.parse(xml.getValue()));
-        }
-    }
-
     @NestedParserName({"gamemode", "game-mode", "gm"})
-    @Produces(GameModeContent.class)
-    public static class ContentParser extends BaseContentParser<GameModeContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<GameMode> gameModeParser;
 
@@ -59,9 +49,21 @@ public class GameModeContent implements KitContent<GameMode>  {
         }
 
         @Override
-        protected ParserResult<GameModeContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             GameMode gameMode = this.gameModeParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new GameModeContent(gameMode));
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<GameMode> result() { return Ref.ofProvided(gameMode); }
+            });
+        }
+    }
+
+    public interface Config extends KitContent.Config<GameModeContent, GameMode> {
+        GameMode DEFAULT_GAME_MODE = GameMode.SURVIVAL;
+
+        @Override
+        default GameModeContent create(Game game) {
+            return new GameModeContent(this);
         }
     }
 }

@@ -1,8 +1,7 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
@@ -10,6 +9,9 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class KillContent implements BaseVoidKitContent {
+    protected KillContent() {
+    }
+
     @Override
     public boolean isApplicable(GamePlayer player) {
         return KitContent.testBukkit(player) && !player.isDead();
@@ -20,19 +22,19 @@ public class KillContent implements BaseVoidKitContent {
         player.kill();
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<KillContent> {
+    @NestedParserName("kill")
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config> {
         @Override
-        public KillContent parse(Element xml) throws DataConversionException {
-            return new KillContent();
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            return ParserResult.fine(node, name, value, new Config() {});
         }
     }
 
-    @NestedParserName("name")
-    @Produces(KillContent.class)
-    public static class ContentParser extends BaseContentParser<KillContent> {
+    public interface Config extends BaseVoidKitContent.Config<KillContent> {
         @Override
-        protected ParserResult<KillContent> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, new KillContent());
+        default KillContent create(Game game) {
+            return new KillContent();
         }
     }
 }

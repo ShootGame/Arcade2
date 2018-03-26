@@ -1,6 +1,5 @@
 package pl.themolka.arcade.match;
 
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -159,9 +158,7 @@ public class MatchStartCountdown extends PrintableCountdown {
         }
 
         if (text != null) {
-            BaseComponent[] component = TextComponent.fromLegacyText(text);
-            BaseComponent[] infoComponent = TextComponent.fromLegacyText(
-                    ChatColor.YELLOW + ChatColor.UNDERLINE.toString() + "The match has started.");
+            String start = ChatColor.GREEN + ChatColor.ITALIC.toString() + "The match has started.";
 
             for (ArcadePlayer online : this.plugin.getPlayers()) {
                 GamePlayer player = online.getGamePlayer();
@@ -170,9 +167,9 @@ public class MatchStartCountdown extends PrintableCountdown {
                 }
 
                 if (!this.getMatch().getObservers().contains(online)) {
-                    player.getBukkit().showTitle(component);
+                    player.getBukkit().sendTitle(text, "", 3, 5, 30);
                 } else if (left == 0) {
-                    player.getBukkit().showTitle(infoComponent);
+                    player.getBukkit().sendTitle(text, start, 3, 60, 10);
                 }
             }
         }

@@ -1,9 +1,9 @@
 package pl.themolka.arcade.kit.content;
 
 import org.bukkit.potion.PotionEffect;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -13,19 +13,14 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.potion.XMLPotionEffect;
 
 public class EffectContent implements KitContent<PotionEffect>, BaseModeContent {
     private final PotionEffect result;
     private final Mode mode;
 
-    public EffectContent(PotionEffect result) {
-        this(result, Mode.GIVE);
-    }
-
-    public EffectContent(PotionEffect result, Mode mode) {
-        this.result = result;
-        this.mode = mode;
+    public EffectContent(Config config) {
+        this.result = config.result().get();
+        this.mode = config.mode();
     }
 
     @Override
@@ -36,9 +31,9 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
     @Override
     public void apply(GamePlayer player) {
         if (this.give()) {
-            player.getBukkit().addPotionEffect(this.getResult(), true);
+            player.getBukkit().addPotionEffect(this.result, true);
         } else if (this.take()) {
-            player.getBukkit().removePotionEffect(this.getResult().getType());
+            player.getBukkit().removePotionEffect(this.result.getType());
         }
     }
 
@@ -57,16 +52,9 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
         return this.mode.equals(Mode.TAKE);
     }
 
-    public static class LegacyParser implements LegacyKitContentParser<EffectContent> {
-        @Override
-        public EffectContent parse(Element xml) throws DataConversionException {
-            return new EffectContent(XMLPotionEffect.parse(xml));
-        }
-    }
-
     @NestedParserName({"effect", "potion-effect", "potioneffect"})
-    @Produces(EffectContent.class)
-    public static class ContentParser extends BaseContentParser<EffectContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<PotionEffect> effectParser;
         private Parser<Mode> modeParser;
@@ -79,9 +67,22 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
         }
 
         @Override
-        protected ParserResult<EffectContent> parseNode(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
             PotionEffect effect = this.effectParser.parse(node).orFail();
-            return ParserResult.fine(node, name, value, new EffectContent(effect, this.modeParser.parse(node).orFail()));
+            BaseModeContent.Mode mode = this.modeParser.parse(node).orDefault(Config.DEFAULT_MODE);
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<PotionEffect> result() { return Ref.ofProvided(effect); }
+                public Mode mode() { return mode; }
+            });
+        }
+    }
+
+    public interface Config extends KitContent.Config<EffectContent, PotionEffect>,
+                                    BaseModeContent.Config {
+        @Override
+        default EffectContent create(Game game) {
+            return new EffectContent(this);
         }
     }
 }

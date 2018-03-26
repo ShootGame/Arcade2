@@ -2,11 +2,10 @@ package pl.themolka.arcade.kit.content;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.item.XMLItemStack;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
@@ -15,7 +14,6 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class ItemStackContent extends BaseInventoryContent<ItemStack>
                               implements BaseModeContent {
@@ -26,16 +24,13 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
     public static final int SLOT_BOOTS = 100;
 
     private final Mode mode;
-    private Integer slot;
+    private final Integer slot;
 
-    public ItemStackContent(ItemStack result) {
-        this(result, Mode.GIVE);
-    }
+    protected ItemStackContent(Config config) {
+        super(config);
 
-    public ItemStackContent(ItemStack result, Mode mode) {
-        super(result);
-
-        this.mode = mode;
+        this.mode = config.mode();
+        this.slot = config.slot();
     }
 
     @Override
@@ -69,32 +64,9 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         return this.slot != null;
     }
 
-    public void resetSlot() {
-        this.setSlot(null);
-    }
-
-    public ItemStackContent setSlot(Integer slot) {
-        this.slot = slot;
-        return this;
-    }
-
-    public static class LegacyParser implements LegacyKitContentParser<ItemStackContent> {
-        @Override
-        public ItemStackContent parse(Element xml) throws DataConversionException {
-            ItemStackContent content = new ItemStackContent(XMLItemStack.parse(xml));
-
-            int slot = XMLParser.parseInt(xml.getAttributeValue("slot"), -1);
-            if (slot != -1) {
-                content.setSlot(slot);
-            }
-
-            return content;
-        }
-    }
-
     @NestedParserName({"item", "item-stack", "itemstack"})
-    @Produces(ItemStackContent.class)
-    public static class ContentParser extends BaseContentParser<ItemStackContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<ItemStack> itemStackParser;
         private Parser<Mode> modeParser;
@@ -109,12 +81,28 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         }
 
         @Override
-        protected ParserResult<ItemStackContent> parseNode(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
             ItemStack itemStack = this.itemStackParser.parse(node).orFail();
+            BaseModeContent.Mode mode = this.modeParser.parse(node).orDefault(Config.DEFAULT_MODE);
+            Integer slot = this.slotParser.parse(node.property("slot")).orDefault(Config.DEFAULT_SLOT);
 
-            ItemStackContent content = new ItemStackContent(itemStack, this.modeParser.parse(node).orFail());
-            content.setSlot(this.slotParser.parse(node.property("slot")).orDefaultNull());
-            return ParserResult.fine(node, name, value, content);
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<ItemStack> result() { return Ref.ofProvided(itemStack); }
+                public BaseModeContent.Mode mode() { return mode; }
+                public Integer slot() { return slot; }
+            });
+        }
+    }
+
+    public interface Config extends BaseInventoryContent.Config<ItemStackContent, ItemStack>,
+                                    BaseModeContent.Config {
+        Integer DEFAULT_SLOT = null;
+
+        default Integer slot() { return DEFAULT_SLOT; }
+
+        @Override
+        default ItemStackContent create(Game game) {
+            return new ItemStackContent(this);
         }
     }
 }

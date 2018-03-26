@@ -70,7 +70,7 @@ public class ImportStage implements TreePreprocessHandler {
         this.preprocessor.preprocess(target);
 
         Node.detach(node); // Remove the old <import> node.
-        Node.append(parent, target.getRoot().children()); // We don't support root node properties.
+        parent.add(target.getRoot().children()); // We don't support root node properties.
     }
 
     protected static Document readDocument(EngineManager engines, Node node, URI uri) throws PreprocessException {

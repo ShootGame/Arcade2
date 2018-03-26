@@ -176,7 +176,7 @@ public class SimpleGameManager implements GameManager {
             return;
         }
 
-        this.plugin.getLogger().info("Cycled in '" + (Instant.now().toEpochMilli() - now.toEpochMilli()) + "' ms.");
+        this.plugin.getLogger().info("Cycled in " + (Instant.now().toEpochMilli() - now.toEpochMilli()) + " ms.");
     }
 
     @Override

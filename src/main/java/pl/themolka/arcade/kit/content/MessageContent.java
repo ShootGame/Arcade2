@@ -1,9 +1,8 @@
 package pl.themolka.arcade.kit.content;
 
-import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -14,19 +13,14 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.xml.XMLParser;
 
 public class MessageContent implements KitContent<String> {
     private final String result;
     private final Channel channel;
 
-    public MessageContent(String result) {
-        this(result, null);
-    }
-
-    public MessageContent(String result, Channel channel) {
-        this.result = result;
-        this.channel = Channel.nonNull(channel);
+    protected MessageContent(Config config) {
+        this.result = config.result().get();
+        this.channel = config.channel();
     }
 
     @Override
@@ -36,7 +30,7 @@ public class MessageContent implements KitContent<String> {
 
     @Override
     public void apply(GamePlayer player) {
-        this.getChannel().sendMessage(player, this.getResult());
+        this.channel.sendMessage(player, this.result);
     }
 
     @Override
@@ -46,22 +40,6 @@ public class MessageContent implements KitContent<String> {
 
     public Channel getChannel() {
         return this.channel;
-    }
-
-    public static class LegacyParser implements LegacyKitContentParser<MessageContent> {
-        @Override
-        public MessageContent parse(Element xml) throws DataConversionException {
-            return new MessageContent(XMLParser.parseMessage(xml.getValue()), this.parseChannel(xml));
-        }
-
-        private Channel parseChannel(Element xml) {
-            Attribute attribute = xml.getAttribute("channel");
-            if (attribute != null) {
-                return Channel.valueOf(XMLParser.parseEnumValue(attribute.getValue()));
-            }
-
-            return null;
-        }
     }
 
     public enum Channel {
@@ -133,8 +111,8 @@ public class MessageContent implements KitContent<String> {
     }
 
     @NestedParserName({"message", "msg", "send", "announce"})
-    @Produces(MessageContent.class)
-    public static class ContentParser extends BaseContentParser<MessageContent>
+    @Produces(Config.class)
+    public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
         private Parser<String> textParser;
         private Parser<Channel> channelParser;
@@ -147,10 +125,25 @@ public class MessageContent implements KitContent<String> {
         }
 
         @Override
-        protected ParserResult<MessageContent> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             String text = this.textParser.parse(node).orFail();
-            Channel channel = this.channelParser.parse(node.property("channel")).orDefault(Channel.getDefault());
-            return ParserResult.fine(node, name, value, new MessageContent(text, channel));
+            Channel channel = this.channelParser.parse(node.property("channel")).orDefault(Config.DEFAULT_CHANNEL);
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<String> result() { return Ref.ofProvided(text); }
+                public Channel channel() { return channel; }
+            });
+        }
+    }
+
+    public interface Config extends KitContent.Config<MessageContent, String> {
+        Channel DEFAULT_CHANNEL = Channel.getDefault();
+
+        default Channel channel() { return DEFAULT_CHANNEL; }
+
+        @Override
+        default MessageContent create(Game game) {
+            return new MessageContent(this);
         }
     }
 }

@@ -1,12 +1,13 @@
 package pl.themolka.arcade.kit;
 
 import org.jdom2.Attribute;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.kit.content.KitContent;
-import pl.themolka.arcade.kit.content.KitContentType;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
+import pl.themolka.arcade.xml.XML;
 import pl.themolka.arcade.xml.XMLParser;
 
 /**
@@ -22,13 +23,9 @@ public class XMLKit extends XMLParser {
 
         Kit kit = new Kit(plugin, id);
         for (Element contentElement : xml.getChildren()) {
-            try {
-                KitContent<?> content = KitContentType.parseForName(contentElement.getName(), contentElement);
-                if (content != null) {
-                    kit.addContent(content);
-                }
-            } catch (DataConversionException ex) {
-                return null;
+            KitContent<?> content = parseContent(plugin, contentElement);
+            if (content != null) {
+                kit.addContent(content);
             }
         }
 
@@ -40,5 +37,18 @@ public class XMLKit extends XMLParser {
         }
 
         return kit;
+    }
+
+    /**
+     * @deprecated Uses JDOM.
+     */
+    @Deprecated
+    private static KitContent<?> parseContent(ArcadePlugin plugin, Element xml) {
+        try {
+            Parser<KitContent> parser = plugin.getParsers().forType(KitContent.class);
+            return parser.parseWithName(XML.convert(xml), xml.getName()).orNull();
+        } catch (ParserNotSupportedException ex) {
+            return null;
+        }
     }
 }

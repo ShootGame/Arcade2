@@ -62,7 +62,9 @@ public class ParserValidation {
             invalidString = "Missing value";
         }
 
-        return new ParserException(element, invalidString + " in \"" + name + "\"" +
+        String whereString = name != null ? " in \"" + name + "\"" : "";
+
+        return new ParserException(element, invalidString + whereString +
                 (fail != null ? ": " + fail : "") + expected, cause);
     }
 }

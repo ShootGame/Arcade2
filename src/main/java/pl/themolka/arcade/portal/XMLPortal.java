@@ -29,7 +29,7 @@ public class XMLPortal extends XMLParser {
 
         // destination
         if (spawns != null) {
-            SpawnApply destination = SpawnApply.parse(xml.getAttributeValue("destination"), spawns, new SpawnApply.AgentCreator() {
+            SpawnApply destination = SpawnApply.parse(xml.getAttributeValue("destination"), spawns, new SpawnApply.AgentFactory() {
                 @Override
                 public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
                     Direction yaw = DirectionValues.of(xml.getAttributeValue("yaw"), defaultYaw);

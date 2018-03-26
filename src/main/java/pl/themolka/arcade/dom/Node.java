@@ -473,7 +473,7 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
 
     boolean resetPrimitive() {
         boolean ok = this.isPrimitive();
-        this.setValue(null);
+        super.setValue(null); // this.resetPrimitive will reset the tree type :(
 
         return ok;
     }
@@ -493,16 +493,6 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     // Utilities
     //
 
-    public static Node append(Node node, List<Node> children) {
-        if (node != null && children != null) {
-            node.resetPrimitive();
-            node.children.addAll(children);
-        }
-
-        parent(node);
-        return node;
-    }
-
     public static Node detach(Node node) {
         if (node != null) {
             Node parent = node.getParent();
@@ -511,16 +501,6 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
             }
 
             node.detach();
-        }
-
-        return node;
-    }
-
-    public static Node parent(Node node) {
-        if (node != null) {
-            for (Node child : node.children()) {
-                child.setParent(node);
-            }
         }
 
         return node;
