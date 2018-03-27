@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.attribute.Attributable;
 import pl.themolka.arcade.attribute.Attribute;
 import pl.themolka.arcade.attribute.AttributeKey;
-import pl.themolka.arcade.attribute.AttributeMap;
+import pl.themolka.arcade.attribute.TrackingAttributeMap;
 import pl.themolka.arcade.bossbar.BossBarContext;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
@@ -63,7 +63,7 @@ import java.util.logging.Level;
 public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
-    private AttributeMap attributeMap;
+    private TrackingAttributeMap attributeMap;
     private final BossBarContext bossBarContext;
     private ChatChannel channel;
     private ChatColor chatColor;
@@ -123,7 +123,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
             try {
                 Field mojangMap = EntityLiving.class.getDeclaredField("attributeMap");
                 mojangMap.setAccessible(true);
-                this.attributeMap = new AttributeMap((AttributeMapBase) mojangMap.get(mojang));
+                this.attributeMap = new TrackingAttributeMap((AttributeMapBase) mojangMap.get(mojang));
             } catch (ReflectiveOperationException ex) {
                 this.game.getPlugin().getLogger().log(Level.SEVERE, "Could not inject attribute map", ex);
                 return null;
@@ -412,6 +412,16 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
 
         for (PotionEffectType effect : PotionEffectType.values()) {
             bukkit.removePotionEffect(effect);
+        }
+
+        if (this.attributeMap != null) {
+            for (AttributeKey key : this.attributeMap.getTracking()) {
+                Attribute attribute = this.attributeMap.getAttribute(key);
+                if (attribute != null) {
+                    attribute.removeAllModifers();
+                }
+            }
+            this.attributeMap.unsubscribeAll();
         }
 
         this.getMojang().reset();
