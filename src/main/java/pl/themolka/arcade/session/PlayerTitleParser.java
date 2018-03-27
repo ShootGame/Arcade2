@@ -1,4 +1,4 @@
-package pl.themolka.arcade.parser.type;
+package pl.themolka.arcade.session;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -11,7 +11,6 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
-import pl.themolka.arcade.session.PlayerTitle;
 import pl.themolka.arcade.time.Time;
 
 import java.util.Collections;

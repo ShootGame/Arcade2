@@ -39,14 +39,25 @@ public class Kit implements Applicable<GamePlayer>, StringId {
 
     @Override
     public void apply(GamePlayer player) {
-        KitApplyEvent event = new KitApplyEvent(this.plugin, this, player);
-        this.plugin.getEventBus().publish(event);
+        this.apply(player, false);
+    }
 
-        if (!event.isCanceled()) {
-            for (KitContent<?> content : this.getContent()) {
-                content.applyIfApplicable(player);
+    public void apply(GamePlayer player, boolean secret) {
+        boolean allow = true;
+        if (!secret) {
+            KitApplyEvent event = new KitApplyEvent(this.plugin, this, player);
+            allow = !this.plugin.getEventBus().postEvent(event).isCanceled();
+        }
+
+        if (allow) {
+            for (KitContent<?> content : this.content) {
+                this.applyContent(content, player);
             }
         }
+    }
+
+    protected void applyContent(KitContent<?> content, GamePlayer player) {
+        content.applyIfApplicable(player);
     }
 
     @Override

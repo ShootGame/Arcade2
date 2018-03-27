@@ -90,7 +90,7 @@ public class MapManager implements FilenameFilter {
                 .environment(info.getEnvironment())
                 .generateStructures(false)
                 .generator(generator.getChunkGenerator())
-                .hardcore(false)
+                .hardcore(info.isHardcore())
                 .seed(info.getRandomSeed().getSeed())
                 .type(generator.getWorldType());
 

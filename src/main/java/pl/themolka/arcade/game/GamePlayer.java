@@ -5,6 +5,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import pl.themolka.arcade.attribute.Attributable;
+import pl.themolka.arcade.attribute.Attribute;
+import pl.themolka.arcade.attribute.AttributeKey;
+import pl.themolka.arcade.attribute.AttributeMap;
 import pl.themolka.arcade.bossbar.BossBarContext;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
@@ -52,9 +56,10 @@ import java.util.UUID;
  * rejoin). The GamePlayers are removed only on game cycles. GamePlayer is
  * secure to store game related data.
  */
-public class GamePlayer implements GameHolder, MatchWinner, Sender {
+public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender {
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
+    private AttributeMap attributeMap;
     private final BossBarContext bossBarContext;
     private ChatChannel channel;
     private ChatColor chatColor;
@@ -108,6 +113,11 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
     }
 
     @Override
+    public Attribute getAttribute(AttributeKey key) {
+        return this.isOnline() ? this.getPlayer().getAttribute(key) : null;
+    }
+
+    @Override
     public Color getColor() {
         return Color.ofChat(this.getChatColor());
     }
@@ -129,11 +139,7 @@ public class GamePlayer implements GameHolder, MatchWinner, Sender {
 
     @Override
     public Locale getLocale() {
-        if (this.isOnline()) {
-            return this.getPlayer().getLocale();
-        } else {
-            return DEFAULT_LOCALE;
-        }
+        return this.isOnline() ? this.getPlayer().getLocale() : DEFAULT_LOCALE;
     }
 
     @Override

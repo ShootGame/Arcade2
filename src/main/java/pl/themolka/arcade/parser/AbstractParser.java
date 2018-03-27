@@ -61,7 +61,7 @@ public abstract class AbstractParser<T> extends ParserValidation
         return ParserResult.empty(element, name);
     }
 
-    private String normalizeInput(String input) {
+    protected String normalizeInput(String input) {
         if (input != null) {
             input = input.trim();
             if (!input.isEmpty()) {

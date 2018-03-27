@@ -104,7 +104,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     }
 
     public Map<Enchantment, Integer> enchantmentsLegacy() {
-        return EnchantmentUtils.toLegacy(this.enchantments);
+        return ItemEnchantment.toLegacy(this.enchantments);
     }
 
     /**
@@ -112,7 +112,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
      */
     @Deprecated
     public ItemStackBuilder enchantmentsLegacy(Map<Enchantment, Integer> enchantments) {
-        this.enchantments.addAll(EnchantmentUtils.fromLegacy(enchantments));
+        this.enchantments.addAll(ItemEnchantment.fromLegacy(enchantments));
         return this;
     }
 

@@ -11,6 +11,7 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.kit.content.BaseModeContent;
+import pl.themolka.arcade.kit.content.CanFlyContent;
 import pl.themolka.arcade.kit.content.ClearInventoryContent;
 import pl.themolka.arcade.kit.content.EffectContent;
 import pl.themolka.arcade.kit.content.FlyContent;
@@ -77,6 +78,12 @@ public class ObserversKit extends Kit {
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
     }.create(null);
 
+    // can fly
+    public static final CanFlyContent CAN_FLY = new CanFlyContent.Config() {
+        public Ref<Boolean> result() { return Ref.ofProvided(true); }
+        public boolean force() { return true; }
+    }.create(null);
+
     // fly
     public static final FlyContent FLY = new FlyContent.Config() {
         public Ref<Boolean> result() { return Ref.ofProvided(true); }
@@ -109,6 +116,7 @@ public class ObserversKit extends Kit {
                         PLAY_ITEM, // slot 1
                         HELD_SLOT,
                         NIGHT_VISION_EFFECT,
+                        CAN_FLY,
                         FLY,
                         FLY_SPEED,
                         WALK_SPEED);

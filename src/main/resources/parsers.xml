@@ -6,6 +6,10 @@ Note: These are not all existing parsers, some of
 them are registered in the ParserContainer class
 -->
 <parsers>
+    <parser class="pl.themolka.arcade.attribute.AttributeKeyParser" />
+    <parser class="pl.themolka.arcade.attribute.AttributeModifierParser" />
+    <parser class="pl.themolka.arcade.attribute.BoundedModifierParser" />
+    <parser class="pl.themolka.arcade.attribute.OperationParser" />
     <parser class="pl.themolka.arcade.config.RefParser" />
     <parser class="pl.themolka.arcade.damage.DamageGameParser" />
     <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
@@ -46,6 +50,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.FlySpeedContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.GameModeContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.GiveExperienceContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.GiveKitContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.GiveLevelContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.GlowContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.GravityContent$ContentParser" />
@@ -65,6 +70,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.MessageContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveArrowsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveEffectsContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.RemoveKitContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RootContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SaturationContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SilentContent$ContentParser" />
@@ -112,7 +118,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.type.PathParser" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />
-    <parser class="pl.themolka.arcade.parser.type.PlayerTitleParser" />
     <parser class="pl.themolka.arcade.parser.type.UUIDParser" />
     <parser class="pl.themolka.arcade.parser.type.VectorParser" />
     <parser class="pl.themolka.arcade.parser.type.VersionParser" />
@@ -127,6 +132,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.region.RegionParser$Sphere" />
     <parser class="pl.themolka.arcade.region.RegionParser$Union" />
     <parser class="pl.themolka.arcade.respawn.AutoRespawnGameParser" />
+    <parser class="pl.themolka.arcade.session.PlayerTitleParser" />
     <parser class="pl.themolka.arcade.time.LocalDateParser" />
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />
     <parser class="pl.themolka.arcade.time.LocalTimeParser" />

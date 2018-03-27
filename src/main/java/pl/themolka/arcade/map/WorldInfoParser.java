@@ -23,6 +23,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     private Parser<Difficulty> difficultyParser;
     private Parser<World.Environment> environmentParser;
     private Parser<Generator> generatorParser;
+    private Parser<Boolean> hardcoreParser;
     private Parser<Boolean> pvpParser;
     private Parser<RandomSeed> randomSeedParser;
     private Parser<Location> spawnParser;
@@ -33,6 +34,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
         this.difficultyParser = context.type(Difficulty.class);
         this.environmentParser = context.enumType(World.Environment.class);
         this.generatorParser = context.type(Generator.class);
+        this.hardcoreParser = context.type(Boolean.class);
         this.pvpParser = context.type(Boolean.class);
         this.randomSeedParser = context.type(RandomSeed.class);
         this.spawnParser = context.type(Location.class);
@@ -50,6 +52,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
         info.setDifficulty(this.difficultyParser.parse(node.property("difficulty")).orNull());
         info.setEnvironment(this.environmentParser.parse(node.property("environment")).orNull());
         info.setGenerator(this.generatorParser.parse(node.firstChild("generator")).orNull());
+        info.setHardcore(this.hardcoreParser.parse(node.property("hardcore")).orDefault(WorldInfo.DEFAULT_IS_HARDCORE));
         info.setPvp(this.pvpParser.parse(node.property("pvp")).orDefault(WorldInfo.DEFAULT_IS_PVP));
         info.setRandomSeed(this.randomSeedParser.parse(node.property("seed", "random-seed")).orDefault(WorldInfo.DEFAULT_RANDOM_SEED));
         info.setSpawn(this.spawnParser.parse(node.firstChild("spawn")).orNull());

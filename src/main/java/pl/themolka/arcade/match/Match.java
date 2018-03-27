@@ -139,6 +139,7 @@ public class Match implements DynamicWinnable, GameHolder {
                     ObserversKit.NAVIGATION_ITEM,
                     ObserversKit.HELD_SLOT,
                     ObserversKit.NIGHT_VISION_EFFECT,
+                    ObserversKit.CAN_FLY,
                     ObserversKit.FLY,
                     ObserversKit.FLY_SPEED,
                     ObserversKit.WALK_SPEED

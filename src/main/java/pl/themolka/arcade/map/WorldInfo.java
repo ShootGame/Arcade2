@@ -9,6 +9,7 @@ public class WorldInfo implements Cloneable {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.EASY;
     public static final World.Environment DEFAULT_ENVIRONMENT = World.Environment.NORMAL;
     public static final Generator DEFAULT_GENERATOR = Generator.DEFAULT_GENERATOR;
+    public static final boolean DEFAULT_IS_HARDCORE = false;
     public static final boolean DEFAULT_IS_PVP = true;
     public static final RandomSeed DEFAULT_RANDOM_SEED = new RandomSeed(RandomSeed.DEFAULT_SEED);
     public static final Location DEFAULT_SPAWN = new Location((World) null, 0.5D, 16D, 0.5D);
@@ -17,6 +18,7 @@ public class WorldInfo implements Cloneable {
     private Difficulty difficulty;
     private World.Environment environment;
     private Generator generator;
+    private boolean hardcore = DEFAULT_IS_HARDCORE;
     private boolean pvp = DEFAULT_IS_PVP;
     private RandomSeed randomSeed;
     private Location spawn;
@@ -29,6 +31,7 @@ public class WorldInfo implements Cloneable {
             clone.difficulty = this.difficulty;
             clone.environment = this.environment;
             clone.generator = this.generator;
+            clone.hardcore = this.hardcore;
             clone.pvp = this.pvp;
             clone.randomSeed = this.randomSeed;
             clone.spawn = this.spawn.clone();
@@ -63,6 +66,10 @@ public class WorldInfo implements Cloneable {
         return this.time != null ? this.time : DEFAULT_TIME;
     }
 
+    public boolean isHardcore() {
+        return this.hardcore;
+    }
+
     public boolean isPvp() {
         return this.pvp;
     }
@@ -77,6 +84,10 @@ public class WorldInfo implements Cloneable {
 
     public void setGenerator(Generator generator) {
         this.generator = generator;
+    }
+
+    public void setHardcore(boolean hardcore) {
+        this.hardcore = hardcore;
     }
 
     public void setPvp(boolean pvp) {

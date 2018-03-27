@@ -42,7 +42,7 @@ public class BurnContent implements RemovableKitContent<Time> {
         return this.result;
     }
 
-    @NestedParserName({"burn"})
+    @NestedParserName("burn")
     @Produces(Config.class)
     public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {

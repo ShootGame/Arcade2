@@ -152,7 +152,7 @@ public class MatchStartCountdown extends PrintableCountdown {
 
         String text = null;
         if (left == 0) {
-            text = ChatColor.RED + ChatColor.UNDERLINE.toString() + "GO!";
+            text = "";
         } else if (left == 1 || left == 2 || left == 3) {
             text = ChatColor.YELLOW + Long.toString(left);
         }
@@ -160,16 +160,19 @@ public class MatchStartCountdown extends PrintableCountdown {
         if (text != null) {
             String start = ChatColor.GREEN + ChatColor.ITALIC.toString() + "The match has started.";
 
+            Observers observers = this.match.getObservers();
             for (ArcadePlayer online : this.plugin.getPlayers()) {
                 GamePlayer player = online.getGamePlayer();
                 if (player == null) {
                     continue;
                 }
 
-                if (!this.getMatch().getObservers().contains(online)) {
-                    player.getBukkit().sendTitle(text, "", 3, 5, 30);
-                } else if (left == 0) {
-                    player.getBukkit().sendTitle(text, start, 3, 60, 10);
+                if (observers.contains(online)) {
+                    if (left == 0) {
+                        player.getBukkit().sendTitle(text, start, 3, 60, 10);
+                    }
+                } else {
+                    player.getBukkit().sendTitle(text, "", 3, 5, 20);
                 }
             }
         }

@@ -1,10 +1,12 @@
 package pl.themolka.arcade.item;
 
 import org.bukkit.Material;
+import org.bukkit.attribute.ItemAttributeModifier;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.attribute.BoundedModifier;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.item.meta.ItemMetaParser;
@@ -36,6 +38,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
     private Parser<ItemEnchantment> enchantmentParser;
     private Parser<Material> canDestroyParser;
     private Parser<Material> canPlaceOnParser;
+    private Parser<BoundedModifier> modifierParser;
     private Parser<Boolean> unbreakableParser;
     private Parser<ItemFlag> flagParser;
 
@@ -52,6 +55,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         this.enchantmentParser = context.type(ItemEnchantment.class);
         this.canDestroyParser = context.type(Material.class);
         this.canPlaceOnParser = context.type(Material.class);
+        this.modifierParser = context.type(BoundedModifier.class);
         this.unbreakableParser = context.type(Boolean.class);
         this.flagParser = context.enumType(ItemFlag.class);
     }
@@ -106,6 +110,12 @@ public class ItemStackParser extends NodeParser<ItemStack>
         }
         if (!canPlaceOn.isEmpty()) {
             itemMeta.setCanPlaceOn(canPlaceOn);
+        }
+
+        for (Node modifierNode : node.children("modifier", "attribute-modifier", "attributemodifier", "attribute")) {
+            BoundedModifier modifier = this.modifierParser.parse(modifierNode).orFail();
+            itemMeta.addAttributeModifier(modifier.getKey().key(),
+                                          new ItemAttributeModifier(null, modifier.getModifier()));
         }
 
         itemMeta.setUnbreakable(unbreakable);
