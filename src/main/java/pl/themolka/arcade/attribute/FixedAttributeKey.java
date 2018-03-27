@@ -27,6 +27,10 @@ public class FixedAttributeKey extends AttributeKey {
         return this.key;
     }
 
+    public static String computeKey(String key) {
+        return computeKey(DEFAULT_NAMESPACE, key);
+    }
+
     public static String computeKey(String namespace, String key) {
         return requireNamespace(namespace) + NAMESPACE_SEPARATOR + requireKey(key);
     }

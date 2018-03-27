@@ -48,6 +48,7 @@ public class Sessions implements Listener {
             if (game != null) {
                 game.setPlayer(null); // remove the pointer
                 game.setParticipating(false);
+                game.onDisconnect(info.player);
             }
         }
     }

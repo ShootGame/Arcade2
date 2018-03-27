@@ -68,9 +68,11 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.LivesContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.MaxHealthContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.MessageContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.ModifierContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveArrowsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveEffectsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveKitContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.RemoveModifiersContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RootContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SaturationContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SilentContent$ContentParser" />

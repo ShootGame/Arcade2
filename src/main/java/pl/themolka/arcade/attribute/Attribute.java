@@ -5,6 +5,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.craftbukkit.attribute.CraftAttributeInstance;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,6 +61,16 @@ public class Attribute {
     @Override
     public int hashCode() {
         return Objects.hash(this.mojang, this.key);
+    }
+
+    public int removeAllModifers() {
+        int done = 0;
+        for (net.minecraft.server.AttributeModifier modifier : new HashSet<>(this.mojang.c())) {
+            this.mojang.c(modifier);
+            done++;
+        }
+
+        return done;
     }
 
     public void removeModifier(AttributeModifier modifier) {

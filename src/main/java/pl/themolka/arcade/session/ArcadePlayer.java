@@ -2,9 +2,7 @@ package pl.themolka.arcade.session;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.AttributeMapBase;
 import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -17,10 +15,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.attribute.Attributable;
-import pl.themolka.arcade.attribute.Attribute;
-import pl.themolka.arcade.attribute.AttributeKey;
-import pl.themolka.arcade.attribute.AttributeMap;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.content.HealthContent;
@@ -29,10 +23,8 @@ import pl.themolka.arcade.time.Time;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * ArcadePlayers are created when player joins the server, and removed then he
@@ -40,7 +32,7 @@ import java.util.logging.Level;
  * are not secure to be stored in objects - use {@link GamePlayer} or
  * {@link UUID} instead.
  */
-public class ArcadePlayer implements Attributable, Sender {
+public class ArcadePlayer implements Sender {
     public static final long SOUND_INTERVAL = 500L; // half second
     public static final int USERNAME_MIN_LENGTH = 3; // was changed to 4 in beta
     public static final int USERNAME_MAX_LENGTH = 16;
@@ -51,8 +43,6 @@ public class ArcadePlayer implements Attributable, Sender {
 
     private final Reference<Player> bukkit; // Bukkit
     private Reference<GamePlayer> gamePlayer; // NEVER null
-
-    private AttributeMap attributeMap;
     private Time lastPlayedSound = Time.now();
 
     public ArcadePlayer(ArcadePlugin plugin, Player bukkit) {
@@ -64,23 +54,6 @@ public class ArcadePlayer implements Attributable, Sender {
     //
     // Inherited stuff
     //
-
-    @Override
-    public Attribute getAttribute(AttributeKey key) {
-        EntityPlayer mojang = this.getMojang();
-        if (this.attributeMap == null) {
-            try {
-                Field mojangMap = EntityLiving.class.getDeclaredField("attributeMap");
-                mojangMap.setAccessible(true);
-                this.attributeMap = new AttributeMap((AttributeMapBase) mojangMap.get(mojang));
-            } catch (ReflectiveOperationException ex) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not inject attribute map", ex);
-                return null;
-            }
-        }
-
-        return this.attributeMap.getAttribute(key);
-    }
 
     @Override
     public GamePlayer getGamePlayer() {

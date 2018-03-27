@@ -1,5 +1,7 @@
 package pl.themolka.arcade.game;
 
+import net.minecraft.server.AttributeMapBase;
+import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
@@ -42,12 +44,14 @@ import pl.themolka.arcade.util.Color;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * GamePlayers are secure to be stored when the players are offline. The
@@ -114,7 +118,19 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
 
     @Override
     public Attribute getAttribute(AttributeKey key) {
-        return this.isOnline() ? this.getPlayer().getAttribute(key) : null;
+        EntityPlayer mojang = this.getMojang();
+        if (this.attributeMap == null) {
+            try {
+                Field mojangMap = EntityLiving.class.getDeclaredField("attributeMap");
+                mojangMap.setAccessible(true);
+                this.attributeMap = new AttributeMap((AttributeMapBase) mojangMap.get(mojang));
+            } catch (ReflectiveOperationException ex) {
+                this.game.getPlugin().getLogger().log(Level.SEVERE, "Could not inject attribute map", ex);
+                return null;
+            }
+        }
+
+        return this.attributeMap.getAttribute(key);
     }
 
     @Override
@@ -443,5 +459,13 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
                 .append("isOnline", this.isOnline())
                 .append("username", this.username)
                 .build();
+    }
+
+    /**
+     * @deprecated Internal use only.
+     */
+    @Deprecated
+    public final void onDisconnect(ArcadePlayer player) {
+        this.attributeMap = null;
     }
 }
