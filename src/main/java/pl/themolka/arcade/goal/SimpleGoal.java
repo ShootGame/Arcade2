@@ -1,6 +1,7 @@
 package pl.themolka.arcade.goal;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.bukkit.ChatColor;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 
@@ -34,7 +35,7 @@ public abstract class SimpleGoal implements Goal {
 
     @Override
     public String getName() {
-        return this.hasName() ? this.name : this.getDefaultName();
+        return ChatColor.stripColor(this.hasName() ? this.name : this.getDefaultName());
     }
 
     @Override

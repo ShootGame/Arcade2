@@ -91,7 +91,7 @@ public class Point extends Capturable {
 
     @Override
     public String getColoredName() {
-        return this.getState().getColor() + this.getName();
+        return this.getState().getColor() + this.getName() + ChatColor.RESET;
     }
 
     @Override

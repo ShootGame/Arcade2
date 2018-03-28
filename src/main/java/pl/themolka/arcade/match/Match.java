@@ -132,9 +132,9 @@ public class Match implements DynamicWinnable, GameHolder {
 
             player.setCurrentChannel(null);
             player.setParticipating(false);
-            player.reset();
 
             for (KitContent<?> content : new KitContent[] {
+                    ObserversKit.RESET,
                     ObserversKit.GAME_MODE,
                     ObserversKit.NAVIGATION_ITEM,
                     ObserversKit.HELD_SLOT,
@@ -395,7 +395,7 @@ public class Match implements DynamicWinnable, GameHolder {
             }
 
             player.setParticipating(true);
-            player.reset();
+            ObserversKit.RESET.applyIfApplicable(player);
         }
 
         this.plugin.getEventBus().publish(new MatchStartedEvent(this.plugin, this, force));

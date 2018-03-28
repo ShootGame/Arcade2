@@ -12,7 +12,7 @@ public class KitApply implements PlayerApplicable {
 
     @Override
     public void apply(GamePlayer player) {
-        this.getKit().apply(player);
+        this.getKit().apply(player, false);
         player.getBukkit().updateInventory();
     }
 

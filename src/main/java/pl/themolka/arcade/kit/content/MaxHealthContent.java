@@ -1,5 +1,7 @@
 package pl.themolka.arcade.kit.content;
 
+import org.bukkit.attribute.Attribute;
+import pl.themolka.arcade.attribute.AttributeKey;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
@@ -14,6 +16,8 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class MaxHealthContent implements RemovableKitContent<Double> {
+    public static final AttributeKey MAX_HEALTH = AttributeKey.bukkit(Attribute.GENERIC_MAX_HEALTH);
+
     public static final double MIN_VALUE = 0D;
 
     public static boolean testValue(double value) {
@@ -33,12 +37,16 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
 
     @Override
     public void attach(GamePlayer player, Double value) {
-        player.getBukkit().setMaxHealth(value);
+        if (value != null) {
+            player.getAttribute(MAX_HEALTH).setValue(value);
+        } else {
+            player.getAttribute(MAX_HEALTH).resetValue();
+        }
     }
 
     @Override
     public Double defaultValue() {
-        return Config.DEFAULT_MAX_HEALTH;
+        return null;
     }
 
     @Override

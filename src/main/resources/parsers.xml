@@ -8,7 +8,9 @@ them are registered in the ParserContainer class
 <parsers>
     <parser class="pl.themolka.arcade.attribute.AttributeKeyParser" />
     <parser class="pl.themolka.arcade.attribute.AttributeModifierParser" />
+    <parser class="pl.themolka.arcade.attribute.BoundedItemModifierParser" />
     <parser class="pl.themolka.arcade.attribute.BoundedModifierParser" />
+    <parser class="pl.themolka.arcade.attribute.ItemAttributeModifierParser" />
     <parser class="pl.themolka.arcade.attribute.OperationParser" />
     <parser class="pl.themolka.arcade.config.RefParser" />
     <parser class="pl.themolka.arcade.damage.DamageGameParser" />
@@ -73,6 +75,8 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.RemoveEffectsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveKitContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RemoveModifiersContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.ResetContent$ContentParser" />
+    <parser class="pl.themolka.arcade.kit.content.ResetHealthContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.RootContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SaturationContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.SilentContent$ContentParser" />

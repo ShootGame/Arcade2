@@ -32,6 +32,7 @@ import pl.themolka.arcade.kit.content.HealthScaleContent;
 import pl.themolka.arcade.kit.content.HungerContent;
 import pl.themolka.arcade.kit.content.KnockbackContent;
 import pl.themolka.arcade.kit.content.LevelContent;
+import pl.themolka.arcade.kit.content.MaxHealthContent;
 import pl.themolka.arcade.kit.content.RemoveArrowsContent;
 import pl.themolka.arcade.kit.content.SaturationContent;
 import pl.themolka.arcade.kit.content.SilentContent;
@@ -377,6 +378,8 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.closeInventory();
         this.getPlayer().clearInventory(true);
 
+        this.resetHealth();
+
         bukkit.setAbsorption(AbsorptionContent.Config.DEFAULT_ABSORPTION);
         bukkit.setAllowFlight(CanFlyContent.Config.DEFAULT_CAN_FLY);
         bukkit.setArrowsStuck(RemoveArrowsContent.FINAL_COUNT);
@@ -390,10 +393,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.setGameMode(GameModeContent.Config.DEFAULT_GAME_MODE);
         bukkit.setGlowing(GlowContent.Config.DEFAULT_GLOW);
         bukkit.setGravity(GravityContent.Config.DEFAULT_GRAVITY);
-        bukkit.setHealthScale(HealthContent.Config.DEFAULT_HEALTH);
-        bukkit.setHealth(HealthContent.Config.DEFAULT_HEALTH);
-        bukkit.setHealthScale(HealthScaleContent.Config.DEFAULT_SCALE);
-        bukkit.setHealthScaled(false);
         bukkit.setKnockbackReduction(KnockbackContent.Config.DEFAULT_KNOCKBACK);
         bukkit.setLevel(LevelContent.Config.DEFAULT_LEVEL);
         bukkit.setSaturation(SaturationContent.Config.DEFAULT_SATURATION);
@@ -402,9 +401,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.setSprinting(false);
         bukkit.setVelocity(VelocityContent.Config.DEFAULT_VELOCITY);
         bukkit.setWalkSpeed(WalkSpeedContent.Config.DEFAULT_SPEED);
-
-        bukkit.setFastNaturalRegeneration(false);
-        bukkit.setSlowNaturalRegeneration(true);
 
         bukkit.resetPlayerTime();
         bukkit.resetPlayerWeather();
@@ -429,6 +425,15 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
 
     public void resetDisplayName() {
         this.setDisplayName(null);
+    }
+
+    public void resetHealth() {
+        this.getAttribute(MaxHealthContent.MAX_HEALTH).resetValue();
+
+        Player bukkit = this.getBukkit();
+        bukkit.setHealthScale(HealthScaleContent.Config.DEFAULT_SCALE);
+        bukkit.setHealthScaled(false);
+        bukkit.setHealth(HealthContent.Config.DEFAULT_HEALTH);
     }
 
     public boolean sendPacket(Object packet) {

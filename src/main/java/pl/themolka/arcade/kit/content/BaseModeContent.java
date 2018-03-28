@@ -28,6 +28,11 @@ public interface BaseModeContent {
             return this.mode;
         }
 
+        @Override
+        public String toString() {
+            return Boolean.toString(this.mode);
+        }
+
         public static Mode fromBoolean(boolean mode) {
             return mode ? GIVE : TAKE;
         }
@@ -58,7 +63,9 @@ public interface BaseModeContent {
 
         @Override
         protected ParserResult<Mode> parseNode(Node node, String name, String value) throws ParserException {
-            boolean take = this.modeParser.parse(node.property("take", "remove")).orDefault(Mode.getDefault().toBoolean());
+            boolean defTake = !Config.DEFAULT_MODE.toBoolean();
+            boolean take = this.modeParser.parse(node.property("take", "remove")).orDefault(defTake);
+
             return ParserResult.fine(node, name, value, Mode.fromBoolean(!take));
         }
     }

@@ -19,10 +19,13 @@ import java.util.UUID;
 @Produces(AttributeModifier.class)
 public class AttributeModifierParser extends NodeParser<AttributeModifier>
                                      implements InstallableParser {
+    public static final String NAMESPACE = FixedAttributeKey.DEFAULT_NAMESPACE;
+    public static final String SEPARATOR = FixedAttributeKey.NAMESPACE_SEPARATOR;
+
     private Parser<AttributeModifier.Operation> operationParser;
     private Parser<Double> amountParser;
 
-    private FastUUID fastUUID = new FastUUID();
+    private final FastUUID fastUUID = new FastUUID();
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
@@ -42,6 +45,14 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
         double amount = this.amountParser.parse(node).orFail();
 
         UUID uniqueId = this.fastUUID.next();
-        return ParserResult.fine(node, name, value, new AttributeModifier(uniqueId, uniqueId.toString(), amount, operation));
+        return ParserResult.fine(node, name, value, new AttributeModifier(uniqueId,
+                                                                          this.computeName(uniqueId, operation, amount),
+                                                                          amount,
+                                                                          operation));
+    }
+
+    protected String computeName(UUID uniqueId, AttributeModifier.Operation operation, double amount) {
+        // eg. 'arcade.2b5f34f6-fb05-4852-a86c-2e03bccbdf89'
+        return FixedAttributeKey.computeKey(NAMESPACE, SEPARATOR, uniqueId.toString());
     }
 }

@@ -1,0 +1,43 @@
+package pl.themolka.arcade.attribute;
+
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.ItemAttributeModifier;
+import org.bukkit.inventory.EquipmentSlot;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.NodeParser;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
+import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
+
+import java.util.Collections;
+import java.util.Set;
+
+@Produces(ItemAttributeModifier.class)
+public class ItemAttributeModifierParser extends NodeParser<ItemAttributeModifier>
+                                         implements InstallableParser {
+    private Parser<EquipmentSlot> slotParser;
+    private Parser<AttributeModifier> modifierParser;
+
+    @Override
+    public void install(ParserContext context) throws ParserNotSupportedException {
+        this.slotParser = context.enumType(EquipmentSlot.class);
+        this.modifierParser = context.type(AttributeModifier.class);
+    }
+
+    @Override
+    public Set<Object> expect() {
+        return Collections.singleton("item attribute modifier");
+    }
+
+    @Override
+    protected ParserResult<ItemAttributeModifier> parseNode(Node node, String name, String value) throws ParserException {
+        EquipmentSlot slot = this.slotParser.parse(node.property("slot", "equipment-slot", "equipmentslot")).orDefaultNull();
+        AttributeModifier modifier = this.modifierParser.parse(node).orFail();
+
+        return ParserResult.fine(node, name, value, new ItemAttributeModifier(slot, modifier));
+    }
+}

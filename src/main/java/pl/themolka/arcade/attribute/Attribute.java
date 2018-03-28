@@ -37,16 +37,12 @@ public class Attribute {
         return false;
     }
 
-    public AttributeKey getKey() {
-        return this.key;
-    }
-
-    public double getBaseValue() {
-        return this.mojang.b();
-    }
-
     public double getDefaultValue() {
         return this.mojang.getAttribute().getDefault();
+    }
+
+    public AttributeKey getKey() {
+        return this.key;
     }
 
     public List<AttributeModifier> getModifiers() {
@@ -56,6 +52,10 @@ public class Attribute {
         }
 
         return modifiers;
+    }
+
+    public double getValue() {
+        return this.mojang.b();
     }
 
     @Override
@@ -77,7 +77,11 @@ public class Attribute {
         this.mojang.c(CraftAttributeInstance.convert(Objects.requireNonNull(modifier, "modifier cannot be null")));
     }
 
-    public void setBaseValue(double baseValue) {
+    public void resetValue() {
+        this.mojang.setValue(this.mojang.getAttribute().getDefault());
+    }
+
+    public void setValue(double baseValue) {
         this.mojang.setValue(baseValue);
     }
 }

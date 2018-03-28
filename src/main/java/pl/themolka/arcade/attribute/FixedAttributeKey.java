@@ -32,7 +32,11 @@ public class FixedAttributeKey extends AttributeKey {
     }
 
     public static String computeKey(String namespace, String key) {
-        return requireNamespace(namespace) + NAMESPACE_SEPARATOR + requireKey(key);
+        return computeKey(namespace, NAMESPACE_SEPARATOR, key);
+    }
+
+    public static String computeKey(String namespace, String separator, String key) {
+        return requireNamespace(namespace) + Objects.requireNonNull(separator, "separator cannot be null") + requireKey(key);
     }
 
     private static String requireNamespace(String namespace) {

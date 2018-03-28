@@ -58,6 +58,8 @@ public class RootContentParser extends NodeParser<KitContent.Config<?, ?>>
             .add(RemoveEffectsContent.class)
             .add(RemoveKitContent.class)
             .add(RemoveModifiersContent.class)
+            .add(ResetContent.class)
+            .add(ResetHealthContent.class)
             .add(SaturationContent.class)
             .add(SilentContent.class)
             .add(SoundContent.class)

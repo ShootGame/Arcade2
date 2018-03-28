@@ -3,6 +3,7 @@ package pl.themolka.arcade.attribute;
 import net.minecraft.server.AttributeMapBase;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class TrackingAttributeMap extends AttributeMap {
@@ -26,15 +27,23 @@ public class TrackingAttributeMap extends AttributeMap {
         return new LinkedHashSet<>(this.tracking);
     }
 
+    public boolean isSubcribed(AttributeKey key) {
+        return this.tracking.contains(requireKey(key));
+    }
+
     public void subscribe(AttributeKey key) {
-        this.tracking.add(key);
+        this.tracking.add(requireKey(key));
     }
 
     public void unsubscribe(AttributeKey key) {
-        this.tracking.remove(key);
+        this.tracking.remove(requireKey(key));
     }
 
     public void unsubscribeAll() {
         this.tracking.clear();
+    }
+
+    private static AttributeKey requireKey(AttributeKey key) {
+        return Objects.requireNonNull(key, "key cannot be null");
     }
 }

@@ -18,10 +18,12 @@ import java.util.Set;
 public class OperationParser extends ElementParser<AttributeModifier.Operation>
                              implements InstallableParser {
     private Parser<String> operationParser;
+    private Parser<Integer> vanillaIdParser;
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         this.operationParser = context.text();
+        this.vanillaIdParser = context.type(Integer.class);
     }
 
     @Override
@@ -31,12 +33,23 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
 
     @Override
     protected ParserResult<AttributeModifier.Operation> parseElement(Element element, String name, String value) throws ParserException {
-        AttributeModifier.Operation operation = this.getOperation(this.operationParser.parse(element).orFail());
+        AttributeModifier.Operation operation = this.getOperation(this.operationParser.parse(element).orDefaultNull());
+        if (operation == null) {
+            operation = this.parseOperationVanillaId(element, name, value);
+        }
+
         if (operation == null) {
             throw this.fail(element, name, value, "Unknown attribute modifier operation type");
         }
 
         return ParserResult.fine(element, name, value, operation);
+    }
+
+    protected AttributeModifier.Operation parseOperationVanillaId(Element element, String name, String value) throws ParserException {
+        Integer vanillaId = this.vanillaIdParser.parse(element).orDefaultNull();
+        return isValidOperationVanillaId(vanillaId)
+                ? AttributeModifier.Operation.fromOpcode(vanillaId)
+                : null;
     }
 
     protected AttributeModifier.Operation getOperation(String input) {
@@ -46,5 +59,9 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
             case "multiply": return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
             default: return null;
         }
+    }
+
+    private static boolean isValidOperationVanillaId(Integer vanillaId) {
+        return vanillaId != null && vanillaId >= 0 && vanillaId < AttributeModifier.Operation.values().length;
     }
 }

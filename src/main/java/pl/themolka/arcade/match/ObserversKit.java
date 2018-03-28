@@ -19,6 +19,7 @@ import pl.themolka.arcade.kit.content.FlySpeedContent;
 import pl.themolka.arcade.kit.content.GameModeContent;
 import pl.themolka.arcade.kit.content.HeldSlotContent;
 import pl.themolka.arcade.kit.content.ItemStackContent;
+import pl.themolka.arcade.kit.content.ResetContent;
 import pl.themolka.arcade.kit.content.WalkSpeedContent;
 import pl.themolka.arcade.potion.PotionEffectBuilder;
 
@@ -28,6 +29,9 @@ public class ObserversKit extends Kit {
     //
     // Content
     //
+
+    public static final ResetContent RESET = new ResetContent.Config() {
+    }.create(null);
 
     // clear inventory
     public static final ClearInventoryContent CLEAR_INVENTORY = new ClearInventoryContent.Config() {

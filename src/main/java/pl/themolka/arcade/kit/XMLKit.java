@@ -3,8 +3,9 @@ package pl.themolka.arcade.kit;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.content.KitContent;
-import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.xml.XML;
@@ -15,7 +16,9 @@ import pl.themolka.arcade.xml.XMLParser;
  */
 @Deprecated
 public class XMLKit extends XMLParser {
-    public static Kit parse(ArcadePlugin plugin, Element xml) {
+    public static Kit parse(Game game, Element xml) {
+        ArcadePlugin plugin = game.getPlugin();
+
         String id = xml.getAttributeValue("id");
         if (id == null) {
             return null;
@@ -23,10 +26,19 @@ public class XMLKit extends XMLParser {
 
         Kit kit = new Kit(plugin, id);
         for (Element contentElement : xml.getChildren()) {
-            KitContent<?> content = parseContent(plugin, contentElement);
+            KitContent.Config<?, ?> config = parseContent(plugin, contentElement);
+            if (config == null) {
+                continue;
+            }
+
+            KitContent<?> content = config.create(game);
             if (content != null) {
                 kit.addContent(content);
             }
+        }
+
+        if (kit.getContent().isEmpty()) {
+            return null;
         }
 
         Attribute inheritAttribute = xml.getAttribute("inherit");
@@ -43,11 +55,13 @@ public class XMLKit extends XMLParser {
      * @deprecated Uses JDOM.
      */
     @Deprecated
-    private static KitContent<?> parseContent(ArcadePlugin plugin, Element xml) {
+    private static KitContent.Config<?, ?> parseContent(ArcadePlugin plugin, Element xml) {
         try {
-            Parser<KitContent> parser = plugin.getParsers().forType(KitContent.class);
-            return parser.parseWithName(XML.convert(xml), xml.getName()).orNull();
-        } catch (ParserNotSupportedException ex) {
+            return plugin.getParsers().forType(KitContent.Config.class)
+                                      .parseWithName(XML.convert(xml), xml.getName())
+                                      .orDefaultNull();
+        } catch (ParserNotSupportedException | ParserException ex) {
+            ex.printStackTrace();
             return null;
         }
     }

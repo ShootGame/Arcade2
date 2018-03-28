@@ -18,7 +18,7 @@ public class KitsModule extends Module<KitsGame> {
     public KitsGame buildGameModule(Element xml, Game game) throws JDOMException {
         List<Kit> kits = new ArrayList<>();
         for (Element kitElement : xml.getChildren("kit")) {
-            Kit kit = XMLKit.parse(this.getPlugin(), kitElement);
+            Kit kit = XMLKit.parse(game, kitElement);
             if (kit != null) {
                 kits.add(kit);
             }
