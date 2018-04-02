@@ -70,7 +70,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
                 });
             }
 
-            boolean canFly = this.canFlyParser.parse(node).orFail();
+            boolean canFly = this.canFlyParser.parseWithDefinition(node, name, value).orFail();
             boolean force = this.forceParser.parse(node.property("force")).orDefault(Config.DEFAULT_FORCE);
 
             return ParserResult.fine(node, name, value, new Config() {

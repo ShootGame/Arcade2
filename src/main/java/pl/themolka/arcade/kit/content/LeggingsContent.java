@@ -44,7 +44,7 @@ public class LeggingsContent extends BaseArmorContent {
                 });
             }
 
-            ItemStack leggings = this.itemStackParser.parse(node).orFail();
+            ItemStack leggings = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(leggings); }

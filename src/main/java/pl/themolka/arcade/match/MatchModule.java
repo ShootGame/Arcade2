@@ -12,7 +12,6 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.time.Time;
-import pl.themolka.arcade.time.XMLTime;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.List;
@@ -39,12 +38,7 @@ public class MatchModule extends Module<MatchGame> {
 
         Element startCountdownElement = xml.getChild("start-countdown");
         if (startCountdownElement != null) {
-            Time time = XMLTime.parse(startCountdownElement.getValue());
-            if (time != null) {
-                startCountdown = (int) time.toSeconds();
-            } else {
-                startCountdown = DEFAULT_START_COUNTDOWN;
-            }
+            startCountdown = (int) Time.parseTime(startCountdownElement.getValue(), Time.ofSeconds(DEFAULT_START_COUNTDOWN)).toSeconds();
         }
 
         Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());

@@ -9,6 +9,14 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 public class ResetHealthContent implements BaseVoidKitContent {
+    protected ResetHealthContent() {
+    }
+
+    @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
     @Override
     public void apply(GamePlayer player) {
         player.resetHealth();

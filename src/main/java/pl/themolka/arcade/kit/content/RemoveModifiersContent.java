@@ -23,6 +23,11 @@ public class RemoveModifiersContent implements KitContent<AttributeKey> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
         Attribute attribute = player.getAttribute(this.result);
         if (attribute != null) {
@@ -48,7 +53,7 @@ public class RemoveModifiersContent implements KitContent<AttributeKey> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            AttributeKey key = this.keyParser.parse(node).orFail();
+            AttributeKey key = this.keyParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<AttributeKey> result() { return Ref.ofProvided(key); }

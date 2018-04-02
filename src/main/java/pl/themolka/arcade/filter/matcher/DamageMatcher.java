@@ -44,6 +44,6 @@ public class DamageMatcher extends Matcher {
 class DamageParser implements MatcherParser<DamageMatcher> {
     @Override
     public DamageMatcher parsePrimitive(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
-        return new DamageMatcher(context.enumType(DamageCause.class).parse(node).orFail());
+        return new DamageMatcher(context.type(DamageCause.class).parse(node).orFail());
     }
 }

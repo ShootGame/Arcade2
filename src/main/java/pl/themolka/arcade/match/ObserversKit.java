@@ -30,6 +30,7 @@ public class ObserversKit extends Kit {
     // Content
     //
 
+    // reset
     public static final ResetContent RESET = new ResetContent.Config() {
     }.create(null);
 
@@ -95,12 +96,12 @@ public class ObserversKit extends Kit {
 
     // fly speed
     public static final FlySpeedContent FLY_SPEED = new FlySpeedContent.Config() {
-        public Ref<Float> result() { return Ref.ofProvided(FlySpeedContent.Config.DEFAULT_SPEED * 1.35F); }
+        public Ref<Float> result() { return Ref.ofProvided(FlySpeedContent.Config.DEFAULT_SPEED * 1.15F); }
     }.create(null);
 
     // walk speed
     public static final WalkSpeedContent WALK_SPEED = new WalkSpeedContent.Config() {
-        public Ref<Float> result() { return Ref.ofProvided(WalkSpeedContent.Config.DEFAULT_SPEED * 1.85F); }
+        public Ref<Float> result() { return Ref.ofProvided(WalkSpeedContent.Config.DEFAULT_SPEED * 1.65F); }
     }.create(null);
 
     //

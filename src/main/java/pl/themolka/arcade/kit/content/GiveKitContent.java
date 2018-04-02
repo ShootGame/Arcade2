@@ -23,7 +23,7 @@ public class GiveKitContent implements KitContent<Kit> {
 
     @Override
     public void apply(GamePlayer player) {
-        this.result.apply(player, true); // this is application is secret
+        this.result.apply(player, true); // this application is secret
     }
 
     @Override
@@ -44,7 +44,7 @@ public class GiveKitContent implements KitContent<Kit> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Ref<Kit> kit = this.kitParser.parse(node).orFail();
+            Ref<Kit> kit = this.kitParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Kit> result() { return kit; }

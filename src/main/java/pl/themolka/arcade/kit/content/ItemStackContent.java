@@ -82,8 +82,8 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            ItemStack itemStack = this.itemStackParser.parse(node).orFail();
-            BaseModeContent.Mode mode = this.modeParser.parse(node).orDefault(Config.DEFAULT_MODE);
+            ItemStack itemStack = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
+            BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(node, name, value).orDefault(Config.DEFAULT_MODE);
             Integer slot = this.slotParser.parse(node.property("slot")).orDefault(Config.DEFAULT_SLOT);
 
             return ParserResult.fine(node, name, value, new Config() {

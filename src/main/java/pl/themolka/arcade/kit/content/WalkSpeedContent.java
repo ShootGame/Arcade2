@@ -67,7 +67,7 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float speed = this.speedParser.parse(node).orFail();
+            float speed = this.speedParser.parseWithDefinition(node, name,  value).orFail();
             if (speed < MIN_VALUE) {
                 throw this.fail(node, name, value, "Walk speed is too slow (min " + MIN_VALUE + ")");
             } else if (speed > MAX_VALUE) {

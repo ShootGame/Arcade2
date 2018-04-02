@@ -17,8 +17,6 @@ import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.content.HealthContent;
-import pl.themolka.arcade.kit.content.HealthScaleContent;
 import pl.themolka.arcade.time.Time;
 
 import java.lang.ref.Reference;
@@ -42,7 +40,7 @@ public class ArcadePlayer implements Sender {
     private final ArcadePlugin plugin;
 
     private final Reference<Player> bukkit; // Bukkit
-    private Reference<GamePlayer> gamePlayer; // NEVER null
+    private Reference<GamePlayer> gamePlayer = new WeakReference<>(null); // NEVER null
     private Time lastPlayedSound = Time.now();
 
     public ArcadePlayer(ArcadePlugin plugin, Player bukkit) {
@@ -231,10 +229,9 @@ public class ArcadePlayer implements Sender {
             worldId = ((CraftWorld) at.getWorld()).getHandle().dimension;
         }
 
-        Player bukkit = this.getBukkit();
-        if (bukkit != null) {
-            bukkit.setHealthScale(HealthScaleContent.Config.DEFAULT_SCALE);
-            bukkit.setHealth(HealthContent.Config.DEFAULT_HEALTH);
+        GamePlayer gamePlayer = this.getGamePlayer();
+        if (gamePlayer != null) {
+            gamePlayer.resetHealth();
         }
 
         EntityPlayer mojang = this.getMojang();

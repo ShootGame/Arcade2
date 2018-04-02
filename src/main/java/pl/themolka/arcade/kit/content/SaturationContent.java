@@ -60,8 +60,7 @@ public class SaturationContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float saturation = this.saturationParser.parse(node).orFail();
-            // TODO test if saturation can be negative
+            float saturation = this.saturationParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Float> result() { return Ref.ofProvided(saturation); }

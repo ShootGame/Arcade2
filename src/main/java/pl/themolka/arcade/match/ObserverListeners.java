@@ -115,10 +115,6 @@ public class ObserverListeners implements Listener {
     public void onPlayerJoinedObservers(ObserversJoinEvent event) {
         GamePlayer player = event.getGamePlayer();
         if (player.isOnline()) {
-            if (this.game.getMatch().isRunning()) {
-                player.kill();
-            }
-
             this.game.getMatch().getObserversKit().apply(player);
             // ^ apply kits
 

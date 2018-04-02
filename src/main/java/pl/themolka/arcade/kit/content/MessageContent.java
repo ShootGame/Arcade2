@@ -121,12 +121,12 @@ public class MessageContent implements KitContent<String> {
         public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
             this.textParser = context.type(String.class);
-            this.channelParser = context.enumType(Channel.class);
+            this.channelParser = context.type(Channel.class);
         }
 
         @Override
         protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            String text = this.textParser.parse(node).orFail();
+            String text = this.textParser.parseWithDefinition(node, name, value).orFail();
             Channel channel = this.channelParser.parse(node.property("channel")).orDefault(Config.DEFAULT_CHANNEL);
 
             return ParserResult.fine(node, name, value, new Config() {

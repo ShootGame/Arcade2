@@ -60,8 +60,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float knockback = this.knockbackParser.parse(node).orFail();
-            // TODO test if knockback can be negative
+            float knockback = this.knockbackParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Float> result() { return Ref.ofProvided(knockback); }

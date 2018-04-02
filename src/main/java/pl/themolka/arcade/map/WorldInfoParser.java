@@ -32,7 +32,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         this.difficultyParser = context.type(Difficulty.class);
-        this.environmentParser = context.enumType(World.Environment.class);
+        this.environmentParser = context.type(World.Environment.class);
         this.generatorParser = context.type(Generator.class);
         this.hardcoreParser = context.type(Boolean.class);
         this.pvpParser = context.type(Boolean.class);

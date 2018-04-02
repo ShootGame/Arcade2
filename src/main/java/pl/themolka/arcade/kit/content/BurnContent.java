@@ -62,7 +62,7 @@ public class BurnContent implements RemovableKitContent<Time> {
                 });
             }
 
-            Time time = this.timeParser.parse(node).orFail();
+            Time time = this.timeParser.parseWithDefinition(node, name, value).orFail();
             if (time.isNegative()) {
                 throw this.fail(node, name, value, "Burn time cannot be negative");
             }

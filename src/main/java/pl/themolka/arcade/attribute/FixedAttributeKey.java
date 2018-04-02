@@ -9,7 +9,7 @@ public class FixedAttributeKey extends AttributeKey {
     private final String namespace;
     private final String key;
 
-    protected FixedAttributeKey(String namespace, String key) {
+    public FixedAttributeKey(String namespace, String key) {
         this.namespace = requireNamespace(namespace);
         this.key = requireKey(key);
     }

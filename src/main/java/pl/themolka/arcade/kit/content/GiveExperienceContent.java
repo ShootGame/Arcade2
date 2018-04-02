@@ -54,7 +54,7 @@ public class GiveExperienceContent implements KitContent<Integer> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            int experience = this.experienceParser.parse(node).orFail();
+            int experience = this.experienceParser.parseWithDefinition(node, name, value).orFail();
             if (experience <= 0) {
                 throw this.fail(node, name, value, "Experience must be positive (greater than 0)");
             }

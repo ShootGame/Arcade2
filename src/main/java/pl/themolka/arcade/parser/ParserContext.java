@@ -7,12 +7,8 @@ public class ParserContext {
         this.parsers = parsers;
     }
 
-    public <T extends Enum<T>> EnumParser<T> enumType(Class<T> enumType) throws ParserNotSupportedException {
-        try {
-            return new EnumParser<>(enumType);
-        } catch (NullPointerException npe) {
-            throw new ParserNotSupportedException(npe);
-        }
+    public <T extends Enum<T>> Parser<T> enumType(Class<T> type) throws ParserNotSupportedException {
+        return this.parsers.forEnumType(type);
     }
 
     public ParserContainer getContainer() {

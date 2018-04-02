@@ -10,12 +10,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Listeners related to anti-grief methods.
@@ -41,7 +44,7 @@ public class ProtectionListeners implements Listener {
         if (player != null && bukkit != null && player.isParticipating()) {
             PlayerDeathEvent death = new PlayerDeathEvent(
                     bukkit,
-                    Arrays.asList(bukkit.getInventory().getContents()),
+                    this.getDropsFor(bukkit),
                     bukkit.getTotalExperience(),
                     null
             );
@@ -49,6 +52,10 @@ public class ProtectionListeners implements Listener {
             // call the fake event
             this.plugin.getServer().getPluginManager().callEvent(death);
         }
+    }
+
+    private List<ItemStack> getDropsFor(Player bukkit) {
+        return new ArrayList<>(Arrays.asList(bukkit.getInventory().getContents()));
     }
 
     /**

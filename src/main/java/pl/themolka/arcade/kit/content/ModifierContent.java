@@ -23,6 +23,11 @@ public class ModifierContent implements KitContent<BoundedModifier> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
         Attribute attribute = player.getAttribute(this.result.getKey());
         if (attribute != null) {
@@ -49,7 +54,7 @@ public class ModifierContent implements KitContent<BoundedModifier> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            BoundedModifier modifier = this.modifierParser.parse(node).orFail();
+            BoundedModifier modifier = this.modifierParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<BoundedModifier> result() { return Ref.ofProvided(modifier); }

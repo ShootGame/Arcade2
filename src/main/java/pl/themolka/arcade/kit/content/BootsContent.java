@@ -44,7 +44,7 @@ public class BootsContent extends BaseArmorContent {
                 });
             }
 
-            ItemStack boots = this.itemStackParser.parse(node).orFail();
+            ItemStack boots = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(boots); }

@@ -66,7 +66,8 @@ public class TeamContent implements RemovableKitContent<Team> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Ref<Team> team = this.reset(node) ? Config.DEFAULT_TEAM : this.teamParser.parse(node).orFail();
+            Ref<Team> team = this.reset(node) ? Config.DEFAULT_TEAM
+                                              : this.teamParser.parseWithDefinition(node, name, value).orFail();
             boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
 
             return ParserResult.fine(node, name, value, new Config() {

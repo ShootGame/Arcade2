@@ -60,7 +60,7 @@ public class SilentContent implements RemovableKitContent<Boolean> {
                 });
             }
 
-            boolean silent = this.silentParser.parse(node).orFail();
+            boolean silent = this.silentParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(silent); }

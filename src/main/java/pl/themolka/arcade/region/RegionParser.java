@@ -190,7 +190,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
         @Override
         protected ParserResult<NegativeRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
-            Ref<UnionRegion.Config> region = Ref.ofProvided(this.regionParser.parse(node).orFail());
+            Ref<UnionRegion.Config> region = Ref.ofProvided(this.regionParser.parseWithDefinition(node, name, value).orFail());
 
             return ParserResult.fine(node, name, value, new NegativeRegion.Config() {
                 public String id() { return id; }

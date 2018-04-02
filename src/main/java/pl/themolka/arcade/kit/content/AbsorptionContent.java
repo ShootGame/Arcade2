@@ -66,7 +66,7 @@ public class AbsorptionContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float absorption = this.absorptionParser.parse(node).orFail();
+            float absorption = this.absorptionParser.parseWithDefinition(node, name, value).orFail();
             if (absorption < MIN_VALUE) {
                 throw this.fail(node, name, value, "Absorption cannot be negative (smaller than 0)");
             }

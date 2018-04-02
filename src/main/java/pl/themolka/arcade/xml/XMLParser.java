@@ -5,7 +5,6 @@ import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.number.DoubleParser;
-import pl.themolka.arcade.parser.number.IntegerParser;
 import pl.themolka.arcade.parser.type.BooleanParser;
 import pl.themolka.arcade.parser.type.MessageParser;
 
@@ -30,7 +29,6 @@ import pl.themolka.arcade.parser.type.MessageParser;
 public class XMLParser {
     private static final Parser<Boolean> booleanParser = new BooleanParser();
     private static final Parser<Double> doubleParser = new DoubleParser();
-    private static final Parser<Integer> integerParser = new IntegerParser();
     private static final Parser<String> messageParser = new MessageParser();
 
     /**
@@ -71,18 +69,6 @@ public class XMLParser {
         }
 
         return null;
-    }
-
-    /**
-     * @deprecated {@link IntegerParser}
-     */
-    @Deprecated
-    public static int parseInt(String input, int def) {
-        try {
-            return integerParser.parseWithValue(EmptyElement.empty(), input).orFail();
-        } catch (ParserException ex) {
-            return def;
-        }
     }
 
     /**

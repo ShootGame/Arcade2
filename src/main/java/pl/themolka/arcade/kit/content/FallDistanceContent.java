@@ -66,7 +66,7 @@ public class FallDistanceContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float distance = this.distanceParser.parse(node).orFail();
+            float distance = this.distanceParser.parseWithDefinition(node, name, value).orFail();
             if (distance < MIN_VALUE) {
                 throw this.fail(node, name, value, "Fall distance cannot be negative (smaller than 0)");
             }

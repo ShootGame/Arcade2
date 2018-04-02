@@ -23,7 +23,7 @@ class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         this.authorParser = context.type(String.class);
-        this.generationParser = context.enumType(BookMeta.Generation.class);
+        this.generationParser = context.type(BookMeta.Generation.class);
         this.titleParser = context.type(String.class);
         this.pageParser = context.type(String.class);
     }

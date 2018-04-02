@@ -8,7 +8,6 @@ import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
-import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
 public class WoolFactory implements CapturableFactory<Wool> {
@@ -18,8 +17,15 @@ public class WoolFactory implements CapturableFactory<Wool> {
     }
 
     public Wool parseWoolXml(CaptureGame game, Element xml, Wool wool) {
-        DyeColor color = XMLDyeColor.parse(xml.getAttributeValue("color"));
-        if (color == null) {
+        DyeColor color;
+        try {
+            String input = xml.getAttributeValue("color");
+            if (input == null) {
+                return null;
+            }
+
+            color = DyeColor.valueOf(XMLParser.parseEnumValue(xml.getAttributeValue("color")));
+        } catch (IllegalArgumentException ex) {
             return null;
         }
 

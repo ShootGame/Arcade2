@@ -44,7 +44,7 @@ public class ChestplateContent extends BaseArmorContent {
                 });
             }
 
-            ItemStack chestplate = this.itemStackParser.parse(node).orFail();
+            ItemStack chestplate = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(chestplate); }

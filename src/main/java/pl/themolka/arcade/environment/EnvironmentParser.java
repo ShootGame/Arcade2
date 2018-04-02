@@ -21,7 +21,7 @@ public class EnvironmentParser extends NodeParser<Environment>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.environmentTypeParser = context.enumType(EnvironmentType.class);
+        this.environmentTypeParser = context.type(EnvironmentType.class);
     }
 
     @Override

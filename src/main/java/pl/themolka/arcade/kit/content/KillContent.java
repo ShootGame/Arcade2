@@ -14,7 +14,7 @@ public class KillContent implements BaseVoidKitContent {
 
     @Override
     public boolean isApplicable(GamePlayer player) {
-        return KitContent.testBukkit(player) && !player.isDead();
+        return KitContent.test(player);
     }
 
     @Override

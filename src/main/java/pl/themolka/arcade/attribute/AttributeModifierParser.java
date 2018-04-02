@@ -42,7 +42,7 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
     protected ParserResult<AttributeModifier> parsePrimitive(Node node, String name, String value) throws ParserException {
         AttributeModifier.Operation operation = this.operationParser.parse(node.property("operation"))
                 .orDefault(AttributeModifier.Operation.ADD_NUMBER);
-        double amount = this.amountParser.parse(node).orFail();
+        double amount = this.amountParser.parseWithDefinition(node, name, value).orFail();
 
         UUID uniqueId = this.fastUUID.next();
         return ParserResult.fine(node, name, value, new AttributeModifier(uniqueId,

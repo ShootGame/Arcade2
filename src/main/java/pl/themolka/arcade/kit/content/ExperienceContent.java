@@ -65,7 +65,7 @@ public class ExperienceContent implements RemovableKitContent<Percentage> {
                 });
             }
 
-            Percentage experience = this.experienceParser.parse(node).orFail();
+            Percentage experience = this.experienceParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Percentage> result() { return Ref.ofProvided(experience); }

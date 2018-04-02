@@ -65,7 +65,7 @@ public class LivesContent implements RemovableKitContent<Integer> {
                 });
             }
 
-            int lives = this.livesParser.parse(node).orFail();
+            int lives = this.livesParser.parseWithDefinition(node, name, value).orFail();
             if (lives == 0) {
                 throw this.fail(node, name, value, "No lives to increment or decrement");
             }

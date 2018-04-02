@@ -13,7 +13,7 @@ import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.score.Score;
-import pl.themolka.arcade.time.XMLTime;
+import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLParser;
 
@@ -44,12 +44,12 @@ public class PointFactory implements CapturableFactory<Point> {
 
         // setup
         point.setCapture(capture);
-        point.setCaptureTime(XMLTime.parse(xml.getAttributeValue("capture-time"), Point.DEFAULT_CAPTURE_TIME));
+        point.setCaptureTime(Time.parseTime(xml.getAttributeValue("capture-time"), Point.DEFAULT_CAPTURE_TIME));
         point.setCapturingCapturedEnabled(XMLParser.parseBoolean(xml.getAttributeValue("capturing-captured"), false));
         point.setDominatorStrategy(this.findDominatorStrategy(xml, Point.DEFAULT_DOMINATOR_STRATEGY));
         point.setDominateFilter(this.findFilter(game.getGame(), xml.getAttributeValue("dominate-filter"),
                                                 Point.DEFAULT_DOMINATE_FILTER));
-        point.setLoseTime(XMLTime.parse(xml.getAttributeValue("lose-time"), Point.DEFAULT_LOSE_TIME));
+        point.setLoseTime(Time.parseTime(xml.getAttributeValue("lose-time"), Point.DEFAULT_LOSE_TIME));
         point.setNeutralColor(Color.parse(xml.getAttributeValue("color"), Point.DEFAULT_NEUTRAL_COLOR));
         point.setObjective(XMLParser.parseBoolean(xml.getAttributeValue("objective"), false));
         point.setPermanent(XMLParser.parseBoolean(xml.getAttributeValue("permanent"), false));

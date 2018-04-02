@@ -1,6 +1,5 @@
 package pl.themolka.arcade.life;
 
-import org.bukkit.Sound;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import pl.themolka.arcade.game.Game;
@@ -11,7 +10,6 @@ import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.xml.XMLParser;
-import pl.themolka.arcade.xml.XMLSound;
 
 @ModuleInfo(id = "Lives",
         dependency = {
@@ -19,12 +17,18 @@ import pl.themolka.arcade.xml.XMLSound;
 public class LivesModule extends Module<LivesGame> {
     @Override
     public LivesGame buildGameModule(Element xml, Game game) throws JDOMException {
-        int lives = XMLParser.parseInt(xml.getValue(), 1);
-        if (lives > 0) {
-            boolean announce = XMLParser.parseBoolean(xml.getAttributeValue("announce"), true);
-            Sound sound = XMLSound.parse(xml.getAttributeValue("sound"), LivesGame.DEFAULT_SOUND);
+        int lives;
+        try {
+            lives = Integer.parseInt(xml.getValue());
+        } catch (NumberFormatException ex) {
+            lives = 1;
+        }
 
-            return new LivesGame(lives, null, announce, sound);
+        if (lives > 0) {
+            return new LivesGame(lives,
+                                 null,
+                                 XMLParser.parseBoolean(xml.getAttributeValue("announce"), true),
+                                 LivesGame.DEFAULT_SOUND);
         }
 
         return null;

@@ -66,7 +66,7 @@ public class HealthContent implements RemovableKitContent<Double> {
                 });
             }
 
-            double health = this.healthParser.parse(node).orFail();
+            double health = this.healthParser.parseWithDefinition(node, name, value).orFail();
             if (health < MIN_VALUE) {
                 throw this.fail(node, name, value, "Health cannot be negative (smaller than 0)");
             }

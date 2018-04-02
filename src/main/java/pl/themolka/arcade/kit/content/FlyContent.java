@@ -60,7 +60,7 @@ public class FlyContent implements RemovableKitContent<Boolean> {
                 });
             }
 
-            boolean fly = this.flyParser.parse(node).orFail();
+            boolean fly = this.flyParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(fly); }

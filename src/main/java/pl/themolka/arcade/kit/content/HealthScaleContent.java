@@ -66,7 +66,7 @@ public class HealthScaleContent implements RemovableKitContent<Double> {
                 });
             }
 
-            double scale = this.scaleParser.parse(node).orFail();
+            double scale = this.scaleParser.parseWithDefinition(node, name, value).orFail();
             if (scale <= MIN_VALUE) {
                 throw this.fail(node, name, value, "Health scale must be positive (greater than 0)");
             }

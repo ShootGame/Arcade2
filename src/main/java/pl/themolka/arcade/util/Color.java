@@ -392,10 +392,14 @@ public enum Color {
 
     /** Internal parsers used to parse the color objects */
     private static class Parsers {
-        static Parser<Color> color = new EnumParser<>(Color.class);
-        static Parser<ChatColor> chat = new EnumParser<>(ChatColor.class);
-        static Parser<net.md_5.bungee.api.ChatColor> component = new EnumParser<>(net.md_5.bungee.api.ChatColor.class);
-        static Parser<DyeColor> dye = new EnumParser<>(DyeColor.class);
+        static Parser<Color> color = create(Color.class);
+        static Parser<ChatColor> chat = create(ChatColor.class);
+        static Parser<net.md_5.bungee.api.ChatColor> component = create(net.md_5.bungee.api.ChatColor.class);
+        static Parser<DyeColor> dye = create(DyeColor.class);
+
+        static <T extends Enum<T>> Parser<T> create(Class<T> clazz) {
+            return new EnumParser<>(clazz);
+        }
 
         static Element element = EmptyElement.empty();
     }

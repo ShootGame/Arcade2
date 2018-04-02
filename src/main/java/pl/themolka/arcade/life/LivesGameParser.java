@@ -36,7 +36,7 @@ public class LivesGameParser extends GameModuleParser<LivesGame, LivesGame.Confi
         this.livesParser = context.type(Integer.class);
         this.fallbackParser = context.type(Ref.class);
         this.announceParser = context.type(Boolean.class);
-        this.soundParser = context.enumType(Sound.class);
+        this.soundParser = context.type(Sound.class);
     }
 
     @Override

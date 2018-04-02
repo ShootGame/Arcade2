@@ -40,7 +40,7 @@ public class VelocityContent implements RemovableKitContent<Vector> {
         return this.result;
     }
 
-    @NestedParserName({"velocity", "push", "pull"})
+    @NestedParserName({"velocity", "push", "pull", "jump"})
     @Produces(Config.class)
     public static class ContentParser extends BaseRemovableContentParser<Config> {
         private Parser<Vector> velocityParser;
@@ -59,7 +59,7 @@ public class VelocityContent implements RemovableKitContent<Vector> {
                 });
             }
 
-            Vector velocity = this.velocityParser.parse(node).orFail();
+            Vector velocity = this.velocityParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Vector> result() { return Ref.ofProvided(velocity); }

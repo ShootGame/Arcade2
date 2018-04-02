@@ -36,8 +36,8 @@ public class BoundedItemModifierParser extends NodeParser<BoundedItemModifier>
 
     @Override
     protected ParserResult<BoundedItemModifier> parseNode(Node node, String name, String value) throws ParserException {
-        AttributeKey key = this.keyParser.parse(node.property("attribute", "attribute-key", "attributekey", "key")).orFail();
-        ItemAttributeModifier itemModifier = this.itemModifierParser.parse(node).orFail();
+        AttributeKey key = this.keyParser.parse(node.property("attribute", "attribute-key", "attributekey", "attr", "key")).orFail();
+        ItemAttributeModifier itemModifier = this.itemModifierParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new BoundedItemModifier(key, itemModifier));
     }

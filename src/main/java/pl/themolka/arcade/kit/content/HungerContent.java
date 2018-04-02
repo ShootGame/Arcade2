@@ -60,8 +60,7 @@ public class HungerContent implements RemovableKitContent<Integer> {
                 });
             }
 
-            int level = this.levelParser.parse(node).orFail();
-            // TODO test if level can be negative
+            int level = this.levelParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Integer> result() { return Ref.ofProvided(level); }

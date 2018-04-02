@@ -1,17 +1,13 @@
 package pl.themolka.arcade.command;
 
 import org.apache.commons.lang3.StringUtils;
-import pl.themolka.arcade.dom.EmptyElement;
-import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.type.BooleanParser;
+import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class CommandContext {
-    private static final Parser<Boolean> booleanParser = new BooleanParser();
-
     private final String[] args;
     private final Command command;
     private final Map<String, String> flags;
@@ -156,8 +152,8 @@ public class CommandContext {
         return this.getFlag(flag) != null;
     }
 
-    protected Boolean parseBoolean(String bool, Boolean def) {
-        return booleanParser.parseWithValue(EmptyElement.empty(), bool).or(def);
+    protected boolean parseBoolean(String bool, boolean def) {
+        return XMLParser.parseBoolean(bool, def);
     }
 
     public static CommandContext parse(Command command, String label, String[] args) {

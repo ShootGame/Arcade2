@@ -7,7 +7,7 @@ import java.util.Objects;
 public class BukkitAttributeKey extends AttributeKey {
     private final Attribute bukkit;
 
-    protected BukkitAttributeKey(Attribute bukkit) {
+    public BukkitAttributeKey(Attribute bukkit) {
         this.bukkit = Objects.requireNonNull(bukkit, "bukkit cannot be null");
     }
 

@@ -12,13 +12,14 @@ import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.session.PlayerLevel;
 
-public class GiveLevelContent implements KitContent<Integer> {
+public class GiveLevelContent implements KitContent<PlayerLevel> {
     public static boolean testValue(int value) {
         return value != 0;
     }
 
-    private final int result;
+    private final PlayerLevel result;
 
     protected GiveLevelContent(Config config) {
         this.result = config.result().get();
@@ -31,46 +32,43 @@ public class GiveLevelContent implements KitContent<Integer> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getBukkit().giveExpLevels(this.result);
+        this.getResult().applyIncremental(player);
     }
 
     @Override
-    public Integer getResult() {
+    public PlayerLevel getResult() {
         return this.result;
     }
 
-    @NestedParserName({"give-level", "givelevel", "give-levels", "givelevels",
-                       "take-level", "takelevel", "take-levels", "takelevels"})
+    @NestedParserName({"give-level", "givelevel", "give-levels", "givelevels", "give-lvl", "givelvl",
+                       "take-level", "takelevel", "take-levels", "takelevels", "take-lvl", "takelvl"})
     @Produces(Config.class)
     public static class ContentParser extends BaseContentParser<Config>
                                       implements InstallableParser {
-        private Parser<Integer> levelParser;
+        private Parser<PlayerLevel> levelParser;
 
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
-            this.levelParser = context.type(Integer.class);
+            this.levelParser = context.type(PlayerLevel.class);
         }
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            int level = this.levelParser.parse(node).orFail();
-            if (level <= 0) {
-                throw this.fail(node, name, value, "Level must be positive (greater than 0)");
-            }
+            PlayerLevel level = this.levelParser.parseWithDefinition(node, name, value).orFail();
 
             if (name.toLowerCase().startsWith("take")) {
-                level = -level;
+                level = level.negate();
             }
 
-            final int finalLevel = level;
+            final PlayerLevel finalLevel = level;
             return ParserResult.fine(node, name, value, new Config() {
-                public Ref<Integer> result() { return Ref.ofProvided(finalLevel); }
+                public Ref<PlayerLevel> result() { return Ref.ofProvided(finalLevel); }
             });
         }
     }
 
-    public interface Config extends KitContent.Config<GiveLevelContent, Integer> {
+    public interface Config extends KitContent.Config<GiveLevelContent, PlayerLevel> {
         @Override
         default GiveLevelContent create(Game game) {
             return new GiveLevelContent(this);

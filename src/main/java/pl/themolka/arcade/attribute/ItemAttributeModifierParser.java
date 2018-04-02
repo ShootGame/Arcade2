@@ -24,7 +24,7 @@ public class ItemAttributeModifierParser extends NodeParser<ItemAttributeModifie
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.slotParser = context.enumType(EquipmentSlot.class);
+        this.slotParser = context.type(EquipmentSlot.class);
         this.modifierParser = context.type(AttributeModifier.class);
     }
 
@@ -36,7 +36,7 @@ public class ItemAttributeModifierParser extends NodeParser<ItemAttributeModifie
     @Override
     protected ParserResult<ItemAttributeModifier> parseNode(Node node, String name, String value) throws ParserException {
         EquipmentSlot slot = this.slotParser.parse(node.property("slot", "equipment-slot", "equipmentslot")).orDefaultNull();
-        AttributeModifier modifier = this.modifierParser.parse(node).orFail();
+        AttributeModifier modifier = this.modifierParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new ItemAttributeModifier(slot, modifier));
     }

@@ -65,7 +65,7 @@ public class TitleContent implements RemovableKitContent<PlayerTitle> {
                 });
             }
 
-            PlayerTitle title = this.titleParser.parse(node).orFail();
+            PlayerTitle title = this.titleParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<PlayerTitle> result() { return Ref.ofProvided(title); }

@@ -50,7 +50,7 @@ public class CompassTargetContent implements KitContent<Vector> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Vector target = this.targetParser.parse(node).orFail();
+            Vector target = this.targetParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Vector> result() { return Ref.ofProvided(target); }

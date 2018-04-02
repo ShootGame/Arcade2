@@ -85,9 +85,9 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
         return StringUtils.join(words, ' ');
     }
 
-    public <T extends Enum<T>> List<Object> valueNames(Class<T> enumClass) {
+    public <E extends Enum<E>> List<Object> valueNames(Class<E> enumClass) {
         List<Object> valueNames = new ArrayList<>();
-        for (T constant : enumClass.getEnumConstants()) {
+        for (E constant : enumClass.getEnumConstants()) {
             valueNames.add(toPrettyValue(constant.name()));
         }
 

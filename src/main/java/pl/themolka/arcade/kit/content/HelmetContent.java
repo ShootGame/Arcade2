@@ -44,7 +44,7 @@ public class HelmetContent extends BaseArmorContent {
                 });
             }
 
-            ItemStack helmet = this.itemStackParser.parse(node).orFail();
+            ItemStack helmet = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(helmet); }

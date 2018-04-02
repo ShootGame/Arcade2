@@ -50,7 +50,7 @@ public class GameModeContent implements KitContent<GameMode>  {
 
         @Override
         protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            GameMode gameMode = this.gameModeParser.parse(node).orFail();
+            GameMode gameMode = this.gameModeParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<GameMode> result() { return Ref.ofProvided(gameMode); }

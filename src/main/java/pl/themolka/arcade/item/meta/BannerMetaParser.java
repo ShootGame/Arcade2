@@ -19,7 +19,7 @@ class BannerMetaParser extends ItemMetaParser.Nested<BannerMeta> {
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.baseColorParser = context.enumType(DyeColor.class);
+        this.baseColorParser = context.type(DyeColor.class);
         this.patternParser = context.type(Pattern.class);
     }
 

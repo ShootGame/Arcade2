@@ -26,7 +26,7 @@ class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.enumType(PotionType.class);
+        this.typeParser = context.type(PotionType.class);
         this.extendedParser = context.type(Boolean.class);
         this.upgradedParser = context.type(Boolean.class);
         this.colorParser = context.type(Color.class);

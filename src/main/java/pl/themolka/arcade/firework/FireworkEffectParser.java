@@ -26,7 +26,7 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.enumType(FireworkEffect.Type.class);
+        this.typeParser = context.type(FireworkEffect.Type.class);
         this.flickerParser = context.type(Boolean.class);
         this.trailParser = context.type(Boolean.class);
         this.colorParser = context.type(Color.class);

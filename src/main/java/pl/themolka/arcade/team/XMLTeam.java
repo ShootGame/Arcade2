@@ -20,8 +20,6 @@ import pl.themolka.arcade.spawn.SpawnAgent;
 import pl.themolka.arcade.spawn.SpawnApply;
 import pl.themolka.arcade.spawn.SpawnsGame;
 import pl.themolka.arcade.util.Color;
-import pl.themolka.arcade.xml.XMLChatColor;
-import pl.themolka.arcade.xml.XMLDyeColor;
 import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
@@ -114,18 +112,24 @@ public class XMLTeam extends XMLParser {
     }
 
     public static ChatColor parseColor(Element xml) {
-        Attribute attribute = xml.getAttribute("color");
+        String attribute = xml.getAttributeValue("color");
         if (attribute != null) {
-            return XMLChatColor.parse(attribute);
+            try {
+                return ChatColor.valueOf(parseEnumValue(attribute));
+            } catch (IllegalArgumentException ignored) {
+            }
         }
 
         return null;
     }
 
     public static DyeColor parseDyeColor(Element xml) {
-        Attribute attribute = xml.getAttribute("dye-color");
+        String attribute = xml.getAttributeValue("dye-color");
         if (attribute != null) {
-            return XMLDyeColor.parse(attribute);
+            try {
+                return DyeColor.valueOf(parseEnumValue(attribute));
+            } catch (IllegalArgumentException ignored) {
+            }
         }
 
         return null;

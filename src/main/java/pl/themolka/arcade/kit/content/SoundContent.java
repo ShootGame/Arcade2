@@ -36,7 +36,8 @@ public class SoundContent implements KitContent<Sound> {
 
     @Override
     public void apply(GamePlayer player) {
-        Location location = this.hasLocation() ? this.getLocation() : player.getBukkit().getLocation();
+        Location location = this.hasLocation() ? this.getLocation()
+                                               : player.getBukkit().getLocation();
         player.getPlayer().play(this.getResult(), location, this.getVolume(), this.getPitch());
     }
 
@@ -85,7 +86,7 @@ public class SoundContent implements KitContent<Sound> {
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
-            this.soundParser = context.enumType(Sound.class);
+            this.soundParser = context.type(Sound.class);
             this.locationParser = context.type(Location.class);
             this.pitchParser = context.type(Float.class);
             this.volumeParser = context.type(Float.class);
@@ -93,7 +94,7 @@ public class SoundContent implements KitContent<Sound> {
 
         @Override
         protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            Sound sound = this.soundParser.parse(node).orFail();
+            Sound sound = this.soundParser.parseWithDefinition(node, name, value).orFail();
             Location location = this.locationParser.parse(node.property("location", "at")).orDefault(Config.DEFAULT_LOCATION);
             float pitch = this.pitchParser.parse(node.property("pitch")).orDefault(Config.DEFAULT_PITCH);
             float volume = this.volumeParser.parse(node.property("volume")).orDefault(Config.DEFAULT_VOLUME);

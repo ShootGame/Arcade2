@@ -60,7 +60,7 @@ public class GravityContent implements RemovableKitContent<Boolean> {
                 });
             }
 
-            boolean gravity = this.gravityParser.parse(node).orFail();
+            boolean gravity = this.gravityParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(gravity); }

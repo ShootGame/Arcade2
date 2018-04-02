@@ -24,8 +24,8 @@ public class BannerPatternParser extends NodeParser<Pattern>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.enumType(PatternType.class);
-        this.colorParser = context.enumType(DyeColor.class);
+        this.typeParser = context.type(PatternType.class);
+        this.colorParser = context.type(DyeColor.class);
     }
 
     @Override

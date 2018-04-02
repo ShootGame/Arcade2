@@ -12,13 +12,14 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.attribute.BoundedModifierParser" />
     <parser class="pl.themolka.arcade.attribute.ItemAttributeModifierParser" />
     <parser class="pl.themolka.arcade.attribute.OperationParser" />
+    <parser class="pl.themolka.arcade.bossbar.BarColorParser" />
     <parser class="pl.themolka.arcade.config.RefParser" />
     <parser class="pl.themolka.arcade.damage.DamageGameParser" />
     <parser class="pl.themolka.arcade.damage.DamageRuleParser" />
     <parser class="pl.themolka.arcade.environment.EnvironmentParser" />
     <parser class="pl.themolka.arcade.filter.FilterParser" />
     <parser class="pl.themolka.arcade.filter.FilterSetParser" />
-    <!--<parser class="pl.themolka.arcade.filter.FiltersGameParser" />-->
+    <parser class="pl.themolka.arcade.filter.FiltersGameParser" />
     <parser class="pl.themolka.arcade.firework.FireworkEffectParser" />
     <parser class="pl.themolka.arcade.firework.FireworksGameParser" />
     <parser class="pl.themolka.arcade.gamerule.GameRuleParser" />
@@ -29,6 +30,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.generator.VanillaGenerator$GeneratorParser" />
     <parser class="pl.themolka.arcade.generator.VoidGenerator$GeneratorParser" />
     <parser class="pl.themolka.arcade.hunger.HungerGameParser" />
+    <parser class="pl.themolka.arcade.item.EnchantmentOfferParser" />
     <parser class="pl.themolka.arcade.item.EnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemEnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemStackParser" />
@@ -138,6 +140,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.region.RegionParser$Sphere" />
     <parser class="pl.themolka.arcade.region.RegionParser$Union" />
     <parser class="pl.themolka.arcade.respawn.AutoRespawnGameParser" />
+    <parser class="pl.themolka.arcade.session.PlayerLevelParser" />
     <parser class="pl.themolka.arcade.session.PlayerTitleParser" />
     <parser class="pl.themolka.arcade.time.LocalDateParser" />
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />

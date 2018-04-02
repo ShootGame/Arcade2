@@ -27,7 +27,7 @@ public class MapTimeParser extends NodeParser<MapTime>
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         this.booleanParser = context.type(Boolean.class);
-        this.contantParser = context.enumType(MapTimeConstants.class);
+        this.contantParser = context.type(MapTimeConstants.class);
         this.longParser = context.type(Long.class);
     }
 

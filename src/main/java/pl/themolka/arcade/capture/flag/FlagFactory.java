@@ -41,7 +41,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
 
                 banner = findBannerIn(spawn.getRegion());
 
-                float yaw = (float) XMLParser.parseInt(xml.getAttributeValue("yaw"), Integer.MAX_VALUE);
+                float yaw = (float) XMLParser.parseDouble(xml.getAttributeValue("yaw"), Integer.MAX_VALUE);
                 if (yaw > 180 || yaw < -180) {
                     if (banner == null) {
                         continue;
@@ -63,7 +63,14 @@ public class FlagFactory implements CapturableFactory<Flag> {
         FlagItem flagItem = flag.getItem();
         flagItem.setItemMeta(flagItem.transferMetaFrom(banner));
 
-        flag.setObjective(XMLParser.parseInt(xml.getAttributeValue("objective"), Flag.NOT_OBJECTIVE));
+        int objective;
+        try {
+            objective = Integer.parseInt(xml.getAttributeValue("objective"));
+        } catch (NumberFormatException ex) {
+            objective = Flag.NOT_OBJECTIVE;
+        }
+
+        flag.setObjective(objective);
         return flag;
     }
 

@@ -68,8 +68,8 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            PotionEffect effect = this.effectParser.parse(node).orFail();
-            BaseModeContent.Mode mode = this.modeParser.parse(node).orDefault(Config.DEFAULT_MODE);
+            PotionEffect effect = this.effectParser.parseWithDefinition(node, name, value).orFail();
+            BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(node, name, value).orDefault(Config.DEFAULT_MODE);
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<PotionEffect> result() { return Ref.ofProvided(effect); }

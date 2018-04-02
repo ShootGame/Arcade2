@@ -8,11 +8,12 @@ import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.leak.LeakGame;
 import pl.themolka.arcade.leak.LeakableFactory;
 import pl.themolka.arcade.leak.Liquid;
+import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.XMLRegion;
-import pl.themolka.arcade.xml.XMLMaterial;
 import pl.themolka.arcade.xml.XMLParser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class CoreFactory implements LeakableFactory<Core> {
         // material
         List<Material> material = Collections.singletonList(Core.DEFAULT_MATERIAL);
         if (paramMaterial != null) {
-            material = XMLMaterial.parseArray(new Attribute("material", paramMaterial), Core.DEFAULT_MATERIAL);
+            material = parseArray(new Attribute("material", paramMaterial), Core.DEFAULT_MATERIAL);
         }
 
         // detector
@@ -61,5 +62,26 @@ public class CoreFactory implements LeakableFactory<Core> {
         core.setMaterial(material);
         core.build(liquid, region, detectorLevel);
         return core;
+    }
+
+    public static List<Material> parseArray(Attribute attribute, Material def) {
+        List<Material> results = new ArrayList<>();
+        if (attribute != null) {
+            List<String> rawList = ParserUtils.array(attribute.getValue());
+            for (String raw : rawList) {
+                if (raw.isEmpty()) {
+                    continue;
+                }
+
+                Material material = Material.matchMaterial(XMLParser.parseEnumValue(raw));
+                if (material != null) {
+                    results.add(material);
+                }
+            }
+        } else if (def != null) {
+            results.add(def);
+        }
+
+        return results;
     }
 }

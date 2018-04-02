@@ -56,7 +56,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         this.canPlaceOnParser = context.type(Material.class);
         this.modifierParser = context.type(BoundedItemModifier.class);
         this.unbreakableParser = context.type(Boolean.class);
-        this.flagParser = context.enumType(ItemFlag.class);
+        this.flagParser = context.type(ItemFlag.class);
     }
 
     @Override

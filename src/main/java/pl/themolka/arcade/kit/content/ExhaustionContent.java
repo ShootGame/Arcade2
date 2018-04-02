@@ -60,7 +60,7 @@ public class ExhaustionContent implements RemovableKitContent<Float> {
                 });
             }
 
-            float level = this.levelParser.parse(node).orFail();
+            float level = this.levelParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Float> result() { return Ref.ofProvided(level); }

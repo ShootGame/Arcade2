@@ -45,7 +45,7 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
 
         @Override
         protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            int slot = this.slotParser.parse(node).orFail();
+            int slot = this.slotParser.parseWithDefinition(node, name, value).orFail();
             if (slot < MIN_VALUE || slot > MAX_VALUE) {
                 throw this.fail(node, name, value, "Unknown slot number (not in " + MIN_VALUE + "-" + MAX_VALUE + " range)");
             }

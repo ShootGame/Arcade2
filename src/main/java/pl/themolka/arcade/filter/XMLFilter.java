@@ -5,7 +5,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.material.MaterialData;
 import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.damage.XMLDamage;
 import pl.themolka.arcade.filter.matcher.DamageMatcher;
 import pl.themolka.arcade.filter.matcher.Matcher;
 import pl.themolka.arcade.filter.matcher.MaterialMatcher;
@@ -71,10 +70,15 @@ public class XMLFilter extends XMLParser {
     }
 
     public static Filter parseDamage(Element xml) {
-        EntityDamageEvent.DamageCause damage = XMLDamage.parse(xml.getValue());
-        return Filters.secure(damage != null
-                ? new DamageMatcher(damage)
-                : null);
+        try {
+            String input = XMLParser.parseEnumValue(xml.getValue());
+            if (input != null) {
+                return new DamageMatcher(EntityDamageEvent.DamageCause.valueOf(XMLParser.parseEnumValue(input)));
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        return Filters.undefined();
     }
 
     public static StaticFilter parseDeny() {

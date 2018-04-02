@@ -60,7 +60,7 @@ public class GlowContent implements RemovableKitContent<Boolean> {
                 });
             }
 
-            boolean glow = this.glowParser.parse(node).orFail();
+            boolean glow = this.glowParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(glow); }

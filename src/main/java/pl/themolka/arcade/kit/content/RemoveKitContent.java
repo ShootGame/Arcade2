@@ -22,6 +22,11 @@ public class RemoveKitContent implements KitContent<Kit> {
     }
 
     @Override
+    public boolean isApplicable(GamePlayer player) {
+        return KitContent.test(player);
+    }
+
+    @Override
     public void apply(GamePlayer player) {
         for (KitContent<?> content : this.result.getContent()) {
             if (content instanceof RemovableKitContent) {
@@ -49,7 +54,7 @@ public class RemoveKitContent implements KitContent<Kit> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Ref<Kit> kit = this.kitParser.parse(node).orFail();
+            Ref<Kit> kit = this.kitParser.parseWithDefinition(node, name, value).orFail();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Kit> result() { return kit; }

@@ -55,7 +55,7 @@ public class DamageContent implements KitContent<Double> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            double damage = this.damageParser.parse(node).orFail();
+            double damage = this.damageParser.parseWithDefinition(node, name, value).orFail();
             if (damage <= MIN_VALUE) {
                 throw this.fail(node, name, value, "Damage must be positive (greater than 0)");
             }

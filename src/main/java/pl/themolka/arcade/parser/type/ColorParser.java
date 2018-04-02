@@ -27,7 +27,7 @@ public class ColorParser extends ElementParser<Color>
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
-        this.predefinedParser = context.enumType(DyeColor.class);
+        this.predefinedParser = context.type(DyeColor.class);
         this.redParser = context.type(Integer.class);
         this.greenParser = context.type(Integer.class);
         this.blueParser = context.type(Integer.class);

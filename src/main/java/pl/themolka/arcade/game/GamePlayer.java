@@ -31,7 +31,6 @@ import pl.themolka.arcade.kit.content.HealthContent;
 import pl.themolka.arcade.kit.content.HealthScaleContent;
 import pl.themolka.arcade.kit.content.HungerContent;
 import pl.themolka.arcade.kit.content.KnockbackContent;
-import pl.themolka.arcade.kit.content.LevelContent;
 import pl.themolka.arcade.kit.content.MaxHealthContent;
 import pl.themolka.arcade.kit.content.RemoveArrowsContent;
 import pl.themolka.arcade.kit.content.SaturationContent;
@@ -40,6 +39,7 @@ import pl.themolka.arcade.kit.content.VelocityContent;
 import pl.themolka.arcade.kit.content.WalkSpeedContent;
 import pl.themolka.arcade.match.MatchWinner;
 import pl.themolka.arcade.session.ArcadePlayer;
+import pl.themolka.arcade.session.PlayerLevel;
 import pl.themolka.arcade.time.TimeUtils;
 import pl.themolka.arcade.util.Color;
 
@@ -284,6 +284,10 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         return this.isOnline() ? this.getPlayer().getFullName() : this.getDisplayName();
     }
 
+    public PlayerLevel getLevel() {
+        return this.isOnline() ? new PlayerLevel(this.getBukkit()) : PlayerLevel.ZERO;
+    }
+
     public EntityPlayer getMojang() {
         return this.isOnline() ? this.getPlayer().getMojang() : null;
     }
@@ -379,6 +383,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         this.getPlayer().clearInventory(true);
 
         this.resetHealth();
+        this.setLevel(PlayerLevel.getDefaultLevel());
 
         bukkit.setAbsorption(AbsorptionContent.Config.DEFAULT_ABSORPTION);
         bukkit.setAllowFlight(CanFlyContent.Config.DEFAULT_CAN_FLY);
@@ -394,7 +399,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.setGlowing(GlowContent.Config.DEFAULT_GLOW);
         bukkit.setGravity(GravityContent.Config.DEFAULT_GRAVITY);
         bukkit.setKnockbackReduction(KnockbackContent.Config.DEFAULT_KNOCKBACK);
-        bukkit.setLevel(LevelContent.Config.DEFAULT_LEVEL);
         bukkit.setSaturation(SaturationContent.Config.DEFAULT_SATURATION);
         bukkit.setSilent(SilentContent.Config.DEFAULT_SILENT);
         bukkit.setSneaking(false);
@@ -460,6 +464,12 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
             this.displayName = displayName;
 
             this.getPlayer().setDisplayName(displayName);
+        }
+    }
+
+    public void setLevel(PlayerLevel level) {
+        if (this.isOnline()) {
+            this.getBukkit().setLevel(level.getLevel());
         }
     }
 

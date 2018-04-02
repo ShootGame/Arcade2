@@ -21,26 +21,25 @@ public class ParserManager {
         return new ParserContext(this);
     }
 
-    public <T> Parser<T> forType(Class<T> type) throws ParserNotSupportedException {
-        Class<? extends Parser> clazz = this.forTypeClass(type);
-        if (clazz == null) {
-            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
-        }
-
-        Parser<T> parser = this.container.getParser(clazz);
-        if (parser == null) {
-            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
-        }
-
-        return parser;
+    public <T extends Enum<T>> Parser<T> forEnumType(Class<T> type) {
+        return this.createEnumParser(type);
     }
 
-    public Class<? extends Parser> forTypeClass(Class<?> type) throws ParserNotSupportedException {
-        if (!this.byType.containsKey(type)) {
-            throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
+    public <T> Parser<T> forType(Class<T> type) throws ParserNotSupportedException {
+        if (this.byType.containsKey(type)) {
+            Class<? extends Parser> clazz = this.byType.get(type);
+
+            Parser<T> parser = this.container.getParser(clazz);
+            if (parser != null) {
+                return parser;
+            }
         }
 
-        return this.byType.get(type);
+        if (Enum.class.isAssignableFrom(type)) {
+            return (Parser<T>) this.createEnumParser(type);
+        }
+
+        throw new ParserNotSupportedException(type.getSimpleName() + " is not supported");
     }
 
     public ParserContainer getContainer() {
@@ -83,5 +82,10 @@ public class ParserManager {
 
     public boolean unregisterType(Class<?> type) {
         return this.byType.remove(type) != null;
+    }
+
+    // hacky method to skip generics
+    private <T extends Enum<T>> EnumParser<T> createEnumParser(Class clazz) {
+        return new EnumParser<>(clazz);
     }
 }

@@ -37,7 +37,7 @@ public class MobSpawnRuleParser extends ConfigParser<MobSpawnRule.Config>
     protected ParserResult<MobSpawnRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
         Ref<Filter> filter = this.filterParser.parse(node.property("filter")).orFail();
-        boolean allow = this.allowParser.parse(node).orFail();
+        boolean allow = this.allowParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new MobSpawnRule.Config() {
             public String id() { return id; }
