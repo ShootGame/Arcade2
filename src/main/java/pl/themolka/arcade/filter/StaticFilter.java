@@ -1,22 +1,59 @@
 package pl.themolka.arcade.filter;
 
-public class StaticFilter extends AbstractFilter {
-    public static final StaticFilter ABSTAIN = new StaticFilter(FilterResult.ABSTAIN);
-    public static final StaticFilter ALLOW = new StaticFilter(FilterResult.ALLOW);
-    public static final StaticFilter DENY = new StaticFilter(FilterResult.DENY);
+import pl.themolka.arcade.condition.AbstainableResult;
+import pl.themolka.arcade.condition.OptionalResult;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
 
-    private final FilterResult result;
+public enum StaticFilter implements Filter {
+    ALLOW(OptionalResult.TRUE),
+    DENY(OptionalResult.FALSE),
+    ABSTAIN(OptionalResult.ABSTAIN),
+    ;
 
-    public StaticFilter(FilterResult result) {
+    private final AbstainableResult result;
+    private final Config config;
+
+    StaticFilter(AbstainableResult result) {
         this.result = result;
+        this.config = new Config() {
+            public Ref<AbstainableResult> result() { return Ref.ofProvided(result); }
+        };
     }
 
     @Override
-    public FilterResult filter(Object object) {
-        return this.getResult();
+    public AbstainableResult filter(Object... objects) {
+        return this.result;
     }
 
-    public FilterResult getResult() {
+    public Config config() {
+        return this.config;
+    }
+
+    public AbstainableResult getResult() {
         return this.result;
+    }
+
+    @Override
+    public String toString() {
+        return this.result.toString();
+    }
+
+    public interface Config extends Filter.Config<StaticFilter> {
+        Ref<AbstainableResult> result();
+
+        @Override
+        default StaticFilter create(Game game) {
+            AbstainableResult result = this.result().get();
+            if (result.isTrue()) {
+                return ALLOW;
+            } else if (result.isFalse()) {
+                return DENY;
+            } else if (result.isAbstaining()) {
+                return ABSTAIN;
+            } else {
+                throw new IllegalStateException("Illegal result");
+            }
+        }
     }
 }

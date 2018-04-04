@@ -11,11 +11,11 @@ import java.util.Objects;
 /**
  * Rendering {@link BossBar}s by the given priority.
  */
-public class BossBarContext {
+public class BossBarFacet {
     private final GamePlayer player;
     private final List<BossBarView> views = new ArrayList<>();
 
-    public BossBarContext(GamePlayer player) {
+    public BossBarFacet(GamePlayer player) {
         this.player = player;
     }
 
@@ -85,14 +85,14 @@ public class BossBarContext {
     protected void renderViews() {
         Player bukkit = this.player.getBukkit();
         for (BossBarView view : this.views) {
-            view.getBossBar().addPlayer(bukkit);
+            view.getBossBar().bukkit.addPlayer(bukkit);
         }
     }
 
     /** Fast fix for strange Bukkit NPE in CraftBossBar.java:190. */
     protected void detachBossBar(BossBarView view) {
         try {
-            view.getBossBar().removePlayer(this.player.getBukkit());
+            view.getBossBar().bukkit.removePlayer(this.player.getBukkit());
         } catch (NullPointerException ignored) {
         }
     }

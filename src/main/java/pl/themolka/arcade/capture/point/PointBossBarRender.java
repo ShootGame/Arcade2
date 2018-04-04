@@ -82,7 +82,7 @@ public class PointBossBarRender implements Listener {
         if (player != null) {
             BossBar bossBar = this.renderBossBar(point, pointColor, progress, progressColor);
             if (bossBar != null) {
-                player.getBossBarContext().addBossBar(bossBar, BAR_PRIORITY);
+                bossBar.addPlayer(player, BAR_PRIORITY);
             }
 
             return bossBar;
@@ -98,7 +98,7 @@ public class PointBossBarRender implements Listener {
     public void removeBossBar(Point point, GamePlayer player) {
         BossBar bossBar = this.bossBars.get(point);
         if (bossBar != null) {
-            player.getBossBarContext().removeBossBar(bossBar);
+            bossBar.removePlayer(player);
         }
     }
 

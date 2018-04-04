@@ -1,19 +1,27 @@
 package pl.themolka.arcade.condition;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collection;
 
-public class AnyCondition<T> extends MultiCondition<T> {
-    public AnyCondition(Collection<Condition<T>> any) {
+public class AnyCondition<K> extends MultiCondition<K> {
+    public AnyCondition(Collection<Condition<K, AbstainableResult>> any) {
         super(any);
     }
 
     @Override
-    public boolean defaultValue() {
-        return false;
+    public AbstainableResult defaultValue() {
+        return OptionalResult.FALSE;
     }
 
     @Override
-    public Result test(T t, Condition<T> condition) {
-        return condition.test(t) ? Result.TRUE : Result.ABSTAIN;
+    public AbstainableResult query(K k, Condition<K, AbstainableResult> condition) {
+        return condition.query(k).isTrue() ? OptionalResult.TRUE
+                                           : OptionalResult.ABSTAIN;
+    }
+
+    @Override
+    public String toString() {
+        return "any(" + StringUtils.join(this.getConditions(), ", ") + ")";
     }
 }

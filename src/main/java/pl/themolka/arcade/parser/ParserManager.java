@@ -4,12 +4,14 @@ import pl.themolka.arcade.ArcadePlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class ParserManager {
     private final ArcadePlugin plugin;
 
     private final ParserContainer container = new ParserContainer();
+    private ParserContext.Factory contextFactory;
     private final Map<Class<?>, Class<? extends Parser>> byType = new HashMap<>();
     private boolean installed = false;
 
@@ -18,7 +20,7 @@ public class ParserManager {
     }
 
     public ParserContext createContext() {
-        return new ParserContext(this);
+        return Objects.requireNonNull(this.contextFactory, "contextFactory cannot be null").createContext(this);
     }
 
     public <T extends Enum<T>> Parser<T> forEnumType(Class<T> type) {
@@ -44,6 +46,10 @@ public class ParserManager {
 
     public ParserContainer getContainer() {
         return this.container;
+    }
+
+    public ParserContext.Factory getContextFactory() {
+        return this.contextFactory;
     }
 
     public Set<Class<?>> getTypes() {
@@ -74,6 +80,10 @@ public class ParserManager {
 
     public void registerType(Class<?> type, Class<? extends Parser> parser) {
         this.byType.put(type, parser);
+    }
+
+    public void setContextFactory(ParserContext.Factory contextFactory) {
+        this.contextFactory = contextFactory;
     }
 
     public boolean supportsType(Class<?> type) {

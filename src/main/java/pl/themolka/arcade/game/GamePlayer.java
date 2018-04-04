@@ -11,7 +11,7 @@ import pl.themolka.arcade.attribute.Attributable;
 import pl.themolka.arcade.attribute.Attribute;
 import pl.themolka.arcade.attribute.AttributeKey;
 import pl.themolka.arcade.attribute.TrackingAttributeMap;
-import pl.themolka.arcade.bossbar.BossBarContext;
+import pl.themolka.arcade.bossbar.BossBarFacet;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
@@ -65,7 +65,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
     private TrackingAttributeMap attributeMap;
-    private final BossBarContext bossBarContext;
+    private final BossBarFacet bossBarFacet;
     private ChatChannel channel;
     private ChatColor chatColor;
     private String displayName;
@@ -88,7 +88,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         this.username = username;
         this.uuid = uuid;
 
-        this.bossBarContext = new BossBarContext(this);
+        this.bossBarFacet = new BossBarFacet(this);
     }
 
     @Override
@@ -253,8 +253,8 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         return this.isOnline() && target.isOnline() && game != null && game.getVisibility().canSee(this, target);
     }
 
-    public BossBarContext getBossBarContext() {
-        return this.bossBarContext;
+    public BossBarFacet getBossBarFacet() {
+        return this.bossBarFacet;
     }
 
     public Player getBukkit() {

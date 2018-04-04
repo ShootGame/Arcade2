@@ -55,14 +55,10 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
 
     protected AttributeModifier.Operation getOperation(String input) {
         switch (input.toLowerCase()) {
-            case "add":
-                return AttributeModifier.Operation.ADD_NUMBER;
-            case "base":
-                return AttributeModifier.Operation.ADD_SCALAR;
-            case "multiply":
-                return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
-            default:
-                return null;
+            case "add": return AttributeModifier.Operation.ADD_NUMBER;
+            case "base": return AttributeModifier.Operation.ADD_SCALAR;
+            case "multiply": return AttributeModifier.Operation.MULTIPLY_SCALAR_1;
+            default: return null;
         }
     }
 

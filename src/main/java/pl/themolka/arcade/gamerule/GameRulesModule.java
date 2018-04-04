@@ -25,7 +25,7 @@ public class GameRulesModule extends Module<GameRulesGame> {
 
             if (type != null) {
                 if (type.isApplicable()) {
-                    rules.add(new GameRule(type, element.getValue()));
+                    rules.add(type.create(element.getValue()));
                 }
             } else {
                 rules.add(new GameRule(key, element.getValue()));

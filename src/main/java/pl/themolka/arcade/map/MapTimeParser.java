@@ -37,7 +37,7 @@ public class MapTimeParser extends NodeParser<MapTime>
     }
 
     @Override
-    protected ParserResult<MapTime> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected ParserResult<MapTime> parseNode(Node node, String name, String value) throws ParserException {
         MapTime result = MapTime.ofTicks(this.parseTicks(node, name, value));
         result.setLocked(this.booleanParser.parse(node.property("locked", "lock")).orDefault(DEFAULT_IS_LOCKED));
         return ParserResult.fine(node, name, value, result);

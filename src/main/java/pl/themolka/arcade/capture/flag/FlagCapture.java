@@ -23,7 +23,7 @@ public class FlagCapture {
     }
 
     public boolean canCapture() {
-        return this.filter.filter(this.flag).isNotDenied();
+        return this.filter.filter(this.flag).isNotFalse();
     }
 
     public RegionFieldStrategy getFieldStrategy() {

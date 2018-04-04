@@ -5,39 +5,31 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class MultiCondition<T> implements Condition<T> {
-    private final ImmutableList<Condition<T>> conditions;
+public abstract class MultiCondition<K> implements Condition<K, AbstainableResult> {
+    private final List<Condition<K, AbstainableResult>> conditions;
 
-    public MultiCondition(Collection<Condition<T>> conditions) {
+    public MultiCondition(Collection<Condition<K, AbstainableResult>> conditions) {
         this.conditions = ImmutableList.copyOf(conditions);
     }
 
     @Override
-    public boolean test(T t) {
-        for (Condition<T> condition : this.conditions) {
-            Result result = this.test(t, condition);
+    public AbstainableResult query(K k) {
+        for (Condition<K, AbstainableResult> condition : this.conditions) {
+            AbstainableResult result = this.query(k, condition);
 
-            if (!result.equals(Result.ABSTAIN)) {
-                return result.toBoolean();
+            if (result.isNotAbstaining()) {
+                return result;
             }
         }
 
         return this.defaultValue();
     }
 
-    public abstract boolean defaultValue();
+    public abstract AbstainableResult defaultValue();
 
-    public List<Condition<T>> getConditions() {
+    public List<Condition<K, AbstainableResult>> getConditions() {
         return this.conditions;
     }
 
-    public abstract Result test(T t, Condition<T> condition);
-
-    enum Result {
-        TRUE, FALSE, ABSTAIN;
-
-        boolean toBoolean() {
-            return this.equals(TRUE);
-        }
-    }
+    public abstract AbstainableResult query(K k, Condition<K, AbstainableResult> condition);
 }

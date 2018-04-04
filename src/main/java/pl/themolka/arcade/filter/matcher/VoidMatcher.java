@@ -3,49 +3,67 @@ package pl.themolka.arcade.filter.matcher;
 import org.bukkit.Locatable;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.filter.FilterResult;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserNotSupportedException;
+import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 
-@MatcherId("void")
-public class VoidMatcher extends Matcher {
-    public static final MatcherParser PARSER = new VoidParser();
+public class VoidMatcher extends Matcher<Block> {
+    public static final int VOID_LEVEL = 0;
 
-    public static int VOID_LEVEL = 0;
-
-    @Override
-    public FilterResult matches(Object object) {
-        if (object instanceof Location) {
-            return this.of(this.matches((Location) object));
-        } else if (object instanceof Locatable) {
-            return this.of(this.matches((Locatable) object));
-        }
-
-        return this.abstain();
+    protected VoidMatcher() {
     }
 
-    public boolean matches(Locatable locatable) {
-        return this.matches(locatable.getLocation());
+    @Override
+    public boolean find(Object object) {
+        if (object instanceof Block) {
+            return this.matches((Block) object);
+        } else if (object instanceof Location) {
+            return this.matches((Location) object);
+        } else if (object instanceof Locatable) {
+            return this.matches((Locatable) object);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean matches(Block block) {
+        return block != null && block.isEmpty();
     }
 
     public boolean matches(Location location) {
-        return this.matches(location.getWorld(), location.getX(), location.getZ());
+        return location != null && this.matches(location.getBlock());
+    }
+
+    public boolean matches(Locatable locatable) {
+        return locatable != null && this.matches(locatable.getLocation());
     }
 
     public boolean matches(World world, double x, double z) {
-        return this.matches(world, (int) x, (int) z);
+        return world != null && this.matches(new Location(world, x, VOID_LEVEL, z));
     }
 
     public boolean matches(World world, int x, int z) {
-        return world.getBlockAt(x, VOID_LEVEL, z).isEmpty();
+        return this.matches(world, (double) x, (double) z);
     }
-}
 
-class VoidParser implements MatcherParser<VoidMatcher> {
-    @Override
-    public VoidMatcher parse(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
-        return new VoidMatcher();
+    @NestedParserName("void")
+    @Produces(Config.class)
+    public static class MatcherParser extends BaseMatcherParser<Config> {
+        @Override
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            return ParserResult.fine(node, name, new Config() {});
+        }
+    }
+
+    public interface Config extends Matcher.Config<VoidMatcher> {
+        @Override
+        default VoidMatcher create(Game game) {
+            return new VoidMatcher();
+        }
     }
 }

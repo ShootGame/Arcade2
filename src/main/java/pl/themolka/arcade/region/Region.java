@@ -12,7 +12,7 @@ import pl.themolka.arcade.util.StringId;
 import java.util.List;
 import java.util.Random;
 
-public interface Region extends GameHolder, StringId {
+public interface Region extends GameHolder, Iterable<Block>, StringId {
     double MIN_HEIGHT = -0.1;
     double MAX_HEIGHT = Double.MAX_VALUE;
     int RANDOM_LIMIT = 10;

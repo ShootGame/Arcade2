@@ -149,6 +149,14 @@ public enum GameRuleType {
         this.applicable = applicable;
     }
 
+    public GameRule create() {
+        return this.create(null);
+    }
+
+    public GameRule create(Object value) {
+        return new GameRule(this.key, value);
+    }
+
     public String getKey() {
         return this.key;
     }

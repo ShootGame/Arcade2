@@ -84,4 +84,8 @@ public class Percentage {
     public static Percentage infinite(double value) {
         return new Percentage(value);
     }
+
+    public static Percentage random() {
+        return finite(Math.random());
+    }
 }

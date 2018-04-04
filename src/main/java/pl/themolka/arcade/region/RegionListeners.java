@@ -9,9 +9,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import pl.themolka.arcade.condition.AbstainableResult;
+import pl.themolka.arcade.condition.OptionalResult;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.FilterResult;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.PlayerMoveEvent;
 
@@ -28,15 +29,15 @@ public class RegionListeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Region region = this.regions.fetch(event.getBlock());
-        FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_BREAK, event.getPlayer(), null, event.getBlock());
+        AbstainableResult result = this.getFilterResult(region, RegionEventType.BLOCK_BREAK, event.getPlayer(), null, event.getBlock());
 
-        if (result.equals(FilterResult.DENY)) {
+        if (result.isFalse()) {
             event.setCancelled(true);
             return;
         }
 
-        FilterResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
-        if (buildResult.equals(FilterResult.DENY)) {
+        AbstainableResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
+        if (buildResult.isFalse()) {
             event.setCancelled(true);
         }
     }
@@ -44,9 +45,9 @@ public class RegionListeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
         Region region = this.regions.fetch(event.getBlock());
-        FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_PHYSICS, null, null, event.getBlock());
+        AbstainableResult result = this.getFilterResult(region, RegionEventType.BLOCK_PHYSICS, null, null, event.getBlock());
 
-        if (result.equals(FilterResult.DENY)) {
+        if (result.isFalse()) {
             event.setCancelled(true);
         }
     }
@@ -57,21 +58,21 @@ public class RegionListeners implements Listener {
 
         Block against = event.getBlockAgainst();
         if (against != null) {
-            FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_PLACE_AGAINST, event.getPlayer(), null, against);
-            if (result.equals(FilterResult.DENY)) {
+            AbstainableResult result = this.getFilterResult(region, RegionEventType.BLOCK_PLACE_AGAINST, event.getPlayer(), null, against);
+            if (result.isFalse()) {
                 event.setCancelled(true);
                 return;
             }
         }
 
-        FilterResult result = this.getFilterResult(region, RegionEventType.BLOCK_PLACE, event.getPlayer(), null, event.getBlock());
-        if (result.equals(FilterResult.DENY)) {
+        AbstainableResult result = this.getFilterResult(region, RegionEventType.BLOCK_PLACE, event.getPlayer(), null, event.getBlock());
+        if (result.isFalse()) {
             event.setCancelled(true);
             return;
         }
 
-        FilterResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
-        if (buildResult.equals(FilterResult.DENY)) {
+        AbstainableResult buildResult = this.getFilterResult(region, RegionEventType.BLOCK, event.getPlayer(), null, event.getBlock());
+        if (buildResult.isFalse()) {
             event.setCancelled(true);
         }
     }
@@ -84,9 +85,9 @@ public class RegionListeners implements Listener {
         }
 
         Region region = this.regions.fetch(block);
-        FilterResult result = this.getFilterResult(region, RegionEventType.USE, event.getPlayer(), null, block);
+        AbstainableResult result = this.getFilterResult(region, RegionEventType.USE, event.getPlayer(), null, block);
 
-        if (result.equals(FilterResult.DENY)) {
+        if (result.isFalse()) {
             event.setCancelled(true);
         }
     }
@@ -100,28 +101,28 @@ public class RegionListeners implements Listener {
             return;
         }
 
-        FilterResult fromResult = this.getFilterResult(from, RegionEventType.LEAVE, event.getPlayer().getBukkit(),
+        AbstainableResult fromResult = this.getFilterResult(from, RegionEventType.LEAVE, event.getPlayer().getBukkit(),
                 event.getGamePlayer(), event.getTo().getBlock());
-        if (fromResult.equals(FilterResult.DENY)) {
+        if (fromResult.isFalse()) {
             event.setCanceled(true);
             return;
         }
 
-        FilterResult toResult = this.getFilterResult(to, RegionEventType.ENTER, event.getPlayer().getBukkit(),
+        AbstainableResult toResult = this.getFilterResult(to, RegionEventType.ENTER, event.getPlayer().getBukkit(),
                 event.getGamePlayer(), event.getTo().getBlock());
-        if (toResult.equals(FilterResult.DENY)) {
+        if (toResult.isFalse()) {
             event.setCanceled(true);
         }
     }
 
-    private FilterResult getFilterResult(Region region, RegionEventType type, Player player, GamePlayer game, Block block) {
+    private AbstainableResult getFilterResult(Region region, RegionEventType type, Player player, GamePlayer game, Block block) {
         if (region == null) {
-            return FilterResult.ABSTAIN;
+            return OptionalResult.ABSTAIN;
         }
 
         Filter filter = null;
         if (filter == null) {
-            return FilterResult.ABSTAIN;
+            return OptionalResult.ABSTAIN;
         }
 
         if (game == null && player != null) {

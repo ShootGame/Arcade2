@@ -6,14 +6,6 @@ public class GameRule {
     private String key;
     private Object value;
 
-    public GameRule(GameRuleType type) {
-        this(type, null);
-    }
-
-    public GameRule(GameRuleType type, Object value) {
-        this(Objects.requireNonNull(type, "type cannot be null").getKey(), value);
-    }
-
     public GameRule(String key) {
         this(key, null);
     }

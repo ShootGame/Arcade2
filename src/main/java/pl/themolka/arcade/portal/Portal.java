@@ -42,7 +42,7 @@ public class Portal extends ForwardingRegion implements PlayerApplicable {
 
     public boolean canTeleport(GamePlayer player) {
         if (player != null && player.isOnline() && !player.isDead()) {
-            return !player.isParticipating() || this.filter.filter(player).isNotDenied();
+            return !player.isParticipating() || this.filter.filter(player).isNotFalse();
         }
 
         return false;

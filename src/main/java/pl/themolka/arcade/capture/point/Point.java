@@ -130,8 +130,8 @@ public class Point extends Capturable {
     }
 
     public boolean canCapture(Participator competitor) {
-        // Rebuild this if we want to support many
-        // PointCapture objects in the future.
+        // Rebuild this if we would want to support
+        // many PointCapture objects in the future.
         return competitor != null && this.isCompletableBy(competitor) &&
                 this.getCapture().canCapture(competitor);
 
@@ -139,7 +139,7 @@ public class Point extends Capturable {
 
     public boolean canDominate(GamePlayer player) {
         return player != null && player.isParticipating() && this.isCompletableBy(player) &&
-                this.getDominateFilter().filter(player).isNotDenied();
+                this.dominateFilter.filter(player).isNotFalse();
     }
 
     public CapturedState createCapturedState() {

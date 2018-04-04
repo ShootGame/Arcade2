@@ -21,8 +21,10 @@ import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.session.PlayerQuitEvent;
 import pl.themolka.arcade.team.Team;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 public class LivesGame extends GameModule {
@@ -39,6 +41,7 @@ public class LivesGame extends GameModule {
     private final Sound sound;
 
     private final Map<GamePlayer, Integer> remaining = new WeakHashMap<>();
+    private final Set<GamePlayer> eliminated = new LinkedHashSet<>();
 
     @Deprecated
     public LivesGame(int lives, Team fallbackTeam, boolean announce, Sound sound) {
@@ -89,6 +92,14 @@ public class LivesGame extends GameModule {
         return this.sound;
     }
 
+    public Set<GamePlayer> eliminated() {
+        return new LinkedHashSet<>(this.eliminated);
+    }
+
+    public boolean isEliminated(GamePlayer player) {
+        return this.eliminated.contains(player);
+    }
+
     //
     // Lives
     //
@@ -99,7 +110,7 @@ public class LivesGame extends GameModule {
 
         // eliminate the player if the newValue is zero or negative
         if (newValue <= ZERO) {
-            this.eliminate(player, false);
+            this.eliminate(player, this.fallbackTeam());
         }
 
         return newValue;
@@ -113,20 +124,23 @@ public class LivesGame extends GameModule {
         return this.remaining.getOrDefault(player, this.lives());
     }
 
-    public void eliminate(GamePlayer player, boolean serverQuit) {
+    public void eliminate(GamePlayer player, Team fallbackTeam) {
         if (this.remaining.containsKey(player)) {
             PlayerEliminateEvent event = new PlayerEliminateEvent(this.getPlugin(),
                     player, this.remaining.getOrDefault(player, ZERO), player.getBukkit().getLocation());
             this.getPlugin().getEventBus().publish(event);
 
-            if (event.isCanceled() && !serverQuit) {
+            if (event.isCanceled() && fallbackTeam != null) {
                 this.remaining.put(event.getPlayer(), event.getRemainingLives());
                 return;
             }
 
-            this.remaining.remove(event.getPlayer());
-            if (!serverQuit) {
-                this.fallbackTeam().join(event.getPlayer(), true, true);
+            GamePlayer eventPlayer = event.getPlayer();
+            this.remaining.remove(eventPlayer);
+            this.eliminated.add(eventPlayer);
+
+            if (fallbackTeam != null) {
+                fallbackTeam.join(eventPlayer, true, true);
             }
 
             // I don't know if it should be done here.
@@ -143,7 +157,7 @@ public class LivesGame extends GameModule {
 
     @Handler(priority = Priority.LAST)
     public void revokePlayer(PlayerQuitEvent event) {
-        this.eliminate(event.getGamePlayer(), true);
+        this.eliminate(event.getGamePlayer(), null);
     }
 
     @Handler(priority = Priority.LAST)

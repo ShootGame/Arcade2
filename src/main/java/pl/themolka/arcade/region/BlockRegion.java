@@ -109,7 +109,7 @@ public class BlockRegion extends AbstractRegion {
 
     public boolean addBlocks(MaterialData... materials) {
         int index = 0;
-        for (Block block : this.getBlocks()) {
+        for (Block block : this) {
             for (MaterialData data : materials) {
                 if (data.getItemType().equals(block.getType()) && data.getData() == block.getData() && this.addBlock(block)) {
                     index++;

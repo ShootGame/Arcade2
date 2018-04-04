@@ -28,6 +28,7 @@ public class RootContentParser extends NodeParser<KitContent.Config<?, ?>>
             .add(DamageContent.class)
             .add(EffectContent.class)
             .add(EjectContent.class)
+            .add(EliminateContent.class)
             .add(ExhaustionContent.class)
             .add(ExperienceContent.class)
             .add(FallDistanceContent.class)

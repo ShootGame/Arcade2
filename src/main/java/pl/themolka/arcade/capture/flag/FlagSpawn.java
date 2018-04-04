@@ -35,7 +35,7 @@ public class FlagSpawn {
     }
 
     public boolean canSpawn() {
-        return this.filter.filter(this.flag).isNotDenied();
+        return this.filter.filter(this.flag).isNotFalse();
     }
 
     public Banner getBanner() {

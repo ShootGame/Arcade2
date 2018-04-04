@@ -34,11 +34,11 @@ public class GameRuleParser extends NodeParser<GameRule>
 
     @Override
     protected ParserResult<GameRule> parsePrimitive(Node node, String name, String value) throws ParserException {
-        GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orDefaultNull(); // name is the value
+        GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orNull(); // name is the value
         String ruleValue = this.valueParser.parseWithDefinition(node, name, value).orFail();
 
         if (type != null) {
-            return ParserResult.fine(node, name, value, new GameRule(type, ruleValue));
+            return ParserResult.fine(node, name, value, type.create(ruleValue));
         }
 
         String ruleKey = this.keyParser.parseWithValue(node, name).orFail();

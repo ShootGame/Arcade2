@@ -15,7 +15,6 @@ import pl.themolka.arcade.capture.point.state.NeutralState;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameStartEvent;
 import pl.themolka.arcade.game.Participator;
-import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.team.TeamEditEvent;
 import pl.themolka.arcade.util.Color;
 
@@ -97,11 +96,7 @@ public class PointRegionRender implements Listener {
     }
 
     public void renderPoint(Point point, DyeColor color) {
-        this.renderRegion(point.getStateRegion(), color);
-    }
-
-    public void renderRegion(Region region, DyeColor color) {
-        this.renderBlocks(region.getBlocks(), color);
+        this.renderBlocks(point.getStateRegion(), color);
     }
 
     @Handler(priority = Priority.LAST)

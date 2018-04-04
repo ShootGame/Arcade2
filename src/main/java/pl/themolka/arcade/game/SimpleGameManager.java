@@ -98,7 +98,7 @@ public class SimpleGameManager implements GameManager {
 
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             GamePlayer gamePlayer = player.getGamePlayer();
-            gamePlayer.getBossBarContext().removeAll();
+            gamePlayer.getBossBarFacet().removeAll();
 
             player.setGamePlayer(new GamePlayer(game, player));
             game.getPlayers().playerJoin(player.getGamePlayer());

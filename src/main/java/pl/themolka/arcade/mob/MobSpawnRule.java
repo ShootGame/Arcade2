@@ -45,12 +45,12 @@ public class MobSpawnRule implements Cancelable {
     }
 
     public boolean matches(Entity entity, CreatureSpawnEvent.SpawnReason reason, Location location) {
-        return this.getFilter().filter(entity, reason, location).isAllowed();
+        return this.filter.filter(entity, reason, location).isTrue();
     }
 
     public interface Config extends IGameConfig<MobSpawnRule> {
         default Ref<Filter> filter() { return Ref.empty(); }
-        default boolean cancel() { return false; }
+        default boolean cancel() { return true; }
 
         @Override
         default MobSpawnRule create(Game game) {

@@ -68,11 +68,11 @@ public class DamageRule implements Cancelable {
     }
 
     public boolean matches(Entity entity, EntityDamageEvent.DamageCause cause) {
-        return !entity.isDead() && this.entityFilter.filter(entity, cause).isAllowed();
+        return !entity.isDead() && this.entityFilter.filter(entity, cause).isTrue();
     }
 
     public boolean matches(GamePlayer player, EntityDamageEvent.DamageCause cause) {
-        return player != null && player.isOnline() && this.playerFilter.filter(player, cause).isAllowed();
+        return player != null && player.isOnline() && this.playerFilter.filter(player, cause).isTrue();
     }
 
     public void setDamage(double damage) {

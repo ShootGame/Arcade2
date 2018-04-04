@@ -1,12 +1,11 @@
 package pl.themolka.arcade.filter;
 
-import pl.themolka.arcade.filter.matcher.MatcherContext;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,16 +14,14 @@ import java.util.Set;
 public class FiltersGame extends GameModule {
     private final Map<String, UniqueFilter> filters = new LinkedHashMap<>();
 
-    private final MatcherContext matcherContext = new MatcherContext();
-
     @Deprecated
     public FiltersGame(Map<String, FilterSet> filters) {
         this.filters.putAll(filters);
     }
 
-    protected FiltersGame(Config config) {
-        for (UniqueFilter filter : config.filterSets()) {
-            this.filters.put(Objects.requireNonNull(filter.getId(), "id cannot be null"), filter);
+    protected FiltersGame(Game game, Config config) {
+        for (FilterSet.Config filter : config.filterSets().get()) {
+            this.filters.put(Objects.requireNonNull(filter.getId(), "id cannot be null"), filter.create(game));
         }
     }
 
@@ -59,10 +56,6 @@ public class FiltersGame extends GameModule {
         return this.filters.values();
     }
 
-    public MatcherContext getMatcherContext() {
-        return this.matcherContext;
-    }
-
     public void removeFilter(UniqueFilter filter) {
         this.removeFilter(filter.getId());
     }
@@ -72,11 +65,11 @@ public class FiltersGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<FiltersGame> {
-        default Set<FilterSet> filterSets() { return Collections.emptySet(); }
+        Ref<Set<FilterSet.Config>> filterSets();
 
         @Override
         default FiltersGame create(Game game) {
-            return new FiltersGame(this);
+            return new FiltersGame(game, this);
         }
     }
 }

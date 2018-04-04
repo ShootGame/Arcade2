@@ -42,7 +42,7 @@ public class PointCapture implements Listener {
     }
 
     public boolean canCapture(Participator competitor) {
-        return competitor != null && this.getFilter().filter(competitor).isNotDenied();
+        return competitor != null && this.filter.filter(competitor).isNotFalse();
     }
 
     public void clearPlayers() {

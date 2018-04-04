@@ -1,92 +1,100 @@
 package pl.themolka.arcade.filter.matcher;
 
 import org.bukkit.Locatable;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.InstallableParser;
+import pl.themolka.arcade.parser.NestedParserName;
+import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
+import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Produces;
 
-import java.util.Objects;
-
-@MatcherId("material")
-public class MaterialMatcher extends Matcher {
-    public static final MatcherParser PARSER = new MaterialParser();
-
-    public static final byte DATA_NULL = 0;
-
-    private final MaterialData material;
-
-    public MaterialMatcher(Material material) {
-        this(new MaterialData(material));
-    }
-
-    public MaterialMatcher(MaterialData material) {
-        this.material = material;
+public class MaterialMatcher extends ConfigurableMatcher<MaterialData> {
+    protected MaterialMatcher(Config config) {
+        super(config.value().get());
     }
 
     @Override
-    public FilterResult matches(Object object) {
-        if (object instanceof Block) {
-            return this.of(this.matches((Block) object));
+    public boolean find(Object object) {
+        if (object instanceof MaterialData) {
+            return this.matches((MaterialData) object);
+        } else if (object instanceof Block) {
+            return this.matches((Block) object);
         } else if (object instanceof BlockState) {
-            return this.of(this.matches((BlockState) object));
-        } else if (object instanceof Byte) {
-            return this.of(this.matches((byte) object));
+            return this.matches((BlockState) object);
         } else if (object instanceof ItemStack) {
-            return this.of(this.matches((ItemStack) object));
+            return this.matches((ItemStack) object);
+        } else if (object instanceof Location) {
+            return this.matches((Location) object);
         } else if (object instanceof Locatable) {
-            return this.of(this.matches((Locatable) object));
+            return this.matches((Locatable) object);
         } else if (object instanceof Material) {
-            return this.of(this.matches((Material) object));
-        } else if (object instanceof MaterialData) {
-            return this.of(this.matches((MaterialData) object));
+            return this.matches((Material) object);
         }
 
-        return this.abstain();
+        return false;
     }
 
     public boolean matches(Block block) {
-        return this.matches(block.getType(), block.getData());
+        return block != null && this.matches(block.getState());
     }
 
     public boolean matches(BlockState blockState) {
-        return this.matches(blockState.getMaterialData());
+        return blockState != null && this.matches(blockState.getData());
     }
 
-    public boolean matches(byte data) {
-        return Objects.equals(this.material.getData(), data);
+    public boolean matches(ItemStack itemStack) {
+        return itemStack != null && this.matches(itemStack.getData());
     }
 
-    public boolean matches(ItemStack item) {
-        return this.matches(item.getData());
+    public boolean matches(Location location) {
+        return location != null && this.matches(location.getBlock());
     }
 
     public boolean matches(Locatable locatable) {
-        return this.matches(locatable.getLocation().getBlock().getState().getData());
+        return locatable != null && this.matches(locatable.getLocation());
     }
 
     public boolean matches(Material material) {
-        return Objects.equals(this.material.getItemType(), material);
+        return material != null && this.matches(new MaterialData(material));
     }
 
-    public boolean matches(MaterialData data) {
-        return Objects.equals(this.material, data);
+    @NestedParserName("material")
+    @Produces(Config.class)
+    public static class MatcherParser extends BaseMatcherParser<Config>
+                                      implements InstallableParser {
+        private Parser<MaterialData> materialParser;
+
+        @Override
+        public void install(ParserContext context) throws ParserNotSupportedException {
+            super.install(context);
+            this.materialParser = context.type(MaterialData.class);
+        }
+
+        @Override
+        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+            MaterialData material = this.materialParser.parseWithDefinition(node, name, value).orFail();
+
+            return ParserResult.fine(node, name, value, new Config() {
+                public Ref<MaterialData> value() { return Ref.ofProvided(material); }
+            });
+        }
     }
 
-    public boolean matches(Material material, byte data) {
-        return this.matches(material) && this.matches(data);
-    }
-}
-
-class MaterialParser implements MatcherParser<MaterialMatcher> {
-    @Override
-    public MaterialMatcher parsePrimitive(Node node, ParserContext context) throws ParserException, ParserNotSupportedException {
-        return new MaterialMatcher(context.type(MaterialData.class).parse(node).orFail());
+    public interface Config extends ConfigurableMatcher.Config<MaterialMatcher, MaterialData> {
+        @Override
+        default MaterialMatcher create(Game game) {
+            return new MaterialMatcher(this);
+        }
     }
 }

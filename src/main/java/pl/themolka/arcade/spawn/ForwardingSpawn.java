@@ -8,7 +8,8 @@ import org.bukkit.geometry.Direction;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.util.Forwarding;
 
-public abstract class ForwardingSpawn extends Forwarding<Spawn> implements Spawn {
+public abstract class ForwardingSpawn extends Forwarding<Spawn>
+                                      implements Spawn {
     @Override
     public Location getLocation() {
         return this.delegate().getLocation();

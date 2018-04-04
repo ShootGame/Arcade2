@@ -1,29 +1,25 @@
 package pl.themolka.arcade.filter.matcher;
 
-import pl.themolka.arcade.filter.AbstractFilter;
-import pl.themolka.arcade.filter.FilterResult;
+import pl.themolka.arcade.condition.AbstainableResult;
+import pl.themolka.arcade.condition.OptionalResult;
+import pl.themolka.arcade.filter.Filter;
 
-public abstract class Matcher extends AbstractFilter {
+public abstract class Matcher<T> implements Filter {
     @Override
-    public FilterResult filter(Object object) {
-        return this.matches(object);
+    public final AbstainableResult filter(Object... objects) {
+        for (Object object : objects) {
+            if (this.find(object)) {
+                return OptionalResult.TRUE;
+            }
+        }
+
+        return OptionalResult.ABSTAIN;
     }
 
-    protected final FilterResult abstain() {
-        return FilterResult.ABSTAIN;
-    }
+    public abstract boolean find(Object object);
 
-    protected final FilterResult allow() {
-        return FilterResult.ALLOW;
-    }
+    public abstract boolean matches(T t);
 
-    protected final FilterResult deny() {
-        return FilterResult.DENY;
-    }
-
-    public abstract FilterResult matches(Object object);
-
-    protected FilterResult of(boolean result) {
-        return FilterResult.of(result);
+    interface Config<T extends Matcher<?>> extends Filter.Config<T> {
     }
 }

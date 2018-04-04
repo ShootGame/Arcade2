@@ -1,5 +1,6 @@
 package pl.themolka.arcade.filter;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -14,10 +15,10 @@ import pl.themolka.arcade.parser.Produces;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Produces(FiltersGame.class)
+@Produces(FiltersGame.Config.class)
 public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame.Config>
                                implements InstallableParser {
-    private Parser<FilterSet> filterSetParser;
+    private Parser<FilterSet.Config> filterSetParser;
 
     public FiltersGameParser() {
         super(FiltersGame.class);
@@ -31,12 +32,12 @@ public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         super.install(context);
-        this.filterSetParser = context.type(FilterSet.class);
+        this.filterSetParser = context.type(FilterSet.Config.class);
     }
 
     @Override
     protected ParserResult<FiltersGame.Config> parseTree(Node node, String name) throws ParserException {
-        Set<FilterSet> filterSets = new LinkedHashSet<>();
+        Set<FilterSet.Config> filterSets = new LinkedHashSet<>();
         for (Node filterSetNode : node.children("filter")) {
             filterSets.add(this.filterSetParser.parse(filterSetNode).orFail());
         }
@@ -46,7 +47,7 @@ public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame
         }
 
         return ParserResult.fine(node, name, null, new FiltersGame.Config() {
-            public Set<FilterSet> filterSets() { return filterSets; }
+            public Ref<Set<FilterSet.Config>> filterSets() { return Ref.ofProvided(filterSets); }
         });
     }
 }

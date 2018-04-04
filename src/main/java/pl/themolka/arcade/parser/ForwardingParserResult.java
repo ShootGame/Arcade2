@@ -4,7 +4,8 @@ import pl.themolka.arcade.util.Forwarding;
 
 import java.util.Optional;
 
-public abstract class ForwardingParserResult<T> extends Forwarding<IParserResult<T>> implements IParserResult<T> {
+public abstract class ForwardingParserResult<T> extends Forwarding<IParserResult<T>>
+                                                implements IParserResult<T> {
     @Override
     public T get() {
         return this.delegate().get();

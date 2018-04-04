@@ -1,18 +1,18 @@
 package pl.themolka.arcade.parser;
 
 public class ParserContext {
-    private final ParserManager parsers;
+    private final ParserManager source;
 
-    public ParserContext(ParserManager parsers) {
-        this.parsers = parsers;
+    public ParserContext(ParserManager source) {
+        this.source = source;
     }
 
     public <T extends Enum<T>> Parser<T> enumType(Class<T> type) throws ParserNotSupportedException {
-        return this.parsers.forEnumType(type);
+        return this.source.forEnumType(type);
     }
 
     public ParserContainer getContainer() {
-        return this.parsers.getContainer();
+        return this.source.getContainer();
     }
 
     public IdParser id() throws ParserNotSupportedException {
@@ -28,7 +28,7 @@ public class ParserContext {
     }
 
     public boolean supportsType(Class<?> type) {
-        return this.parsers.supportsType(type);
+        return this.source.supportsType(type);
     }
 
     // Text is the default value, so we can reference it here.
@@ -37,6 +37,12 @@ public class ParserContext {
     }
 
     public <T> Parser<T> type(Class<T> type) throws ParserNotSupportedException  {
-        return this.parsers.forType(type);
+        return this.source.forType(type);
+    }
+
+    public static class Factory {
+        public ParserContext createContext(ParserManager source) {
+            return new ParserContext(source);
+        }
     }
 }

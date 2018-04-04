@@ -1,56 +1,35 @@
 package pl.themolka.arcade.filter;
 
+import pl.themolka.arcade.condition.AbstainableResult;
+import pl.themolka.arcade.condition.AnyCondition;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
+/**
+ * Represents a set of instructions which must be filtered.
+ */
 public class FilterSet implements UniqueFilter {
-    private final List<Filter> filters = new ArrayList<>();
+    private final Set<Filter> filters = new LinkedHashSet<>();
     private final String id;
 
-    @Deprecated
-    public FilterSet(String id) {
-        this(id, (Filter[]) null);
-    }
-
-    @Deprecated
-    public FilterSet(String id, Filter... filters) {
-        this.id = id;
-
-        if (filters != null) {
-            for (Filter filter : filters) {
-                this.addFilter(filter);
-            }
-        }
-    }
-
-    protected FilterSet(Config config) {
+    protected FilterSet(Game game, Config config) {
         this.id = config.id();
-        this.filters.addAll(config.filters());
+
+        for (Filter.Config<?> filter : config.filters().get()) {
+            this.filters.add(filter.create(game));
+        }
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj instanceof UniqueFilter && ((FilterSet) obj).id.equals(this.id);
-    }
-
-    @Override
-    public FilterResult filter(Object... objects) {
-        FilterResult def = FilterResult.ABSTAIN;
-
-        for (Filter filter : this.filters) {
-            FilterResult result = filter.filter(objects);
-            if (!result.equals(def)) {
-                return result;
-            }
-        }
-
-        return def;
     }
 
     @Override
@@ -63,12 +42,17 @@ public class FilterSet implements UniqueFilter {
         return Objects.hash(this.id);
     }
 
+    @Override
+    public AbstainableResult filter(Object... objects) {
+        return new AnyCondition(this.filters).query(objects);
+    }
+
     public boolean addFilter(Filter filter) {
         return this.filters.add(Objects.requireNonNull(filter, "filter cannot be null"));
     }
 
-    public List<Filter> getFilters() {
-        return new ArrayList<>(this.filters);
+    public Set<Filter> getFilters() {
+        return new HashSet<>(this.filters);
     }
 
     public boolean isEmpty() {
@@ -80,11 +64,11 @@ public class FilterSet implements UniqueFilter {
     }
 
     public interface Config extends IGameConfig<FilterSet>, Unique {
-        default List<Filter> filters() { return Collections.emptyList(); }
+        Ref<Set<Filter.Config<?>>> filters();
 
         @Override
         default FilterSet create(Game game) {
-            return new FilterSet(this);
+            return new FilterSet(game, this);
         }
     }
 }

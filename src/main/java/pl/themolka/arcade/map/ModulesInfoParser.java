@@ -1,7 +1,6 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.filter.FiltersGameParser;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -45,10 +44,6 @@ public class ModulesInfoParser extends NodeParser<ModulesInfo>
     protected ParserResult<ModulesInfo> parseTree(Node node, String name) throws ParserException {
         List<IGameModuleConfig<?>> configs = new ArrayList<>();
         for (GameModuleParser<?, ?> parser : this.moduleParsers) {
-            if (parser instanceof FiltersGameParser) {
-                continue;
-            }
-
             Node definedNode = parser.define(node);
 
             if (definedNode != null) {

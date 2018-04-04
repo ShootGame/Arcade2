@@ -11,10 +11,14 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.util.Forwarding;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
-public abstract class ForwardingRegion extends Forwarding<Region> implements Region {
+public abstract class ForwardingRegion extends Forwarding<Region>
+                                       implements Region {
     @Override
     public boolean contains(Block block) {
         return this.delegate().contains(block);
@@ -63,6 +67,11 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     @Override
     public boolean contains(int x, int y, int z) {
         return this.delegate().contains(x, y, z);
+    }
+
+    @Override
+    public void forEach(Consumer<? super Block> action) {
+        this.delegate().forEach(action);
     }
 
     @Override
@@ -123,6 +132,16 @@ public abstract class ForwardingRegion extends Forwarding<Region> implements Reg
     @Override
     public World getWorld() {
         return this.delegate().getWorld();
+    }
+
+    @Override
+    public Iterator<Block> iterator() {
+        return this.delegate().iterator();
+    }
+
+    @Override
+    public Spliterator<Block> spliterator() {
+        return this.delegate().spliterator();
     }
 
     @Override

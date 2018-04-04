@@ -38,7 +38,7 @@ public class HungerGame extends GameModule {
     }
 
     public boolean cannotDeplete(GamePlayer player) {
-        return player == null || !player.isOnline() || this.getFilter().filter(player).isDenied();
+        return player == null || !player.isOnline() || this.filter.filter(player).isNotFalse();
     }
 
     public Filter getFilter() {

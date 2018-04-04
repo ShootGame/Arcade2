@@ -49,17 +49,17 @@ public class RestartCountdown extends PrintableCountdown {
         }
 
         String message = this.getPrintMessage(this.getRestartMessage());
-        this.getBossBar().setProgress(Percentage.finite(this.getProgress()));
-        this.getBossBar().setText(new TextComponent(message));
+
+        BossBar bossBar = this.getBossBar();
+        bossBar.setProgress(Percentage.finite(this.getProgress()));
+        bossBar.setText(new TextComponent(message));
 
         for (ArcadePlayer online : this.plugin.getPlayers()) {
             GamePlayer player = online.getGamePlayer();
             if (player != null) {
-                player.getBossBarContext().addBossBar(this.getBossBar(), BAR_PRIORITY);
+                bossBar.addPlayer(player, BAR_PRIORITY);
             }
         }
-
-        this.getBossBar().setVisible(true);
     }
 
     @Override

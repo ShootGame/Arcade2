@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
@@ -40,13 +41,23 @@ public class MobsGame extends GameModule {
 
     @Override
     public void onEnable() {
+        Game game = this.getGame();
         if (this.denyNatural) {
-            // Register the natural rule first, so it
-            // is handled before any other rules.
-            this.rules.add(new MobSpawnRule(new SpawnReasonMatcher(SpawnReason.NATURAL), true));
+            // Register the natural rule first, so it is handled before any other rules.
+
+            Filter naturalSpawnFilter = new SpawnReasonMatcher.Config() {
+                public Ref<SpawnReason> value() { return Ref.ofProvided(SpawnReason.NATURAL); }
+            }.create(game);
+
+            MobSpawnRule naturalSpawnRule = new MobSpawnRule.Config() {
+                public Ref<Filter> filter() { return Ref.ofProvided(naturalSpawnFilter); }
+                public boolean cancel() { return true; }
+            }.create(game);
+
+            this.rules.add(naturalSpawnRule);
         }
 
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
+        FiltersGame filters = (FiltersGame) game.getModule(FiltersModule.class);
         for (Element xml : this.getSettings().getChildren("rule")) {
             Filter filter = filters.filterOrDefault(xml.getAttributeValue("filter"), null);
             if (filter != null) {

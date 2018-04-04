@@ -153,7 +153,7 @@ public class Core extends Leakable implements Listener {
 
     public List<Block> buildBlocks(Region region) {
         List<Block> blocks = new ArrayList<>();
-        for (Block block : region.getBlocks()) { // may take a while
+        for (Block block : region) { // may take a while
             if (this.matchMaterial(block.getType())) {
                 blocks.add(block);
             }

@@ -32,7 +32,7 @@ public class KillReward implements PlayerApplicable {
     }
 
     public boolean canReward(GamePlayer player) {
-        return player != null && player.isOnline() && this.getFilter().filter(player).isNotDenied();
+        return player != null && player.isOnline() && this.filter.filter(player).isNotFalse();
     }
 
     public Filter getFilter() {

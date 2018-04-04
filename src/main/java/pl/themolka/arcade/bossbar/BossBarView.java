@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Objects;
 
 /**
- * A single {@link BossBar} player view used in {@link BossBarContext}.
+ * A single {@link BossBar} player view used in {@link BossBarFacet}.
  */
 class BossBarView implements Comparable<BossBarView> {
     private final BossBar bossBar;

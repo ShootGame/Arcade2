@@ -66,7 +66,7 @@ public class PrintableCountdown extends Countdown {
         for (ArcadePlayer onlinePlayer : online) {
             GamePlayer player = onlinePlayer.getGamePlayer();
             if (player != null) {
-                player.getBossBarContext().removeBossBar(bossBar);
+                bossBar.removePlayer(player);
             }
         }
     }

@@ -11,6 +11,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -22,8 +23,8 @@ public abstract class AbstractRegion implements Region {
     private final String id;
 
     public AbstractRegion(Game game, String id) {
-        this.game = game;
-        this.id = id;
+        this.game = Objects.requireNonNull(game, "game cannot be null");
+        this.id = Objects.requireNonNull(id, "id cannot be null");
     }
 
     public AbstractRegion(AbstractRegion original) {
@@ -146,6 +147,11 @@ public abstract class AbstractRegion implements Region {
 
     protected boolean isYPresent(Vector vector) {
         return vector.getY() != MIN_HEIGHT && vector.getY() != MAX_HEIGHT;
+    }
+
+    @Override
+    public Iterator<Block> iterator() {
+        return this.getBlocks().iterator();
     }
 
     public interface Config<T extends AbstractRegion> extends IGameConfig<T>, Unique {

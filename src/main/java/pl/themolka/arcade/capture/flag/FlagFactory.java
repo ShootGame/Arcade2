@@ -140,7 +140,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
     }
 
     public static Banner findBannerIn(Region region) {
-        for (Block block : region.getBlocks()) {
+        for (Block block : region) {
             if (BannerUtils.isBanner(block)) {
                 return (Banner) block.getState();
             }

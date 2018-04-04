@@ -7,6 +7,7 @@ import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.time.Time;
@@ -26,6 +27,10 @@ public class AutoRespawnGame extends GameModule {
         this.cooldown = config.cooldown();
     }
 
+    public boolean canAutoRespawn(GamePlayer victim) {
+        return this.filter.filter(victim).isNotFalse();
+    }
+
     public Filter getFilter() {
         return this.filter;
     }
@@ -36,7 +41,7 @@ public class AutoRespawnGame extends GameModule {
 
     @Handler(priority = Priority.LAST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (this.filter.filter(event.getVictim()).isNotDenied()) {
+        if (this.canAutoRespawn(event.getVictim())) {
             event.setAutoRespawn(true, this.cooldown);
         }
     }

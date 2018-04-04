@@ -1,12 +1,17 @@
 package pl.themolka.arcade.condition;
 
-public class NotCondition<T> extends SingleCondition<T> {
-    public NotCondition(Condition<T> condition) {
+public class NotCondition<K, V extends InvertableResult<V>> extends SingleCondition<K, V> {
+    public NotCondition(Condition<K, V> condition) {
         super(condition);
     }
 
     @Override
-    public boolean test(T t, Condition<T> condition) {
-        return !condition.test(t);
+    public V query(K k, Condition<K, V> condition) {
+        return condition.query(k).invert();
+    }
+
+    @Override
+    public String toString() {
+        return "not(" + this.getCondition().toString() + ")";
     }
 }
