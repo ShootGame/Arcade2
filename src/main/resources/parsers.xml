@@ -133,6 +133,8 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.map.RandomSeedParser" />
     <parser class="pl.themolka.arcade.map.ScoreboardInfoParser" />
     <parser class="pl.themolka.arcade.map.WorldInfoParser" />
+    <parser class="pl.themolka.arcade.match.MatchGameParser" />
+    <parser class="pl.themolka.arcade.match.ObserversParser" />
     <parser class="pl.themolka.arcade.mob.EntityTypeParser" />
     <parser class="pl.themolka.arcade.mob.MobsGameParser" />
     <parser class="pl.themolka.arcade.mob.MobSpawnRuleParser" />
@@ -184,6 +186,8 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.spawn.SpawnParser$Region" />
     <parser class="pl.themolka.arcade.spawn.SpawnParser$RegionExact" />
     <parser class="pl.themolka.arcade.spawn.SpawnsGameParser" />
+    <parser class="pl.themolka.arcade.team.TeamParser" />
+    <parser class="pl.themolka.arcade.team.TeamsGameParser" />
     <parser class="pl.themolka.arcade.time.LocalDateParser" />
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />
     <parser class="pl.themolka.arcade.time.LocalTimeParser" />

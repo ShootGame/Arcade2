@@ -3,10 +3,10 @@ package pl.themolka.arcade.team;
 import org.apache.commons.lang3.builder.Builder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 
 public class TeamBuilder implements Builder<Team> {
-    private final ArcadePlugin plugin;
+    private final Game game;
 
     private final String id;
     private ChatColor color;
@@ -17,14 +17,14 @@ public class TeamBuilder implements Builder<Team> {
     private String name;
     private int slots;
 
-    public TeamBuilder(ArcadePlugin plugin, String id) {
-        this.plugin = plugin;
+    public TeamBuilder(Game game, String id) {
+        this.game = game;
         this.id = id;
     }
 
     @Override
     public Team build() {
-        Team team = new Team(this.plugin, this.id());
+        Team team = new Team(this.game, this.id());
         team.setChatColor(this.color());
         team.setDyeColor(this.dyeColor());
         team.setFriendlyFire(this.friendlyFire());

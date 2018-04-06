@@ -145,7 +145,7 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
 
         @Override
         public Set<Object> expect() {
-            return Collections.singleton("Multi-region spawn");
+            return Collections.singleton("multi-region spawn");
         }
 
         @Override

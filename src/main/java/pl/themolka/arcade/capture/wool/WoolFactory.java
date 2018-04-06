@@ -7,8 +7,8 @@ import pl.themolka.arcade.capture.CapturableFactory;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.xml.XMLRegion;
 
 public class WoolFactory implements CapturableFactory<Wool> {
     @Override

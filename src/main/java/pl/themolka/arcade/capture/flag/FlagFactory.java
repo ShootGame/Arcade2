@@ -14,8 +14,8 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
-import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.xml.XMLRegion;
 
 public class FlagFactory implements CapturableFactory<Flag> {
     @Override

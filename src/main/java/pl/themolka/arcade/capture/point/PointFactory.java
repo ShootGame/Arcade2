@@ -11,11 +11,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
-import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.score.Score;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.xml.XMLRegion;
 
 public class PointFactory implements CapturableFactory<Point> {
     @Override

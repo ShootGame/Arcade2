@@ -2,16 +2,17 @@ package pl.themolka.arcade.team;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
-import org.jdom2.Element;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandPermissionException;
 import pl.themolka.arcade.command.GameCommands;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.KitsGame;
-import pl.themolka.arcade.kit.KitsModule;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
@@ -20,20 +21,15 @@ import pl.themolka.arcade.match.MatchStartedEvent;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerQuitEvent;
-import pl.themolka.arcade.spawn.SpawnsGame;
-import pl.themolka.arcade.spawn.SpawnsModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Set;
 
 public class TeamsGame extends GameModule implements Match.IObserverHandler {
-    /** Limit the amount of teams in the match */
-    public static final int TEAMS_LIMIT = 26;
-
     /** Commands related to this module */
     private TeamCommands commands;
     /** Match where teams are stored */
@@ -45,51 +41,37 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     /** Team picker window */
     private TeamWindow window;
 
+    protected TeamsGame(Game game, IGameConfig.Library library, Config config) {
+        for (Team.Config team : config.teams().get()) {
+            this.teamsById.put(team.id(), library.getOrDefine(game, team));
+        }
+    }
+
     @Override
     public void onEnable() {
-        MatchGame matchGame = (MatchGame) this.getGame().getModule(MatchModule.class);
-        KitsGame kitsGame = (KitsGame) this.getGame().getModule(KitsModule.class);
-        SpawnsGame spawnsGame = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
-
         this.commands = new TeamCommands(this);
-        this.match = matchGame.getMatch();
 
-        List<Team> teams = new ArrayList<>();
-        for (Element teamElement : this.getSettings().getChildren("team")) {
-            Team team = XMLTeam.parse(this.getGame().getMap(), teamElement, this.getPlugin(),
-                                      kitsGame, spawnsGame);
-            if (team != null) {
-                teams.add(team);
-            }
-        }
+        MatchGame module = (MatchGame) this.getGame().getModule(MatchModule.class);
+        this.match = module.getMatch();
 
-        for (int i = 0; i < teams.size(); i++) {
-            if (i > TEAMS_LIMIT) {
-                this.getLogger().log(Level.SEVERE, "There are too many teams (reached limit of " + TEAMS_LIMIT + ")!");
-                break;
-            }
-
-            Team team = teams.get(i);
-            this.teamsById.put(team.getId(), team);
-        }
-
-        for (Team team : this.getTeams()) {
-            team.setMatch(this.getMatch());
-            this.getMatch().registerWinner(team); // register
+        for (Team team : this.teamsById.values()) {
+            team.setMatch(this.match);
+            this.match.registerWinner(team);
         }
 
         this.teamsById.put(this.match.getObservers().getId(), this.match.getObservers());
 
         this.window = new TeamWindow(this);
-        this.getWindow().create();
+        this.window.create();
         this.getGame().getWindowRegistry().addWindow(this.getWindow()); // register
-        this.getMatch().setPlayWindow(this.getWindow());
+        this.match.setPlayWindow(this.getWindow());
 
-        this.getMatch().setObserverHandler(this);
+        this.match.setObserverHandler(this);
 
         // cache
-        for (GamePlayer observer : matchGame.getObservers().getOnlineMembers()) {
-            this.teamsByPlayer.put(observer, matchGame.getObservers());
+        Observers observers = this.match.getObservers();
+        for (GamePlayer observer : observers.getOnlineMembers()) {
+            this.teamsByPlayer.put(observer, observers);
         }
     }
 
@@ -149,20 +131,23 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             return result;
         }
 
-        for (Team team : this.getTeams()) {
+        Collection<Team> teams = this.teamsById.values();
+        for (Team team : teams) {
             if (team.getId().toLowerCase().startsWith(query.toLowerCase())) {
                 return team;
             }
         }
 
-        for (Team team : this.getTeams()) {
-            if (team.getName() != null && team.getName().equalsIgnoreCase(query)) {
+        for (Team team : teams) {
+            String name = team.getName();
+            if (name != null && name.equalsIgnoreCase(query)) {
                 return team;
             }
         }
 
-        for (Team team : this.getTeams()) {
-            if (team.getName() != null && team.getName().toLowerCase().contains(query.toLowerCase())) {
+        for (Team team : teams) {
+            String name = team.getName();
+            if (name != null && name.toLowerCase().contains(query.toLowerCase())) {
                 return team;
             }
         }
@@ -187,7 +172,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
     }
 
     public Collection<Team> getTeams() {
-        return this.teamsById.values();
+        return new ArrayList<>(this.teamsById.values());
     }
 
     public TeamWindow getWindow() {
@@ -200,7 +185,7 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
 
     public void autoJoinTeam(GamePlayer player) throws CommandException {
         Team smallestTeam = null;
-        for (Team team : this.getTeams()) {
+        for (Team team : this.teamsById.values()) {
             if (team.isParticipating()) {
                 if (smallestTeam != null) {
                     double first = smallestTeam.getOnlineMembers().size() / smallestTeam.getMaxPlayers();
@@ -430,6 +415,17 @@ public class TeamsGame extends GameModule implements Match.IObserverHandler {
             if (team.getName() != null && team.getName().toLowerCase().startsWith(request.toLowerCase())) {
                 event.addResult(team.getName());
             }
+        }
+    }
+
+    public interface Config extends IGameModuleConfig<TeamsGame> {
+        int TEAMS_LIMIT = 26;
+
+        Ref<Set<Team.Config>> teams();
+
+        @Override
+        default TeamsGame create(Game game, Library library) {
+            return new TeamsGame(game, library, this);
         }
     }
 }

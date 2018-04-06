@@ -2,10 +2,9 @@ package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
-import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.team.Team;
 import pl.themolka.arcade.util.Color;
 
@@ -18,18 +17,14 @@ import java.util.Set;
  */
 public class Observers extends Team {
     public static final ChatColor OBSERVERS_CHAT_COLOR = ChatColor.AQUA;
-    public static final DyeColor OBSERVERS_DYE_COLOR =
-            Color.ofChat(OBSERVERS_CHAT_COLOR).toDye();
+    public static final DyeColor OBSERVERS_DYE_COLOR = Color.ofChat(OBSERVERS_CHAT_COLOR).toDye();
     public static final String OBSERVERS_KEY = "@";
     public static final String OBSERVERS_NAME = "Observers";
     public static final int OBSERVERS_SLOTS = Integer.MAX_VALUE;
     public static final String OBSERVERS_TEAM_ID = "_observers-team";
 
-    private final ArcadePlugin plugin;
-
-    public Observers(ArcadePlugin plugin) {
-        super(plugin, OBSERVERS_TEAM_ID);
-        this.plugin = plugin;
+    protected Observers(Game game, Config config) {
+        super(game, config);
     }
 
     @Override
@@ -70,10 +65,8 @@ public class Observers extends Team {
     @Override
     public Set<GamePlayer> getPlayers() {
         Set<GamePlayer> players = new HashSet<>();
-        for (ArcadePlayer online : this.plugin.getPlayers()) {
-            GamePlayer player = online.getGamePlayer();
-
-            if (!player.isParticipating()) {
+        for (GamePlayer player : this.getGame().getPlayers().getOnlinePlayers()) {
+            if (player.isParticipating()) {
                 players.add(player);
             }
         }
@@ -129,8 +122,7 @@ public class Observers extends Team {
             player.setParticipating(false);
             player.getBukkit().setAllowFlight(true);
 
-            this.plugin.getEventBus().publish(
-                    new ObserversJoinEvent(this.plugin, player, this));
+            this.getPlugin().getEventBus().publish(new ObserversJoinEvent(this.getPlugin(), player, this));
         }
 
         return result;
@@ -140,8 +132,7 @@ public class Observers extends Team {
     public boolean leave(GamePlayer player) {
         boolean result = super.leave(player);
         if (result) {
-            this.plugin.getEventBus().publish(
-                    new ObserversLeaveEvent(this.plugin, player, this));
+            this.getPlugin().getEventBus().publish(new ObserversLeaveEvent(this.getPlugin(), player, this));
         }
 
         return result;
@@ -175,5 +166,21 @@ public class Observers extends Team {
     @Override
     public void setSlots(int slots) {
         throw new UnsupportedOperationException("Not supported here.");
+    }
+
+    public interface Config extends Team.Config {
+        default String id() { return OBSERVERS_TEAM_ID; }
+        default ChatColor chatColor() { return OBSERVERS_CHAT_COLOR; }
+        default DyeColor dyeColor() { return OBSERVERS_DYE_COLOR; }
+        default boolean friendlyFire() { return true; }
+        default int minPlayers() { return 0; }
+        default int maxPlayers() { return OBSERVERS_SLOTS; }
+        default String name() { return OBSERVERS_NAME; }
+        default int slots() { return OBSERVERS_SLOTS; }
+
+        @Override
+        default Team create(Game game, Library library) {
+            return new Observers(game, this);
+        }
     }
 }

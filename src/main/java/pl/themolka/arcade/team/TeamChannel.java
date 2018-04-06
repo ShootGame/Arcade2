@@ -1,9 +1,9 @@
 package pl.themolka.arcade.team;
 
 import org.bukkit.ChatColor;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,8 @@ public class TeamChannel extends ChatChannel implements TeamHolder {
 
     private final Team team;
 
-    public TeamChannel(ArcadePlugin plugin, Team team) {
-        super(plugin, team.getId());
+    public TeamChannel(Game game, Team team) {
+        super(game.getPlugin(), team.getId());
 
         this.team = team;
     }

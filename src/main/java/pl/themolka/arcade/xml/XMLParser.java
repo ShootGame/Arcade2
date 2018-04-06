@@ -14,13 +14,7 @@ import pl.themolka.arcade.parser.type.MessageParser;
  *
  * TODO:
  * - write simple module parsing with reference handling.
- * - write match,
- *         observers,
- *         team parsing
- * - write core,
- *         flag,
- *         point,
- *         wool parsing
+ * - write objective parsing: [core] [flag] [monument] [point] [wool]
  */
 @Deprecated
 public class XMLParser {

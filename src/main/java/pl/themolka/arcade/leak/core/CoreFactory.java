@@ -10,8 +10,8 @@ import pl.themolka.arcade.leak.LeakableFactory;
 import pl.themolka.arcade.leak.Liquid;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.region.Region;
-import pl.themolka.arcade.region.XMLRegion;
 import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.xml.XMLRegion;
 
 import java.util.ArrayList;
 import java.util.Collections;

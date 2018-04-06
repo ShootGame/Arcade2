@@ -1,4 +1,4 @@
-package pl.themolka.arcade.region;
+package pl.themolka.arcade.xml;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.util.Vector;
@@ -6,13 +6,20 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import pl.themolka.arcade.game.Game;
-import pl.themolka.arcade.xml.XMLParser;
+import pl.themolka.arcade.region.CuboidRegion;
+import pl.themolka.arcade.region.CylinderRegion;
+import pl.themolka.arcade.region.GlobalRegion;
+import pl.themolka.arcade.region.NegativeRegion;
+import pl.themolka.arcade.region.PointRegion;
+import pl.themolka.arcade.region.Region;
+import pl.themolka.arcade.region.SphereRegion;
+import pl.themolka.arcade.region.UnionRegion;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @deprecated {@link RegionParser}
+ * @deprecated {@link pl.themolka.arcade.region.RegionParser}
  */
 @Deprecated
 public class XMLRegion extends XMLParser {

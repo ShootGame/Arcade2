@@ -4,7 +4,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
@@ -31,7 +30,7 @@ import java.util.Set;
 public class Team implements GameHolder, MatchWinner {
     public static final int NAME_MAX_LENGTH = 16;
 
-    private final ArcadePlugin plugin;
+    private final Game game;
 
     private final TeamApplyContext applyContext;
     private final TeamChannel channel;
@@ -49,18 +48,18 @@ public class Team implements GameHolder, MatchWinner {
     private int slots;
 
     @Deprecated
-    public Team(ArcadePlugin plugin, String id) {
-        this.plugin = plugin;
+    public Team(Game game, String id) {
+        this.game = game;
 
         this.applyContext = new TeamApplyContext(this);
         this.id = id;
-        this.channel = new TeamChannel(plugin, this);
+        this.channel = new TeamChannel(game, this);
 
         this.channel.setFormat(TeamChannel.TEAM_FORMAT);
     }
 
     public Team(Team original) {
-        this(original.plugin, original.getId());
+        this(original.game, original.getId());
 
         this.setChatColor(original.getChatColor());
         this.setDyeColor(original.getDyeColor());
@@ -73,7 +72,19 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     protected Team(Game game, Config config) {
-        this(game.getPlugin(), config.id());
+        this.game = game;
+        this.applyContext = new TeamApplyContext(this);
+        this.channel = new TeamChannel(game, this);
+        this.channel.setFormat(TeamChannel.TEAM_FORMAT);
+
+        this.id = config.id();
+        this.chatColor = config.chatColor();
+        this.dyeColor = config.dyeColor();
+        this.friendlyFire = config.friendlyFire();
+        this.minPlayers = config.minPlayers();
+        this.maxPlayers = config.maxPlayers();
+        this.name = config.name();
+        this.slots = config.slots();
     }
 
     @Override
@@ -82,19 +93,18 @@ public class Team implements GameHolder, MatchWinner {
             return false;
         }
 
-        GoalCreateEvent.call(this.plugin, goal);
+        GoalCreateEvent.call(this.game.getPlugin(), goal);
         return this.goals.add(goal);
     }
 
     @Override
     public boolean contains(Player bukkit) {
-        return this.contains(this.plugin.getPlayer(bukkit));
+        return this.contains(this.game.getPlayer(bukkit));
     }
 
     @Override
     public boolean contains(ArcadePlayer player) {
-        return player.getGamePlayer() != null &&
-                this.contains(player.getGamePlayer());
+        return player.getGamePlayer() != null && this.contains(player.getGamePlayer());
     }
 
     @Override
@@ -159,8 +169,7 @@ public class Team implements GameHolder, MatchWinner {
 
     @Override
     public void sendGoalMessage(String message) {
-        this.plugin.getLogger().info("[" + this.getName() + "] (Goal) " +
-                ChatColor.stripColor(message));
+        this.game.getPlugin().getLogger().info("[" + this.getName() + "] (Goal) " + ChatColor.stripColor(message));
         this.getChannel().send(ChatColor.YELLOW + message);
         this.getChannel().sendAction(ChatColor.YELLOW + message);
     }
@@ -264,9 +273,8 @@ public class Team implements GameHolder, MatchWinner {
             return false;
         }
 
-        PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(
-                this.plugin, player, this);
-        this.plugin.getEventBus().publish(event);
+        PlayerJoinTeamEvent event = new PlayerJoinTeamEvent(this.game.getPlugin(), player, this);
+        this.game.getPlugin().getEventBus().publish(event);
 
         if (!force && event.isCanceled()) {
             return false;
@@ -278,20 +286,15 @@ public class Team implements GameHolder, MatchWinner {
 
         player.setChatColor(this.getChatColor());
         player.setCurrentChannel(this.getCurrentChannel());
-        player.setDisplayName(this.getChatColor() +
-                player.getUsername() + ChatColor.RESET);
-        player.setParticipating(this.getMatch().isRunning() &&
-                this.isParticipating());
+        player.setDisplayName(this.getChatColor() + player.getUsername() + ChatColor.RESET);
+        player.setParticipating(this.getMatch().isRunning() && this.isParticipating());
 
-        this.plugin.getLogger().info(player.getUsername() + " joined team '" +
-                this.getName() + "' (" + this.getId() + ")");
+        this.game.getPlugin().getLogger().info(player.getUsername() + " joined team '" + this.getName() + "' (" + this.getId() + ")");
         if (message) {
-            player.getPlayer().sendSuccess("You joined " +
-                    this.getPrettyName() + ChatColor.GREEN + ".");
+            player.getPlayer().sendSuccess("You joined " + this.getPrettyName() + ChatColor.GREEN + ".");
         }
 
-        this.plugin.getEventBus().publish(new PlayerJoinedTeamEvent(
-                this.plugin, player, this));
+        this.game.getPlugin().getEventBus().publish(new PlayerJoinedTeamEvent(this.getPlugin(), player, this));
         return true;
     }
 
@@ -308,9 +311,8 @@ public class Team implements GameHolder, MatchWinner {
             return false;
         }
 
-        PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(
-                this.plugin, player, this);
-        this.plugin.getEventBus().publish(event);
+        PlayerLeaveTeamEvent event = new PlayerLeaveTeamEvent(this.getPlugin(), player, this);
+        this.getPlugin().getEventBus().publish(event);
 
         if (!force && event.isCanceled()) {
             return false;
@@ -325,11 +327,9 @@ public class Team implements GameHolder, MatchWinner {
         player.setParticipating(false);
         player.resetDisplayName();
 
-        this.plugin.getLogger().info(player.getUsername() + " left team '" +
-                this.getName() + "' (" + this.getId() + ")");
+        this.getPlugin().getLogger().info(player.getUsername() + " left team '" + this.getName() + "' (" + this.getId() + ")");
 
-        this.plugin.getEventBus().publish(new PlayerLeftTeamEvent(
-                this.plugin, player, this));
+        this.getPlugin().getEventBus().publish(new PlayerLeftTeamEvent(this.getPlugin(), player, this));
         return true;
     }
 
@@ -340,8 +340,7 @@ public class Team implements GameHolder, MatchWinner {
     public void leaveServer(GamePlayer player) {
         this.onlineMembers.remove(player);
 
-        this.plugin.getLogger().info(player.getUsername() + " left team '" +
-                this.getName() + "' (" + this.getId() + ") <server quit>");
+        this.getPlugin().getLogger().info(player.getUsername() + " left team '" + this.getName() + "' (" + this.getId() + ") <server quit>");
     }
 
     public void send(String message) {
@@ -376,8 +375,7 @@ public class Team implements GameHolder, MatchWinner {
 
     public void setName(String name) {
         if (name.length() > NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("Name too long (" +
-                    name.length() + " > " + NAME_MAX_LENGTH + ")");
+            throw new IllegalArgumentException("Name too long (" + name.length() + " > " + NAME_MAX_LENGTH + ")");
         }
 
         this.name = name;
@@ -399,11 +397,15 @@ public class Team implements GameHolder, MatchWinner {
     }
 
     public interface Config extends Participator.Config<Team>, Unique {
+        boolean DEFAULT_IS_FRIENDLY_FIRE = true;
+        int DEFAULT_MIN_PLAYERS = 0;
+        int DEFAULT_MAX_PLAYERS = 0;
+
         ChatColor chatColor();
         DyeColor dyeColor();
-        boolean friendlyFire();
-        int minPlayers();
-        int maxPlayers();
+        default boolean friendlyFire() { return DEFAULT_IS_FRIENDLY_FIRE; }
+        default int minPlayers() { return DEFAULT_MIN_PLAYERS; };
+        default int maxPlayers() { return DEFAULT_MAX_PLAYERS; }
         String name();
         int slots();
 

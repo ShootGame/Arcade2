@@ -10,10 +10,14 @@ import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.GeneralCommands;
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.event.Priority;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.game.RestartCountdown;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -37,11 +41,11 @@ public class MatchGame extends GameModule {
     private Observers observers;
     private MatchStartCountdown startCountdown;
 
-    public MatchGame(boolean autoCycle, boolean autoStart, int defaultStartCountdown, Observers observers) {
-        this.autoCycle = autoCycle;
-        this.autoStart = autoStart;
-        this.defaultStartCountdown = defaultStartCountdown;
-        this.observers = observers;
+    protected MatchGame(Game game, IGameConfig.Library library, Config config) {
+        this.autoCycle = config.autoCycle();
+        this.autoStart = config.autoStart();
+        this.defaultStartCountdown = (int) config.startCountdown().toSeconds();
+        this.observers = (Observers) library.getOrDefine(game, config.observers().get());
     }
 
     @Override
@@ -291,5 +295,21 @@ public class MatchGame extends GameModule {
                                            ChatColor.GRAY.toString());
 
         event.getSender().send(ChatColor.GREEN + "Time: " + ChatColor.DARK_AQUA + time);
+    }
+
+    public interface Config extends IGameModuleConfig<MatchGame> {
+        boolean DEFAULT_IS_AUTO_CYCLE = true;
+        boolean DEFAULT_IS_AUTO_START = true;
+        Time DEFAULT_START_COUNTDOWN = Time.ofSeconds(15);
+
+        default boolean autoCycle() { return DEFAULT_IS_AUTO_CYCLE; }
+        default boolean autoStart() { return DEFAULT_IS_AUTO_START; }
+        default Time startCountdown() { return DEFAULT_START_COUNTDOWN; };
+        Ref<Observers.Config> observers();
+
+        @Override
+        default MatchGame create(Game game, Library library) {
+            return new MatchGame(game, library, this);
+        }
     }
 }
