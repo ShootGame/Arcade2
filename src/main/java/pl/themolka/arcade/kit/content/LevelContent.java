@@ -79,7 +79,7 @@ public class LevelContent implements RemovableKitContent<PlayerLevel> {
         PlayerLevel DEFAULT_LEVEL = PlayerLevel.getDefaultLevel();
 
         @Override
-        default LevelContent create(Game game) {
+        default LevelContent create(Game game, Library library) {
             return new LevelContent(this);
         }
     }

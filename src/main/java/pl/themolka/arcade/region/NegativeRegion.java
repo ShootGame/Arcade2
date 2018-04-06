@@ -67,13 +67,13 @@ public class NegativeRegion extends AbstractRegion {
         Ref<UnionRegion.Config> region();
 
         @Override
-        default NegativeRegion create(Game game) {
+        default NegativeRegion create(Game game, Library library) {
             UnionRegion.Config region = this.region().getIfPresent();
             if (region == null) {
                 return null;
             }
 
-            UnionRegion union = region.create(game);
+            UnionRegion union = library.getOrDefine(game, region);
             if (union == null) {
                 return null;
             }

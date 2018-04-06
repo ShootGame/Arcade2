@@ -8,6 +8,7 @@ import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.time.Time;
@@ -16,14 +17,8 @@ public class AutoRespawnGame extends GameModule {
     private final Filter filter;
     private final Time cooldown;
 
-    @Deprecated
-    public AutoRespawnGame() {
-        this.filter = Filters.undefined();
-        this.cooldown = PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN;
-    }
-
-    protected AutoRespawnGame(Config config) {
-        this.filter = Filters.secure(config.filter().getIfPresent());
+    protected AutoRespawnGame(Game game, IGameConfig.Library library, Config config) {
+        this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
         this.cooldown = config.cooldown();
     }
 
@@ -47,12 +42,12 @@ public class AutoRespawnGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<AutoRespawnGame> {
-        default Ref<Filter> filter() { return Ref.empty(); }
+        default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
         default Time cooldown() { return PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN; }
 
         @Override
-        default AutoRespawnGame create(Game game) {
-            return new AutoRespawnGame(this);
+        default AutoRespawnGame create(Game game, Library library) {
+            return new AutoRespawnGame(game, library, this);
         }
     }
 }

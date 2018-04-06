@@ -104,7 +104,7 @@ public class CylinderRegion extends AbstractRegion {
         default double height() { return Region.MAX_HEIGHT; }
 
         @Override
-        default CylinderRegion create(Game game) {
+        default CylinderRegion create(Game game, Library library) {
             return new CylinderRegion(game, this);
         }
     }

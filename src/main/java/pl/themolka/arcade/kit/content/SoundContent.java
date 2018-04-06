@@ -118,7 +118,7 @@ public class SoundContent implements KitContent<Sound> {
         default float volume() { return DEFAULT_VOLUME; }
 
         @Override
-        default SoundContent create(Game game) {
+        default SoundContent create(Game game, Library library) {
             return new SoundContent(this);
         }
     }

@@ -65,7 +65,7 @@ public class EntityMatcher extends ConfigurableMatcher<EntityType> {
 
     public interface Config extends ConfigurableMatcher.Config<EntityMatcher, EntityType> {
         @Override
-        default EntityMatcher create(Game game) {
+        default EntityMatcher create(Game game, Library library) {
             return new EntityMatcher(this);
         }
     }

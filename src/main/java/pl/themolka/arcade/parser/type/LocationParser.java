@@ -39,8 +39,8 @@ public class LocationParser extends NodeParser<Location>
     @Override
     protected ParserResult<Location> parseNode(Node node, String name, String value) throws ParserException {
         Vector vector = this.vectorParser.parseWithDefinition(node, name, value).orFail();
-        float yaw = this.yawParser.parse(node.property("yaw", "horizontal")).orDefault(Directional.DEFAULT_YAW);
-        float pitch = this.pitchParser.parse(node.property("pitch", "vertical")).orDefault(Directional.DEFAULT_PITCH);
+        float yaw = this.yawParser.parse(node.property("yaw", "horizontal")).orDefault(Directional.Config.DEFAULT_YAW);
+        float pitch = this.pitchParser.parse(node.property("pitch", "vertical")).orDefault(Directional.Config.DEFAULT_PITCH);
         return ParserResult.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
     }
 }

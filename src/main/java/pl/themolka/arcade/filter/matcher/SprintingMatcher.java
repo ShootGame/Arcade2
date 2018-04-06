@@ -70,7 +70,7 @@ public class SprintingMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<SprintingMatcher, Boolean> {
         @Override
-        default SprintingMatcher create(Game game) {
+        default SprintingMatcher create(Game game, Library library) {
             return new SprintingMatcher(this);
         }
     }

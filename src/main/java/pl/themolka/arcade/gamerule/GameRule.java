@@ -1,8 +1,11 @@
 package pl.themolka.arcade.gamerule;
 
+import org.bukkit.World;
+import pl.themolka.arcade.util.Applicable;
+
 import java.util.Objects;
 
-public class GameRule {
+public class GameRule implements Applicable<World> {
     private String key;
     private Object value;
 
@@ -13,6 +16,11 @@ public class GameRule {
     public GameRule(String key, Object value) {
         this.key = Objects.requireNonNull(key, "key cannot be null");
         this.value = value;
+    }
+
+    @Override
+    public void apply(World world) {
+        world.setGameRuleValue(this.key, this.getValueString());
     }
 
     @Override

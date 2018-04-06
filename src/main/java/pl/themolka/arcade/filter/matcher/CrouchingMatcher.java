@@ -70,7 +70,7 @@ public class CrouchingMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<CrouchingMatcher, Boolean> {
         @Override
-        default CrouchingMatcher create(Game game) {
+        default CrouchingMatcher create(Game game, Library library) {
             return new CrouchingMatcher(this);
         }
     }

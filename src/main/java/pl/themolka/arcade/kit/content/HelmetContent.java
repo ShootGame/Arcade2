@@ -54,7 +54,7 @@ public class HelmetContent extends BaseArmorContent {
 
     public interface Config extends BaseArmorContent.Config<HelmetContent> {
         @Override
-        default HelmetContent create(Game game) {
+        default HelmetContent create(Game game, Library library) {
             return new HelmetContent(this);
         }
     }

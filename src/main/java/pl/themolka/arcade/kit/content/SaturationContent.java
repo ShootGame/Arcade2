@@ -72,7 +72,7 @@ public class SaturationContent implements RemovableKitContent<Float> {
         float DEFAULT_SATURATION = 5F;
 
         @Override
-        default SaturationContent create(Game game) {
+        default SaturationContent create(Game game, Library library) {
             return new SaturationContent(this);
         }
     }

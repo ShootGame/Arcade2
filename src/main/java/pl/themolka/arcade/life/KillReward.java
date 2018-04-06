@@ -1,6 +1,7 @@
 package pl.themolka.arcade.life;
 
 import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
 import pl.themolka.arcade.game.Game;
@@ -8,20 +9,17 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.PlayerApplicable;
 import pl.themolka.arcade.kit.Kit;
+import pl.themolka.arcade.util.StringId;
 
-public class KillReward implements PlayerApplicable {
+public class KillReward implements PlayerApplicable, StringId {
     private final Filter filter;
+    private final String id;
     private final Kit kit;
 
-    @Deprecated
-    public KillReward(Filter filter, Kit kit) {
-        this.filter = Filters.secure(filter);
-        this.kit = kit;
-    }
-
-    protected KillReward(Config config) {
-        this.filter = Filters.secure(config.filter().getIfPresent());
-        this.kit = config.kit().getIfPresent();
+    protected KillReward(Game game, IGameConfig.Library library, Config config) {
+        this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
+        this.id = config.id();
+        this.kit = library.getOrDefine(game, config.kit().getIfPresent());
     }
 
     @Override
@@ -29,6 +27,11 @@ public class KillReward implements PlayerApplicable {
         if (this.canReward(player)) {
             this.rewardPlayer(player);
         }
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     public boolean canReward(GamePlayer player) {
@@ -56,13 +59,13 @@ public class KillReward implements PlayerApplicable {
         return false;
     }
 
-    public interface Config extends IGameConfig<KillReward> {
-        default Ref<Filter> filter() { return Ref.empty(); }
-        default Ref<Kit> kit() { return Ref.empty(); }
+    public interface Config extends IGameConfig<KillReward>, Unique {
+        default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
+        default Ref<Kit.Config> kit() { return Ref.empty(); }
 
         @Override
-        default KillReward create(Game game) {
-            return new KillReward(this);
+        default KillReward create(Game game, Library library) {
+            return new KillReward(game, library, this);
         }
     }
 }

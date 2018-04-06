@@ -142,7 +142,7 @@ public class MessageContent implements KitContent<String> {
         default Channel channel() { return DEFAULT_CHANNEL; }
 
         @Override
-        default MessageContent create(Game game) {
+        default MessageContent create(Game game, Library library) {
             return new MessageContent(this);
         }
     }

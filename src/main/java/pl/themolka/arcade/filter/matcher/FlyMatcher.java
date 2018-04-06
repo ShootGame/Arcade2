@@ -70,7 +70,7 @@ public class FlyMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<FlyMatcher, Boolean> {
         @Override
-        default FlyMatcher create(Game game) {
+        default FlyMatcher create(Game game, Library library) {
             return new FlyMatcher(this);
         }
     }

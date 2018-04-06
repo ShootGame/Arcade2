@@ -2,27 +2,20 @@ package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class KitsGame extends GameModule {
     private final Map<String, Kit> kits = new LinkedHashMap<>();
 
-    @Deprecated
-    public KitsGame(List<Kit> kits) {
-        for (Kit kit : kits) {
-            this.addKit(kit);
-        }
-    }
-
-    protected KitsGame(Game game, Config config) {
-        for (Kit.Config kitConfig : config.kits()) {
-            this.addKit(kitConfig.create(game));
+    protected KitsGame(Game game, IGameConfig.Library library, Config config) {
+        for (Kit.Config kit : config.kits()) {
+            this.kits.put(kit.id(), library.getOrDefine(game, kit));
         }
     }
 
@@ -76,8 +69,8 @@ public class KitsGame extends GameModule {
         Set<Kit.Config> kits();
 
         @Override
-        default KitsGame create(Game game) {
-            return new KitsGame(game, this);
+        default KitsGame create(Game game, Library library) {
+            return new KitsGame(game, library, this);
         }
     }
 }

@@ -104,7 +104,7 @@ public class CuboidRegion extends AbstractRegion {
         Vector max();
 
         @Override
-        default CuboidRegion create(Game game) {
+        default CuboidRegion create(Game game, Library library) {
             return new CuboidRegion(game, this);
         }
     }

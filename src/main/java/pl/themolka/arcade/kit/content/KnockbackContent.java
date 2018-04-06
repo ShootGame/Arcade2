@@ -40,7 +40,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
         return this.result;
     }
 
-    @NestedParserName({"knockback", "knockback-reduction", "knockbackreduction"})
+    @NestedParserName({"knockback", "knockback-reduction", "knockbackreduction", "knock"})
     @Produces(Config.class)
     public static class ContentParser extends BaseRemovableContentParser<Config>
                                       implements InstallableParser {
@@ -72,7 +72,7 @@ public class KnockbackContent implements RemovableKitContent<Float> {
         float DEFAULT_KNOCKBACK = 0F;
 
         @Override
-        default KnockbackContent create(Game game) {
+        default KnockbackContent create(Game game, Library library) {
             return new KnockbackContent(this);
         }
     }

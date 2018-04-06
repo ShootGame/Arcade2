@@ -58,7 +58,7 @@ public class SpawnReasonMatcher extends ConfigurableMatcher<SpawnReason> {
 
     public interface Config extends ConfigurableMatcher.Config<SpawnReasonMatcher, SpawnReason> {
         @Override
-        default SpawnReasonMatcher create(Game game) {
+        default SpawnReasonMatcher create(Game game, Library library) {
             return new SpawnReasonMatcher(this);
         }
     }

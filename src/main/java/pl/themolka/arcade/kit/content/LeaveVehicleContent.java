@@ -33,7 +33,7 @@ public class LeaveVehicleContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<LeaveVehicleContent> {
         @Override
-        default LeaveVehicleContent create(Game game) {
+        default LeaveVehicleContent create(Game game, Library library) {
             return new LeaveVehicleContent();
         }
     }

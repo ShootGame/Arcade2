@@ -5,32 +5,26 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-import org.jdom2.Element;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class RegionsGame extends GameModule {
-    private FiltersGame filters;
-    private final List<Region> regions = new ArrayList<>();
+    private final Set<Region> regions = new LinkedHashSet<>();
     private final Map<String, Region> regionsById = new HashMap<>();
 
-    @Override
-    public void onEnable() {
-        this.filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-
-        for (Element child : this.getSettings().getChildren()) {
-            Region region = XMLRegion.parse(this.getGame(), child);
-
-            if (region != null) {
-                this.addRegion(region);
-            }
+    protected RegionsGame(Game game, IGameConfig.Library library, Config config) {
+        for (AbstractRegion.Config<?> region : config.regions().get()) {
+            this.addRegion(library.getOrDefine(game, region));
         }
     }
 
@@ -57,8 +51,8 @@ public class RegionsGame extends GameModule {
         return this.regionsById.keySet();
     }
 
-    public List<Region> getRegions() {
-        return this.regions;
+    public Set<Region> getRegions() {
+        return new LinkedHashSet<>(this.regions);
     }
 
     public void removeRegion(Region region) {
@@ -92,7 +86,7 @@ public class RegionsGame extends GameModule {
 
     public Region fetch(Vector vector) {
         List<Region> results = new ArrayList<>();
-        for (Region region : this.getRegions()) {
+        for (Region region : this.regions) {
             if (region.contains(vector)) {
                 results.add(region);
             }
@@ -121,5 +115,14 @@ public class RegionsGame extends GameModule {
 
     public Region fetch(int x, int y, int z) {
         return this.fetch(new BlockVector(x, y, z));
+    }
+
+    public interface Config extends IGameModuleConfig<RegionsGame> {
+        Ref<Set<AbstractRegion.Config<?>>> regions();
+
+        @Override
+        default RegionsGame create(Game game, Library library) {
+            return new RegionsGame(game, library, this);
+        }
     }
 }

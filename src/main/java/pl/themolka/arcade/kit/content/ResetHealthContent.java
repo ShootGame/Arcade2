@@ -33,7 +33,7 @@ public class ResetHealthContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<ResetHealthContent> {
         @Override
-        default ResetHealthContent create(Game game) {
+        default ResetHealthContent create(Game game, Library library) {
             return new ResetHealthContent();
         }
     }

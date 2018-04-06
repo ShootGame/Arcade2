@@ -81,7 +81,7 @@ public class HealthContent implements RemovableKitContent<Double> {
         double DEFAULT_HEALTH = 20D;
 
         @Override
-        default HealthContent create(Game game) {
+        default HealthContent create(Game game, Library library) {
             return new HealthContent(this);
         }
     }

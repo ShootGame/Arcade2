@@ -64,7 +64,7 @@ public class ModifierContent implements KitContent<BoundedModifier> {
 
     public interface Config extends KitContent.Config<ModifierContent, BoundedModifier> {
         @Override
-        default ModifierContent create(Game game) {
+        default ModifierContent create(Game game, Library library) {
             return new ModifierContent(this);
         }
     }

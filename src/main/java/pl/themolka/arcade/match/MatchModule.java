@@ -1,59 +1,19 @@
 package pl.themolka.arcade.match;
 
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.GameCommands;
 import pl.themolka.arcade.command.Sender;
-import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.time.Time;
-import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.List;
 
 @ModuleInfo(id = "Match")
 public class MatchModule extends Module<MatchGame> {
     public static final int DEFAULT_START_COUNTDOWN = 15;
-
-    @Override
-    public MatchGame buildGameModule(Element xml, Game game) throws JDOMException {
-        boolean autoCycle = true;
-        boolean autoStart = true;
-        int startCountdown = DEFAULT_START_COUNTDOWN;
-
-        Element autoCycleElement = xml.getChild("auto-cycle");
-        if (autoCycleElement != null) {
-            autoCycle = XMLParser.parseBoolean(autoCycleElement.getValue(), true);
-        }
-
-        Element autoStartElement = xml.getChild("auto-start");
-        if (autoStartElement != null) {
-            autoStart = XMLParser.parseBoolean(autoStartElement.getValue(), true);
-        }
-
-        Element startCountdownElement = xml.getChild("start-countdown");
-        if (startCountdownElement != null) {
-            startCountdown = (int) Time.parseTime(startCountdownElement.getValue(), Time.ofSeconds(DEFAULT_START_COUNTDOWN)).toSeconds();
-        }
-
-        Observers observers = XMLObservers.parse(xml.getChild("observers"), this.getPlugin());
-        if (observers.getColor() == null) {
-            observers.setChatColor(Observers.OBSERVERS_CHAT_COLOR);
-        }
-        if (observers.getDyeColor() == null) {
-            observers.setDyeColor(Observers.OBSERVERS_DYE_COLOR);
-        }
-        if (observers.getName() == null) {
-            observers.setName(Observers.OBSERVERS_NAME);
-        }
-
-        return new MatchGame(autoCycle, autoStart, startCountdown, observers);
-    }
 
     @CommandInfo(name = {"begin", "start"},
             description = "Begin the match",

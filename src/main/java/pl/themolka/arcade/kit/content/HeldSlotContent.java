@@ -58,7 +58,7 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
 
     public interface Config extends BaseInventoryContent.Config<HeldSlotContent, Integer> {
         @Override
-        default HeldSlotContent create(Game game) {
+        default HeldSlotContent create(Game game, Library library) {
             return new HeldSlotContent(this);
         }
     }

@@ -93,7 +93,7 @@ public class MaterialMatcher extends ConfigurableMatcher<MaterialData> {
 
     public interface Config extends ConfigurableMatcher.Config<MaterialMatcher, MaterialData> {
         @Override
-        default MaterialMatcher create(Game game) {
+        default MaterialMatcher create(Game game, Library library) {
             return new MaterialMatcher(this);
         }
     }

@@ -33,7 +33,7 @@ public class EjectContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<EjectContent> {
         @Override
-        default EjectContent create(Game game) {
+        default EjectContent create(Game game, Library library) {
             return new EjectContent();
         }
     }

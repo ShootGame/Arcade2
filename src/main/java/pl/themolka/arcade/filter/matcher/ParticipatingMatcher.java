@@ -71,7 +71,7 @@ public class ParticipatingMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<ParticipatingMatcher, Boolean> {
         @Override
-        default ParticipatingMatcher create(Game game) {
+        default ParticipatingMatcher create(Game game, Library library) {
             return new ParticipatingMatcher(this);
         }
     }

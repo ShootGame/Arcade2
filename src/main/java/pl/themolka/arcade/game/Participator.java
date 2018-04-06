@@ -41,4 +41,7 @@ public interface Participator extends GoalHolder, Participartable, StringId {
     }
 
     void sendGoalMessage(String message);
+
+    interface Config<T extends Participator> extends IGameConfig<T> {
+    }
 }

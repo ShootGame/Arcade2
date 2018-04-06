@@ -1,8 +1,9 @@
 package pl.themolka.arcade.score;
 
 import org.bukkit.Location;
-import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.portal.Portal;
 
 /**
@@ -11,14 +12,12 @@ import pl.themolka.arcade.portal.Portal;
  * scoring player. We can use portals for all of these executions.
  */
 public class ScoreBox extends Portal {
-    public static final double POINTS = 1.0D;
-
     private final double points;
 
-    public ScoreBox(ArcadePlugin plugin, double points) {
-        super(plugin);
+    protected ScoreBox(Game game, IGameConfig.Library library, Config config) {
+        super(game, library, config);
 
-        this.points = points;
+        this.points = config.points();
     }
 
     // Use canScore(...) instead.
@@ -45,8 +44,8 @@ public class ScoreBox extends Portal {
             return null;
         }
 
-        ScoreBoxEvent event = new ScoreBoxEvent(this.plugin, score, this, player, this.points);
-        this.plugin.getEventBus().publish(event);
+        ScoreBoxEvent event = new ScoreBoxEvent(this.getPlugin(), score, this, player, this.points);
+        this.getPlugin().getEventBus().publish(event);
 
         double points = event.getPoints();
         if (event.isCanceled() || !Score.isValid(points)) {
@@ -55,5 +54,14 @@ public class ScoreBox extends Portal {
 
         score.incrementScore(player, points);
         return this.teleport(player);
+    }
+
+    public interface Config extends Portal.Config {
+        double points();
+
+        @Override
+        default ScoreBox create(Game game, Library library) {
+            return new ScoreBox(game, library, this);
+        }
     }
 }

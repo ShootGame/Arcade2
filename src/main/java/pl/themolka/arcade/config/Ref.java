@@ -95,6 +95,10 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
         return Objects.hash(this.id);
     }
 
+    public boolean isEmpty() {
+        return false;
+    }
+
     public boolean isProvided() {
         return this.provider != null && this.provider.get() != null;
     }
@@ -162,6 +166,11 @@ final class EmptyRef extends Ref<Object> {
     @Override
     public boolean clear() {
         return false;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
     }
 
     @Override

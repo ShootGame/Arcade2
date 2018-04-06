@@ -72,7 +72,7 @@ public class ExhaustionContent implements RemovableKitContent<Float> {
         float DEFAULT_LEVEL = 0F;
 
         @Override
-        default ExhaustionContent create(Game game) {
+        default ExhaustionContent create(Game game, Library library) {
             return new ExhaustionContent(this);
         }
     }

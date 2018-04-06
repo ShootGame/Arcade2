@@ -3,91 +3,72 @@ package pl.themolka.arcade.score;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.util.Vector;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.game.Participator;
-import pl.themolka.arcade.kit.KitsGame;
-import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.match.DynamicWinnable;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchGame;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.MatchWinner;
-import pl.themolka.arcade.session.PlayerMoveEvent;
-import pl.themolka.arcade.spawn.SpawnsGame;
-import pl.themolka.arcade.spawn.SpawnsModule;
-import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ScoreGame extends GameModule implements DynamicWinnable {
     private final Map<Participator, Score> byOwner = new HashMap<>();
-
-    private final ScoreConfig config;
-    private final Map<String, Element> competitors;
-    private final List<ScoreBox> scoreBoxes = new ArrayList<>();
+    private final Set<ScoreBox> scoreBoxes = new LinkedHashSet<>();
 
     private Match match;
 
-    public ScoreGame(ScoreConfig config, Map<String, Element> competitors) {
-        this.config = config;
-        this.competitors = competitors;
+    protected ScoreGame(Game game, IGameConfig.Library library, Config config) {
+        for (Score.Config score : config.scores().get()) {
+            this.byOwner.put(library.getOrDefine(game, score.owner().get()),
+                             library.getOrDefine(game, score));
+        }
+
+        for (ScoreBox.Config scoreBox : config.scoreBoxes().getOrDefault(Collections.emptySet())) {
+            this.scoreBoxes.add((ScoreBox) library.getOrDefine(game, scoreBox));
+        }
     }
 
     @Override
     public void onEnable() {
-        GameModule module = this.getGame().getModule(MatchModule.class);
-        if (module == null || !(module instanceof MatchGame)) {
-            return;
-        }
+        MatchGame module = (MatchGame) this.getGame().getModule(MatchModule.class);
+        this.match = module.getMatch();
+        this.match.registerDynamicWinnable(this);
 
-        this.match = ((MatchGame) module).getMatch();
-        this.getMatch().registerDynamicWinnable(this);
-
-        for (Map.Entry<String, Element> competitor : this.competitors.entrySet()) {
-            MatchWinner winner = this.getMatch().findWinnerById(competitor.getKey());
+        for (Map.Entry<Participator, Score> entry : this.byOwner.entrySet()) {
+            MatchWinner winner = this.match.findWinnerById(entry.getKey().getId());
             if (winner == null) {
                 continue;
             }
 
-            ScoreConfig config = ScoreConfig.parse(competitor.getValue(), this.config);
-            if (config != null) {
-                Score score = new Score(this, winner, config);
+            Score score = entry.getValue();
+            score.setMatch(this.match);
 
-                // Make sure that Score is only ONE per Participator
-                if (score.isCompletableBy(winner) && this.getScore(winner) == null) {
-                    this.byOwner.put(winner, score);
-                    winner.addGoal(score);
-                }
-            }
+            winner.addGoal(score);
         }
-
-        this.parseScoreBoxes();
     }
 
-    private void parseScoreBoxes() {
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-        KitsGame kits = (KitsGame) this.getGame().getModule(KitsModule.class);
-        SpawnsGame spawns = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
-
-        for (Element xml : this.getSettings().getChildren("scorebox")) {
-            double points = XMLParser.parseDouble(xml.getAttributeValue("points"), ScoreBox.POINTS);
-
-            ScoreBox scoreBox = XMLScoreBox.parse(this.getGame(), xml,
-                    new ScoreBox(this.getPlugin(), points), filters, kits, spawns);
-            if (scoreBox != null) {
-                this.scoreBoxes.add(scoreBox);
-            }
+    @Override
+    public List<Object> onListenersRegister(List<Object> register) {
+        if (!this.scoreBoxes.isEmpty()) {
+            register.add(new ScoreBoxListeners(this));
         }
+        return super.onListenersRegister(register);
     }
 
     @Override
@@ -124,10 +105,6 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return this.byOwner.values();
     }
 
-    public ScoreConfig getConfig() {
-        return this.config;
-    }
-
     public Match getMatch() {
         return this.match;
     }
@@ -146,28 +123,8 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         return null;
     }
 
-    @Handler(priority = Priority.LOWEST)
-    public void onPlayerEnterScoreBox(PlayerMoveEvent event) {
-        if (event.isCanceled() || this.scoreBoxes.isEmpty()) {
-            return;
-        }
-
-        GamePlayer player = event.getGamePlayer();
-        ScoreBox scoreBox = this.getScoreBox(event.getTo().toVector());
-
-        if (scoreBox == null || !scoreBox.canScore(player)) {
-            return;
-        }
-
-        Participator competitor = this.getMatch().findWinnerByPlayer(player);
-        if (competitor == null) {
-            return;
-        }
-
-        Score score = this.getScore(competitor);
-        if (score != null) {
-            scoreBox.score(score, player);
-        }
+    public boolean hasAnyScoreBoxes() {
+        return !this.scoreBoxes.isEmpty();
     }
 
     @Handler(priority = Priority.LOWEST)
@@ -218,7 +175,7 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
             Score score = this.getScore(competitor);
 
             if (score != null) {
-                double value = killReward ? score.getConfig().getKillReward() : -score.getConfig().getDeathLoss();
+                double value = killReward ? score.getKillReward() : -score.getDeathLoss();
 
                 if (value != Score.ZERO) {
                     score.incrementScore(player, value);
@@ -228,5 +185,15 @@ public class ScoreGame extends GameModule implements DynamicWinnable {
         }
 
         return false;
+    }
+
+    public interface Config extends IGameModuleConfig<ScoreGame> {
+        Ref<Set<Score.Config>> scores();
+        default Ref<Set<ScoreBox.Config>> scoreBoxes() { return Ref.empty(); }
+
+        @Override
+        default ScoreGame create(Game game, Library library) {
+            return new ScoreGame(game, library, this);
+        }
     }
 }

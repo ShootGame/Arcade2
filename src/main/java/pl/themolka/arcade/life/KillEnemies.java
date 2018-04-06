@@ -1,6 +1,7 @@
 package pl.themolka.arcade.life;
 
 import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
@@ -9,6 +10,7 @@ import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.SimpleInteractableGoal;
+import pl.themolka.arcade.util.StringId;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -16,25 +18,21 @@ import java.util.Set;
 /**
  * The objective is to kill all the enemies in the given {@link Set}.
  */
-public class KillEnemies extends SimpleInteractableGoal {
+public class KillEnemies extends SimpleInteractableGoal implements StringId {
     public static final String DEFAULT_GOAL_NAME = "Kill Enemies";
 
     private final Set<Participator> enemies;
+    private final String id;
 
-    @Deprecated
-    public KillEnemies(Game game, Participator owner, Set<Participator> enemies) {
-        super(game, owner);
-
-        this.enemies = enemies;
-    }
-
-    protected KillEnemies(Game game, Config config) {
-        super(game, config.owner().get());
+    protected KillEnemies(Game game, IGameConfig.Library library, Config config) {
+        super(game, library.getOrDefine(game, config.owner().get()));
 
         this.enemies = new LinkedHashSet<>();
-        for (Ref<Participator> enemy : config.enemies()) {
-            this.enemies.add(enemy.get());
+        for (Ref<Participator.Config<?>> enemy : config.enemies()) {
+            this.enemies.add(library.getOrDefine(game, enemy.get()));
         }
+
+        this.id = config.id();
     }
 
     @Override
@@ -47,6 +45,11 @@ public class KillEnemies extends SimpleInteractableGoal {
     @Override
     public String getDefaultName() {
         return DEFAULT_GOAL_NAME;
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     @Override
@@ -86,13 +89,13 @@ public class KillEnemies extends SimpleInteractableGoal {
         return players;
     }
 
-    public interface Config extends IGameConfig<KillEnemies> {
-        Ref<Participator> owner();
-        Set<Ref<Participator>> enemies();
+    public interface Config extends IGameConfig<KillEnemies>, Unique {
+        Ref<Participator.Config<?>> owner();
+        Set<Ref<Participator.Config<?>>> enemies();
 
         @Override
-        default KillEnemies create(Game game) {
-            return new KillEnemies(game, this);
+        default KillEnemies create(Game game, Library library) {
+            return new KillEnemies(game, library, this);
         }
     }
 }

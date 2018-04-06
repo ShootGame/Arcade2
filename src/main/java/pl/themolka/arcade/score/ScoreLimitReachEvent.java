@@ -8,6 +8,6 @@ public class ScoreLimitReachEvent extends ScoreEvent {
     }
 
     public double getLimit() {
-        return this.getScore().getConfig().getLimit();
+        return this.getScore().getLimit();
     }
 }

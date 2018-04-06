@@ -80,7 +80,7 @@ public class LivesContent implements RemovableKitContent<Integer> {
         int DEFAULT_LIVES = +1;
 
         @Override
-        default LivesContent create(Game game) {
+        default LivesContent create(Game game, Library library) {
             return new LivesContent(this);
         }
     }

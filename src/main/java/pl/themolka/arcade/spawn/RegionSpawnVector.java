@@ -1,22 +1,25 @@
 package pl.themolka.arcade.spawn;
 
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.Region;
 
 public class RegionSpawnVector extends AbstractSpawnVector {
     public static final int RANDOM_LIMIT = Integer.MAX_VALUE;
 
     private final Region region;
+    private final float yaw;
+    private final float pitch;
 
-    private float yaw;
-    private float pitch;
+    protected RegionSpawnVector(Game game, IGameConfig.Library library, Config config) {
+        super(game, config);
 
-    public RegionSpawnVector(Region region) {
-        super(region.getWorld());
-        this.region = region;
-
-        this.resetYaw();
-        this.resetPitch();
+        this.region = library.getOrDefine(game, config.region().get());
+        this.yaw = config.yaw();
+        this.pitch = config.pitch();
     }
 
     @Override
@@ -34,19 +37,13 @@ public class RegionSpawnVector extends AbstractSpawnVector {
         return this.pitch;
     }
 
-    public void resetYaw() {
-        this.yaw = DEFAULT_YAW;
-    }
+    public interface Config extends AbstractSpawnVector.Config<RegionSpawnVector>,
+                                    Directional.Config<RegionSpawnVector> {
+        Ref<AbstractRegion.Config<?>> region();
 
-    public void resetPitch() {
-        this.pitch = DEFAULT_PITCH;
-    }
-
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-    }
-
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
+        @Override
+        default RegionSpawnVector create(Game game, Library library) {
+            return new RegionSpawnVector(game, library, this);
+        }
     }
 }

@@ -54,7 +54,7 @@ public class LeggingsContent extends BaseArmorContent {
 
     public interface Config extends BaseArmorContent.Config<LeggingsContent> {
         @Override
-        default LeggingsContent create(Game game) {
+        default LeggingsContent create(Game game, Library library) {
             return new LeggingsContent(this);
         }
     }

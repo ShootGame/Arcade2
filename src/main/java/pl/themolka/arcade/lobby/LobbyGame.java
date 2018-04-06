@@ -21,7 +21,7 @@ public class LobbyGame extends GameModule {
 
     public interface Config extends IGameModuleConfig<LobbyGame> {
         @Override
-        default LobbyGame create(Game game) {
+        default LobbyGame create(Game game, Library library) {
             return new LobbyGame();
         }
     }

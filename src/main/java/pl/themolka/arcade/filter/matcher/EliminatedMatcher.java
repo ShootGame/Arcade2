@@ -53,7 +53,7 @@ public class EliminatedMatcher extends Matcher<GamePlayer> {
 
     public interface Config extends Matcher.Config<EliminatedMatcher> {
         @Override
-        default EliminatedMatcher create(Game game) {
+        default EliminatedMatcher create(Game game, Library library) {
             return new EliminatedMatcher();
         }
     }

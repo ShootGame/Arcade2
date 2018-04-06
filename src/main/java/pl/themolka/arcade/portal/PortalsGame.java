@@ -5,18 +5,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.kit.KitsGame;
-import pl.themolka.arcade.kit.KitsModule;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.session.PlayerJoinEvent;
 import pl.themolka.arcade.session.PlayerMoveEvent;
-import pl.themolka.arcade.spawn.SpawnsGame;
-import pl.themolka.arcade.spawn.SpawnsModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,28 +24,9 @@ import java.util.Set;
 public class PortalsGame extends GameModule {
     private final Map<String, Portal> portals = new HashMap<>();
 
-    @Override
-    public void onEnable() {
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-        KitsGame kits = (KitsGame) this.getGame().getModule(KitsModule.class);
-        SpawnsGame spawns = (SpawnsGame) this.getGame().getModule(SpawnsModule.class);
-
-        for (Element child : this.getSettings().getChildren("portal")) {
-            // id
-            String id = child.getAttributeValue("id");
-            if (id != null) {
-                id = id.trim();
-            }
-
-            if (id == null || id.isEmpty()) {
-                continue;
-            }
-
-            Portal portal = XMLPortal.parse(this.getGame(), child,
-                    new Portal(this.getPlugin()), filters, kits, spawns);
-            if (portal != null) {
-                this.portals.put(id, portal);
-            }
+    protected PortalsGame(Game game, IGameConfig.Library library, Config config) {
+        for (Portal.Config portal : config.portals().get()) {
+            this.portals.put(portal.id(), library.getOrDefine(game, portal));
         }
     }
 
@@ -116,5 +94,14 @@ public class PortalsGame extends GameModule {
         }
 
         return null;
+    }
+
+    public interface Config extends IGameModuleConfig<PortalsGame> {
+        Ref<Set<Portal.Config>> portals();
+
+        @Override
+        default PortalsGame create(Game game, Library library) {
+            return new PortalsGame(game, library, this);
+        }
     }
 }

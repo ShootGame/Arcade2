@@ -38,7 +38,7 @@ public class EliminateContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<EliminateContent> {
         @Override
-        default EliminateContent create(Game game) {
+        default EliminateContent create(Game game, Library library) {
             return new EliminateContent();
         }
     }

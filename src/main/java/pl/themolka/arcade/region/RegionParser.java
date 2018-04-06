@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public abstract class RegionParser<T extends AbstractRegion.Config> extends ConfigParser<T>
-                                                                    implements InstallableParser {
+public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends ConfigParser<T>
+                                                                       implements InstallableParser {
     private Parser<Double> xParser;
     private Parser<Double> yParser;
     private Parser<Double> zParser;
@@ -59,6 +59,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
         @Override
         public void install(ParserContext context) throws ParserNotSupportedException {
             super.install(context);
+
             this.nested = new NestedParserMap<>(context);
             this.nested.scan(RegionParser.class);
         }
@@ -69,13 +70,13 @@ public abstract class RegionParser<T extends AbstractRegion.Config> extends Conf
         }
 
         @Override
-        protected ParserResult<?> parseTree(Node node, String name) throws ParserException {
+        protected ParserResult<?> parseNode(Node node, String name, String value) throws ParserException {
             RegionParser<?> parser = this.nested.parse(name);
             if (parser == null) {
                 throw this.fail(node, null, name, "Unknown region type");
             }
 
-            return parser.parseWithName(node, name);
+            return parser.parseWithDefinition(node, name, value);
         }
     }
 

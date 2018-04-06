@@ -4,6 +4,7 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -14,13 +15,14 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.team.Team;
+import pl.themolka.arcade.util.Nulls;
 
 public class TeamContent implements RemovableKitContent<Team> {
     private final Team result;
     private final boolean announce;
 
-    protected TeamContent(Config config) {
-        this.result = config.result().getOrDefault(this.defaultValue());
+    protected TeamContent(Game game, IGameConfig.Library library, Config config) {
+        this.result = Nulls.defaults(library.getOrDefine(game, config.result().getIfPresent()), this.defaultValue());
         this.announce = config.announce();
     }
 
@@ -66,27 +68,27 @@ public class TeamContent implements RemovableKitContent<Team> {
 
         @Override
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Ref<Team> team = this.reset(node) ? Config.DEFAULT_TEAM
-                                              : this.teamParser.parseWithDefinition(node, name, value).orFail();
+            Ref<Team.Config> team = this.reset(node) ? Config.DEFAULT_TEAM
+                                                     : this.teamParser.parseWithDefinition(node, name, value).orFail();
             boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
 
             return ParserResult.fine(node, name, value, new Config() {
-                public Ref<Team> result() { return team; }
+                public Ref<Team.Config> result() { return team; }
                 public boolean announce() { return announce; }
             });
         }
     }
 
-    public interface Config extends RemovableKitContent.Config<TeamContent, Team> {
-        Ref<Team> DEFAULT_TEAM = Ref.of(Observers.OBSERVERS_TEAM_ID);
+    public interface Config extends RemovableKitContent.Config<TeamContent, Team.Config> {
+        Ref<Team.Config> DEFAULT_TEAM = Ref.of(Observers.OBSERVERS_TEAM_ID);
         boolean DEFAULT_ANNOUNCE = true;
 
-        default Ref<Team> result() { return DEFAULT_TEAM; }
+        default Ref<Team.Config> result() { return DEFAULT_TEAM; }
         default boolean announce() { return DEFAULT_ANNOUNCE; }
 
         @Override
-        default TeamContent create(Game game) {
-            return new TeamContent(this);
+        default TeamContent create(Game game, Library library) {
+            return new TeamContent(game, library, this);
         }
     }
 }

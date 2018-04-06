@@ -2,14 +2,13 @@ package pl.themolka.arcade.module;
 
 import org.bukkit.Server;
 import org.bukkit.event.Listener;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
@@ -78,24 +77,15 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
         return this.id;
     }
 
-    /**
-     * Legacy way to instantiate {@link pl.themolka.arcade.game.GameModule}s.
-     * @deprecated The modern way is to use {@link pl.themolka.arcade.game.IGameConfig#create(Game)}.
-     */
-    @Deprecated
-    public GM buildGameModule(Element xml, Game game) throws JDOMException {
-        return null;
-    }
-
     public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
         return null;
     }
 
-    public void defineGameModule(Game game, IGameModuleConfig<GM> config, ConfigContext context) {
+    public void defineGameModule(Game game, IGameModuleConfig<GM> config, IGameConfig.Library library, ConfigContext context) {
     }
 
-    public GM createGameModule(Game game, IGameModuleConfig<GM> config, ConfigContext context) {
-        return config != null ? config.create(game) : null;
+    public GM createGameModule(Game game, IGameModuleConfig<GM> config, IGameConfig.Library library, ConfigContext context) {
+        return config != null ? library.getOrDefine(game, config) : null;
     }
 
     public final void destroy() {

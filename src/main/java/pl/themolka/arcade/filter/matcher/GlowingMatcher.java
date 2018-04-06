@@ -70,7 +70,7 @@ public class GlowingMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<GlowingMatcher, Boolean> {
         @Override
-        default GlowingMatcher create(Game game) {
+        default GlowingMatcher create(Game game, Library library) {
             return new GlowingMatcher(this);
         }
     }

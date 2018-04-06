@@ -72,7 +72,7 @@ public class GiveExperienceContent implements KitContent<Integer> {
 
     public interface Config extends KitContent.Config<GiveExperienceContent, Integer> {
         @Override
-        default GiveExperienceContent create(Game game) {
+        default GiveExperienceContent create(Game game, Library library) {
             return new GiveExperienceContent(this);
         }
     }

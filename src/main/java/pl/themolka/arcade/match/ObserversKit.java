@@ -6,8 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.item.ItemStackBuilder;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.kit.content.BaseModeContent;
@@ -19,9 +20,14 @@ import pl.themolka.arcade.kit.content.FlySpeedContent;
 import pl.themolka.arcade.kit.content.GameModeContent;
 import pl.themolka.arcade.kit.content.HeldSlotContent;
 import pl.themolka.arcade.kit.content.ItemStackContent;
+import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.kit.content.ResetContent;
 import pl.themolka.arcade.kit.content.WalkSpeedContent;
 import pl.themolka.arcade.potion.PotionEffectBuilder;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class ObserversKit extends Kit {
     public static final String OBSERVERS_KIT_ID = "_observers-kit";
@@ -31,21 +37,20 @@ public class ObserversKit extends Kit {
     //
 
     // reset
-    public static final ResetContent RESET = new ResetContent.Config() {
-    }.create(null);
+    public static final ResetContent RESET = create(new ResetContent.Config() {});
 
     // clear inventory
-    public static final ClearInventoryContent CLEAR_INVENTORY = new ClearInventoryContent.Config() {
+    public static final ClearInventoryContent CLEAR_INVENTORY = create(new ClearInventoryContent.Config() {
         public Ref<Boolean> result() { return Ref.ofProvided(true); }
-    }.create(null);
+    });
 
     // game mode
-    public static final GameModeContent GAME_MODE = new GameModeContent.Config() {
+    public static final GameModeContent GAME_MODE = create(new GameModeContent.Config() {
         public Ref<GameMode> result() { return Ref.ofProvided(GameMode.CREATIVE); }
-    }.create(null);
+    });
 
     // navigation item
-    public static final ItemStackContent NAVIGATION_ITEM = new ItemStackContent.Config() {
+    public static final ItemStackContent NAVIGATION_ITEM = create(new ItemStackContent.Config() {
         public Ref<ItemStack> result() { return Ref.ofProvided(new ItemStackBuilder()
                 .type(Material.COMPASS)
                 .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Navigation")
@@ -54,10 +59,10 @@ public class ObserversKit extends Kit {
                 .build()); }
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
         public Integer slot() { return 0; }
-    }.create(null);
+    });
 
     // play item
-    public static final ItemStackContent PLAY_ITEM = new ItemStackContent.Config() {
+    public static final ItemStackContent PLAY_ITEM = create(new ItemStackContent.Config() {
         public Ref<ItemStack> result() { return Ref.ofProvided(new ItemStackBuilder()
                 .type(Material.NETHER_STAR)
                 .displayName(ChatColor.AQUA + ChatColor.BOLD.toString() + "Join the game")
@@ -65,15 +70,15 @@ public class ObserversKit extends Kit {
                 .build()); }
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
         public Integer slot() { return 2; }
-    }.create(null);
+    });
 
     // held slot
-    public static final HeldSlotContent HELD_SLOT = new HeldSlotContent.Config() {
+    public static final HeldSlotContent HELD_SLOT = create(new HeldSlotContent.Config() {
         public Ref<Integer> result() { return Ref.ofProvided(0); }
-    }.create(null);
+    });
 
     // night vision effect
-    public static final EffectContent NIGHT_VISION_EFFECT = new EffectContent.Config() {
+    public static final EffectContent NIGHT_VISION_EFFECT = create(new EffectContent.Config() {
         public Ref<PotionEffect> result() { return Ref.ofProvided(new PotionEffectBuilder()
                 .type(PotionEffectType.NIGHT_VISION)
                 .duration(PotionEffectBuilder.DURATION_INFINITY)
@@ -81,35 +86,35 @@ public class ObserversKit extends Kit {
                 .particles(false)
                 .build()); }
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
-    }.create(null);
+    });
 
     // can fly
-    public static final CanFlyContent CAN_FLY = new CanFlyContent.Config() {
+    public static final CanFlyContent CAN_FLY = create(new CanFlyContent.Config() {
         public Ref<Boolean> result() { return Ref.ofProvided(true); }
         public boolean force() { return true; }
-    }.create(null);
+    });
 
     // fly
-    public static final FlyContent FLY = new FlyContent.Config() {
+    public static final FlyContent FLY = create(new FlyContent.Config() {
         public Ref<Boolean> result() { return Ref.ofProvided(true); }
-    }.create(null);
+    });
 
     // fly speed
-    public static final FlySpeedContent FLY_SPEED = new FlySpeedContent.Config() {
+    public static final FlySpeedContent FLY_SPEED = create(new FlySpeedContent.Config() {
         public Ref<Float> result() { return Ref.ofProvided(FlySpeedContent.Config.DEFAULT_SPEED * 1.15F); }
-    }.create(null);
+    });
 
     // walk speed
-    public static final WalkSpeedContent WALK_SPEED = new WalkSpeedContent.Config() {
+    public static final WalkSpeedContent WALK_SPEED = create(new WalkSpeedContent.Config() {
         public Ref<Float> result() { return Ref.ofProvided(WalkSpeedContent.Config.DEFAULT_SPEED * 1.65F); }
-    }.create(null);
+    });
 
     //
     // Object
     //
 
-    public ObserversKit(ArcadePlugin plugin) {
-        super(plugin, OBSERVERS_KIT_ID);
+    protected ObserversKit(Game game, IGameConfig.Library library, Config config) {
+        super(game, library, config);
 
         this.buildKit();
     }
@@ -125,5 +130,20 @@ public class ObserversKit extends Kit {
                         FLY,
                         FLY_SPEED,
                         WALK_SPEED);
+    }
+
+    private static <T extends KitContent<?>> T create(KitContent.Config<?, ?> t) {
+        return (T) t.create(null, IGameConfig.Library.EMPTY);
+    }
+
+    public interface Config extends Kit.Config {
+        default String id() { return OBSERVERS_KIT_ID; }
+        default List<KitContent.Config<?, ?>> contents() { return Collections.emptyList(); }
+        default Set<String> inherit() { return Collections.emptySet(); }
+
+        @Override
+        default ObserversKit create(Game game, Library library) {
+            return new ObserversKit(game, library, this);
+        }
     }
 }

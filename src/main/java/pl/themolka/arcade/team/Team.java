@@ -6,9 +6,11 @@ import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.ChatChannel;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
 import pl.themolka.arcade.match.Match;
@@ -46,6 +48,7 @@ public class Team implements GameHolder, MatchWinner {
     private final Set<GamePlayer> onlineMembers = new HashSet<>();
     private int slots;
 
+    @Deprecated
     public Team(ArcadePlugin plugin, String id) {
         this.plugin = plugin;
 
@@ -67,6 +70,10 @@ public class Team implements GameHolder, MatchWinner {
         this.setMinPlayers(original.getMinPlayers());
         this.setName(original.getName());
         this.setSlots(original.getSlots());
+    }
+
+    protected Team(Game game, Config config) {
+        this(game.getPlugin(), config.id());
     }
 
     @Override
@@ -389,5 +396,20 @@ public class Team implements GameHolder, MatchWinner {
 
     private ChatChannel getCurrentChannel() {
         return this.match.isRunning() ? this.channel : null;
+    }
+
+    public interface Config extends Participator.Config<Team>, Unique {
+        ChatColor chatColor();
+        DyeColor dyeColor();
+        boolean friendlyFire();
+        int minPlayers();
+        int maxPlayers();
+        String name();
+        int slots();
+
+        @Override
+        default Team create(Game game, Library library) {
+            return new Team(game, this);
+        }
     }
 }

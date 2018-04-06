@@ -72,7 +72,7 @@ public class FlyContent implements RemovableKitContent<Boolean> {
         boolean DEFAULT_FLY = false;
 
         @Override
-        default FlyContent create(Game game) {
+        default FlyContent create(Game game, Library library) {
             return new FlyContent(this);
         }
     }

@@ -92,7 +92,7 @@ public class PointRegion extends AbstractRegion {
         Vector point();
 
         @Override
-        default PointRegion create(Game game) {
+        default PointRegion create(Game game, Library library) {
             return new PointRegion(game, this);
         }
     }

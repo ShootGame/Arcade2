@@ -72,7 +72,7 @@ public class SilentContent implements RemovableKitContent<Boolean> {
         boolean DEFAULT_SILENT = false;
 
         @Override
-        default SilentContent create(Game game) {
+        default SilentContent create(Game game, Library library) {
             return new SilentContent(this);
         }
     }

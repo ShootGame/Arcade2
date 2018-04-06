@@ -72,7 +72,7 @@ public class GravityContent implements RemovableKitContent<Boolean> {
         boolean DEFAULT_GRAVITY = true;
 
         @Override
-        default GravityContent create(Game game) {
+        default GravityContent create(Game game, Library library) {
             return new GravityContent(this);
         }
     }

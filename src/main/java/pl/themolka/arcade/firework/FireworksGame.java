@@ -13,11 +13,6 @@ import java.util.List;
 public class FireworksGame extends GameModule {
     private final List<FireworkHandler> handlers = new ArrayList<>();
 
-    @Deprecated
-    public FireworksGame(List<FireworkHandler> handlers) {
-        this.handlers.addAll(handlers);
-    }
-
     protected FireworksGame(Config config) {
         this.handlers.add(new CoreLeakFireworks(config.onCoreLeak()));
         this.handlers.add(new PointCaptureFireworks(config.onPointCapture()));
@@ -54,7 +49,7 @@ public class FireworksGame extends GameModule {
         default boolean onWoolPlace() { return true; }
 
         @Override
-        default FireworksGame create(Game game) {
+        default FireworksGame create(Game game, Library library) {
             return new FireworksGame(this);
         }
     }

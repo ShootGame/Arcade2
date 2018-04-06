@@ -60,7 +60,7 @@ public class CompassTargetContent implements KitContent<Vector> {
 
     public interface Config extends KitContent.Config<CompassTargetContent, Vector> {
         @Override
-        default CompassTargetContent create(Game game) {
+        default CompassTargetContent create(Game game, Library library) {
             return new CompassTargetContent(this);
         }
     }

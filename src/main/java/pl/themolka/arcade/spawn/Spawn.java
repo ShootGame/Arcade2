@@ -5,10 +5,12 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Unique;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.util.StringId;
 
-public interface Spawn extends Directional {
-    PlayerTeleportEvent.TeleportCause DEFAULT_SPAWN_CAUSE =
-            PlayerTeleportEvent.TeleportCause.ENDER_PEARL;
+public interface Spawn extends Directional, StringId {
+    PlayerTeleportEvent.TeleportCause DEFAULT_SPAWN_CAUSE = PlayerTeleportEvent.TeleportCause.ENDER_PEARL;
 
     default Location getLocation() {
         Vector vector = this.getVector();
@@ -37,5 +39,8 @@ public interface Spawn extends Directional {
     default World getWorld() {
         Location location = this.getLocation();
         return location != null ? location.getWorld() : null;
+    }
+
+    interface Config<T extends Spawn> extends IGameConfig<T>, Unique {
     }
 }

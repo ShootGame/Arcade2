@@ -1,16 +1,16 @@
 package pl.themolka.arcade.filter;
 
-public final class Filters {
-    private static final Filter undefined = StaticFilter.ABSTAIN;
+import pl.themolka.arcade.util.Nulls;
 
+public final class Filters {
     private Filters() {
     }
 
     public static Filter secure(Filter filter) {
-        return filter != null ? filter : undefined();
+        return Nulls.defaults(filter, undefined());
     }
 
     public static Filter undefined() {
-        return undefined;
+        return StaticFilter.ABSTAIN;
     }
 }

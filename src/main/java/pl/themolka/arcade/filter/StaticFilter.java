@@ -18,6 +18,7 @@ public enum StaticFilter implements Filter {
         this.result = result;
         this.config = new Config() {
             public Ref<AbstainableResult> result() { return Ref.ofProvided(result); }
+            public StaticFilter create(Game game, Library library) { return StaticFilter.this; }
         };
     }
 
@@ -43,7 +44,7 @@ public enum StaticFilter implements Filter {
         Ref<AbstainableResult> result();
 
         @Override
-        default StaticFilter create(Game game) {
+        default StaticFilter create(Game game, Library library) {
             AbstainableResult result = this.result().get();
             if (result.isTrue()) {
                 return ALLOW;

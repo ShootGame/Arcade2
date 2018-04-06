@@ -54,7 +54,7 @@ public class ChestplateContent extends BaseArmorContent {
 
     public interface Config extends BaseArmorContent.Config<ChestplateContent> {
         @Override
-        default ChestplateContent create(Game game) {
+        default ChestplateContent create(Game game, Library library) {
             return new ChestplateContent(this);
         }
     }

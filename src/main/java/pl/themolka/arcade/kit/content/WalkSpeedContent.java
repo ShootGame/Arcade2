@@ -84,7 +84,7 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
         float DEFAULT_SPEED = 0.2F;
 
         @Override
-        default WalkSpeedContent create(Game game) {
+        default WalkSpeedContent create(Game game, Library library) {
             return new WalkSpeedContent(this);
         }
     }

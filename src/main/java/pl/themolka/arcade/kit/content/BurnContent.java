@@ -77,7 +77,7 @@ public class BurnContent implements RemovableKitContent<Time> {
         Time DEFAULT_TIME = Time.ZERO;
 
         @Override
-        default BurnContent create(Game game) {
+        default BurnContent create(Game game, Library library) {
             return new BurnContent(this);
         }
     }

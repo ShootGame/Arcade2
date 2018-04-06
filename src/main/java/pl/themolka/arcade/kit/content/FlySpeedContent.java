@@ -84,7 +84,7 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         float DEFAULT_SPEED = 0.1F;
 
         @Override
-        default FlySpeedContent create(Game game) {
+        default FlySpeedContent create(Game game, Library library) {
             return new FlySpeedContent(this);
         }
     }

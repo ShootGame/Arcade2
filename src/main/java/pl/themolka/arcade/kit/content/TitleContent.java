@@ -77,7 +77,7 @@ public class TitleContent implements RemovableKitContent<PlayerTitle> {
         PlayerTitle DEFAULT_TITLE = null;
 
         @Override
-        default TitleContent create(Game game) {
+        default TitleContent create(Game game, Library library) {
             return new TitleContent(this);
         }
     }

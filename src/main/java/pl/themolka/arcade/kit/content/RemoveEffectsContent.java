@@ -38,7 +38,7 @@ public class RemoveEffectsContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<RemoveEffectsContent> {
         @Override
-        default RemoveEffectsContent create(Game game) {
+        default RemoveEffectsContent create(Game game, Library library) {
             return new RemoveEffectsContent();
         }
     }

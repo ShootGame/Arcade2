@@ -63,7 +63,7 @@ public class RemoveModifiersContent implements KitContent<AttributeKey> {
 
     public interface Config extends KitContent.Config<RemoveModifiersContent, AttributeKey> {
         @Override
-        default RemoveModifiersContent create(Game game) {
+        default RemoveModifiersContent create(Game game, Library library) {
             return new RemoveModifiersContent(this);
         }
     }

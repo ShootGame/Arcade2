@@ -86,7 +86,7 @@ public class SphereRegion extends AbstractRegion {
         double radius();
 
         @Override
-        default SphereRegion create(Game game) {
+        default SphereRegion create(Game game, Library library) {
             return new SphereRegion(game, this);
         }
     }

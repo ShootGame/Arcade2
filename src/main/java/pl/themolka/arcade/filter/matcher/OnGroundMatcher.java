@@ -70,7 +70,7 @@ public class OnGroundMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<OnGroundMatcher, Boolean> {
         @Override
-        default OnGroundMatcher create(Game game) {
+        default OnGroundMatcher create(Game game, Library library) {
             return new OnGroundMatcher(this);
         }
     }

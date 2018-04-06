@@ -58,7 +58,7 @@ public class GlobalRegion extends CuboidRegion {
         default String id() { return REGION_ID; }
 
         @Override
-        default GlobalRegion create(Game game) {
+        default GlobalRegion create(Game game, Library library) {
             return new GlobalRegion(game);
         }
     }

@@ -54,7 +54,7 @@ public class GiveKitContent implements KitContent<Kit> {
 
     public interface Config extends KitContent.Config<GiveKitContent, Kit> {
         @Override
-        default GiveKitContent create(Game game) {
+        default GiveKitContent create(Game game, Library library) {
             return new GiveKitContent(this);
         }
     }

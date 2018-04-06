@@ -33,7 +33,7 @@ public class KillContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<KillContent> {
         @Override
-        default KillContent create(Game game) {
+        default KillContent create(Game game, Library library) {
             return new KillContent();
         }
     }

@@ -81,7 +81,7 @@ public class AbsorptionContent implements RemovableKitContent<Float> {
         float DEFAULT_ABSORPTION = 0F;
 
         @Override
-        default AbsorptionContent create(Game game) {
+        default AbsorptionContent create(Game game, Library library) {
             return new AbsorptionContent(this);
         }
     }

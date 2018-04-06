@@ -70,7 +70,7 @@ public class DeadMatcher extends ConfigurableMatcher<Boolean> {
 
     public interface Config extends ConfigurableMatcher.Config<DeadMatcher, Boolean> {
         @Override
-        default DeadMatcher create(Game game) {
+        default DeadMatcher create(Game game, Library library) {
             return new DeadMatcher(this);
         }
     }

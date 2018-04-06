@@ -10,6 +10,7 @@ import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.match.MatchEmptyEvent;
@@ -43,17 +44,9 @@ public class LivesGame extends GameModule {
     private final Map<GamePlayer, Integer> remaining = new WeakHashMap<>();
     private final Set<GamePlayer> eliminated = new LinkedHashSet<>();
 
-    @Deprecated
-    public LivesGame(int lives, Team fallbackTeam, boolean announce, Sound sound) {
-        this.lives = lives;
-        this.fallbackTeam = fallbackTeam;
-        this.announce = announce;
-        this.sound = sound;
-    }
-
-    protected LivesGame(Config config) {
+    protected LivesGame(Game game, IGameConfig.Library library, Config config) {
         this.lives = config.lives();
-        this.fallbackTeam = config.fallbackTeam().getIfPresent();
+        this.fallbackTeam = library.getOrDefine(game, config.fallbackTeam().getIfPresent());
         this.announce = config.announce();
         this.sound = config.sound();
     }
@@ -227,13 +220,13 @@ public class LivesGame extends GameModule {
 
     public interface Config extends IGameModuleConfig<LivesGame> {
         default int lives() { return 1; }
-        default Ref<Team> fallbackTeam() { return Ref.empty(); }
+        default Ref<Team.Config> fallbackTeam() { return Ref.empty(); }
         default boolean announce() { return true; }
         default Sound sound() { return DEFAULT_SOUND; }
 
         @Override
-        default LivesGame create(Game game) {
-            return new LivesGame(this);
+        default LivesGame create(Game game, Library library) {
+            return new LivesGame(game, library, this);
         }
     }
 }

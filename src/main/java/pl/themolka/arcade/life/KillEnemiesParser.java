@@ -38,26 +38,26 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
     @Override
     protected ParserResult<KillEnemies.Config> parseNode(Node node, String name, String value) throws ParserException {
         String id = this.parseId(node);
-        Ref<Participator> owner = this.parseOwner(node);
-        Set<Ref<Participator>> enemies = Collections.singleton(this.enemyParser.parse(node).orFail());
+        Ref<Participator.Config<?>> owner = this.parseOwner(node);
+        Set<Ref<Participator.Config<?>>> enemies = Collections.singleton(this.enemyParser.parse(node).orFail());
 
         return ParserResult.fine(node, name, value, new KillEnemies.Config() {
             public String id() { return id; }
-            public Ref<Participator> owner() { return owner; }
-            public Set<Ref<Participator>> enemies() { return enemies; }
+            public Ref<Participator.Config<?>> owner() { return owner; }
+            public Set<Ref<Participator.Config<?>>> enemies() { return enemies; }
         });
     }
 
     @Override
     protected ParserResult<KillEnemies.Config> parseTree(Node node, String name) throws ParserException {
         String id = this.parseId(node);
-        Ref<Participator> owner = this.parseOwner(node);
-        Set<Ref<Participator>> enemies = this.parseEnemies(node, name, null);
+        Ref<Participator.Config<?>> owner = this.parseOwner(node);
+        Set<Ref<Participator.Config<?>>> enemies = this.parseEnemies(node, name, null);
 
         return ParserResult.fine(node, name, new KillEnemies.Config() {
             public String id() { return id; }
-            public Ref<Participator> owner() { return owner; }
-            public Set<Ref<Participator>> enemies() { return enemies; }
+            public Ref<Participator.Config<?>> owner() { return owner; }
+            public Set<Ref<Participator.Config<?>>> enemies() { return enemies; }
         });
     }
 
@@ -65,12 +65,12 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
         return this.parseOptionalId(node);
     }
 
-    protected Ref<Participator> parseOwner(Node node) throws ParserException {
+    protected Ref<Participator.Config<?>> parseOwner(Node node) throws ParserException {
         return this.ownerParser.parse(node.property("owner", "of")).orFail();
     }
 
-    protected Set<Ref<Participator>> parseEnemies(Node node, String name, String value) throws ParserException {
-        Set<Ref<Participator>> enemies = new LinkedHashSet<>();
+    protected Set<Ref<Participator.Config<?>>> parseEnemies(Node node, String name, String value) throws ParserException {
+        Set<Ref<Participator.Config<?>>> enemies = new LinkedHashSet<>();
         for (Node enemyNode : node.children("enemy", "kill")) {
             enemies.add(this.enemyParser.parse(enemyNode).orFail());
         }

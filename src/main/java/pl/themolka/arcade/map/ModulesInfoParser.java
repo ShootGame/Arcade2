@@ -52,7 +52,6 @@ public class ModulesInfoParser extends NodeParser<ModulesInfo>
         }
 
         ModulesInfo info = new ModulesInfo();
-        info.setModules(node.children());
         info.setConfigs(configs);
         return ParserResult.fine(node, name, info);
     }

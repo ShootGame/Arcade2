@@ -54,7 +54,7 @@ public class BootsContent extends BaseArmorContent {
 
     public interface Config extends BaseArmorContent.Config<BootsContent> {
         @Override
-        default BootsContent create(Game game) {
+        default BootsContent create(Game game, Library library) {
             return new BootsContent(this);
         }
     }

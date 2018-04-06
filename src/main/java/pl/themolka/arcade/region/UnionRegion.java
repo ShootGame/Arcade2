@@ -201,7 +201,7 @@ public class UnionRegion extends AbstractRegion {
         List<Ref<AbstractRegion.Config<AbstractRegion>>> regions();
 
         @Override
-        default UnionRegion create(Game game) {
+        default UnionRegion create(Game game, Library library) {
             List<Region> regions = new ArrayList<>();
             for (Ref<AbstractRegion.Config<AbstractRegion>> region : this.regions()) {
                 AbstractRegion.Config<?> config = region.getIfPresent();
@@ -209,7 +209,7 @@ public class UnionRegion extends AbstractRegion {
                     continue;
                 }
 
-                AbstractRegion value = config.create(game);
+                AbstractRegion value = library.getOrDefine(game, config);
                 if (value != null) {
                     regions.add(value);
                 }

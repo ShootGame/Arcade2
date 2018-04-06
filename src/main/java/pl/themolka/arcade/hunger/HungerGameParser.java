@@ -34,10 +34,10 @@ public class HungerGameParser extends GameModuleParser<HungerGame, HungerGame.Co
 
     @Override
     protected ParserResult<HungerGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        Ref<Filter> filter = this.filterParser.parse(node.property("filter")).orFail();
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orFail();
 
         return ParserResult.fine(node, name, value, new HungerGame.Config() {
-            public Ref<Filter> filter() { return filter; }
+            public Ref<Filter.Config<?>> filter() { return filter; }
         });
     }
 }

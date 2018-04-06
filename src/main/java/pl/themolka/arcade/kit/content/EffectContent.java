@@ -81,7 +81,7 @@ public class EffectContent implements KitContent<PotionEffect>, BaseModeContent 
     public interface Config extends KitContent.Config<EffectContent, PotionEffect>,
                                     BaseModeContent.Config {
         @Override
-        default EffectContent create(Game game) {
+        default EffectContent create(Game game, Library library) {
             return new EffectContent(this);
         }
     }

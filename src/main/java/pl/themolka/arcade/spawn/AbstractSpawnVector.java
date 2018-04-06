@@ -2,12 +2,14 @@ package pl.themolka.arcade.spawn;
 
 import org.bukkit.World;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.game.Game;
 
-public abstract class AbstractSpawnVector implements Spawn {
+public abstract class AbstractSpawnVector extends AbstractSpawn {
     private final World world;
 
-    public AbstractSpawnVector(World world) {
-        this.world = world;
+    protected AbstractSpawnVector(Game game, Config<?> config) {
+        super(config);
+        this.world = game.getWorld();
     }
 
     @Override
@@ -22,5 +24,8 @@ public abstract class AbstractSpawnVector implements Spawn {
     @Override
     public World getWorld() {
         return this.world;
+    }
+
+    public interface Config<T extends AbstractSpawnVector> extends AbstractSpawn.Config<T> {
     }
 }

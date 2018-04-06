@@ -4,19 +4,13 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.entity.Player;
-import org.jdom2.Element;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
-import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.Filters;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.kit.Kit;
-import pl.themolka.arcade.kit.KitsGame;
-import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.respawn.PlayerRespawnEvent;
 import pl.themolka.arcade.time.Time;
 
@@ -28,31 +22,9 @@ public class KillRewardsGame extends GameModule {
     private final List<KillReward> rewards = new ArrayList<>();
     private final Multimap<UUID, KillReward> queuedRewards = ArrayListMultimap.create();
 
-    @Deprecated
-    public KillRewardsGame() {
-    }
-
-    protected KillRewardsGame(Config config) {
-        this.rewards.addAll(config.rewards());
-    }
-
-    @Override
-    public void onEnable() {
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-        KitsGame kits = (KitsGame) this.getGame().getModule(KitsModule.class);
-
-        for (Element xml : this.getSettings().getChildren("reward")) {
-            Filter filter = Filters.undefined();
-            if (filters != null) {
-                filter = filters.filterOrDefault(xml.getAttributeValue("filter"), filter);
-            }
-
-            Kit kit = kits.getKit(xml.getValue());
-            if (kit == null) {
-                continue;
-            }
-
-            this.rewards.add(new KillReward(filter, kit));
+    protected KillRewardsGame(Game game, IGameConfig.Library library, Config config) {
+        for (KillReward.Config reward : config.rewards().get()) {
+            this.rewards.add(library.getOrDefine(game, reward));
         }
     }
 
@@ -127,11 +99,11 @@ public class KillRewardsGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<KillRewardsGame> {
-        List<KillReward> rewards();
+        Ref<List<KillReward.Config>> rewards();
 
         @Override
-        default KillRewardsGame create(Game game) {
-            return new KillRewardsGame(this);
+        default KillRewardsGame create(Game game, Library library) {
+            return new KillRewardsGame(game, library, this);
         }
     }
 }

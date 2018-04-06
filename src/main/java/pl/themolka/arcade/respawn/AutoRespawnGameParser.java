@@ -38,11 +38,11 @@ public class AutoRespawnGameParser extends GameModuleParser<AutoRespawnGame, Aut
 
     @Override
     protected ParserResult<AutoRespawnGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        Ref<Filter> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
         Time cooldown = this.cooldownParser.parse(node.property("cooldown", "after")).orDefault(PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN);
 
         return ParserResult.fine(node, name, value, new AutoRespawnGame.Config() {
-            public Ref<Filter> filter() { return filter; }
+            public Ref<Filter.Config<?>> filter() { return filter; }
             public Time cooldown() { return cooldown; }
         });
     }

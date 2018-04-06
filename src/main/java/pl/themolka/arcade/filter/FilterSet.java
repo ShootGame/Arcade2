@@ -19,11 +19,11 @@ public class FilterSet implements UniqueFilter {
     private final Set<Filter> filters = new LinkedHashSet<>();
     private final String id;
 
-    protected FilterSet(Game game, Config config) {
+    protected FilterSet(Game game, IGameConfig.Library library, Config config) {
         this.id = config.id();
 
         for (Filter.Config<?> filter : config.filters().get()) {
-            this.filters.add(filter.create(game));
+            this.filters.add(library.getOrDefine(game, filter));
         }
     }
 
@@ -67,8 +67,8 @@ public class FilterSet implements UniqueFilter {
         Ref<Set<Filter.Config<?>>> filters();
 
         @Override
-        default FilterSet create(Game game) {
-            return new FilterSet(game, this);
+        default FilterSet create(Game game, Library library) {
+            return new FilterSet(game, library, this);
         }
     }
 }

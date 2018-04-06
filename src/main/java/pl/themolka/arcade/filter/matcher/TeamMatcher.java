@@ -47,7 +47,7 @@ public class TeamMatcher extends ConfigurableMatcher<Team> {
 
     public interface Config extends ConfigurableMatcher.Config<TeamMatcher, Team> {
         @Override
-        default TeamMatcher create(Game game) {
+        default TeamMatcher create(Game game, Library library) {
             return new TeamMatcher(this);
         }
     }

@@ -72,7 +72,7 @@ public class GlowContent implements RemovableKitContent<Boolean> {
         boolean DEFAULT_GLOW = false;
 
         @Override
-        default GlowContent create(Game game) {
+        default GlowContent create(Game game, Library library) {
             return new GlowContent(this);
         }
     }

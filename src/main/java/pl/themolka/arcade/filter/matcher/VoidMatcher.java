@@ -62,7 +62,7 @@ public class VoidMatcher extends Matcher<Block> {
 
     public interface Config extends Matcher.Config<VoidMatcher> {
         @Override
-        default VoidMatcher create(Game game) {
+        default VoidMatcher create(Game game, Library library) {
             return new VoidMatcher();
         }
     }

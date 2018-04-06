@@ -8,6 +8,7 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserResult;
@@ -16,8 +17,8 @@ import pl.themolka.arcade.parser.Produces;
 import java.util.Set;
 
 public class NotOperator extends Operator {
-    protected NotOperator(Game game, Config config) {
-        super(game, config);
+    protected NotOperator(Game game, IGameConfig.Library library, Config config) {
+        super(game, library, config);
     }
 
     @Override
@@ -40,8 +41,8 @@ public class NotOperator extends Operator {
 
     public interface Config extends Operator.Config<NotOperator> {
         @Override
-        default NotOperator create(Game game) {
-            return new NotOperator(game, this);
+        default NotOperator create(Game game, Library library) {
+            return new NotOperator(game, library, this);
         }
     }
 }

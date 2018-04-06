@@ -1,16 +1,18 @@
 package pl.themolka.arcade.channel;
 
 import pl.themolka.arcade.command.Sender;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.List;
 
 public class ChannelsGame extends GameModule {
     private final ChatChannel global;
 
-    public ChannelsGame(ChatChannel global) {
-        this.global = global;
+    protected ChannelsGame(Game game, Config config) {
+        this.global = new GlobalChatChannel(game.getPlugin(), GlobalChatChannel.GLOBAL_FORMAT);
     }
 
     @Override
@@ -30,5 +32,12 @@ public class ChannelsGame extends GameModule {
 
     public ChatChannel getGlobalChannel() {
         return this.global;
+    }
+
+    public interface Config extends IGameModuleConfig<ChannelsGame> {
+        @Override
+        default ChannelsGame create(Game game, Library library) {
+            return new ChannelsGame(game, this);
+        }
     }
 }

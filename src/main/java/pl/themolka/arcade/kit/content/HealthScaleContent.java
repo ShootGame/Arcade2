@@ -81,7 +81,7 @@ public class HealthScaleContent implements RemovableKitContent<Double> {
         double DEFAULT_SCALE = 20L;
 
         @Override
-        default HealthScaleContent create(Game game) {
+        default HealthScaleContent create(Game game, Library library) {
             return new HealthScaleContent(this);
         }
     }

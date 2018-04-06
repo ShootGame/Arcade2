@@ -1,22 +1,22 @@
 package pl.themolka.arcade.channel;
 
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.command.CommandContext;
 import pl.themolka.arcade.command.CommandException;
 import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.Sender;
-import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModuleVersion;
+import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Channels")
 @ModuleVersion("1.0")
 public class ChannelsModule extends Module<ChannelsGame> {
     @Override
-    public ChannelsGame buildGameModule(Element xml, Game game) throws JDOMException {
-        return new ChannelsGame(new GlobalChatChannel(this.getPlugin(), GlobalChatChannel.GLOBAL_FORMAT));
+    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
+        return context.of(ChannelsGameParser.class);
     }
 
     @CommandInfo(name = {"global", "g", "!"},

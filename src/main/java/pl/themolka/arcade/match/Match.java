@@ -7,6 +7,7 @@ import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
@@ -40,7 +41,7 @@ public class Match implements DynamicWinnable, GameHolder {
         this.drawWinner = new DrawMatchWinner(this);
         this.game = game;
         this.observers = observers;
-        this.observersKit = new ObserversKit(plugin);
+        this.observersKit = new ObserversKit.Config() {}.create(game, IGameConfig.Library.EMPTY);
     }
 
     @Override

@@ -70,7 +70,7 @@ public class GiveLevelContent implements KitContent<PlayerLevel> {
 
     public interface Config extends KitContent.Config<GiveLevelContent, PlayerLevel> {
         @Override
-        default GiveLevelContent create(Game game) {
+        default GiveLevelContent create(Game game, Library library) {
             return new GiveLevelContent(this);
         }
     }

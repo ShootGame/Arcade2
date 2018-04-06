@@ -7,17 +7,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.jdom2.Element;
-import pl.themolka.arcade.config.Ref;
-import pl.themolka.arcade.filter.Filter;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.util.Percentage;
-import pl.themolka.arcade.xml.XMLParser;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -30,73 +24,9 @@ public class DamageGame extends GameModule {
     public DamageGame() {
     }
 
-    protected DamageGame(Game game, Config config) {
+    protected DamageGame(Game game, IGameConfig.Library library, Config config) {
         for (DamageRule.Config rule : config.rules()) {
-            DamageRule value = rule.create(game);
-            if (value != null) {
-                this.rules.add(value);
-            }
-        }
-    }
-
-    @Override
-    public void onEnable() {
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-
-        for (Element xml : this.getSettings().getChildren("rule")) {
-            String global = xml.getAttributeValue("filter");
-            String entity = xml.getAttributeValue("entity-filter");
-            String player = xml.getAttributeValue("player-filter");
-
-            if (global != null) {
-                if (entity == null) {
-                    entity = global;
-                }
-                if (player == null) {
-                    player = global;
-                }
-            }
-
-            Filter entityFilter = filters.filterOrDefault(entity, null);
-            Filter playerFilter = filters.filterOrDefault(player, null);
-
-            if (entityFilter == null || playerFilter == null) {
-                continue;
-            }
-
-            Percentage multiplier = Percentage.finite(XMLParser.parseDouble(
-                    xml.getAttributeValue("multiplier"), Percentage.DONE.getValue()));
-
-            String value = xml.getValue();
-            double damage = XMLParser.parseDouble(value, -1D);
-
-            boolean deny = !XMLParser.parseBoolean(value, true);
-            if (deny) {
-                damage = DamageRule.DENY_DAMAGE;
-            }
-            final double finalDamage = damage;
-
-            this.rules.add(new DamageRule(new DamageRule.Config() {
-                @Override
-                public Ref<Filter> entityFilter() {
-                    return Ref.ofProvided(entityFilter);
-                }
-
-                @Override
-                public Ref<Filter> playerFilter() {
-                    return Ref.ofProvided(playerFilter);
-                }
-
-                @Override
-                public double damage() {
-                    return finalDamage;
-                }
-
-                @Override
-                public Percentage multiplier() {
-                    return multiplier;
-                }
-            }));
+            this.rules.add(library.getOrDefine(game, rule));
         }
     }
 
@@ -181,8 +111,8 @@ public class DamageGame extends GameModule {
         Set<DamageRule.Config> rules();
 
         @Override
-        default DamageGame create(Game game) {
-            return new DamageGame(game, this);
+        default DamageGame create(Game game, Library library) {
+            return new DamageGame(game, library, this);
         }
     }
 }

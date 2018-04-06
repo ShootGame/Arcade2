@@ -77,7 +77,7 @@ public class ExperienceContent implements RemovableKitContent<Percentage> {
         Percentage DEFAULT_EXPERIENCE = Percentage.ZERO.trim();
 
         @Override
-        default ExperienceContent create(Game game) {
+        default ExperienceContent create(Game game, Library library) {
             return new ExperienceContent(this);
         }
     }

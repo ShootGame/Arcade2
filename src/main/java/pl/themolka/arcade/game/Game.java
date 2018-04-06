@@ -4,17 +4,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.jdom2.Attribute;
-import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.Messageable;
-import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.map.ArcadeMap;
-import pl.themolka.arcade.map.MapParserException;
 import pl.themolka.arcade.module.Module;
-import pl.themolka.arcade.module.ModuleContainer;
-import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.task.Countdown;
 import pl.themolka.arcade.task.Task;
@@ -56,8 +49,6 @@ public class Game implements Messageable {
         this.map = map;
         this.windowRegistry = new GameWindowRegistry(this);
         this.world = new WeakReference<>(world);
-
-        this.readModules();
     }
 
     @Override
@@ -108,39 +99,6 @@ public class Game implements Messageable {
 
     public void enableModule(GameModule module) {
         if (module == null || module.getModule() == null || module.isEnabled()) {
-            return;
-        }
-
-        for (Class<? extends Module<?>> dependency : module.getModule().getDependency()) {
-            ModuleInfo info = dependency.getAnnotation(ModuleInfo.class);
-            if (info == null) {
-                break;
-            } else if (!this.getModules().contains(dependency)) {
-                try {
-                    GameModule game = this.readModule(new Element(info.id().toLowerCase()));
-                    if (game != null) {
-                        this.getModules().register(game);
-                    }
-                } catch (MapParserException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            GameModule dependencyModule = this.getModules().getModule(dependency);
-            this.enableModule(dependencyModule);
-        }
-
-        for (Class<? extends Module<?>> loadBefore : module.getModule().getLoadBefore()) {
-            ModuleInfo info = loadBefore.getAnnotation(ModuleInfo.class);
-            if (info == null) {
-                continue;
-            }
-
-            GameModule loadBeforeModule = this.getModules().getModule(loadBefore);
-            this.enableModule(loadBeforeModule);
-        }
-
-        if (!this.hasDependencies(module)) {
             return;
         }
 
@@ -268,34 +226,6 @@ public class Game implements Messageable {
         return true;
     }
 
-    public GameModule readModule(Element xml) throws MapParserException {
-        ModuleContainer container = this.plugin.getModules();
-        if (!container.contains(xml.getName())) {
-            throw new MapParserException(xml.getName() + ": module not found");
-        }
-
-        Module<?> module = this.plugin.getModules().getModuleById(xml.getName());
-        try {
-            Object object = module.buildGameModule(xml, this);
-            if (object == null || !(object instanceof GameModule)) {
-                return null;
-            }
-
-            GameModule game = (GameModule) object;
-            game.initialize(this.plugin, this, module, xml);
-            return game;
-        } catch (ClassCastException cast) {
-            throw new MapParserException(module, "game module does not inherit the " + GameModule.class.getName());
-        } catch (Throwable th) {
-            throw new MapParserException(module, "could not build game module", th);
-        }
-    }
-
-    public void readModules() {
-        this.readMapModules();
-        this.readGlobalModules();
-    }
-
     public boolean removeTask(Task task) {
         return this.taskList.remove(task);
     }
@@ -334,83 +264,5 @@ public class Game implements Messageable {
         this.getWindowRegistry().removeAll();
 
         this.plugin.getLogger().info("Game #" + this.getGameId() + " has ended.");
-    }
-
-    private void readGlobalModules() {
-        for (Module<?> global : this.plugin.getModules().getModules()) {
-            if (!global.isGlobal() || this.getModules().contains(global.getId())) {
-                continue;
-            }
-
-            try {
-                GameModule module = this.readModule(new Element(global.getId()));
-                if (module != null) {
-                    this.getModules().register(module);
-                }
-            } catch (MapParserException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    private void readMapModules() {
-        Node parent = Node.ofChildren(null, "legacy", this.map.getManifest().getModules().getModules());
-
-        if (parent == null || parent.isEmpty()) {
-            this.plugin.getLogger().warning("No modules were found for '" + this.getMap().getMapInfo().getName() + "'.");
-            return;
-        }
-
-        for (Node node : parent.children()) {
-            try {
-                GameModule module = this.readModule(toJdom(node));
-                if (module != null) {
-                    this.getModules().register(module);
-                }
-            } catch (MapParserException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Converting our DOM {@link Node}s into JDOM {@link Element}s.
-     *
-     * The Goal is to totally drop JDOM library from the source. We need to
-     * convert our DOM objects to JDOM's to support legacy code. This class
-     * should be used only for legacy purposes and ignored in new code.
-     *
-     * @deprecated Should be removed.
-     */
-    @Deprecated
-    public static Element toJdom(Node node) {
-        if (node == null) {
-            return null;
-        }
-
-        Element element = new Element(node.getName());
-
-        // attach properties
-        for (Property property : node.properties()) {
-            element.setAttribute(new Attribute(property.getName(), property.getValue()));
-        }
-
-        // attach body
-        if (node.isPrimitive()) {
-            element.setText(node.getValue());
-        } else if (node.isTree()) {
-            List<Element> children = new ArrayList<>();
-            for (Node child : node.children()) {
-                Element jdom = toJdom(child);
-
-                if (jdom != null) {
-                    children.add(jdom);
-                }
-            }
-
-            element.addContent(children);
-        }
-
-        return element;
     }
 }

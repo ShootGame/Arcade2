@@ -3,25 +3,20 @@ package pl.themolka.arcade.filter;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class FiltersGame extends GameModule {
     private final Map<String, UniqueFilter> filters = new LinkedHashMap<>();
 
-    @Deprecated
-    public FiltersGame(Map<String, FilterSet> filters) {
-        this.filters.putAll(filters);
-    }
-
-    protected FiltersGame(Game game, Config config) {
+    protected FiltersGame(Game game, IGameConfig.Library library, Config config) {
         for (FilterSet.Config filter : config.filterSets().get()) {
-            this.filters.put(Objects.requireNonNull(filter.getId(), "id cannot be null"), filter.create(game));
+            this.filters.put(filter.id(), library.getOrDefine(game, filter));
         }
     }
 
@@ -68,8 +63,8 @@ public class FiltersGame extends GameModule {
         Ref<Set<FilterSet.Config>> filterSets();
 
         @Override
-        default FiltersGame create(Game game) {
-            return new FiltersGame(game, this);
+        default FiltersGame create(Game game, Library library) {
+            return new FiltersGame(game, library, this);
         }
     }
 }

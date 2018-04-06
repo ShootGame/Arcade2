@@ -72,7 +72,7 @@ public class HungerContent implements RemovableKitContent<Integer> {
         int DEFAULT_LEVEL = 20;
 
         @Override
-        default HungerContent create(Game game) {
+        default HungerContent create(Game game, Library library) {
             return new HungerContent(this);
         }
     }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.dom.engine;
 
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.SAXEngine;
@@ -12,7 +13,9 @@ import org.xml.sax.SAXException;
 import pl.themolka.arcade.dom.Cursor;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
-import pl.themolka.arcade.xml.XML;
+import pl.themolka.arcade.dom.Namespace;
+import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.Property;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,8 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -92,8 +97,14 @@ public class JDOMEngine extends LocatedJDOMFactory
     }
 
     private Document read(Path path, org.jdom2.Document jdom) throws DOMException {
-        return XML.read(path, jdom);
+        if (!jdom.hasRootElement()) {
+            throw new DOMException(null, "The root node is not defined.");
+        }
+
+        return Document.create(path, JDOMEngine.convert(jdom.getRootElement()));
     }
+
+
 
     //
     // JDOMFactory
@@ -159,5 +170,55 @@ public class JDOMEngine extends LocatedJDOMFactory
 
             return line != -1 && column != -1 ? new Cursor(line, column) : null;
         }
+    }
+
+    //
+    // Converting
+    //
+
+    public static Node convert(org.jdom2.Element jdom) {
+        List<Element> children = jdom.getChildren();
+        Node node = Node.of(JDOMEngine.convert(jdom.getNamespace()), jdom.getName());
+
+        String maybeValue = jdom.getValue();
+        if (children.isEmpty() && maybeValue != null) {
+            // primitive value
+            node.setValue(jdom.getValue());
+        } else {
+            // children
+            List<Node> parsed = new ArrayList<>();
+            for (org.jdom2.Element child : children) {
+                parsed.add(JDOMEngine.convert(child));
+            }
+
+            node.add(parsed);
+        }
+
+        // properties
+        for (org.jdom2.Attribute attribute : jdom.getAttributes()) {
+            node.setProperty(JDOMEngine.convert(attribute));
+        }
+
+        // location
+        if (jdom instanceof JDOMElement) {
+            JDOMElement located = (JDOMElement) jdom;
+
+            Cursor start = located.getStartCursor();
+            Cursor end = located.getEndCursor();
+
+            if (start != null && end != null) {
+                node.locate(start, end);
+            }
+        }
+
+        return node;
+    }
+
+    public static Namespace convert(org.jdom2.Namespace namespace) {
+        return Namespace.of(namespace.getPrefix(), namespace.getURI());
+    }
+
+    public static Property convert(org.jdom2.Attribute attribute) {
+        return Property.of(JDOMEngine.convert(attribute.getNamespace()), attribute.getName(), attribute.getValue());
     }
 }

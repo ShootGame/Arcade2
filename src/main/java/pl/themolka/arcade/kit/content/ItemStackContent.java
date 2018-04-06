@@ -101,7 +101,7 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         default Integer slot() { return DEFAULT_SLOT; }
 
         @Override
-        default ItemStackContent create(Game game) {
+        default ItemStackContent create(Game game, Library library) {
             return new ItemStackContent(this);
         }
     }

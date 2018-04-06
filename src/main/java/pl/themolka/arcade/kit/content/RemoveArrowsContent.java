@@ -35,7 +35,7 @@ public class RemoveArrowsContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<RemoveArrowsContent> {
         @Override
-        default RemoveArrowsContent create(Game game) {
+        default RemoveArrowsContent create(Game game, Library library) {
             return new RemoveArrowsContent();
         }
     }

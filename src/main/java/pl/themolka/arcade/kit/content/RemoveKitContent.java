@@ -64,7 +64,7 @@ public class RemoveKitContent implements KitContent<Kit> {
 
     public interface Config extends KitContent.Config<RemoveKitContent, Kit> {
         @Override
-        default RemoveKitContent create(Game game) {
+        default RemoveKitContent create(Game game, Library library) {
             return new RemoveKitContent(this);
         }
     }

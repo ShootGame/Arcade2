@@ -11,22 +11,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 
 public class MobSpawnRule implements Cancelable {
-    private boolean cancel;
+    private final boolean cancel;
     private final Filter filter;
 
-    @Deprecated
-    public MobSpawnRule(Filter filter) {
-        this.filter = Filters.secure(filter);
-    }
-
-    @Deprecated
-    public MobSpawnRule(Filter filter, boolean cancel) {
-        this(filter);
-        this.cancel = cancel;
-    }
-
-    protected MobSpawnRule(Config config) {
-        this.filter = Filters.secure(config.filter().getIfPresent());
+    protected MobSpawnRule(Game game, IGameConfig.Library library, Config config) {
+        this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
         this.cancel = config.cancel();
     }
 
@@ -37,7 +26,7 @@ public class MobSpawnRule implements Cancelable {
 
     @Override
     public void setCanceled(boolean cancel) {
-        this.cancel = cancel;
+        throw new UnsupportedOperationException("Cannot cancel mob spawn rule");
     }
 
     public Filter getFilter() {
@@ -49,12 +38,12 @@ public class MobSpawnRule implements Cancelable {
     }
 
     public interface Config extends IGameConfig<MobSpawnRule> {
-        default Ref<Filter> filter() { return Ref.empty(); }
+        default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
         default boolean cancel() { return true; }
 
         @Override
-        default MobSpawnRule create(Game game) {
-            return new MobSpawnRule(this);
+        default MobSpawnRule create(Game game, Library library) {
+            return new MobSpawnRule(game, library, this);
         }
     }
 }

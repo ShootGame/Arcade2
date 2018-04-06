@@ -33,7 +33,7 @@ public class ResetContent implements BaseVoidKitContent {
 
     public interface Config extends BaseVoidKitContent.Config<ResetContent> {
         @Override
-        default ResetContent create(Game game) {
+        default ResetContent create(Game game, Library library) {
             return new ResetContent();
         }
     }

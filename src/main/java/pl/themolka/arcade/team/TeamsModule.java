@@ -1,8 +1,6 @@
 package pl.themolka.arcade.team;
 
 import org.bukkit.ChatColor;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import pl.themolka.arcade.channel.ChannelsModule;
 import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.CommandContext;
@@ -11,7 +9,6 @@ import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.filter.FiltersModule;
-import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.FormatModule;
 import pl.themolka.arcade.match.MatchModule;
@@ -36,11 +33,6 @@ import java.util.Collection;
 public class TeamsModule extends Module<TeamsGame> {
     /** Permission node which allow to edit teams in runtime. */
     public static final String TEAMS_MANAGE_PERMISSION = "arcade.command.teams.manage";
-
-    @Override
-    public TeamsGame buildGameModule(Element xml, Game game) throws JDOMException {
-        return new TeamsGame();
-    }
 
     //
     // Commands

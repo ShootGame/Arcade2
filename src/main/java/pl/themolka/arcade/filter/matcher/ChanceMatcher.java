@@ -26,7 +26,7 @@ public class ChanceMatcher extends ConfigurableMatcher<Percentage> {
             return this.matches((Double) object);
         }
 
-        return false;
+        return this.matches(Percentage.random());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ChanceMatcher extends ConfigurableMatcher<Percentage> {
 
     public interface Config extends ConfigurableMatcher.Config<ChanceMatcher, Percentage> {
         @Override
-        default ChanceMatcher create(Game game) {
+        default ChanceMatcher create(Game game, Library library) {
             return new ChanceMatcher(this);
         }
     }

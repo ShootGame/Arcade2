@@ -11,6 +11,11 @@ import pl.themolka.arcade.util.Forwarding;
 public abstract class ForwardingSpawn extends Forwarding<Spawn>
                                       implements Spawn {
     @Override
+    public String getId() {
+        return this.delegate().getId();
+    }
+
+    @Override
     public Location getLocation() {
         return this.delegate().getLocation();
     }
@@ -52,5 +57,8 @@ public abstract class ForwardingSpawn extends Forwarding<Spawn>
     @Override
     public float getPitch() {
         return this.delegate().getPitch();
+    }
+
+    public interface Config<T extends ForwardingSpawn> extends Spawn.Config<T> {
     }
 }

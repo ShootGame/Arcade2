@@ -79,7 +79,7 @@ public class DamageMatcher extends ConfigurableMatcher<DamageCause> {
 
     public interface Config extends ConfigurableMatcher.Config<DamageMatcher, DamageCause> {
         @Override
-        default DamageMatcher create(Game game) {
+        default DamageMatcher create(Game game, Library library) {
             return new DamageMatcher(this);
         }
     }

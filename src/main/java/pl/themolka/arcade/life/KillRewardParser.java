@@ -37,13 +37,13 @@ public class KillRewardParser extends ConfigParser<KillReward.Config>
     @Override
     protected ParserResult<KillReward.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
-        Ref<Filter> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
-        Ref<Kit> kit = this.kitParser.parseWithDefinition(node, name, value).orFail();
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
+        Ref<Kit.Config> kit = this.kitParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new KillReward.Config() {
             public String id() { return id; }
-            public Ref<Filter> filter() { return filter; }
-            public Ref<Kit> kit() { return kit; }
+            public Ref<Filter.Config<?>> filter() { return filter; }
+            public Ref<Kit.Config> kit() { return kit; }
         });
     }
 }

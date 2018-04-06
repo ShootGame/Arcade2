@@ -59,7 +59,7 @@ public class ClearInventoryContent implements KitContent<Boolean> {
 
     public interface Config extends KitContent.Config<ClearInventoryContent, Boolean> {
         @Override
-        default ClearInventoryContent create(Game game) {
+        default ClearInventoryContent create(Game game, Library library) {
             return new ClearInventoryContent(this);
         }
     }

@@ -62,7 +62,7 @@ public class GameModeContent implements KitContent<GameMode>  {
         GameMode DEFAULT_GAME_MODE = GameMode.SURVIVAL;
 
         @Override
-        default GameModeContent create(Game game) {
+        default GameModeContent create(Game game, Library library) {
             return new GameModeContent(this);
         }
     }

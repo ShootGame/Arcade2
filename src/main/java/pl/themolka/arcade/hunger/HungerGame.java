@@ -8,33 +8,17 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
-import pl.themolka.arcade.filter.FiltersGame;
-import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 
 public class HungerGame extends GameModule {
-    private Filter filter;
+    private final Filter filter;
 
-    @Deprecated
-    public HungerGame() {
-        this.filter = Filters.undefined();
-    }
-
-    protected HungerGame(Config config) {
-        this.filter = Filters.secure(config.filter().getIfPresent());
-    }
-
-    @Override
-    public void onEnable() {
-        FiltersGame filters = (FiltersGame) this.getGame().getModule(FiltersModule.class);
-        if (filters != null) {
-            String global = this.getSettings().getAttributeValue("filter");
-
-            this.filter = filters.filterOrDefault(global, this.filter);
-        }
+    protected HungerGame(Game game, IGameConfig.Library library, Config config) {
+        this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
     }
 
     public boolean cannotDeplete(GamePlayer player) {
@@ -55,11 +39,11 @@ public class HungerGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<HungerGame> {
-        default Ref<Filter> filter() { return Ref.empty(); }
+        default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
 
         @Override
-        default HungerGame create(Game game) {
-            return new HungerGame(this);
+        default HungerGame create(Game game, Library library) {
+            return new HungerGame(game, library, this);
         }
     }
 }

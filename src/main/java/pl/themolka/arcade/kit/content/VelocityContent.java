@@ -71,7 +71,7 @@ public class VelocityContent implements RemovableKitContent<Vector> {
         Vector DEFAULT_VELOCITY = new Vector(0, 0, 0);
 
         @Override
-        default VelocityContent create(Game game) {
+        default VelocityContent create(Game game, Library library) {
             return new VelocityContent(this);
         }
     }

@@ -81,7 +81,7 @@ public class FallDistanceContent implements RemovableKitContent<Float> {
         float DEFAULT_DISTANCE = 0F;
 
         @Override
-        default FallDistanceContent create(Game game) {
+        default FallDistanceContent create(Game game, Library library) {
             return new FallDistanceContent(this);
         }
     }

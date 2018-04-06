@@ -3,6 +3,7 @@ package pl.themolka.arcade.damage;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.event.Cancelable;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
@@ -10,61 +11,57 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.util.Percentage;
+import pl.themolka.arcade.util.StringId;
 
-public class DamageRule implements Cancelable {
-    public static final double DENY_DAMAGE = 0D;
-
-    public static final double DEFAULT_DAMAGE = DENY_DAMAGE;
-    public static final Percentage DEFAULT_MULTIPLIER = Percentage.DONE;
-
+public class DamageRule implements Cancelable, StringId {
+    private final double damage;
     private final Filter entityFilter;
+    private final String id;
+    private final Percentage multiplier;
     private final Filter playerFilter;
-    private double damage = DEFAULT_DAMAGE;
-    private Percentage multiplier = DEFAULT_MULTIPLIER;
 
-    public DamageRule(Config config) {
-        this(config.entityFilter().getIfPresent(), config.playerFilter().getIfPresent());
-        this.setDamage(config.damage());
-        this.setMultiplier(config.multiplier());
+    protected DamageRule(Game game, IGameConfig.Library library, Config config) {
+        this.damage = config.damage();
+        this.entityFilter = Filters.secure(library.getOrDefine(game, config.entityFilter().getIfPresent()));
+        this.id = config.id();
+        this.multiplier = config.multiplier();
+        this.playerFilter = Filters.secure(library.getOrDefine(game, config.playerFilter().getIfPresent()));
     }
 
-    protected DamageRule(Filter filter) {
-        this(filter, filter);
-    }
-
-    protected DamageRule(Filter entityFilter, Filter playerFilter) {
-        this.entityFilter = Filters.secure(entityFilter);
-        this.playerFilter = Filters.secure(playerFilter);
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     @Override
     public boolean isCanceled() {
-        return this.damage <= DENY_DAMAGE;
+        return this.damage <= Config.DENY_DAMAGE;
     }
 
     @Override
     public void setCanceled(boolean cancel) {
-        this.damage = cancel ? DENY_DAMAGE : 1D;
-    }
-
-    public Filter getEntityFilter() {
-        return this.entityFilter;
-    }
-
-    public Filter getPlayerFilter() {
-        return this.playerFilter;
+        throw new UnsupportedOperationException("Cannot cancel damage rule");
     }
 
     public double getDamage() {
-        return this.isCanceled() ? DENY_DAMAGE : this.damage;
+        return this.isCanceled() ? Config.DENY_DAMAGE
+                                 : this.damage;
     }
 
     public double getDamage(double firstDamage) {
         return this.multiplier.calculate(firstDamage + this.getDamage());
     }
 
+    public Filter getEntityFilter() {
+        return this.entityFilter;
+    }
+
     public Percentage getMultiplier() {
         return this.multiplier;
+    }
+
+    public Filter getPlayerFilter() {
+        return this.playerFilter;
     }
 
     public boolean matches(Entity entity, EntityDamageEvent.DamageCause cause) {
@@ -75,23 +72,20 @@ public class DamageRule implements Cancelable {
         return player != null && player.isOnline() && this.playerFilter.filter(player, cause).isTrue();
     }
 
-    public void setDamage(double damage) {
-        this.damage = damage;
-    }
+    public interface Config extends IGameConfig<DamageRule>, Unique {
+        double DENY_DAMAGE = 0D;
 
-    public void setMultiplier(Percentage multiplier) {
-        this.multiplier = multiplier != null ? multiplier : DEFAULT_MULTIPLIER;
-    }
+        double DEFAULT_DAMAGE = DENY_DAMAGE;
+        Percentage DEFAULT_MULTIPLIER = Percentage.DONE;
 
-    public interface Config extends IGameConfig<DamageRule> {
-        default Ref<Filter> entityFilter() { return Ref.empty(); }
-        default Ref<Filter> playerFilter() { return Ref.empty(); }
         default double damage() { return DEFAULT_DAMAGE; }
+        default Ref<Filter.Config<?>> entityFilter() { return Ref.empty(); }
         default Percentage multiplier() { return DEFAULT_MULTIPLIER; }
+        default Ref<Filter.Config<?>> playerFilter() { return Ref.empty(); }
 
         @Override
-        default DamageRule create(Game game) {
-            return new DamageRule(this);
+        default DamageRule create(Game game, Library library) {
+            return new DamageRule(game, library, this);
         }
     }
 }

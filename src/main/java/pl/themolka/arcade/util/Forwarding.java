@@ -5,8 +5,8 @@ import com.google.common.collect.ForwardingObject;
 import java.util.Objects;
 
 /**
- * The {@link ForwardingObject} does not support types... The best way to omit
- * this is to create our own class with will use types.
+ * The {@link ForwardingObject} does not support generics... The best way to
+ * omit this is to create our own class with will use generics.
  * @param <T> The forwarded class type.
  */
 public abstract class Forwarding<T> extends ForwardingObject {

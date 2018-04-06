@@ -87,7 +87,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
         default boolean force() { return DEFAULT_FORCE; }
 
         @Override
-        default CanFlyContent create(Game game) {
+        default CanFlyContent create(Game game, Library library) {
             return new CanFlyContent(this);
         }
     }

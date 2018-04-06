@@ -1,5 +1,8 @@
 package pl.themolka.arcade.score;
 
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
@@ -7,6 +10,7 @@ import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.SimpleGoal;
+import pl.themolka.arcade.match.Match;
 
 public class Score extends SimpleGoal {
     public static final String DEFAULT_GOAL_NAME = "Score";
@@ -14,32 +18,38 @@ public class Score extends SimpleGoal {
     public static final double MIN = Double.MIN_VALUE;
     public static final double MAX = Double.MAX_VALUE;
 
-    protected final ScoreGame game;
+    private final double deathLoss;
+    private final double initialScore;
+    private final double killReward;
+    private final double limit;
 
-    private final ScoreConfig config;
+    private Match match;
     private double score;
 
-    public Score(ScoreGame game, Participator owner, ScoreConfig config) {
-        super(game.getGame(), owner);
-        this.game = game;
+    protected Score(Game game, IGameConfig.Library library, Config config) {
+        super(game, library.getOrDefine(game, config.owner().get()));
+        super.setName(config.name());
 
-        this.config = config;
-        this.score = config.getInitialScore();
+        this.deathLoss = config.deathLoss();
+        this.initialScore = config.initialScore();
+        this.killReward = config.killReward();
+        this.limit = config.limit();
+        this.score = config.initialScore();
     }
 
     @Override
     public void complete(Participator completer) {
         boolean byLimit = this.isLimitReached();
 
-        ScoreScoredEvent event = new ScoreScoredEvent(this.game.getPlugin(), this, byLimit, completer);
-        this.game.getPlugin().getEventBus().publish(event);
+        ScoreScoredEvent event = new ScoreScoredEvent(this.getPlugin(), this, byLimit, completer);
+        this.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
             if (byLimit) {
-                this.game.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.game.getPlugin(), this));
+                this.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.getPlugin(), this));
             }
 
-            GoalCompleteEvent.call(this.game.getPlugin(), this, event.getCompleter());
+            GoalCompleteEvent.call(this.getPlugin(), this, event.getCompleter());
         }
     }
 
@@ -56,11 +66,11 @@ public class Score extends SimpleGoal {
      */
     @Override
     public double getProgress() {
-        if (!this.config.hasLimit()) {
+        if (!this.hasLimit()) {
             return Goal.PROGRESS_UNTOUCHED;
         }
 
-        double progress = this.getScore() / this.config.getLimit();
+        double progress = this.getScore() / this.limit;
         if (progress < Goal.PROGRESS_UNTOUCHED) {
             return Goal.PROGRESS_UNTOUCHED;
         } else if (progress > Goal.PROGRESS_SCORED) {
@@ -82,13 +92,13 @@ public class Score extends SimpleGoal {
 
     @Override
     public boolean reset() {
-        ScoreResetEvent event = new ScoreResetEvent(this.game.getPlugin(), this);
-        this.game.getPlugin().getEventBus().publish(event);
+        ScoreResetEvent event = new ScoreResetEvent(this.getPlugin(), this);
+        this.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            GoalResetEvent.call(this.game.getPlugin(), this);
+            GoalResetEvent.call(this.getPlugin(), this);
 
-            this.score = this.config.getInitialScore();
+            this.score = this.initialScore;
             this.setCompleted(false);
             this.setTouched(false);
             return true;
@@ -97,16 +107,24 @@ public class Score extends SimpleGoal {
         return false;
     }
 
-    public ScoreConfig getConfig() {
-        return this.config;
+    public double getDeathLoss() {
+        return this.deathLoss;
+    }
+
+    public double getKillReward() {
+        return this.killReward;
+    }
+
+    public double getLimit() {
+        return this.limit;
     }
 
     public double getScore() {
         return this.score;
     }
 
-    public ScoreGame getScoreGame() {
-        return this.game;
+    public boolean hasLimit() {
+        return this.limit != Score.MAX;
     }
 
     /**
@@ -120,12 +138,12 @@ public class Score extends SimpleGoal {
      *     - GoalCompleteEvent (cancelable)
      */
     public void incrementScore(Participator completer, double points) {
-        if (!this.game.getMatch().isRunning() || isValid(this.getScore() + points)) {
+        if (!this.match.isRunning() || isValid(this.getScore() + points)) {
             return;
         }
 
-        ScoreIncrementEvent event = new ScoreIncrementEvent(this.game.getPlugin(), this, completer, points);
-        this.game.getPlugin().getEventBus().publish(event);
+        ScoreIncrementEvent event = new ScoreIncrementEvent(this.getPlugin(), this, completer, points);
+        this.getPlugin().getEventBus().publish(event);
 
         if (event.isCanceled()) {
             return;
@@ -138,7 +156,7 @@ public class Score extends SimpleGoal {
             this.score = newScore;
             this.setTouched(true);
 
-            GoalProgressEvent.call(this.game.getPlugin(), this, event.getCompleter(), oldProgress);
+            GoalProgressEvent.call(this.getPlugin(), this, event.getCompleter(), oldProgress);
 
             if (this.isCompleted()) {
                 this.setCompleted(event.getCompleter());
@@ -147,14 +165,37 @@ public class Score extends SimpleGoal {
     }
 
     public boolean isLimitReached() {
-        return this.config.hasLimit() && this.getScore() >= this.config.getLimit();
+        return this.hasLimit() && this.score >= this.limit;
+    }
+
+    public void setMatch(Match match) {
+        this.match = match;
     }
 
     public static boolean outOfBounds(double score) {
-        return score < MIN || score > MAX;
+        return score <= MIN || score >= MAX;
     }
 
     public static boolean isValid(double score) {
         return !outOfBounds(score) && score != ZERO;
+    }
+
+    public interface Config extends IGameConfig<Score> {
+        double DEFAULT_DEATH_LOSS = Score.ZERO;
+        double DEFAULT_INITIAL_SCORE = Score.ZERO;
+        double DEFAULT_KILL_REWARD = Score.ZERO;
+        double DEFAULT_LIMIT = Score.MAX;
+
+        double deathLoss();
+        double initialScore();
+        double killReward();
+        double limit();
+        String name();
+        Ref<Participator.Config<?>> owner();
+
+        @Override
+        default Score create(Game game, Library library) {
+            return new Score(game, library, this);
+        }
     }
 }

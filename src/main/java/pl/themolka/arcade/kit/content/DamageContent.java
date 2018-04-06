@@ -68,7 +68,7 @@ public class DamageContent implements KitContent<Double> {
 
     public interface Config extends KitContent.Config<DamageContent, Double> {
         @Override
-        default DamageContent create(Game game) {
+        default DamageContent create(Game game, Library library) {
             return new DamageContent(this);
         }
     }

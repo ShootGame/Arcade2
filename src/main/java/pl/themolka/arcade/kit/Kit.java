@@ -21,19 +21,12 @@ public class Kit implements Applicable<GamePlayer>, StringId {
     private final String id;
     private final List<String> inherit = new ArrayList<>();
 
-    @Deprecated
-    public Kit(ArcadePlugin plugin, String id) {
-        this.plugin = plugin;
-
-        this.id = id;
-    }
-
-    protected Kit(Game game, Config config) {
+    protected Kit(Game game, IGameConfig.Library library, Config config) {
         this.plugin = game.getPlugin();
         this.id = config.id();
 
         for (KitContent.Config<?, ?> content : config.contents()) {
-            this.content.add(content.create(game));
+            this.content.add(library.getOrDefine(game, content));
         }
     }
 
@@ -104,8 +97,8 @@ public class Kit implements Applicable<GamePlayer>, StringId {
         default Set<String> inherit() { return Collections.emptySet(); }
 
         @Override
-        default Kit create(Game game) {
-            return new Kit(game, this);
+        default Kit create(Game game, Library library) {
+            return new Kit(game, library, this);
         }
     }
 }

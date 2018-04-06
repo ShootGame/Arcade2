@@ -11,11 +11,6 @@ import java.util.List;
 public class GameRulesGame extends GameModule {
     private final List<GameRule> rules = new ArrayList<>();
 
-    @Deprecated
-    public GameRulesGame(List<GameRule> rules) {
-        this.rules.addAll(rules);
-    }
-
     protected GameRulesGame(Config config) {
         this.rules.addAll(config.rules());
     }
@@ -30,7 +25,7 @@ public class GameRulesGame extends GameModule {
             }
 
             if (rule.isApplicable()) {
-                world.setGameRuleValue(rule.getKey(), rule.getValueString());
+                rule.apply(world);
             }
         }
     }
@@ -43,7 +38,7 @@ public class GameRulesGame extends GameModule {
         List<GameRule> rules();
 
         @Override
-        default GameRulesGame create(Game game) {
+        default GameRulesGame create(Game game, Library library) {
             return new GameRulesGame(this);
         }
     }

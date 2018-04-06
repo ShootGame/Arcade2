@@ -90,7 +90,7 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
         double DEFAULT_MAX_HEALTH = 20D;
 
         @Override
-        default MaxHealthContent create(Game game) {
+        default MaxHealthContent create(Game game, Library library) {
             return new MaxHealthContent(this);
         }
     }
