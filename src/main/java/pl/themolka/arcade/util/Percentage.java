@@ -71,14 +71,8 @@ public class Percentage {
     // Instancing
     //
 
-    public static Percentage finite(double value) {
-        if (value < MIN_VALUE) {
-            throw new IllegalArgumentException("value is smaller than " + MIN_VALUE);
-        } else if (value > MAX_VALUE) {
-            throw new IllegalArgumentException("value is greater than " + MAX_VALUE);
-        }
-
-        return infinite(value);
+    public static FinitePercentage finite(double value) {
+        return FinitePercentage.create(value);
     }
 
     public static Percentage infinite(double value) {
@@ -87,5 +81,9 @@ public class Percentage {
 
     public static Percentage random() {
         return finite(Math.random());
+    }
+
+    public static FinitePercentage trim(double value) {
+        return finite(infinite(value).trim().value);
     }
 }

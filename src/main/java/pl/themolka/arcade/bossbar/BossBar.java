@@ -7,6 +7,7 @@ import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.boss.CraftBossBar;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.util.FinitePercentage;
 import pl.themolka.arcade.util.Percentage;
 
 import java.util.Objects;
@@ -56,7 +57,7 @@ public class BossBar {
         return this.bukkit.getColor();
     }
 
-    public Percentage getProgress() {
+    public FinitePercentage getProgress() {
         return Percentage.finite(this.bukkit.getProgress());
     }
 
@@ -99,7 +100,7 @@ public class BossBar {
         return this.facet(player).setPriority(this, priority);
     }
 
-    public void setProgress(Percentage progress) {
+    public void setProgress(FinitePercentage progress) {
         this.bukkit.setProgress(progress.trim().getValue());
     }
 
