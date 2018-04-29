@@ -1,9 +1,7 @@
 package pl.themolka.arcade.filter.operator;
 
 import pl.themolka.arcade.condition.AbstainableResult;
-import pl.themolka.arcade.condition.NotCondition;
-import pl.themolka.arcade.condition.OptionalResult;
-import pl.themolka.arcade.condition.OrCondition;
+import pl.themolka.arcade.condition.XorCondition;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
@@ -16,17 +14,17 @@ import pl.themolka.arcade.parser.Produces;
 
 import java.util.Set;
 
-public class NotOperator extends Operator {
-    protected NotOperator(Game game, IGameConfig.Library library, Config config) {
+public class XorOperator extends Operator {
+    protected XorOperator(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
     }
 
     @Override
     public AbstainableResult filter(Object... objects) {
-        return OptionalResult.valueOf(new NotCondition(new OrCondition(this.getBody())).query(objects));
+        return new XorCondition(this.getBody()).query(objects);
     }
 
-    @NestedParserName("not")
+    @NestedParserName("xor")
     @Produces(Config.class)
     public static class OperatorParser extends BaseOperatorParser<Config> {
         @Override
@@ -39,10 +37,10 @@ public class NotOperator extends Operator {
         }
     }
 
-    public interface Config extends Operator.Config<NotOperator> {
+    public interface Config extends Operator.Config<XorOperator> {
         @Override
-        default NotOperator create(Game game, Library library) {
-            return new NotOperator(game, library, this);
+        default XorOperator create(Game game, Library library) {
+            return new XorOperator(game, library, this);
         }
     }
 }

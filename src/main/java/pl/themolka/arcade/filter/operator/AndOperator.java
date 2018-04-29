@@ -1,7 +1,7 @@
 package pl.themolka.arcade.filter.operator;
 
 import pl.themolka.arcade.condition.AbstainableResult;
-import pl.themolka.arcade.condition.AnyCondition;
+import pl.themolka.arcade.condition.AndCondition;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
@@ -14,17 +14,17 @@ import pl.themolka.arcade.parser.Produces;
 
 import java.util.Set;
 
-public class AnyOperator extends Operator {
-    protected AnyOperator(Game game, IGameConfig.Library library, Config config) {
+public class AndOperator extends Operator {
+    protected AndOperator(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
     }
 
     @Override
     public AbstainableResult filter(Object... objects) {
-        return new AnyCondition(this.getBody()).query(objects);
+        return new AndCondition(this.getBody()).query(objects);
     }
 
-    @NestedParserName("any")
+    @NestedParserName({"and", "all"})
     @Produces(Config.class)
     public static class OperatorParser extends BaseOperatorParser<Config> {
         @Override
@@ -37,10 +37,10 @@ public class AnyOperator extends Operator {
         }
     }
 
-    public interface Config extends Operator.Config<AnyOperator> {
+    public interface Config extends Operator.Config<AndOperator> {
         @Override
-        default AnyOperator create(Game game, Library library) {
-            return new AnyOperator(game, library, this);
+        default AndOperator create(Game game, Library library) {
+            return new AndOperator(game, library, this);
         }
     }
 }

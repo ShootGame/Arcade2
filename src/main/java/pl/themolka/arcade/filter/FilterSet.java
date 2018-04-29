@@ -1,7 +1,7 @@
 package pl.themolka.arcade.filter;
 
 import pl.themolka.arcade.condition.AbstainableResult;
-import pl.themolka.arcade.condition.AnyCondition;
+import pl.themolka.arcade.condition.OrCondition;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
@@ -44,7 +44,7 @@ public class FilterSet implements UniqueFilter {
 
     @Override
     public AbstainableResult filter(Object... objects) {
-        return new AnyCondition(this.filters).query(objects);
+        return new OrCondition(this.filters).query(objects);
     }
 
     public boolean addFilter(Filter filter) {

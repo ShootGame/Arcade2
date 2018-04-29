@@ -22,10 +22,14 @@ import pl.themolka.arcade.filter.matcher.SpawnReasonMatcher;
 import pl.themolka.arcade.filter.matcher.SprintingMatcher;
 import pl.themolka.arcade.filter.matcher.TeamMatcher;
 import pl.themolka.arcade.filter.matcher.VoidMatcher;
-import pl.themolka.arcade.filter.operator.AllOperator;
-import pl.themolka.arcade.filter.operator.AnyOperator;
+import pl.themolka.arcade.filter.operator.AndOperator;
+import pl.themolka.arcade.filter.operator.NandOperator;
 import pl.themolka.arcade.filter.operator.NoneOperator;
+import pl.themolka.arcade.filter.operator.NorOperator;
 import pl.themolka.arcade.filter.operator.NotOperator;
+import pl.themolka.arcade.filter.operator.OrOperator;
+import pl.themolka.arcade.filter.operator.XnorOperator;
+import pl.themolka.arcade.filter.operator.XorOperator;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserMap;
 import pl.themolka.arcade.parser.NestedParserName;
@@ -63,10 +67,14 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
             .add(TeamMatcher.class)
             .add(VoidMatcher.class)
             // operators
-            .add(AllOperator.class)
-            .add(AnyOperator.class)
+            .add(AndOperator.class)
+            .add(NandOperator.class)
             .add(NoneOperator.class)
+            .add(NorOperator.class)
             .add(NotOperator.class)
+            .add(OrOperator.class)
+            .add(XnorOperator.class)
+            .add(XorOperator.class)
             .build();
 
     private NestedParserMap<BaseFilterParser<?>> nested;

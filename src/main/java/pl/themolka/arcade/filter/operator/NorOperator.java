@@ -1,9 +1,8 @@
 package pl.themolka.arcade.filter.operator;
 
 import pl.themolka.arcade.condition.AbstainableResult;
-import pl.themolka.arcade.condition.NotCondition;
+import pl.themolka.arcade.condition.NorCondition;
 import pl.themolka.arcade.condition.OptionalResult;
-import pl.themolka.arcade.condition.OrCondition;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
@@ -16,17 +15,17 @@ import pl.themolka.arcade.parser.Produces;
 
 import java.util.Set;
 
-public class NotOperator extends Operator {
-    protected NotOperator(Game game, IGameConfig.Library library, Config config) {
+public class NorOperator extends Operator {
+    protected NorOperator(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
     }
 
     @Override
     public AbstainableResult filter(Object... objects) {
-        return OptionalResult.valueOf(new NotCondition(new OrCondition(this.getBody())).query(objects));
+        return OptionalResult.valueOf(new NorCondition(this.getBody()).query(objects));
     }
 
-    @NestedParserName("not")
+    @NestedParserName("nor")
     @Produces(Config.class)
     public static class OperatorParser extends BaseOperatorParser<Config> {
         @Override
@@ -39,10 +38,10 @@ public class NotOperator extends Operator {
         }
     }
 
-    public interface Config extends Operator.Config<NotOperator> {
+    public interface Config extends Operator.Config<NorOperator> {
         @Override
-        default NotOperator create(Game game, Library library) {
-            return new NotOperator(game, library, this);
+        default NorOperator create(Game game, Library library) {
+            return new NorOperator(game, library, this);
         }
     }
 }
