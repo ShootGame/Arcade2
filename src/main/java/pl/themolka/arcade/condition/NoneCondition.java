@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 
-public class NoneCondition<K> extends AnyCondition<K> {
+public class NoneCondition<K> extends OrCondition<K> {
     public NoneCondition(Collection<Condition<K, AbstainableResult>> none) {
         super(none);
     }
@@ -22,6 +22,6 @@ public class NoneCondition<K> extends AnyCondition<K> {
 
     @Override
     public String toString() {
-        return "none(" + StringUtils.join(this.getConditions(), ", ") + ")";
+        return "NONE(" + StringUtils.join(this.conditions, ", ") + ")";
     }
 }

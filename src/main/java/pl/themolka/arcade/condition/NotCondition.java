@@ -12,6 +12,6 @@ public class NotCondition<K, V extends InvertableResult<V>> extends SingleCondit
 
     @Override
     public String toString() {
-        return "not(" + this.getCondition().toString() + ")";
+        return "NOT(" + this.getCondition().toString() + ")";
     }
 }

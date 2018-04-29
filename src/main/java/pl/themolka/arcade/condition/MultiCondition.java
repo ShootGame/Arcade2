@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class MultiCondition<K> implements Condition<K, AbstainableResult> {
-    private final List<Condition<K, AbstainableResult>> conditions;
+    protected final List<Condition<K, AbstainableResult>> conditions;
 
     public MultiCondition(Collection<Condition<K, AbstainableResult>> conditions) {
         this.conditions = ImmutableList.copyOf(conditions);
@@ -23,6 +23,18 @@ public abstract class MultiCondition<K> implements Condition<K, AbstainableResul
         }
 
         return this.defaultValue();
+    }
+
+    public AbstainableResult query(K[] k) {
+        for (K item : k) {
+            AbstainableResult result = this.query(item);
+
+            if (result.isNotAbstaining()) {
+                return result;
+            }
+        }
+
+        return OptionalResult.ABSTAIN;
     }
 
     public abstract AbstainableResult defaultValue();

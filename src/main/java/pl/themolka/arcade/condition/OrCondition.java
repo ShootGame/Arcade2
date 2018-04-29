@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 
-public class AnyCondition<K> extends MultiCondition<K> {
-    public AnyCondition(Collection<Condition<K, AbstainableResult>> any) {
-        super(any);
+public class OrCondition<K> extends MultiCondition<K> {
+    public OrCondition(Collection<Condition<K, AbstainableResult>> or) {
+        super(or);
     }
 
     @Override
@@ -22,6 +22,6 @@ public class AnyCondition<K> extends MultiCondition<K> {
 
     @Override
     public String toString() {
-        return "any(" + StringUtils.join(this.getConditions(), ", ") + ")";
+        return "OR(" + StringUtils.join(this.conditions, ", ") + ")";
     }
 }

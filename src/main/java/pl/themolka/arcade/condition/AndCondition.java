@@ -4,9 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 
-public class AllCondition<K> extends MultiCondition<K> {
-    public AllCondition(Collection<Condition<K, AbstainableResult>> all) {
-        super(all);
+public class AndCondition<K> extends MultiCondition<K> {
+    public AndCondition(Collection<Condition<K, AbstainableResult>> and) {
+        super(and);
     }
 
     @Override
@@ -23,6 +23,6 @@ public class AllCondition<K> extends MultiCondition<K> {
 
     @Override
     public String toString() {
-        return "all(" + StringUtils.join(this.getConditions(), ", ") + ")";
+        return "AND(" + StringUtils.join(this.conditions, ", ") + ")";
     }
 }
