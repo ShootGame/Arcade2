@@ -1,23 +1,23 @@
 package pl.themolka.arcade.condition;
 
-public enum SimpleResult implements ConditionResult, InvertableResult<SimpleResult> {
+public enum BooleanResult implements ConditionResult, InvertableResult<BooleanResult> {
     TRUE(true) {
         @Override
-        public SimpleResult invert() {
+        public BooleanResult invert() {
             return FALSE;
         }
     },
 
     FALSE(false) {
         @Override
-        public SimpleResult invert() {
+        public BooleanResult invert() {
             return TRUE;
         }
     };
 
     private final boolean value;
 
-    SimpleResult(boolean value) {
+    BooleanResult(boolean value) {
         this.value = value;
     }
 
@@ -50,11 +50,11 @@ public enum SimpleResult implements ConditionResult, InvertableResult<SimpleResu
     // Instancing
     //
 
-    public static SimpleResult fromBoolean(boolean value) {
+    public static BooleanResult fromBoolean(boolean value) {
         return value ? TRUE : FALSE;
     }
 
-    public static SimpleResult valueOf(ConditionResult result) {
+    public static BooleanResult valueOf(ConditionResult result) {
         return fromBoolean(result.toBoolean());
     }
 }

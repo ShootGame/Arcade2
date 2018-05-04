@@ -14,11 +14,13 @@ public abstract class MultiCondition<K> implements Condition<K, AbstainableResul
 
     @Override
     public AbstainableResult query(K k) {
-        for (Condition<K, AbstainableResult> condition : this.conditions) {
-            AbstainableResult result = this.query(k, condition);
+        if (k != null) {
+            for (Condition<K, AbstainableResult> condition : this.conditions) {
+                AbstainableResult result = this.query(k, condition);
 
-            if (result.isNotAbstaining()) {
-                return result;
+                if (result.isNotAbstaining()) {
+                    return result;
+                }
             }
         }
 
@@ -26,11 +28,13 @@ public abstract class MultiCondition<K> implements Condition<K, AbstainableResul
     }
 
     public AbstainableResult query(K[] k) {
-        for (K item : k) {
-            AbstainableResult result = this.query(item);
+        if (k != null) {
+            for (K item : k) {
+                AbstainableResult result = this.query(item);
 
-            if (result.isNotAbstaining()) {
-                return result;
+                if (result.isNotAbstaining()) {
+                    return result;
+                }
             }
         }
 
