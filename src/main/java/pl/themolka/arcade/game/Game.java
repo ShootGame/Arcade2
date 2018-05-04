@@ -22,7 +22,7 @@ import java.util.UUID;
 /**
  * A game representation of the currently playing map.
  */
-public class Game implements Messageable {
+public class Game implements Messageable, PlayerResolver {
     private final ArcadePlugin plugin;
 
     private final int gameId;
@@ -49,6 +49,16 @@ public class Game implements Messageable {
         this.map = map;
         this.windowRegistry = new GameWindowRegistry(this);
         this.world = new WeakReference<>(world);
+    }
+
+    @Override
+    public GamePlayer resolve(String username) {
+        return this.players.resolve(username);
+    }
+
+    @Override
+    public GamePlayer resolve(UUID uniqueId) {
+        return this.players.resolve(uniqueId);
     }
 
     @Override

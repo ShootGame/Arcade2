@@ -12,11 +12,12 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.Set;
 
-@Produces(RegionFieldStrategy.class)
-public class RegionFieldStrategyParser extends ElementParser<RegionFieldStrategy>
+@Produces(IRegionFieldStrategy.class)
+public class RegionFieldStrategyParser extends ElementParser<IRegionFieldStrategy>
                                        implements InstallableParser {
     private Parser<String> textParser;
 
@@ -31,15 +32,16 @@ public class RegionFieldStrategyParser extends ElementParser<RegionFieldStrategy
     }
 
     @Override
-    protected ParserResult<RegionFieldStrategy> parseElement(Element element, String name, String value) throws ParserException {
+    protected ParserResult<IRegionFieldStrategy> parseElement(Element element, String name, String value) throws ParserException {
         String text = this.textParser.parseWithDefinition(element, name, value).orFail();
 
         try {
             Field field = RegionFieldStrategy.class.getField(this.normalizeFieldName(text));
-            field.setAccessible(true);
 
-            if (RegionFieldStrategy.class.isAssignableFrom(field.getType())) {
-                return ParserResult.fine(element, name, value, (RegionFieldStrategy) field.get(null));
+            if (field.isAccessible() && Modifier.isStatic(field.getModifiers())) {
+                if (RegionFieldStrategy.class.isAssignableFrom(field.getType())) {
+                    return ParserResult.fine(element, name, value, (RegionFieldStrategy) field.get(null));
+                }
             }
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }

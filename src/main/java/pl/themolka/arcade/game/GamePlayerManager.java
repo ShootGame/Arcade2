@@ -5,11 +5,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class GamePlayerManager {
+public class GamePlayerManager implements PlayerResolver {
     /** Storing online players. */
     private final Map<UUID, GamePlayer> online = new HashMap<>();
     /** Storing all players ever joined. */
     private final Map<UUID, GamePlayer> players = new HashMap<>();
+
+    @Override
+    public GamePlayer resolve(String username) {
+        for (GamePlayer everPlayed : this.players.values()) {
+            if (everPlayed.getUsername().equalsIgnoreCase(username)) {
+                return everPlayed;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public GamePlayer resolve(UUID uniqueId) {
+        return this.getPlayer(uniqueId);
+    }
 
     public Collection<GamePlayer> getAllPlayers() {
         return this.players.values();
