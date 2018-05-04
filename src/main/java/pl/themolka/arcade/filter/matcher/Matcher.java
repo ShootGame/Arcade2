@@ -7,9 +7,11 @@ import pl.themolka.arcade.filter.Filter;
 public abstract class Matcher<T> implements Filter {
     @Override
     public final AbstainableResult filter(Object... objects) {
-        for (Object object : objects) {
-            if (this.find(object)) {
-                return OptionalResult.TRUE;
+        if (objects != null) {
+            for (Object object : objects) {
+                if (this.find(object)) {
+                    return OptionalResult.TRUE;
+                }
             }
         }
 

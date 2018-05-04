@@ -12,6 +12,7 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.team.Team;
+import pl.themolka.arcade.team.TeamHolder;
 
 public class TeamMatcher extends ConfigurableMatcher<Team> {
     protected TeamMatcher(Config config) {
@@ -20,7 +21,17 @@ public class TeamMatcher extends ConfigurableMatcher<Team> {
 
     @Override
     public boolean find(Object object) {
+        if (object instanceof Team) {
+            return this.matches((Team) object);
+        } else if (object instanceof TeamHolder) {
+            return this.matches((TeamHolder) object);
+        }
+
         return false;
+    }
+
+    public boolean matches(TeamHolder teamHolder) {
+        return teamHolder != null && this.matches(teamHolder.getTeam());
     }
 
     @NestedParserName("team")

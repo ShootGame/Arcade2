@@ -9,6 +9,7 @@ public class BaseMatcherParser<T extends Matcher.Config<?>> extends BaseFilterPa
                                                             implements InstallableParser {
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
+        super.install(context);
     }
 
     @Override
