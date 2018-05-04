@@ -1,11 +1,12 @@
 package pl.themolka.arcade.event;
 
+import org.bukkit.event.Listener;
 import pl.themolka.arcade.game.GameModule;
 
 import java.util.Collections;
 import java.util.List;
 
-public interface EventListenerComponent {
+public interface EventListenerComponent extends Listener {
     boolean REGISTER_THIS_TOO = true;
 
     default List<Object> getEventListeners() {
