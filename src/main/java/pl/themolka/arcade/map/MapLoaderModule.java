@@ -10,7 +10,6 @@ import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.repository.RepositoriesModule;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,9 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-@ModuleInfo(id = "Map-Loader",
-        loadBefore = {
-                RepositoriesModule.class})
+@ModuleInfo(id = "Map-Loader")
 public class MapLoaderModule extends SimpleGlobalModule implements MapContainerLoader {
     private final List<File> worldFiles = new ArrayList<>();
 

@@ -49,13 +49,16 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
                 continue;
             }
 
-            winner.addGoal(entry.getValue());
+            KillEnemies goal = entry.getValue();
+            goal.injectParticipatorResolver(this.match);
+
+            winner.addGoal(goal);
         }
     }
 
     @Override
     public List<MatchWinner> getDynamicWinners() {
-        double highestProgress = Goal.PROGRESS_UNTOUCHED;
+        double highestProgress = Goal.PROGRESS_UNTOUCHED.getValue();
 
         List<MatchWinner> results = new ArrayList<>();
         for (MatchWinner winner : this.getMatch().getWinnerList()) {
@@ -69,7 +72,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
                 continue;
             }
 
-            double progress = objective.getProgress();
+            double progress = objective.getProgress().getValue();
             if (progress > highestProgress) {
                 results.clear();
                 highestProgress = progress;
@@ -80,7 +83,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
             }
         }
 
-        if (highestProgress != Goal.PROGRESS_UNTOUCHED && !results.isEmpty()) {
+        if (highestProgress != Goal.PROGRESS_UNTOUCHED.getValue() && !results.isEmpty()) {
             return results;
         }
 
@@ -117,7 +120,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     public void refreshObjectives(Participator completer) {
         for (KillEnemies objective : this.byOwner.values()) {
             if (objective.isCompleted()) {
-                objective.setCompleted(completer);
+                objective.setCompleted(true, completer);
             }
         }
     }

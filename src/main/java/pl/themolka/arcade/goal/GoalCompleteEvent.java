@@ -1,6 +1,5 @@
 package pl.themolka.arcade.goal;
 
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Participator;
 
 /**
@@ -9,8 +8,8 @@ import pl.themolka.arcade.game.Participator;
 public class GoalCompleteEvent extends GoalEvent {
     private final Participator completer;
 
-    private GoalCompleteEvent(ArcadePlugin plugin, Goal goal, Participator completer) {
-        super(plugin, goal);
+    private GoalCompleteEvent(Goal goal, Participator completer) {
+        super(goal);
 
         this.completer = completer;
     }
@@ -23,11 +22,11 @@ public class GoalCompleteEvent extends GoalEvent {
         return this.completer != null;
     }
 
-    public static GoalCompleteEvent call(ArcadePlugin plugin, Goal goal) {
-        return call(plugin, goal, null);
+    public static GoalCompleteEvent call(Goal goal) {
+        return call(goal, null);
     }
 
-    public static GoalCompleteEvent call(ArcadePlugin plugin, Goal goal, Participator completer) {
-        return plugin.getEventBus().postEvent(new GoalCompleteEvent(plugin, goal, completer));
+    public static GoalCompleteEvent call(Goal goal, Participator completer) {
+        return goal.getPlugin().getEventBus().postEvent(new GoalCompleteEvent(goal, completer));
     }
 }

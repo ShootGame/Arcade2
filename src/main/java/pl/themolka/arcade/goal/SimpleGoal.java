@@ -2,10 +2,13 @@ package pl.themolka.arcade.goal;
 
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.game.ParticipatorResolver;
 
-public abstract class SimpleGoal implements Goal {
+public abstract class SimpleGoal implements Goal, ParticipatorResolver.Injector {
     // The "ToStringStyle.SHORT_PREFIX_STYLE" strings are long and unreadable here.
     public static final ToStringStyle TO_STRING_STYLE = ToStringStyle.MULTI_LINE_STYLE;
 
@@ -13,14 +16,22 @@ public abstract class SimpleGoal implements Goal {
 
     private boolean completed = false;
     private Participator completedBy = null;
-    private String name = null;
+    private String name;
     private Participator owner;
+    private ParticipatorResolver participatorResolver = ParticipatorResolver.NULL;
     private boolean touched = false;
 
+    @Deprecated
     public SimpleGoal(Game game, Participator owner) {
         this.game = game;
 
         this.owner = owner;
+    }
+
+    protected SimpleGoal(Game game, IGameConfig.Library library, Config<?> config) {
+        this.game = game;
+        this.name = config.name();
+        this.owner = library.getOrDefine(game, config.owner().get());
     }
 
     @Override
@@ -41,6 +52,11 @@ public abstract class SimpleGoal implements Goal {
     @Override
     public Participator getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public void injectParticipatorResolver(ParticipatorResolver participatorResolver) {
+        this.participatorResolver = participatorResolver;
     }
 
     @Override
@@ -65,11 +81,14 @@ public abstract class SimpleGoal implements Goal {
 
     @Override
     public void setCompleted(boolean completed, Participator completer) {
-        if (completed) {
-            this.setCompleted(completer);
-        } else {
-            this.setCompleted(false);
-            this.reset();
+        if (this.completed != completed) {
+            if (this.completed = completed) {
+                this.completedBy = completer;
+                this.complete(completer);
+            } else {
+                this.setCompleted(false);
+                this.reset();
+            }
         }
     }
 
@@ -81,6 +100,10 @@ public abstract class SimpleGoal implements Goal {
 
     public abstract String getDefaultName();
 
+    public ParticipatorResolver getParticipatorResolver() {
+        return this.participatorResolver;
+    }
+
     public boolean hasOwner() {
         return this.owner != null;
     }
@@ -90,18 +113,7 @@ public abstract class SimpleGoal implements Goal {
     }
 
     public void setCompleted(boolean completed) {
-        this.completed = completed;
-
-        if (!completed) {
-            this.completedBy = null;
-        }
-    }
-
-    public void setCompleted(Participator completer) {
-        this.setCompleted(true);
-        this.completedBy = completer;
-
-        this.complete(completer);
+        this.setCompleted(completed, null);
     }
 
     public void setName(String name) {
@@ -114,5 +126,10 @@ public abstract class SimpleGoal implements Goal {
 
     public void setTouched(boolean touched) {
         this.touched = touched;
+    }
+
+    public interface Config<T extends SimpleGoal> extends IGameConfig<T> {
+        String name();
+        Ref<Participator.Config<?>> owner();
     }
 }

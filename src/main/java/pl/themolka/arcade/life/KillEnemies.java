@@ -10,6 +10,8 @@ import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCompleteEvent;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.SimpleInteractableGoal;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Percentage;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.LinkedHashSet;
@@ -25,7 +27,7 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
     private final String id;
 
     protected KillEnemies(Game game, IGameConfig.Library library, Config config) {
-        super(game, library.getOrDefine(game, config.owner().get()));
+        super(game, library, config);
 
         this.enemies = new LinkedHashSet<>();
         for (Ref<Participator.Config<?>> enemy : config.enemies()) {
@@ -38,7 +40,7 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
     @Override
     protected void complete(Participator completer) {
         if (!super.isCompleted()) {
-            GoalCompleteEvent.call(this.getGame().getPlugin(), this, completer);
+            GoalCompleteEvent.call(this, completer);
         }
     }
 
@@ -53,10 +55,9 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
     }
 
     @Override
-    public double getProgress() {
+    public FinitePercentage getProgress() {
         int allies = this.getOwner().getPlayers().size();
-        Set<GamePlayer> enemies = this.getEnemyPlayers();
-        return PROGRESS_SCORED / (allies + enemies.size()) * allies;
+        return Percentage.trim(PROGRESS_SCORED.getValue() / (allies + this.enemies.size()) * allies);
     }
 
     @Override
@@ -89,8 +90,7 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
         return players;
     }
 
-    public interface Config extends IGameConfig<KillEnemies>, Unique {
-        Ref<Participator.Config<?>> owner();
+    public interface Config extends SimpleInteractableGoal.Config<KillEnemies>, Unique {
         Set<Ref<Participator.Config<?>>> enemies();
 
         @Override

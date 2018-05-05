@@ -1,39 +1,37 @@
 package pl.themolka.arcade.goal;
 
 import pl.themolka.arcade.game.Game;
-import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Percentage;
 
 public abstract class SimpleProgressGoal extends SimpleGoal {
-    private double initialProgress;
-    private double progress;
+    private FinitePercentage initialProgress;
+    private FinitePercentage progress;
 
-    public SimpleProgressGoal(Game game, Participator owner) {
-        this(game, owner, PROGRESS_UNTOUCHED);
-    }
+    protected SimpleProgressGoal(Game game, IGameConfig.Library library, Config<?> config) {
+        super(game, library, config);
 
-    public SimpleProgressGoal(Game game, Participator owner, double initialProgress) {
-        super(game, owner);
-
-        this.initialProgress = initialProgress;
-        this.progress = initialProgress;
+        this.initialProgress = config.initialProgress();
+        this.progress = config.initialProgress();
     }
 
     @Override
-    public double getProgress() {
+    public FinitePercentage getProgress() {
         return this.progress;
     }
 
-    public double getInitialProgress() {
+    public FinitePercentage getInitialProgress() {
         return this.initialProgress;
     }
 
     public void setProgress(double progress) {
-        if (progress > PROGRESS_SCORED) {
-            progress = PROGRESS_SCORED;
-        } else if (progress < PROGRESS_UNTOUCHED) {
-            progress = PROGRESS_UNTOUCHED;
-        }
+        this.progress = Percentage.trim(progress);
+    }
 
-        this.progress = progress;
+    public interface Config<T extends SimpleProgressGoal> extends SimpleGoal.Config<T> {
+        FinitePercentage DEFAULT_INITIAL_PROGRESS = Goal.PROGRESS_UNTOUCHED;
+
+        default FinitePercentage initialProgress() { return DEFAULT_INITIAL_PROGRESS; }
     }
 }

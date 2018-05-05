@@ -1,6 +1,5 @@
 package pl.themolka.arcade.goal;
 
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Participator;
 
 /**
@@ -9,8 +8,8 @@ import pl.themolka.arcade.game.Participator;
 public class GoalLoseEvent extends GoalEvent {
     private final Participator loser;
 
-    private GoalLoseEvent(ArcadePlugin plugin, Goal goal, Participator loser) {
-        super(plugin, goal);
+    private GoalLoseEvent(Goal goal, Participator loser) {
+        super(goal);
 
         this.loser = loser;
     }
@@ -23,11 +22,11 @@ public class GoalLoseEvent extends GoalEvent {
         return this.loser != null;
     }
 
-    public static GoalLoseEvent call(ArcadePlugin plugin, Goal goal) {
-        return call(plugin, goal, null);
+    public static GoalLoseEvent call(Goal goal) {
+        return call(goal, null);
     }
 
-    public static GoalLoseEvent call(ArcadePlugin plugin, Goal goal, Participator loser) {
-        return plugin.getEventBus().postEvent(new GoalLoseEvent(plugin, goal, loser));
+    public static GoalLoseEvent call(Goal goal, Participator loser) {
+        return goal.getPlugin().getEventBus().postEvent(new GoalLoseEvent(goal, loser));
     }
 }

@@ -97,7 +97,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
             return false;
         }
 
-        GoalCreateEvent.call(this.game.getPlugin(), goal);
+        GoalCreateEvent.call(goal);
         return this.goals.add(goal);
     }
 

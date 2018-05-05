@@ -1,10 +1,10 @@
 package pl.themolka.arcade.kit.content;
 
 import com.google.common.collect.ImmutableSet;
+import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserMap;
-import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Produces(KitContent.Config.class)
-public class RootContentParser extends NodeParser<KitContent.Config<?, ?>>
+public class RootContentParser extends ConfigParser<KitContent.Config<?, ?>>
                                implements InstallableParser {
     private static final Set<Class<?>> types = ImmutableSet.<Class<?>>builder()
             .add(AbsorptionContent.class)
@@ -92,6 +92,6 @@ public class RootContentParser extends NodeParser<KitContent.Config<?, ?>>
             throw this.fail(node, null, name, "Unknown kit content type");
         }
 
-        return ParserResult.fine(node, name, value, parser.parseWithName(node, name).orFail());
+        return ParserResult.fine(node, name, value, parser.parseWithDefinition(node, name, value).orFail());
     }
 }

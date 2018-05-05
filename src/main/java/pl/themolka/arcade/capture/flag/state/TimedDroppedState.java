@@ -7,9 +7,10 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.FinitePercentage;
 
 public class TimedDroppedState extends FlagState.Progress implements FlagState.PhysicalFlag {
-    public static final double LOST = Progress.ZERO;
+    public static final FinitePercentage LOST = Progress.ZERO;
 
     private final DroppedState droppedState;
     private final Time timeout;
@@ -46,7 +47,7 @@ public class TimedDroppedState extends FlagState.Progress implements FlagState.P
         this.droppedState.heartbeat(ticks, match, owner);
         this.progress();
 
-        if (this.getProgress() <= LOST) { // The flag is lost at 0%.
+        if (this.getProgress().getValue() <= LOST.getValue()) { // The flag is lost at 0%.
         }
     }
 

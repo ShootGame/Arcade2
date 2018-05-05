@@ -8,6 +8,7 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.util.FinitePercentage;
 
 public abstract class FlagState extends CapturableState<Flag, FlagState> {
     protected final Flag flag;
@@ -34,13 +35,13 @@ public abstract class FlagState extends CapturableState<Flag, FlagState> {
     }
 
     public abstract static class Progress extends FlagState implements CapturableState.Progress {
-        private double progress;
+        private FinitePercentage progress;
 
         public Progress(Flag flag) {
             this(flag, ZERO);
         }
 
-        public Progress(Flag flag, double progress) {
+        public Progress(Flag flag, FinitePercentage progress) {
             super(flag);
 
             this.progress = progress;
@@ -57,18 +58,12 @@ public abstract class FlagState extends CapturableState<Flag, FlagState> {
         }
 
         @Override
-        public double getProgress() {
+        public FinitePercentage getProgress() {
             return this.progress;
         }
 
         @Override
-        public void setProgress(double progress) {
-            if (progress < ZERO) {
-                progress = ZERO;
-            } else if (progress > DONE) {
-                progress = DONE;
-            }
-
+        public void setProgress(FinitePercentage progress) {
             this.progress = progress;
         }
 

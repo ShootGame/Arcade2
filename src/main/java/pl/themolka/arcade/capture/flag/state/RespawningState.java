@@ -8,9 +8,10 @@ import pl.themolka.arcade.capture.flag.FlagSpawn;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.match.Match;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.FinitePercentage;
 
 public class RespawningState extends FlagState.Progress implements FlagState.VirtualFlag {
-    public static final double RESPAWNED = Progress.DONE;
+    public static final FinitePercentage RESPAWNED = Progress.DONE;
 
     private final FlagSpawn target;
     private final Time time;
@@ -36,7 +37,7 @@ public class RespawningState extends FlagState.Progress implements FlagState.Vir
     public void heartbeat(long ticks, Match match, Participator owner) {
         this.progress();
 
-        if (this.getProgress() >= RESPAWNED) {
+        if (this.getProgress().getValue() >= RESPAWNED.getValue()) {
             Location location = this.target.nextLocationOrDefault(100);
             if (location == null) {
                 // Try in the next heartbeat then.

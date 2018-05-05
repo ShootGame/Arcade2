@@ -1,6 +1,5 @@
 package pl.themolka.arcade.score;
 
-import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
@@ -11,6 +10,8 @@ import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.goal.GoalResetEvent;
 import pl.themolka.arcade.goal.SimpleGoal;
 import pl.themolka.arcade.match.Match;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Percentage;
 
 public class Score extends SimpleGoal {
     public static final String DEFAULT_GOAL_NAME = "Score";
@@ -27,8 +28,7 @@ public class Score extends SimpleGoal {
     private double score;
 
     protected Score(Game game, IGameConfig.Library library, Config config) {
-        super(game, library.getOrDefine(game, config.owner().get()));
-        super.setName(config.name());
+        super(game, library, config);
 
         this.deathLoss = config.deathLoss();
         this.initialScore = config.initialScore();
@@ -49,7 +49,7 @@ public class Score extends SimpleGoal {
                 this.getPlugin().getEventBus().publish(new ScoreLimitReachEvent(this.getPlugin(), this));
             }
 
-            GoalCompleteEvent.call(this.getPlugin(), this, event.getCompleter());
+            GoalCompleteEvent.call(this, event.getCompleter());
         }
     }
 
@@ -65,19 +65,19 @@ public class Score extends SimpleGoal {
      * @return a double between 0 (0% - untouched) and 1 (100% - completed).
      */
     @Override
-    public double getProgress() {
+    public FinitePercentage getProgress() {
         if (!this.hasLimit()) {
             return Goal.PROGRESS_UNTOUCHED;
         }
 
         double progress = this.getScore() / this.limit;
-        if (progress < Goal.PROGRESS_UNTOUCHED) {
+        if (progress < Goal.PROGRESS_UNTOUCHED.getValue()) {
             return Goal.PROGRESS_UNTOUCHED;
-        } else if (progress > Goal.PROGRESS_SCORED) {
+        } else if (progress > Goal.PROGRESS_SCORED.getValue()) {
             return Goal.PROGRESS_SCORED;
         }
 
-        return progress;
+        return Percentage.finite(progress);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class Score extends SimpleGoal {
         this.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            GoalResetEvent.call(this.getPlugin(), this);
+            GoalResetEvent.call(this);
 
             this.score = this.initialScore;
             this.setCompleted(false);
@@ -149,17 +149,17 @@ public class Score extends SimpleGoal {
             return;
         }
 
-        double oldProgress = this.getProgress();
+        FinitePercentage oldProgress = this.getProgress();
         double newScore = this.getScore() + points;
 
         if (!isValid(newScore)) {
             this.score = newScore;
             this.setTouched(true);
 
-            GoalProgressEvent.call(this.getPlugin(), this, event.getCompleter(), oldProgress);
+            GoalProgressEvent.call(this, event.getCompleter(), oldProgress);
 
             if (this.isCompleted()) {
-                this.setCompleted(event.getCompleter());
+                this.setCompleted(true, event.getCompleter());
             }
         }
     }
@@ -170,6 +170,7 @@ public class Score extends SimpleGoal {
 
     public void setMatch(Match match) {
         this.match = match;
+        this.injectParticipatorResolver(match);
     }
 
     public static boolean outOfBounds(double score) {
@@ -180,7 +181,7 @@ public class Score extends SimpleGoal {
         return !outOfBounds(score) && score != ZERO;
     }
 
-    public interface Config extends IGameConfig<Score> {
+    public interface Config extends SimpleGoal.Config<Score> {
         double DEFAULT_DEATH_LOSS = Score.ZERO;
         double DEFAULT_INITIAL_SCORE = Score.ZERO;
         double DEFAULT_KILL_REWARD = Score.ZERO;
@@ -190,8 +191,6 @@ public class Score extends SimpleGoal {
         double initialScore();
         double killReward();
         double limit();
-        String name();
-        Ref<Participator.Config<?>> owner();
 
         @Override
         default Score create(Game game, Library library) {

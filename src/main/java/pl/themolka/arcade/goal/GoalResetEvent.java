@@ -1,16 +1,14 @@
 package pl.themolka.arcade.goal;
 
-import pl.themolka.arcade.ArcadePlugin;
-
 /**
  * Called when a `Goal` is being reset.
  */
 public class GoalResetEvent extends GoalEvent {
-    private GoalResetEvent(ArcadePlugin plugin, Goal goal) {
-        super(plugin, goal);
+    private GoalResetEvent(Goal goal) {
+        super(goal);
     }
 
-    public static GoalResetEvent call(ArcadePlugin plugin, Goal goal) {
-        return plugin.getEventBus().postEvent(new GoalResetEvent(plugin, goal));
+    public static GoalResetEvent call(Goal goal) {
+        return goal.getPlugin().getEventBus().postEvent(new GoalResetEvent(goal));
     }
 }

@@ -3,17 +3,18 @@ package pl.themolka.arcade.capture.flag;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
+import pl.themolka.arcade.region.IRegionFieldStrategy;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 
 public class FlagCapture {
-    public static final RegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.EXACT;
+    public static final IRegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.EXACT;
     public static final Filter DEFAULT_FILTER = Filters.undefined();
 
     private final CaptureGame game;
     private final Flag flag;
 
-    private RegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
+    private IRegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
     private Filter filter = DEFAULT_FILTER;
     private Region region;
 
@@ -26,7 +27,7 @@ public class FlagCapture {
         return this.filter.filter(this.flag).isNotFalse();
     }
 
-    public RegionFieldStrategy getFieldStrategy() {
+    public IRegionFieldStrategy getFieldStrategy() {
         return this.fieldStrategy;
     }
 
@@ -42,7 +43,7 @@ public class FlagCapture {
         return this.region;
     }
 
-    public void setFieldStrategy(RegionFieldStrategy fieldStrategy) {
+    public void setFieldStrategy(IRegionFieldStrategy fieldStrategy) {
         this.fieldStrategy = fieldStrategy;
     }
 

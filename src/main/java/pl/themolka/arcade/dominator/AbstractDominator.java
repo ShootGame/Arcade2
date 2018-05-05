@@ -10,10 +10,6 @@ import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractDominator implements Dominator {
-    protected Multimap<Participator, GamePlayer> copy(Multimap<Participator, GamePlayer> input) {
-        return ImmutableMultimap.copyOf(input);
-    }
-
     protected Multimap<Participator, GamePlayer> empty() {
         return ImmutableMultimap.of();
     }
@@ -25,6 +21,6 @@ public abstract class AbstractDominator implements Dominator {
     protected Multimap<Participator, GamePlayer> singleton(Participator participator, Collection<GamePlayer> players) {
         Multimap<Participator, GamePlayer> map = ArrayListMultimap.create();
         map.putAll(participator, players);
-        return this.copy(map);
+        return ImmutableMultimap.copyOf(map);
     }
 }

@@ -5,20 +5,23 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import pl.themolka.arcade.capture.CapturableFactory;
 import pl.themolka.arcade.capture.CaptureGame;
+import pl.themolka.arcade.dom.EmptyElement;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.FiltersGame;
 import pl.themolka.arcade.filter.FiltersModule;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.parser.EnumParser;
+import pl.themolka.arcade.parser.Parser;
+import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.number.DoubleParser;
+import pl.themolka.arcade.region.IRegionFieldStrategy;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
-import pl.themolka.arcade.xml.XMLParser;
 import pl.themolka.arcade.xml.XMLRegion;
 
-public class FlagFactory implements CapturableFactory<Flag> {
-    @Override
+public class FlagFactory {
     public Flag newCapturable(CaptureGame game, Participator owner, String id, String name, Element xml) throws JDOMException {
         return this.parseFlagXml(game, xml, new Flag(game, owner, id));
     }
@@ -41,7 +44,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
 
                 banner = findBannerIn(spawn.getRegion());
 
-                float yaw = (float) XMLParser.parseDouble(xml.getAttributeValue("yaw"), Integer.MAX_VALUE);
+                float yaw = (float) parseDouble(xml.getAttributeValue("yaw"), Integer.MAX_VALUE);
                 if (yaw > 180 || yaw < -180) {
                     if (banner == null) {
                         continue;
@@ -109,7 +112,7 @@ public class FlagFactory implements CapturableFactory<Flag> {
         return def;
     }
 
-    private RegionFieldStrategy findRegionFieldStrategy(Element xml, RegionFieldStrategy def) {
+    private IRegionFieldStrategy findRegionFieldStrategy(Element xml, IRegionFieldStrategy def) {
         return xml != null ? RegionFieldStrategyValues.of(xml.getAttributeValue("field"), def) : def;
     }
 
@@ -121,16 +124,16 @@ public class FlagFactory implements CapturableFactory<Flag> {
         NOWHERE(RegionFieldStrategy.NOWHERE), // nowhere
         ;
 
-        final RegionFieldStrategy strategy;
+        final IRegionFieldStrategy strategy;
 
-        RegionFieldStrategyValues(RegionFieldStrategy strategy) {
+        RegionFieldStrategyValues(IRegionFieldStrategy strategy) {
             this.strategy = strategy;
         }
 
-        static RegionFieldStrategy of(String value, RegionFieldStrategy def) {
+        static IRegionFieldStrategy of(String value, IRegionFieldStrategy def) {
             if (value != null) {
                 try {
-                    return valueOf(XMLParser.parseEnumValue(value)).strategy;
+                    return valueOf(parseEnumValue(value)).strategy;
                 } catch (IllegalArgumentException ignored) {
                 }
             }
@@ -143,6 +146,28 @@ public class FlagFactory implements CapturableFactory<Flag> {
         for (Block block : region) {
             if (BannerUtils.isBanner(block)) {
                 return (Banner) block.getState();
+            }
+        }
+
+        return null;
+    }
+
+    private static final Parser<Double> doubleParser = new DoubleParser();
+
+    public static double parseDouble(String input, double def) {
+        try {
+            return doubleParser.parseWithValue(EmptyElement.empty(), input).orFail();
+        } catch (ParserException ex) {
+            return def;
+        }
+    }
+
+    public static String parseEnumValue(String key) {
+        if (key != null) {
+            key = key.trim();
+
+            if (!key.isEmpty()) {
+                return EnumParser.toEnumValue(key);
             }
         }
 

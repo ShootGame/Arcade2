@@ -10,6 +10,6 @@ import pl.themolka.arcade.game.Participator;
 public class Everybody extends AbstractDominator {
     @Override
     public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
-        return this.copy(input); // copy so nothing else breaks
+        return input;
     }
 }

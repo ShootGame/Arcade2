@@ -10,10 +10,13 @@ import java.util.Map;
 /**
  * Only the one participator and if has more players than other dominates.
  */
-public class Majority extends Lead {
+public class Majority extends AbstractDominator {
+    private final Exclusive exclusive = new Exclusive();
+    private final Lead lead = new Lead();
+
     @Override
     public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
-        Map.Entry<Participator, Collection<GamePlayer>> dominator = this.getDominator(super.getDominators(input));
+        Map.Entry<Participator, Collection<GamePlayer>> dominator = this.findDominator(input);
         if (dominator == null) {
             return this.empty();
         }
@@ -34,11 +37,19 @@ public class Majority extends Lead {
         return playerCount > 0 ? this.singleton(dominator) : this.empty();
     }
 
-    private Map.Entry<Participator, Collection<GamePlayer>> getDominator(Multimap<Participator, GamePlayer> dominators) {
-        if (dominators.keySet().size() == 1) {
-            for (Map.Entry<Participator, Collection<GamePlayer>> entry : dominators.asMap().entrySet()) {
-                return entry;
-            }
+    private Map.Entry<Participator, Collection<GamePlayer>> findDominator(Multimap<Participator, GamePlayer> original) {
+        Multimap<Participator, GamePlayer> results = this.lead.getDominators(original);
+        if (results == null) {
+            return null;
+        }
+
+        results = this.exclusive.getDominators(results);
+        if (results == null) {
+            return null;
+        }
+
+        for (Map.Entry<Participator, Collection<GamePlayer>> entry : results.asMap().entrySet()) {
+            return entry;
         }
 
         return null;

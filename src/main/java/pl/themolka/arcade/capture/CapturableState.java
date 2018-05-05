@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.time.Time;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Percentage;
 
 public abstract class CapturableState<V extends Capturable, E extends CapturableState> {
     public static final ToStringStyle TO_STRING_STYLE = Capturable.TO_STRING_STYLE;
@@ -30,14 +32,14 @@ public abstract class CapturableState<V extends Capturable, E extends Capturable
     public abstract String toString();
 
     public interface Progress {
-        double ZERO = Goal.PROGRESS_UNTOUCHED;
-        double DONE = Goal.PROGRESS_SCORED;
+        FinitePercentage ZERO = Goal.PROGRESS_UNTOUCHED;
+        FinitePercentage DONE = Goal.PROGRESS_SCORED;
 
         CaptureGame getGame();
 
         Goal getGoal();
 
-        double getProgress();
+        FinitePercentage getProgress();
 
         Time getProgressTime();
 
@@ -54,12 +56,12 @@ public abstract class CapturableState<V extends Capturable, E extends Capturable
                 progressPerHeartbeat *= -1;
             }
 
-            double oldProgress = this.getProgress();
-            GoalProgressEvent.call(this.getGame().getPlugin(), this.getGoal(), oldProgress);
+            FinitePercentage oldProgress = this.getProgress();
+            GoalProgressEvent.call(this.getGoal(), oldProgress);
 
-            this.setProgress(oldProgress + progressPerHeartbeat);
+            this.setProgress(Percentage.trim(oldProgress.getValue() + progressPerHeartbeat));
         }
 
-        void setProgress(double progress);
+        void setProgress(FinitePercentage progress);
     }
 }

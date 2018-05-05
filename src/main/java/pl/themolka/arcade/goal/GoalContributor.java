@@ -4,11 +4,12 @@ import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.GamePlayerSnapshot;
 import pl.themolka.arcade.time.Time;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class GoalContributor extends GamePlayerSnapshot implements Comparable<GoalContributor> {
-    private Time lastTouch;
-    private int touches;
+    private List<Touch> touches = new ArrayList<>();
 
     public GoalContributor(GamePlayer source) {
         super(source);
@@ -29,28 +30,30 @@ public class GoalContributor extends GamePlayerSnapshot implements Comparable<Go
     }
 
     public Time getLastTouchTime() {
-        return this.lastTouch;
+        if (this.touches.isEmpty()) {
+            return null;
+        }
+
+        return this.touches.get(this.touches.size() - 1).time;
     }
 
     public int getTouches() {
-        return this.touches;
+        return this.touches.size();
     }
 
-    public void incrementTouch() {
-        this.setLastTouchTime(Time.now());
-        this.touches++;
+    public void touch() {
+        this.touches.add(new Touch(Time.now()));
     }
 
     public void resetTouches() {
-        this.setLastTouchTime(null);
-        this.touches = 0;
+        this.touches.clear();
     }
 
-    public void setLastTouchTime(Time lastTouch) {
-        this.lastTouch = lastTouch;
-    }
+    private class Touch {
+        final Time time;
 
-    public void setTouches(int touches) {
-        this.touches = touches;
+        Touch(Time time) {
+            this.time = time;
+        }
     }
 }

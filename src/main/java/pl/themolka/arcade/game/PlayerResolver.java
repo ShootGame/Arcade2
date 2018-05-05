@@ -33,6 +33,10 @@ public interface PlayerResolver {
     GamePlayer resolve(String username);
 
     GamePlayer resolve(UUID uniqueId);
+
+    interface Injector {
+        void injectPlayerResolver(PlayerResolver playerResolver);
+    }
 }
 
 class NullPlayerResolver implements PlayerResolver {

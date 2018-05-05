@@ -64,7 +64,7 @@ public class TeamParser extends ConfigParser<Team.Config>
             public boolean friendlyFire() { return friendlyFire; }
             public int minPlayers() { return minPlayers; }
             public int maxPlayers() { return maxPlayers; }
-            public String name() { return name; }
+            public String name() { return teamName; }
             public int slots() { return slots; }
         });
     }

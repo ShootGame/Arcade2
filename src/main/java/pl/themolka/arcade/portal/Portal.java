@@ -13,13 +13,14 @@ import pl.themolka.arcade.game.PlayerApplicable;
 import pl.themolka.arcade.kit.Kit;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.ForwardingRegion;
+import pl.themolka.arcade.region.IRegionFieldStrategy;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 import pl.themolka.arcade.spawn.SpawnApply;
 import pl.themolka.arcade.util.StringId;
 
 public class Portal extends ForwardingRegion implements PlayerApplicable, StringId {
-    public static final RegionFieldStrategy FIELD_STRATEGY = RegionFieldStrategy.NET;
+    public static final IRegionFieldStrategy FIELD_STRATEGY = RegionFieldStrategy.NET;
     public static final Sound TELEPORT_SOUND = Sound.ENTITY_ENDERMEN_TELEPORT;
 
     private final SpawnApply destination;
@@ -69,7 +70,7 @@ public class Portal extends ForwardingRegion implements PlayerApplicable, String
         return this.destination;
     }
 
-    public RegionFieldStrategy getFieldStrategy() {
+    public IRegionFieldStrategy getFieldStrategy() {
         return FIELD_STRATEGY;
     }
 

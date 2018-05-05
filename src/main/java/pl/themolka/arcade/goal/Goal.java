@@ -4,21 +4,22 @@ import org.bukkit.ChatColor;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.Participator;
-import pl.themolka.arcade.util.Percentage;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Progressive;
 
 /**
  * An abstract base class for all goals in games.
  */
-public interface Goal extends GameHolder {
-    /**
-     * This `Goal` is completed in 100%.
-     */
-    double PROGRESS_SCORED = Percentage.MAX_VALUE;
-
+public interface Goal extends GameHolder, Progressive {
     /**
      * This `Goal` is completed in 0%.
      */
-    double PROGRESS_UNTOUCHED = Percentage.MIN_VALUE;
+    FinitePercentage PROGRESS_UNTOUCHED = Progressive.DONE;
+
+    /**
+     * This `Goal` is completed in 100%.
+     */
+    FinitePercentage PROGRESS_SCORED = Progressive.DONE;
 
     /**
      * Colored name of this `Goal` displayed on goal results.
@@ -55,8 +56,10 @@ public interface Goal extends GameHolder {
      * NOTE: Unlimited loop in `#isCompleted() -> #getProgress()`.
      * @return percentage progress of this `Goal`
      */
-    default double getProgress() {
-        return this.isCompleted() ? PROGRESS_SCORED : PROGRESS_UNTOUCHED;
+    @Override
+    default FinitePercentage getProgress() {
+        return this.isCompleted() ? PROGRESS_SCORED
+                                  : PROGRESS_UNTOUCHED;
     }
 
     /**

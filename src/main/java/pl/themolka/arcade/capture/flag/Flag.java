@@ -55,18 +55,13 @@ public class Flag extends Capturable {
         this.objectiveResult++;
 
         if (!this.isObjective() || this.objectiveResult >= this.objective){
-            this.setCompleted(completer);
+            this.setCompleted(true, completer);
         }
     }
 
     @Override
     public String getDefaultName() {
         return DEFAULT_GOAL_NAME;
-    }
-
-    @Override
-    public boolean registerGoal() {
-        return this.isObjective();
     }
 
     @Override

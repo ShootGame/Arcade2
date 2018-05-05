@@ -8,6 +8,8 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.game.ParticipatorResolver;
 import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.time.Time;
@@ -18,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Match implements DynamicWinnable, GameHolder {
+public class Match implements DynamicWinnable, GameHolder, ParticipatorResolver {
     private final ArcadePlugin plugin;
 
     private final DrawMatchWinner drawWinner;
@@ -61,6 +63,16 @@ public class Match implements DynamicWinnable, GameHolder {
     @Override
     public Game getGame() {
         return this.game;
+    }
+
+    @Override
+    public Participator resolve(ArcadePlayer player) {
+        return this.findWinnerByPlayer(player);
+    }
+
+    @Override
+    public Participator resolve(GamePlayer player) {
+        return this.findWinnerByPlayer(player);
     }
 
     public void broadcastEndMessage(MatchWinner winner) {

@@ -8,6 +8,7 @@ import org.bukkit.util.Vector;
 import pl.themolka.arcade.capture.CaptureGame;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.filter.Filters;
+import pl.themolka.arcade.region.IRegionFieldStrategy;
 import pl.themolka.arcade.region.Region;
 import pl.themolka.arcade.region.RegionFieldStrategy;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 public class FlagSpawn {
-    public static final RegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.NET;
+    public static final IRegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.NET;
     public static final Filter DEFAULT_FILTER = Filters.undefined();
 
     private final Random random = new Random();
@@ -25,7 +26,7 @@ public class FlagSpawn {
 
     private Banner banner;
     private BlockFace direction;
-    private RegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
+    private IRegionFieldStrategy fieldStrategy = DEFAULT_FIELD_STRATEGY;
     private Filter filter = DEFAULT_FILTER;
     private Region region;
 
@@ -46,7 +47,7 @@ public class FlagSpawn {
         return this.direction;
     }
 
-    public RegionFieldStrategy getFieldStrategy() {
+    public IRegionFieldStrategy getFieldStrategy() {
         return this.fieldStrategy;
     }
 
@@ -109,7 +110,7 @@ public class FlagSpawn {
         this.direction = direction;
     }
 
-    public void setFieldStrategy(RegionFieldStrategy fieldStrategy) {
+    public void setFieldStrategy(IRegionFieldStrategy fieldStrategy) {
         this.fieldStrategy = fieldStrategy;
     }
 

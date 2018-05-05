@@ -1,38 +1,40 @@
 package pl.themolka.arcade.goal;
 
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.Progressive;
 
-public class GoalProgressEvent extends GoalEvent {
+public class GoalProgressEvent extends GoalEvent implements Progressive {
     private Participator completer;
-    private final double oldProgress;
-    private final double newProgress;
+    private final FinitePercentage oldProgress;
+    private final FinitePercentage newProgress;
 
-    private GoalProgressEvent(ArcadePlugin plugin, Goal goal, Participator completer, double oldProgress, double newProgress) {
-        super(plugin, goal);
+    private GoalProgressEvent(Goal goal, Participator completer, FinitePercentage oldProgress, FinitePercentage newProgress) {
+        super(goal);
 
         this.completer = completer;
         this.oldProgress = oldProgress;
         this.newProgress = newProgress;
     }
 
+    @Override
+    public FinitePercentage getProgress() {
+        return this.newProgress;
+    }
+
     public Participator getCompleter() {
         return this.completer;
     }
 
-    public double getOldProgress() {
+    public FinitePercentage getOldProgress() {
         return this.oldProgress;
     }
 
-    public double getNewProgress() {
-        return this.newProgress;
+    public static GoalProgressEvent call(Goal goal, FinitePercentage oldProgress) {
+        return call(goal, null, oldProgress);
     }
 
-    public static GoalProgressEvent call(ArcadePlugin plugin, Goal goal, double oldProgress) {
-        return call(plugin, goal, null, oldProgress);
-    }
-
-    public static GoalProgressEvent call(ArcadePlugin plugin, Goal goal, Participator completer, double oldProgress) {
-        return plugin.getEventBus().postEvent(new GoalProgressEvent(plugin, goal, completer, oldProgress, goal.getProgress()));
+    public static GoalProgressEvent call(Goal goal, Participator completer, FinitePercentage oldProgress) {
+        return goal.getPlugin().getEventBus().postEvent(new GoalProgressEvent(goal, completer, oldProgress, goal.getProgress()));
     }
 }

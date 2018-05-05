@@ -1,11 +1,11 @@
 package pl.themolka.arcade.firework;
 
-import pl.themolka.arcade.capture.point.PointCaptureFireworks;
-import pl.themolka.arcade.capture.wool.WoolPlaceFireworks;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.leak.core.CoreLeakFireworks;
+import pl.themolka.arcade.objective.core.CoreLeakFireworks;
+import pl.themolka.arcade.objective.point.PointCaptureFireworks;
+import pl.themolka.arcade.objective.wool.WoolPlaceFireworks;
 
 import java.util.ArrayList;
 import java.util.List;

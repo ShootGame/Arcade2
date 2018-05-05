@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.event.Listener;
-import org.jdom2.Element;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.task.Task;
@@ -26,20 +25,18 @@ public class GameModule extends SimpleGameListener
     private boolean loaded = false;
     private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private Module<?> module;
-    private Element settings;
     private final List<Task> taskList = new CopyOnWriteArrayList<>();
 
     public GameModule() {
     }
 
-    public final void initialize(ArcadePlugin plugin, Game game, Module<?> module, Element settings) {
+    public final void initialize(ArcadePlugin plugin, Game game, Module<?> module) {
         if (this.isLoaded()) {
             throw new IllegalStateException(this.getId() + " is already loaded.");
         }
 
         this.loaded = true;
         this.plugin = plugin;
-        this.settings = settings;
 
         this.game = game;
         this.loaded = true;
@@ -144,10 +141,6 @@ public class GameModule extends SimpleGameListener
 
     public Server getServer() {
         return this.getPlugin().getServer();
-    }
-
-    public Element getSettings() {
-        return this.settings;
     }
 
     public List<Task> getTaskList() {

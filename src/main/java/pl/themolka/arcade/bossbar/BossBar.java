@@ -9,13 +9,14 @@ import org.bukkit.craftbukkit.boss.CraftBossBar;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.util.FinitePercentage;
 import pl.themolka.arcade.util.Percentage;
+import pl.themolka.arcade.util.Progressive;
 
 import java.util.Objects;
 
 /**
  * Represents a boss bar.
  */
-public class BossBar {
+public class BossBar implements Progressive.Mutable {
     // protected: BossBarFacet must access the Bukkit class.
     protected final CraftBossBar bukkit;
 
@@ -33,6 +34,16 @@ public class BossBar {
 
     public BossBar(BaseComponent title, BarColor color, BarStyle style, BarFlag... flags) {
         this.bukkit = new CraftBossBar(title, color, style, flags);
+    }
+
+    @Override
+    public FinitePercentage getProgress() {
+        return Percentage.finite(this.bukkit.getProgress());
+    }
+
+    @Override
+    public void setProgress(FinitePercentage progress) {
+        this.bukkit.setProgress(progress.trim().getValue());
     }
 
     public void addFlag(BarFlag flag) {
@@ -55,10 +66,6 @@ public class BossBar {
 
     public BarColor getColor() {
         return this.bukkit.getColor();
-    }
-
-    public FinitePercentage getProgress() {
-        return Percentage.finite(this.bukkit.getProgress());
     }
 
     public BarStyle getStyle() {
@@ -98,10 +105,6 @@ public class BossBar {
 
     public boolean setPriority(GamePlayer player, int priority) {
         return this.facet(player).setPriority(this, priority);
-    }
-
-    public void setProgress(FinitePercentage progress) {
-        this.bukkit.setProgress(progress.trim().getValue());
     }
 
     public void setStyle(BarStyle style) {

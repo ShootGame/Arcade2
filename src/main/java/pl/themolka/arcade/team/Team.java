@@ -93,7 +93,7 @@ public class Team implements GameHolder, MatchWinner {
             return false;
         }
 
-        GoalCreateEvent.call(this.game.getPlugin(), goal);
+        GoalCreateEvent.call(goal);
         return this.goals.add(goal);
     }
 

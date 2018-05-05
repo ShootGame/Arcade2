@@ -13,10 +13,6 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
 
     private final String id;
 
-    public Capturable(CaptureGame game, String id) {
-        this(game, null, id);
-    }
-
     public Capturable(CaptureGame game, Participator owner, String id) {
         super(game.getGame(), owner);
         this.game = game;
@@ -30,7 +26,7 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            GoalCompleteEvent.call(this.game.getPlugin(), this, event.getCompleter());
+            GoalCompleteEvent.call(this, event.getCompleter());
         }
     }
 
@@ -45,7 +41,7 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled()) {
-            GoalResetEvent.call(this.game.getPlugin(), this);
+            GoalResetEvent.call(this);
 
             this.getContributions().clearContributors();
             this.setCompleted(false);
@@ -61,10 +57,6 @@ public abstract class Capturable extends SimpleInteractableGoal implements Event
 
     public CaptureGame getCaptureGame() {
         return this.game;
-    }
-
-    public boolean registerGoal() {
-        return true;
     }
 
     @Deprecated
