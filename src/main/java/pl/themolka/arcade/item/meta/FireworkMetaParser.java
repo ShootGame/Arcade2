@@ -33,11 +33,11 @@ class FireworkMetaParser extends ItemMetaParser.Nested<FireworkMeta>
                 int powerInt = this.powerParser.parse(power).orFail();
                 if (powerInt > 127) {
                     throw this.fail(power, "Power cannot be greater than 127");
-                } else if (powerInt <= 0) {
+                } else if (powerInt < 0) {
                     throw this.fail(power, "Power cannot be smaller than 0");
                 }
 
-                itemMeta.setPower(this.powerParser.parse(power).orFail());
+                itemMeta.setPower(powerInt);
             }
 
             for (Node effect : node.children("effect", "firework-effect", "fireworkeffect")) {

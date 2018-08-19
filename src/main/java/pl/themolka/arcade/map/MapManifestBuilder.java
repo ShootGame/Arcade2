@@ -2,9 +2,13 @@ package pl.themolka.arcade.map;
 
 import org.apache.commons.lang3.builder.Builder;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.IGameModuleConfig;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class MapManifestBuilder implements Builder<MapManifest> {
-    private ModulesInfo modules;
+    private Set<IGameModuleConfig<?>> modules;
     private ScoreboardInfo scoreboard;
     private Node source;
     private WorldInfo world;
@@ -17,11 +21,11 @@ public class MapManifestBuilder implements Builder<MapManifest> {
                                this.world());
     }
 
-    public ModulesInfo modules() {
-        return this.modules;
+    public Set<IGameModuleConfig<?>> modules() {
+        return new LinkedHashSet<>(this.modules);
     }
 
-    public MapManifestBuilder modules(ModulesInfo modules) {
+    public MapManifestBuilder modules(Set<IGameModuleConfig<?>> modules) {
         this.modules = modules;
         return this;
     }

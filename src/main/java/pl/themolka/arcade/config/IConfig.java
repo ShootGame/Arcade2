@@ -1,4 +1,4 @@
 package pl.themolka.arcade.config;
 
-public interface IConfig<T> {
+public interface IConfig {
 }

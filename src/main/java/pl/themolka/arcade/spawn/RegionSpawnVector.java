@@ -38,7 +38,7 @@ public class RegionSpawnVector extends AbstractSpawnVector {
     }
 
     public interface Config extends AbstractSpawnVector.Config<RegionSpawnVector>,
-                                    Directional.Config<RegionSpawnVector> {
+                                    Directional.Config {
         Ref<AbstractRegion.Config<?>> region();
 
         @Override

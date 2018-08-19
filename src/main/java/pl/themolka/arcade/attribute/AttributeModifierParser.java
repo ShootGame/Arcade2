@@ -44,14 +44,14 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
                 .orDefault(AttributeModifier.Operation.ADD_NUMBER);
         double amount = this.amountParser.parseWithDefinition(node, name, value).orFail();
 
-        UUID uniqueId = this.fastUUID.next();
-        return ParserResult.fine(node, name, value, new AttributeModifier(uniqueId,
-                                                                          this.computeName(uniqueId, operation, amount),
-                                                                          amount,
-                                                                          operation));
+        return ParserResult.fine(node, name, value, this.createModifier(this.fastUUID.random(), operation, amount));
     }
 
-    protected String computeName(UUID uniqueId, AttributeModifier.Operation operation, double amount) {
+    protected AttributeModifier createModifier(UUID uniqueId, AttributeModifier.Operation operation, double amount) {
+        return new AttributeModifier(uniqueId, this.computeName(uniqueId), amount, operation);
+    }
+
+    protected String computeName(UUID uniqueId) {
         // eg. 'arcade.2b5f34f6-fb05-4852-a86c-2e03bccbdf89'
         return FixedAttributeKey.computeKey(NAMESPACE, SEPARATOR, uniqueId.toString());
     }

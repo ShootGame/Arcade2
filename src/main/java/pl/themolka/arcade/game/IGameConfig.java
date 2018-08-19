@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public interface IGameConfig<T> extends IConfig<T> {
+public interface IGameConfig<T> extends IConfig {
     /**
      * Create a new T object based on this config.
      * @param game The game this object is created in.

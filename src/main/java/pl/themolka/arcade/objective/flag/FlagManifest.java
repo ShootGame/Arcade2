@@ -14,6 +14,7 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class FlagManifest extends ObjectiveManifest {
@@ -60,12 +61,16 @@ public class FlagManifest extends ObjectiveManifest {
         @Override
         protected ParserResult<Flag.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseRequiredId(node);
+
+            Set<Capture.Config> captures = new HashSet<>();
+
             String flagName = this.parseName(node).orDefaultNull();
             boolean objective = this.parseObjective(node).orDefault(Flag.Config.DEFAULT_IS_OBJECTIVE);
             Ref<Participator.Config<?>> owner = this.parseOwner(node).orDefault(Ref.empty());
 
             return ParserResult.fine(node, name, value, new Flag.Config() {
                 public String id() { return id; }
+                public Set<Capture.Config> captures() { return captures; }
                 public String name() { return flagName; }
                 public boolean objective() { return objective; }
                 public Ref<Participator.Config<?>> owner() { return owner; }

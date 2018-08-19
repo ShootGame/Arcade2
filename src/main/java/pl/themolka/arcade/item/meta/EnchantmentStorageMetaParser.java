@@ -26,8 +26,7 @@ class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStor
         Node node = root.firstChild("enchanted-book");
         if (node != null) {
             for (Node enchantment : node.children("enchantment")) {
-                ItemEnchantment value = this.enchantmentParser.parse(enchantment).orFail();
-                itemMeta.addStoredEnchant(value.getType(), value.getLevel(), true);
+                this.enchantmentParser.parse(enchantment).orFail().apply(itemMeta);
             }
         }
 

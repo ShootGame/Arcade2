@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     @Override
     public ItemStack build() {
         ItemStack stack = new ItemStack(this.type);
-        stack.addUnsafeEnchantments(this.enchantmentsLegacy());
+        stack.addUnsafeEnchantments(this.enchantmentsBukkit());
         stack.setAmount(this.amount);
         stack.setDurability(this.durability);
         stack.setItemMeta(this.buildMeta(stack.getItemMeta()));
@@ -103,19 +104,6 @@ public class ItemStackBuilder implements Builder<ItemStack> {
         return this;
     }
 
-    public Map<Enchantment, Integer> enchantmentsLegacy() {
-        return ItemEnchantment.toLegacy(this.enchantments);
-    }
-
-    /**
-     * @deprecated {@link #enchantments(List)}
-     */
-    @Deprecated
-    public ItemStackBuilder enchantmentsLegacy(Map<Enchantment, Integer> enchantments) {
-        this.enchantments.addAll(ItemEnchantment.fromLegacy(enchantments));
-        return this;
-    }
-
     public ItemStackBuilder flag(ItemFlag flag) {
         this.flags.add(flag);
         return this;
@@ -150,5 +138,14 @@ public class ItemStackBuilder implements Builder<ItemStack> {
     public ItemStackBuilder unbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
         return this;
+    }
+
+    Map<Enchantment, Integer> enchantmentsBukkit() {
+        Map<Enchantment, Integer> bukkit = new LinkedHashMap<>(this.enchantments.size());
+        for (ItemEnchantment enchantment : this.enchantments) {
+            bukkit.put(enchantment.getType(), enchantment.getLevel());
+        }
+
+        return bukkit;
     }
 }

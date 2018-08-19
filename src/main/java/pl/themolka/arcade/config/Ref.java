@@ -97,7 +97,7 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
 
     public boolean isEmpty() {
         return false;
-    }
+}
 
     public boolean isProvided() {
         return this.provider != null && this.provider.get() != null;
@@ -132,7 +132,7 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
     }
 
     private String generateRandomId(T provider) {
-        return "_undefined-" + RandomStringUtils.randomAlphabetic(10);
+        return "_undefined-" + RandomStringUtils.randomAlphabetic(10) + "-" + provider.hashCode();
     }
 
     //

@@ -11,6 +11,7 @@ import pl.themolka.arcade.match.MatchModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,9 +28,22 @@ public class ObjectivesGame extends GameModule {
 
     @Override
     public void onEnable() {
-        Match match = ((MatchGame) this.getGame().getModule(MatchModule.class)).getMatch();
-        for (Objective objective : this.byId.values()) {
+        Game game = this.getGame();
+        Match match = ((MatchGame) game.getModule(MatchModule.class)).getMatch();
+        Set<Objective> objectives = new HashSet<>(this.byId.values());
+
+        for (Objective objective : objectives) {
             objective.injectParticipatorResolver(match);
+            objective.registerEventListeners(this, true);
+        }
+
+        Set<Object> listeners = new HashSet<>();
+        for (ObjectiveManifest manifest : ObjectiveManifest.manifests) {
+            manifest.onEnable(game, objectives, listeners);
+        }
+
+        for (Object listener : listeners) {
+            this.registerListenerObject(listener);
         }
     }
 

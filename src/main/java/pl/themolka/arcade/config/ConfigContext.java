@@ -6,24 +6,30 @@ import pl.themolka.arcade.map.WorldNameGenerator;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class ConfigContext {
-    private final Map<String, IConfig<?>> configMap = new LinkedHashMap<>();
+    private final Map<String, IConfig> configMap = new LinkedHashMap<>();
 
     // TODO: We shouldn't use the world name generator.
     private final WorldNameGenerator idGenerator = new WorldNameGenerator();
+    private final RefFinder refFinder;
 
-    public boolean contains(IConfig<?> config) {
+    public ConfigContext(RefFinder refFinder) {
+        this.refFinder = Objects.requireNonNull(refFinder, "refFinder cannot be null");
+    }
+
+    public boolean contains(IConfig config) {
         return this.configMap.containsValue(config);
     }
 
-    public boolean define(IConfig<?> config) {
+    public boolean define(IConfig config) {
         return this.define(null, config);
     }
 
-    public boolean define(String id, IConfig<?> config) {
-        if (config instanceof Unique) {
+    public boolean define(String id, IConfig config) {
+        if (id == null && config instanceof Unique) {
             id = ((Unique) config).id();
         }
 
@@ -34,20 +40,24 @@ public class ConfigContext {
         return this.configMap.containsKey(id);
     }
 
-    public IConfig<?> getConfig(String id) {
+    public IConfig getConfig(String id) {
         return this.getConfig(id, null);
     }
 
-    public IConfig<?> getConfig(String id, IConfig<?> def) {
+    public IConfig getConfig(String id, IConfig def) {
         return this.configMap.getOrDefault(id, def);
     }
 
-    public Collection<IConfig<?>> getConfigs() {
+    public Collection<IConfig> getConfigs() {
         return this.configMap.values();
     }
 
     public Set<String> getIds() {
         return this.configMap.keySet();
+    }
+
+    public RefFinder getRefFinder() {
+        return this.refFinder;
     }
 
     public boolean isEmpty() {

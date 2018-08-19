@@ -1,11 +1,13 @@
 package pl.themolka.arcade.map;
 
 import org.bukkit.World;
+import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 /**
  * Representation of a playable map based on the given {@link OfflineMap} and
@@ -14,14 +16,16 @@ import java.lang.ref.WeakReference;
 public class ArcadeMap implements GameHolder {
     private final OfflineMap mapInfo;
     private final MapManifest manifest;
+    private final ConfigContext config;
 
     private Reference<Game> game;
     private Reference<World> world;
     private String worldName;
 
-    public ArcadeMap(OfflineMap mapInfo, MapManifest manifest) {
-        this.mapInfo = mapInfo;
-        this.manifest = manifest;
+    public ArcadeMap(OfflineMap mapInfo, MapManifest manifest, ConfigContext config) {
+        this.mapInfo = Objects.requireNonNull(mapInfo, "mapInfo cannot be null");
+        this.manifest = Objects.requireNonNull(manifest, "manifest cannot be null");
+        this.config = Objects.requireNonNull(config, "config cannot be null");
     }
 
     @Override
@@ -32,6 +36,10 @@ public class ArcadeMap implements GameHolder {
     @Override
     public ArcadeMap getMap() {
         return this;
+    }
+
+    public ConfigContext getConfig() {
+        return this.config;
     }
 
     public OfflineMap getMapInfo() {

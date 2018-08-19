@@ -15,7 +15,7 @@ public interface Directional {
         return Config.DEFAULT_PITCH;
     }
 
-    interface Config<T extends Directional> extends IConfig<T> {
+    interface Config extends IConfig {
         float DEFAULT_YAW = 180F; // north
         float DEFAULT_PITCH = 0F; // forward
 

@@ -69,7 +69,7 @@ public class PortalsGame extends GameModule {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void detectPortal(PlayerTeleportEvent event) {
-        GamePlayer player = this.getGame().getPlayer(event.getPlayer());
+        GamePlayer player = this.getGame().resolve(event.getPlayer());
         if (player != null) {
             this.detectPortal(player, event.getTo().toVector());
         }

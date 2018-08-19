@@ -126,7 +126,7 @@ public class RegionListeners implements Listener {
         }
 
         if (game == null && player != null) {
-            game = this.regions.getGame().getPlayer(player);
+            game = this.regions.getGame().resolve(player);
         }
 
         List<Object> data = new ArrayList<>();

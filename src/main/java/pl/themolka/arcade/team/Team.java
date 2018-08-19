@@ -99,7 +99,7 @@ public class Team implements GameHolder, MatchWinner {
 
     @Override
     public boolean contains(Player bukkit) {
-        return this.contains(this.game.getPlayer(bukkit));
+        return this.contains(this.game.resolve(bukkit));
     }
 
     @Override

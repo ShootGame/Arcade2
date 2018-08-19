@@ -1,4 +1,4 @@
-package pl.themolka.arcade.capture.flag;
+package pl.themolka.arcade.objective.flag;
 
 import org.bukkit.Material;
 import org.bukkit.block.Banner;

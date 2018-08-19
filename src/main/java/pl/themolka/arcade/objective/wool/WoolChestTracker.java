@@ -86,7 +86,7 @@ public class WoolChestTracker implements Listener {
     public void restoreWoolChests(InventoryCloseEvent event) {
         HumanEntity human = event.getPlayer();
         if (human instanceof Player) {
-            GamePlayer player = this.game.getPlayer((Player) human);
+            GamePlayer player = this.game.resolve((Player) human);
             if (player == null) {
                 return;
             }
@@ -94,7 +94,7 @@ public class WoolChestTracker implements Listener {
             List<GamePlayer> viewers = new ArrayList<>();
             for (HumanEntity humanViewer : event.getViewers()) {
                 if (humanViewer instanceof Player) {
-                    GamePlayer viewer = this.game.getPlayer((Player) humanViewer);
+                    GamePlayer viewer = this.game.resolve((Player) humanViewer);
 
                     if (viewer != null) {
                         viewers.add(viewer);

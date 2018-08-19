@@ -7,7 +7,7 @@ import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.FinitePercentage;
 import pl.themolka.arcade.util.state.ProgressiveState;
 
-public class FlagState extends ObjectiveState<Flag> implements IFlag {
+public abstract class FlagState extends ObjectiveState<Flag> implements IFlag {
     public FlagState(Flag flag) {
         super(flag);
     }

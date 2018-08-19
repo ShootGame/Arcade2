@@ -3,7 +3,7 @@ package pl.themolka.arcade.config;
 import pl.themolka.arcade.dom.Child;
 import pl.themolka.arcade.util.StringId;
 
-public class SimpleConfig<T extends SimpleConfig<T>> implements Child<T>, IConfig<T>, StringId {
+public class SimpleConfig<T extends SimpleConfig<T>> implements Child<T>, IConfig, StringId {
     protected final String id;
     protected final T parent;
 

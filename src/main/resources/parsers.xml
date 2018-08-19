@@ -133,7 +133,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.map.MapTimeParser" />
     <parser class="pl.themolka.arcade.map.MapVersionParser" />
     <parser class="pl.themolka.arcade.map.MapFileVersionParser" />
-    <parser class="pl.themolka.arcade.map.ModulesInfoParser" />
     <parser class="pl.themolka.arcade.map.OfflineMapParser" />
     <parser class="pl.themolka.arcade.map.RandomSeedParser" />
     <parser class="pl.themolka.arcade.map.ScoreboardInfoParser" />

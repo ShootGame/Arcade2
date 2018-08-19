@@ -32,7 +32,7 @@ public class HungerGame extends GameModule {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         HumanEntity entity = event.getEntity();
-        if (entity instanceof Player && this.cannotDeplete(this.getGame().getPlayer((Player) entity))) {
+        if (entity instanceof Player && this.cannotDeplete(this.getGame().resolve((Player) entity))) {
             event.setCancelled(true);
             event.setFoodLevel(((Player) entity).getFoodLevel());
         }

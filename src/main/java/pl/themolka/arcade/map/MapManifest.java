@@ -1,6 +1,10 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.game.IGameModuleConfig;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Precise and playable map description. This class doesn't hold an
@@ -9,20 +13,20 @@ import pl.themolka.arcade.dom.Node;
 public class MapManifest {
     public static final String FILENAME = "map.xml";
 
-    private final ModulesInfo modules;
+    private final Set<IGameModuleConfig<?>> modules;
     private final ScoreboardInfo scoreboard;
     private final Node source;
     private final WorldInfo world;
 
-    public MapManifest(ModulesInfo modules, ScoreboardInfo scoreboard, Node source, WorldInfo world) {
-        this.modules = modules != null          ? modules       : new ModulesInfo();
+    public MapManifest(Set<IGameModuleConfig<?>> modules, ScoreboardInfo scoreboard, Node source, WorldInfo world) {
+        this.modules = modules != null          ? modules       : new LinkedHashSet<>();
         this.scoreboard = scoreboard != null    ? scoreboard    : new ScoreboardInfo();
         this.source = this.detach(source);
         this.world = world != null              ? world         : new WorldInfo();
     }
 
-    public ModulesInfo getModules() {
-        return this.modules;
+    public Set<IGameModuleConfig<?>> getModules() {
+        return new LinkedHashSet<>(this.modules);
     }
 
     public ScoreboardInfo getScoreboard() {

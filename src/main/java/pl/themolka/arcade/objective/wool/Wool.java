@@ -105,7 +105,7 @@ public class Wool extends Objective {
             return;
         }
 
-        GamePlayer player = this.getGame().getPlayer(event.getActor());
+        GamePlayer player = this.getGame().resolve(event.getActor());
         if (player != null) {
             player.sendError("You may not craft " + ChatColor.GOLD + this.getColoredName() + Messageable.ERROR_COLOR + ".");
         }

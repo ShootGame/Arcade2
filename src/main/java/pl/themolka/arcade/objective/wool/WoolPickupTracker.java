@@ -34,7 +34,7 @@ public class WoolPickupTracker implements Listener {
             return false;
         }
 
-        Participator participator = null; // TODO
+        Participator participator = this.wool.getParticipatorResolver().resolve(picker);
         if (participator == null || !this.wool.isCompletableBy(participator)) {
             return false;
         }
@@ -63,7 +63,7 @@ public class WoolPickupTracker implements Listener {
     }
 
     public void resetPickupsFor(GamePlayer player) {
-        Participator participator = null; // TODO
+        Participator participator = this.wool.getParticipatorResolver().resolve(player);
         if (participator != null) {
             this.pickups.remove(participator, player);
         }
@@ -82,7 +82,7 @@ public class WoolPickupTracker implements Listener {
 
         HumanEntity human = event.getWhoClicked();
         if (human instanceof Player) {
-            GamePlayer picker = this.wool.getGame().getPlayer((Player) human);
+            GamePlayer picker = this.wool.getGame().resolve((Player) human);
             if (picker != null && picker.isParticipating()) {
                 this.pickup(item, picker);
             }
@@ -96,7 +96,7 @@ public class WoolPickupTracker implements Listener {
             return;
         }
 
-        GamePlayer picker = this.wool.getGame().getPlayer(event.getPlayer());
+        GamePlayer picker = this.wool.getGame().resolve(event.getPlayer());
         if (picker != null && picker.isParticipating()) {
             this.pickup(item, picker);
         }

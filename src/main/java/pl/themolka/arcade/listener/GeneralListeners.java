@@ -244,7 +244,7 @@ public class GeneralListeners implements Listener {
             return;
         }
 
-        GamePlayer player = game.getPlayer(event.getPlayer());
+        GamePlayer player = game.resolve(event.getPlayer());
         if (player == null) {
             return;
         }

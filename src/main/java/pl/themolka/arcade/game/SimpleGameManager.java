@@ -9,6 +9,9 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.config.ConfigContext;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.config.RefFinder;
 import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.cycle.CycleRestartEvent;
 import pl.themolka.arcade.cycle.ServerCycleEvent;
@@ -36,9 +39,11 @@ import pl.themolka.arcade.util.Tickable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class SimpleGameManager implements GameManager {
@@ -51,6 +56,7 @@ public class SimpleGameManager implements GameManager {
     private int gameId = 0;
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
+    private final RefFinder refFinder = new RefFinder();
     private final RestartCountdown restartCountdown;
     private MapQueue queue = new MapQueue();
 
@@ -123,7 +129,22 @@ public class SimpleGameManager implements GameManager {
         Document document = engine.read(file);
         this.plugin.getDomPreprocessor().preprocess(document);
 
-        ArcadeMap realMap = new ArcadeMap(map, parser.parse(document).orFail());
+        MapManifest manifest = parser.parse(document).orFail();
+
+        ConfigContext config = new ConfigContext(this.refFinder);
+        try {
+            List<Ref<?>> refs = config.getRefFinder().find((Iterable) manifest.getModules());
+        } catch (InvocationTargetException e) {
+            throw new DOMException(null, e);
+        }
+
+        ArcadeMap realMap = new ArcadeMap(map, manifest, config);
+
+        // ----- TODO -----
+        // hook references, fail if the specified ID does not exist
+        // create ConfigConfig with all the configs and store it somewhere
+        // create IGameConfig.Library and create module configs, catch all NPEs
+        // enable the modules :D
 
         WorldNameGenerator worldNameGenerator = new WorldNameGenerator(map);
         realMap.setWorldName(worldNameGenerator.nextWorldName());

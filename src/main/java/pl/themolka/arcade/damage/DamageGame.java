@@ -93,7 +93,7 @@ public class DamageGame extends GameModule {
     }
 
     private DamageRule byPlayer(Player bukkit, EntityDamageEvent.DamageCause cause) {
-        GamePlayer player = this.getGame().getPlayer(bukkit);
+        GamePlayer player = this.getGame().resolve(bukkit);
         for (DamageRule rule : this.rules) {
             if (rule.matches(player, cause)) {
                 return rule;
