@@ -589,7 +589,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
         }
 
-        this.getLogger().info("Successfully loaded " + success.size() + " of " + loadEvent.getModules().size() + " available modules.");
+        this.getLogger().info("Successfully loaded " + success.size() + " of " + loadEvent.getModules().size() + " available module(s).");
         this.getModules().register(success.toArray(new Module<?>[success.size()]));
 
         Node globalModules = this.getSettings().getData().child("modules");
@@ -657,7 +657,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
                 silentString = " (" + doneSilent + " of them " + (doneSilent == 1 ? "was" : "were") + " silent)";
             }
 
-            this.getLogger().info("Registered " + done + " parsers" + silentString + ".");
+            this.getLogger().info("Registered " + done + " parser(s)" + silentString + ".");
         } catch (DOMException | IOException ex) {
             ex.printStackTrace();
         }
@@ -670,7 +670,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             this.getLogger().log(Level.SEVERE, "Given parser is not supported", ex);
         }
 
-        this.getLogger().info("Installed " + done + " parser dependencies.");
+        this.getLogger().info("Installed " + done + " parser " + (done == 1 ? "dependency" : "dependencies") + ".");
     }
 
     private void loadServer() {

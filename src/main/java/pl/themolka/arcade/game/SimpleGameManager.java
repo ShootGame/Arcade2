@@ -169,7 +169,7 @@ public class SimpleGameManager implements GameManager {
             }
         }
 
-        this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from '" + target.getDirectory().getName() + "'...");
+        this.plugin.getLogger().info("Cycling to '" + target.getName() + "' from the '" + target.getDirectory().getName() + "' directory...");
         try {
             Game oldGame = this.getCurrentGame();
             Game game = this.createGame(target);

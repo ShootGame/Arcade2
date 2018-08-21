@@ -52,6 +52,7 @@ public class RefFinder {
     private List<Ref<?>> find0(Object source, Method method) throws InvocationTargetException {
         Class<?> returnType = method.getReturnType();
         try {
+            method.setAccessible(true);
             if (Ref.class.isAssignableFrom(returnType)) {
                 return this.findForRef((Ref<?>) method.invoke(source));
             } else if (Ref[].class.isAssignableFrom(returnType)) {
