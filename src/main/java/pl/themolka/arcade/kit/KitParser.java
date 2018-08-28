@@ -1,6 +1,7 @@
 package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.config.ConfigParser;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.kit.content.KitContent;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -55,8 +56,8 @@ public class KitParser extends ConfigParser<Kit.Config>
 
         return ParserResult.fine(node, name, new Kit.Config() {
             public String id() { return id; }
-            public List<KitContent.Config<?, ?>> contents() { return contents; }
-            public Set<String> inherit() { return inherit; }
+            public Ref<List<KitContent.Config<?, ?>>> contents() { return Ref.ofProvided(contents); }
+            public Ref<Set<String>> inherit() { return Ref.ofProvided(inherit); }
         });
     }
 }

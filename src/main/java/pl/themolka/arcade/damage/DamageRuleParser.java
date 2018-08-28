@@ -54,9 +54,9 @@ public class DamageRuleParser extends ConfigParser<DamageRule.Config>
 
         return ParserResult.fine(node, name, value, new DamageRule.Config() {
             public String id() { return id; }
-            public double damage() { return damage; }
+            public Ref<Double> damage() { return Ref.ofProvided(damage); }
             public Ref<Filter.Config<?>> entityFilter() { return entityFilter; }
-            public Percentage multiplier() { return multiplier; }
+            public Ref<Percentage> multiplier() { return Ref.ofProvided(multiplier); }
             public Ref<Filter.Config<?>> playerFilter() { return playerFilter; }
         });
     }

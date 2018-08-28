@@ -30,10 +30,10 @@ public class Portal extends ForwardingRegion implements PlayerApplicable, String
     private final Region region;
 
     protected Portal(Game game, IGameConfig.Library library, Config config) {
-        this.destination = config.destination();
-        this.filter = Filters.secure(config.filter().getIfPresent());
+        this.destination = library.getOrDefine(game, config.destination().get());
+        this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
         this.id = config.id();
-        this.kit = config.kit().getIfPresent();
+        this.kit = library.getOrDefine(game, config.kit().getIfPresent());
         this.region = library.getOrDefine(game, config.region().get());
     }
 
@@ -115,9 +115,9 @@ public class Portal extends ForwardingRegion implements PlayerApplicable, String
     }
 
     public interface Config extends IGameConfig<Portal>, Unique {
-        SpawnApply destination();
-        default Ref<Filter> filter() { return Ref.empty(); }
-        default Ref<Kit> kit() { return Ref.empty(); }
+        Ref<SpawnApply.Config> destination();
+        default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
+        default Ref<Kit.Config> kit() { return Ref.empty(); }
         Ref<AbstractRegion.Config<?>> region();
 
         @Override

@@ -33,11 +33,11 @@ public class ScoreBoxParser extends PortalParser
         double points = this.pointsParser.parse(node.property("points")).orFail();
 
         return ParserResult.fine(node, name, value, new ScoreBox.Config() {
-            public SpawnApply destination() { return portal.destination(); }
-            public Ref<Filter> filter() { return portal.filter(); }
+            public Ref<SpawnApply.Config> destination() { return portal.destination(); }
+            public Ref<Filter.Config<?>> filter() { return portal.filter(); }
             public String id() { return portal.id(); }
-            public Ref<Kit> kit() { return portal.kit(); }
-            public double points() { return points; }
+            public Ref<Kit.Config> kit() { return portal.kit(); }
+            public Ref<Double> points() { return Ref.ofProvided(points); }
             public Ref<AbstractRegion.Config<?>> region() { return portal.region(); }
         });
     }

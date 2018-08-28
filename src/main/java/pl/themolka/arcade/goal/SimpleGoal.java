@@ -30,7 +30,7 @@ public abstract class SimpleGoal implements Goal, ParticipatorResolver.Injector 
 
     protected SimpleGoal(Game game, IGameConfig.Library library, Config<?> config) {
         this.game = game;
-        this.name = config.name();
+        this.name = config.name().get();
         this.owner = library.getOrDefine(game, config.owner().get());
     }
 
@@ -129,7 +129,7 @@ public abstract class SimpleGoal implements Goal, ParticipatorResolver.Injector 
     }
 
     public interface Config<T extends SimpleGoal> extends IGameConfig<T> {
-        String name();
+        Ref<String> name();
         Ref<Participator.Config<?>> owner();
     }
 }

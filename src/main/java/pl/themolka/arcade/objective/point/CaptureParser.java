@@ -53,10 +53,10 @@ public class CaptureParser extends ConfigParser<Capture.Config>
         UnionRegion.Config region = this.regionParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new Capture.Config() {
-            public Time captureTime() { return captureTime; }
-            public IRegionFieldStrategy fieldStrategy() { return fieldStrategy; }
+            public Ref<Time> captureTime() { return Ref.ofProvided(captureTime); }
+            public Ref<IRegionFieldStrategy> fieldStrategy() { return Ref.ofProvided(fieldStrategy); }
             public Ref<Filter.Config<?>> filter() { return filter; }
-            public Time loseTime() { return loseTime; }
+            public Ref<Time> loseTime() { return Ref.ofProvided(loseTime); }
             public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }
         });
     }

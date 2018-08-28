@@ -56,37 +56,42 @@ public class PortalParser extends ConfigParser<Portal.Config>
 
     @Override
     protected ParserResult<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
-        SpawnApply destination = this.parseDestination(node, name, value);
-        Ref<Filter> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
+        SpawnApply.Config destination = this.parseDestination(node, name, value);
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
         String id = this.parseOptionalId(node);
-        Ref<Kit> kit = this.kitParser.parse(node.property("kit")).orDefault(Ref.empty());
+        Ref<Kit.Config> kit = this.kitParser.parse(node.property("kit")).orDefault(Ref.empty());
         AbstractRegion.Config<?> region = this.regionParser.parseWithDefinition(node, name, value).orFail();
 
         return ParserResult.fine(node, name, value, new Portal.Config() {
-            public SpawnApply destination() { return destination; }
-            public Ref<Filter> filter() { return filter; }
+            public Ref<SpawnApply.Config> destination() { return Ref.ofProvided(destination); }
+            public Ref<Filter.Config<?>> filter() { return filter; }
             public String id() { return id; }
-            public Ref<Kit> kit() { return kit; }
+            public Ref<Kit.Config> kit() { return kit; }
             public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }
         });
     }
 
-    protected SpawnApply parseDestination(Node node, String name, String value) throws ParserException {
-        Spawn destination = (Spawn) this.destinationParser.parse(node.property("destination")).orFail().get();
+    protected SpawnApply.Config parseDestination(Node node, String name, String value) throws ParserException {
+        Ref<Spawn.Config<?>> destination = this.destinationParser.parse(node.property("destination")).orFail();
         boolean smooth = this.smoothParser.parse(node.property("smooth")).orDefault(false);
 
         Direction yaw = this.yawDirectionParser.parse(node.property("yaw")).orDefault(Direction.ENTITY);
         Direction pitch = this.pitchDirectionParser.parse(node.property("pitch")).orDefault(Direction.ENTITY);
 
-        return new SpawnApply(destination, new SpawnApply.AgentFactory() {
-            @Override
-            public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
-                if (smooth) {
-                    return SmoothSpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
-                } else {
-                    return SpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
-                }
+        return new SpawnApply.Config() {
+            public Ref<Spawn.Config<?>> spawn() { return destination; }
+            public Ref<SpawnApply.AgentFactory> agentFactory() {
+                return Ref.ofProvided(new SpawnApply.AgentFactory() {
+                    @Override
+                    public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
+                        if (smooth) {
+                            return SmoothSpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
+                        } else {
+                            return SpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
+                        }
+                    }
+                });
             }
-        });
+        };
     }
 }

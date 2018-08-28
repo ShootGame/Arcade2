@@ -3,6 +3,7 @@ package pl.themolka.arcade.team;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.config.ConfigParser;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -59,13 +60,13 @@ public class TeamParser extends ConfigParser<Team.Config>
 
         return ParserResult.fine(node, name, value, new Team.Config() {
             public String id() { return id; }
-            public ChatColor chatColor() { return chatColor; }
-            public DyeColor dyeColor() { return dyeColor; }
-            public boolean friendlyFire() { return friendlyFire; }
-            public int minPlayers() { return minPlayers; }
-            public int maxPlayers() { return maxPlayers; }
-            public String name() { return teamName; }
-            public int slots() { return slots; }
+            public Ref<ChatColor> chatColor() { return Ref.ofProvided(chatColor); }
+            public Ref<DyeColor> dyeColor() { return Ref.ofProvided(dyeColor); }
+            public Ref<Boolean> friendlyFire() { return Ref.ofProvided(friendlyFire); }
+            public Ref<Integer> minPlayers() { return Ref.ofProvided(minPlayers); }
+            public Ref<Integer> maxPlayers() { return Ref.ofProvided(maxPlayers); }
+            public Ref<String> name() { return Ref.ofProvided(teamName); }
+            public Ref<Integer> slots() { return Ref.ofProvided(slots); }
         });
     }
 

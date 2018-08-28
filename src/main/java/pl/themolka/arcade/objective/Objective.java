@@ -1,6 +1,7 @@
 package pl.themolka.arcade.objective;
 
 import org.bukkit.ChatColor;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.event.EventListenerComponent;
 import pl.themolka.arcade.game.Game;
@@ -21,7 +22,7 @@ public abstract class Objective extends SimpleInteractableGoal
         super(game, library, config);
 
         this.id = config.id();
-        this.objective = config.objective();
+        this.objective = config.objective().get();
     }
 
     @Override
@@ -85,6 +86,6 @@ public abstract class Objective extends SimpleInteractableGoal
     public interface Config<T extends Objective> extends SimpleInteractableGoal.Config<T>, Unique {
         boolean DEFAULT_IS_OBJECTIVE = true;
 
-        boolean objective();
+        Ref<Boolean> objective();
     }
 }

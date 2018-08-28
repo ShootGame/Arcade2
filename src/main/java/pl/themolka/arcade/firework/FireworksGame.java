@@ -1,5 +1,6 @@
 package pl.themolka.arcade.firework;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.IGameModuleConfig;
@@ -14,9 +15,9 @@ public class FireworksGame extends GameModule {
     private final List<FireworkHandler> handlers = new ArrayList<>();
 
     protected FireworksGame(Config config) {
-        this.handlers.add(new CoreLeakFireworks(config.onCoreLeak()));
-        this.handlers.add(new PointCaptureFireworks(config.onPointCapture()));
-        this.handlers.add(new WoolPlaceFireworks(config.onWoolPlace()));
+        this.handlers.add(new CoreLeakFireworks(config.onCoreLeak().get()));
+        this.handlers.add(new PointCaptureFireworks(config.onPointCapture().get()));
+        this.handlers.add(new WoolPlaceFireworks(config.onWoolPlace().get()));
     }
 
     @Override
@@ -44,9 +45,9 @@ public class FireworksGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<FireworksGame> {
-        default boolean onCoreLeak() { return true; }
-        default boolean onPointCapture() { return true; }
-        default boolean onWoolPlace() { return true; }
+        default Ref<Boolean> onCoreLeak() { return Ref.ofProvided(true); }
+        default Ref<Boolean> onPointCapture() { return Ref.ofProvided(true); }
+        default Ref<Boolean> onWoolPlace() { return Ref.ofProvided(true); }
 
         @Override
         default FireworksGame create(Game game, Library library) {

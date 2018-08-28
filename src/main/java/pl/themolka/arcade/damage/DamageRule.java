@@ -21,10 +21,10 @@ public class DamageRule implements Cancelable, StringId {
     private final Filter playerFilter;
 
     protected DamageRule(Game game, IGameConfig.Library library, Config config) {
-        this.damage = config.damage();
+        this.damage = config.damage().get();
         this.entityFilter = Filters.secure(library.getOrDefine(game, config.entityFilter().getIfPresent()));
         this.id = config.id();
-        this.multiplier = config.multiplier();
+        this.multiplier = config.multiplier().get();
         this.playerFilter = Filters.secure(library.getOrDefine(game, config.playerFilter().getIfPresent()));
     }
 
@@ -78,9 +78,9 @@ public class DamageRule implements Cancelable, StringId {
         double DEFAULT_DAMAGE = DENY_DAMAGE;
         Percentage DEFAULT_MULTIPLIER = Percentage.DONE;
 
-        default double damage() { return DEFAULT_DAMAGE; }
+        default Ref<Double> damage() { return Ref.ofProvided(DEFAULT_DAMAGE); }
         default Ref<Filter.Config<?>> entityFilter() { return Ref.empty(); }
-        default Percentage multiplier() { return DEFAULT_MULTIPLIER; }
+        default Ref<Percentage> multiplier() { return Ref.ofProvided(DEFAULT_MULTIPLIER); }
         default Ref<Filter.Config<?>> playerFilter() { return Ref.empty(); }
 
         @Override

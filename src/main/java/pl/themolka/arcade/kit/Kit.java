@@ -1,6 +1,7 @@
 package pl.themolka.arcade.kit;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
@@ -11,6 +12,7 @@ import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,15 +21,17 @@ public class Kit implements Applicable<GamePlayer>, StringId {
 
     private final List<KitContent<?>> content = new ArrayList<>();
     private final String id;
-    private final List<String> inherit = new ArrayList<>();
+    private final Set<String> inherit = new LinkedHashSet<>();
 
     protected Kit(Game game, IGameConfig.Library library, Config config) {
         this.plugin = game.getPlugin();
         this.id = config.id();
 
-        for (KitContent.Config<?, ?> content : config.contents()) {
+        for (KitContent.Config<?, ?> content : config.contents().get()) {
             this.content.add(library.getOrDefine(game, content));
         }
+
+        this.inherit.addAll(config.inherit().get());
     }
 
     @Override
@@ -81,11 +85,11 @@ public class Kit implements Applicable<GamePlayer>, StringId {
     }
 
     public List<KitContent<?>> getContent() {
-        return this.content;
+        return new ArrayList<>(this.content);
     }
 
-    public List<String> getInherit() {
-        return this.inherit;
+    public Set<String> getInherit() {
+        return new LinkedHashSet<>(this.inherit);
     }
 
     public boolean removeContent(KitContent<?> content) {
@@ -93,8 +97,8 @@ public class Kit implements Applicable<GamePlayer>, StringId {
     }
 
     public interface Config extends IGameConfig<Kit>, Unique {
-        List<KitContent.Config<?, ?>> contents();
-        default Set<String> inherit() { return Collections.emptySet(); }
+        Ref<List<KitContent.Config<?, ?>>> contents();
+        default Ref<Set<String>> inherit() { return Ref.ofProvided(Collections.emptySet()); }
 
         @Override
         default Kit create(Game game, Library library) {

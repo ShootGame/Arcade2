@@ -55,13 +55,13 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         super(game, library, config);
 
         this.capture = (Capture) library.getOrDefine(game, config.capture().get());
-        this.captureTime = config.captureTime();
+        this.captureTime = config.captureTime().get();
         this.dominateFilter = library.getOrDefine(game, config.dominateFilter().getIfPresent());
-        this.dominatorStrategy = config.dominatorStrategy();
-        this.loseTime = config.loseTime();
-        this.neutralColor = config.neutralColor();
-        this.permanent = config.permanent();
-        this.pointReward = config.pointReward();
+        this.dominatorStrategy = config.dominatorStrategy().get();
+        this.loseTime = config.loseTime().get();
+        this.neutralColor = config.neutralColor().get();
+        this.permanent = config.permanent().get();
+        this.pointReward = config.pointReward().get();
         this.stateRegion = library.getOrDefine(game, config.stateRegion().getIfPresent());
 
         this.capture.setup(this);
@@ -265,13 +265,13 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         double DEFAULT_POINT_REWARD = Score.ZERO;
 
         Ref<Capture.Config> capture();
-        default Time captureTime() { return DEFAULT_CAPTURE_TIME; }
+        default Ref<Time> captureTime() { return Ref.ofProvided(DEFAULT_CAPTURE_TIME); }
         default Ref<Filter.Config<?>> dominateFilter() { return Ref.empty(); }
-        default Dominator dominatorStrategy() { return DEFAULT_DOMINATOR_STRATEGY; }
-        default Time loseTime() { return DEFAULT_LOSE_TIME; }
-        default Color neutralColor() { return DEFAULT_NEUTRAL_COLOR; }
-        default boolean permanent() { return DEFAULT_IS_PERMANENT; }
-        default double pointReward() { return DEFAULT_POINT_REWARD; }
+        default Ref<Dominator> dominatorStrategy() { return Ref.ofProvided(DEFAULT_DOMINATOR_STRATEGY); }
+        default Ref<Time> loseTime() { return Ref.ofProvided(DEFAULT_LOSE_TIME); }
+        default Ref<Color> neutralColor() { return Ref.ofProvided(DEFAULT_NEUTRAL_COLOR); }
+        default Ref<Boolean> permanent() { return Ref.ofProvided(DEFAULT_IS_PERMANENT); }
+        default Ref<Double> pointReward() { return Ref.ofProvided(DEFAULT_POINT_REWARD); }
         default Ref<AbstractRegion.Config<?>> stateRegion() { return Ref.empty(); }
 
         @Override

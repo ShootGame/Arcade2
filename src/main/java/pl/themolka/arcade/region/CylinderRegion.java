@@ -2,6 +2,7 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 
 import java.util.Random;
@@ -27,7 +28,7 @@ public class CylinderRegion extends AbstractRegion {
     }
 
     protected CylinderRegion(Game game, Config config) {
-        this(game, config.id(), config.center(), config.radius(), config.height());
+        this(game, config.id(), config.center().get(), config.radius().get(), config.height().get());
     }
 
     @Override
@@ -99,9 +100,9 @@ public class CylinderRegion extends AbstractRegion {
     }
 
     public interface Config extends AbstractRegion.Config<CylinderRegion> {
-        Vector center();
-        double radius();
-        default double height() { return Region.MAX_HEIGHT; }
+        Ref<Vector> center();
+        Ref<Double> radius();
+        default Ref<Double> height() { return Ref.ofProvided(Region.MAX_HEIGHT); }
 
         @Override
         default CylinderRegion create(Game game, Library library) {

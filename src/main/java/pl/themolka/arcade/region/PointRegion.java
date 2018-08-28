@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class PointRegion extends AbstractRegion {
     }
 
     protected PointRegion(Game game, Config config) {
-        this(game, config.id(), config.point());
+        this(game, config.id(), config.point().get());
     }
 
     @Override
@@ -89,7 +90,7 @@ public class PointRegion extends AbstractRegion {
     }
 
     public interface Config extends AbstractRegion.Config<PointRegion> {
-        Vector point();
+        Ref<Vector> point();
 
         @Override
         default PointRegion create(Game game, Library library) {

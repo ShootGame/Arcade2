@@ -4,7 +4,6 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.GameModuleParser;
-import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
@@ -39,11 +38,11 @@ public class AutoRespawnGameParser extends GameModuleParser<AutoRespawnGame, Aut
     @Override
     protected ParserResult<AutoRespawnGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
-        Time cooldown = this.cooldownParser.parse(node.property("cooldown", "after")).orDefault(PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN);
+        Time cooldown = this.cooldownParser.parse(node.property("cooldown", "after")).orDefault(AutoRespawnGame.Config.DEFAULT_COOLDOWN);
 
         return ParserResult.fine(node, name, value, new AutoRespawnGame.Config() {
             public Ref<Filter.Config<?>> filter() { return filter; }
-            public Time cooldown() { return cooldown; }
+            public Ref<Time> cooldown() { return Ref.ofProvided(cooldown); }
         });
     }
 }

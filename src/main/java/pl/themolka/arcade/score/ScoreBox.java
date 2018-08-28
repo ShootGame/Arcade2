@@ -1,6 +1,7 @@
 package pl.themolka.arcade.score;
 
 import org.bukkit.Location;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
@@ -17,7 +18,7 @@ public class ScoreBox extends Portal {
     protected ScoreBox(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        this.points = config.points();
+        this.points = config.points().get();
     }
 
     // Use canScore(...) instead.
@@ -57,7 +58,7 @@ public class ScoreBox extends Portal {
     }
 
     public interface Config extends Portal.Config {
-        double points();
+        Ref<Double> points();
 
         @Override
         default ScoreBox create(Game game, Library library) {

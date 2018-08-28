@@ -30,7 +30,7 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
         super(game, library, config);
 
         this.enemies = new LinkedHashSet<>();
-        for (Ref<Participator.Config<?>> enemy : config.enemies()) {
+        for (Ref<Participator.Config<?>> enemy : config.enemies().get()) {
             this.enemies.add(library.getOrDefine(game, enemy.get()));
         }
 
@@ -91,7 +91,7 @@ public class KillEnemies extends SimpleInteractableGoal implements StringId {
     }
 
     public interface Config extends SimpleInteractableGoal.Config<KillEnemies>, Unique {
-        Set<Ref<Participator.Config<?>>> enemies();
+        Ref<Set<Ref<Participator.Config<?>>>> enemies();
 
         @Override
         default KillEnemies create(Game game, Library library) {

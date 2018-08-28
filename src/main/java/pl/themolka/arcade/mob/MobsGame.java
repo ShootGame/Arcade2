@@ -24,18 +24,18 @@ public class MobsGame extends GameModule {
     private final boolean denyNatural;
 
     protected MobsGame(Game game, IGameConfig.Library library, Config config) {
-        for (MobSpawnRule.Config rule : config.rules()) {
+        for (MobSpawnRule.Config rule : config.rules().get()) {
             this.rules.add(library.getOrDefine(game, rule));
         }
 
-        if (this.denyNatural = config.denyNatural()) {
+        if (this.denyNatural = config.denyNatural().get()) {
             Filter.Config<?> filter = new SpawnReasonMatcher.Config() {
                 public Ref<SpawnReason> value() { return Ref.ofProvided(SpawnReason.NATURAL); }
             };
 
             this.rules.add(library.getOrDefine(game, new MobSpawnRule.Config() {
                 public Ref<Filter.Config<?>> filter() { return Ref.ofProvided(filter); }
-                public boolean cancel() { return true; }
+                public Ref<Boolean> cancel() { return Ref.ofProvided(true); }
             }));
         }
     }
@@ -75,8 +75,8 @@ public class MobsGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<MobsGame> {
-        default List<MobSpawnRule.Config> rules() { return Collections.emptyList(); }
-        default boolean denyNatural() { return false; }
+        default Ref<List<MobSpawnRule.Config>> rules() { return Ref.ofProvided(Collections.emptyList()); }
+        default Ref<Boolean> denyNatural() { return Ref.ofProvided(false); }
 
         @Override
         default MobsGame create(Game game, Library library) {

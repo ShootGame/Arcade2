@@ -17,7 +17,7 @@ public abstract class Capture {
     private final AbstractRegion region;
 
     public Capture(Game game, IGameConfig.Library library, Config config) {
-        this.fieldStrategy = config.fieldStrategy();
+        this.fieldStrategy = config.fieldStrategy().get();
         this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
         this.region = library.getOrDefine(game, config.region().get());
     }
@@ -39,7 +39,7 @@ public abstract class Capture {
     public interface Config extends IGameConfig<Capture> {
         IRegionFieldStrategy DEFAULT_FIELD_STRATEGY = RegionFieldStrategy.EXACT;
 
-        default IRegionFieldStrategy fieldStrategy() { return DEFAULT_FIELD_STRATEGY; }
+        default Ref<IRegionFieldStrategy> fieldStrategy() { return Ref.ofProvided(DEFAULT_FIELD_STRATEGY); }
         default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
         Ref<AbstractRegion.Config<?>> region();
     }

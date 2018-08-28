@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GamePlayer;
@@ -25,7 +26,7 @@ public class DamageGame extends GameModule {
     }
 
     protected DamageGame(Game game, IGameConfig.Library library, Config config) {
-        for (DamageRule.Config rule : config.rules()) {
+        for (DamageRule.Config rule : config.rules().get()) {
             this.rules.add(library.getOrDefine(game, rule));
         }
     }
@@ -108,7 +109,7 @@ public class DamageGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<DamageGame> {
-        Set<DamageRule.Config> rules();
+        Ref<Set<DamageRule.Config>> rules();
 
         @Override
         default DamageGame create(Game game, Library library) {

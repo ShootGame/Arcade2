@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.channel.ChatChannel;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.Unique;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
@@ -78,13 +79,13 @@ public class Team implements GameHolder, MatchWinner {
         this.channel.setFormat(TeamChannel.TEAM_FORMAT);
 
         this.id = config.id();
-        this.chatColor = config.chatColor();
-        this.dyeColor = config.dyeColor();
-        this.friendlyFire = config.friendlyFire();
-        this.minPlayers = config.minPlayers();
-        this.maxPlayers = config.maxPlayers();
-        this.name = config.name();
-        this.slots = config.slots();
+        this.chatColor = config.chatColor().get();
+        this.dyeColor = config.dyeColor().get();
+        this.friendlyFire = config.friendlyFire().get();
+        this.minPlayers = config.minPlayers().get();
+        this.maxPlayers = config.maxPlayers().get();
+        this.name = config.name().get();
+        this.slots = config.slots().get();
     }
 
     @Override
@@ -401,13 +402,13 @@ public class Team implements GameHolder, MatchWinner {
         int DEFAULT_MIN_PLAYERS = 0;
         int DEFAULT_MAX_PLAYERS = 0;
 
-        ChatColor chatColor();
-        DyeColor dyeColor();
-        default boolean friendlyFire() { return DEFAULT_IS_FRIENDLY_FIRE; }
-        default int minPlayers() { return DEFAULT_MIN_PLAYERS; };
-        default int maxPlayers() { return DEFAULT_MAX_PLAYERS; }
-        String name();
-        int slots();
+        Ref<ChatColor> chatColor();
+        Ref<DyeColor> dyeColor();
+        default Ref<Boolean> friendlyFire() { return Ref.ofProvided(DEFAULT_IS_FRIENDLY_FIRE); }
+        default Ref<Integer> minPlayers() { return Ref.ofProvided(DEFAULT_MIN_PLAYERS); };
+        default Ref<Integer> maxPlayers() { return Ref.ofProvided(DEFAULT_MAX_PLAYERS); }
+        Ref<String> name();
+        Ref<Integer> slots();
 
         @Override
         default Team create(Game game, Library library) {

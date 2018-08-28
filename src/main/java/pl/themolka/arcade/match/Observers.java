@@ -2,6 +2,7 @@ package pl.themolka.arcade.match;
 
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.goal.Goal;
@@ -170,13 +171,13 @@ public class Observers extends Team {
 
     public interface Config extends Team.Config {
         default String id() { return OBSERVERS_TEAM_ID; }
-        default ChatColor chatColor() { return OBSERVERS_CHAT_COLOR; }
-        default DyeColor dyeColor() { return OBSERVERS_DYE_COLOR; }
-        default boolean friendlyFire() { return true; }
-        default int minPlayers() { return 0; }
-        default int maxPlayers() { return OBSERVERS_SLOTS; }
-        default String name() { return OBSERVERS_NAME; }
-        default int slots() { return OBSERVERS_SLOTS; }
+        default Ref<ChatColor> chatColor() { return Ref.ofProvided(OBSERVERS_CHAT_COLOR); }
+        default Ref<DyeColor> dyeColor() { return Ref.ofProvided(OBSERVERS_DYE_COLOR); }
+        default Ref<Boolean> friendlyFire() { return Ref.ofProvided(true); }
+        default Ref<Integer> minPlayers() { return Ref.ofProvided(0); }
+        default Ref<Integer> maxPlayers() { return Ref.ofProvided(OBSERVERS_SLOTS); }
+        default Ref<String> name() { return Ref.ofProvided(OBSERVERS_NAME); }
+        default Ref<Integer> slots() { return Ref.ofProvided(OBSERVERS_SLOTS); }
 
         @Override
         default Team create(Game game, Library library) {

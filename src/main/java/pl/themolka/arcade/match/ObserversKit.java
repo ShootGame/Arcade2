@@ -58,7 +58,7 @@ public class ObserversKit extends Kit {
                              ChatColor.YELLOW + "Right click to teleport to point")
                 .build()); }
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
-        public Integer slot() { return 0; }
+        public Ref<Integer> slot() { return Ref.ofProvided(0); }
     });
 
     // play item
@@ -69,7 +69,7 @@ public class ObserversKit extends Kit {
                 .description(ChatColor.YELLOW + "Right click to join the game")
                 .build()); }
         public BaseModeContent.Mode mode() { return BaseModeContent.Mode.GIVE; }
-        public Integer slot() { return 2; }
+        public Ref<Integer> slot() { return Ref.ofProvided(2); }
     });
 
     // held slot
@@ -91,7 +91,7 @@ public class ObserversKit extends Kit {
     // can fly
     public static final CanFlyContent CAN_FLY = create(new CanFlyContent.Config() {
         public Ref<Boolean> result() { return Ref.ofProvided(true); }
-        public boolean force() { return true; }
+        public Ref<Boolean> force() { return Ref.ofProvided(true); }
     });
 
     // fly
@@ -138,8 +138,8 @@ public class ObserversKit extends Kit {
 
     public interface Config extends Kit.Config {
         default String id() { return OBSERVERS_KIT_ID; }
-        default List<KitContent.Config<?, ?>> contents() { return Collections.emptyList(); }
-        default Set<String> inherit() { return Collections.emptySet(); }
+        default Ref<List<KitContent.Config<?, ?>>> contents() { return Ref.ofProvided(Collections.emptyList()); }
+        default Ref<Set<String>> inherit() { return Ref.ofProvided(Collections.emptySet()); }
 
         @Override
         default ObserversKit create(Game game, Library library) {

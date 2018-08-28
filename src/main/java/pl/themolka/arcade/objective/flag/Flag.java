@@ -2,6 +2,7 @@ package pl.themolka.arcade.objective.flag;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Banner;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
@@ -29,7 +30,7 @@ public class Flag extends StatableObjective<FlagState> implements IFlag, Tickabl
     protected Flag(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        for (Capture.Config capture : config.captures()) {
+        for (Capture.Config capture : config.captures().get()) {
             this.captures.add((Capture) library.getOrDefine(game, capture));
         }
 
@@ -108,7 +109,7 @@ public class Flag extends StatableObjective<FlagState> implements IFlag, Tickabl
     public interface Config extends StatableObjective.Config<Flag> {
         String DEFAULT_NAME = "Flag";
 
-        Set<Capture.Config> captures();
+        Ref<Set<Capture.Config>> captures();
 
         @Override
         default Flag create(Game game, Library library) {

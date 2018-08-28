@@ -1,5 +1,6 @@
 package pl.themolka.arcade.score;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
@@ -30,11 +31,11 @@ public class Score extends SimpleGoal {
     protected Score(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        this.deathLoss = config.deathLoss();
-        this.initialScore = config.initialScore();
-        this.killReward = config.killReward();
-        this.limit = config.limit();
-        this.score = config.initialScore();
+        this.deathLoss = config.deathLoss().get();
+        this.initialScore = config.initialScore().get();
+        this.killReward = config.killReward().get();
+        this.limit = config.limit().get();
+        this.score = config.initialScore().get();
     }
 
     @Override
@@ -187,10 +188,10 @@ public class Score extends SimpleGoal {
         double DEFAULT_KILL_REWARD = Score.ZERO;
         double DEFAULT_LIMIT = Score.MAX;
 
-        double deathLoss();
-        double initialScore();
-        double killReward();
-        double limit();
+        Ref<Double> deathLoss();
+        Ref<Double> initialScore();
+        Ref<Double> killReward();
+        Ref<Double> limit();
 
         @Override
         default Score create(Game game, Library library) {

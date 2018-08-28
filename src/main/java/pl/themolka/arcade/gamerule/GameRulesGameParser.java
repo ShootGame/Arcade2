@@ -1,5 +1,6 @@
 package pl.themolka.arcade.gamerule;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -11,8 +12,8 @@ import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Produces(GameRulesGame.Config.class)
 public class GameRulesGameParser extends GameModuleParser<GameRulesGame, GameRulesGame.Config>
@@ -36,9 +37,16 @@ public class GameRulesGameParser extends GameModuleParser<GameRulesGame, GameRul
 
     @Override
     protected ParserResult<GameRulesGame.Config> parseTree(Node node, String name) throws ParserException {
-        List<GameRule> rules = new ArrayList<>();
+        Set<GameRule> rules = new LinkedHashSet<>();
         for (Node ruleNode : node.children()) {
-            rules.add(this.ruleParser.parse(ruleNode).orFail());
+            GameRule rule = this.ruleParser.parse(ruleNode).orFail();
+            for (GameRule existingRule : rules) {
+                if (existingRule.getKey().equals(rule.getKey())) {
+                    throw this.fail(ruleNode, "Rule '" + rule.getKey() + "' is already defined");
+                }
+            }
+
+            rules.add(rule);
         }
 
         if (ParserUtils.ensureNotEmpty(rules)) {
@@ -46,7 +54,7 @@ public class GameRulesGameParser extends GameModuleParser<GameRulesGame, GameRul
         }
 
         return ParserResult.fine(node, name, new GameRulesGame.Config() {
-            public List<GameRule> rules() { return rules; }
+            public Ref<Set<GameRule>> rules() { return Ref.ofProvided(rules); }
         });
     }
 }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.kit;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.IGameConfig;
@@ -14,7 +15,7 @@ public class KitsGame extends GameModule {
     private final Map<String, Kit> kits = new LinkedHashMap<>();
 
     protected KitsGame(Game game, IGameConfig.Library library, Config config) {
-        for (Kit.Config kit : config.kits()) {
+        for (Kit.Config kit : config.kits().get()) {
             this.kits.put(kit.id(), library.getOrDefine(game, kit));
         }
     }
@@ -66,7 +67,7 @@ public class KitsGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<KitsGame> {
-        Set<Kit.Config> kits();
+        Ref<Set<Kit.Config>> kits();
 
         @Override
         default KitsGame create(Game game, Library library) {

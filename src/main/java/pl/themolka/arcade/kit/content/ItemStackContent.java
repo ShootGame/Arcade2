@@ -30,7 +30,7 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         super(config);
 
         this.mode = config.mode();
-        this.slot = config.slot();
+        this.slot = config.slot().getIfPresent();
     }
 
     @Override
@@ -84,21 +84,19 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
             ItemStack itemStack = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
             BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(node, name, value).orDefault(Config.DEFAULT_MODE);
-            Integer slot = this.slotParser.parse(node.property("slot")).orDefault(Config.DEFAULT_SLOT);
+            Integer slot = this.slotParser.parse(node.property("slot")).orDefaultNull();
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(itemStack); }
                 public BaseModeContent.Mode mode() { return mode; }
-                public Integer slot() { return slot; }
+                public Ref<Integer> slot() { return slot != null ? Ref.ofProvided(slot) : Ref.empty(); }
             });
         }
     }
 
     public interface Config extends BaseInventoryContent.Config<ItemStackContent, ItemStack>,
                                     BaseModeContent.Config {
-        Integer DEFAULT_SLOT = null;
-
-        default Integer slot() { return DEFAULT_SLOT; }
+        default Ref<Integer> slot() { return Ref.empty(); }
 
         @Override
         default ItemStackContent create(Game game, Library library) {

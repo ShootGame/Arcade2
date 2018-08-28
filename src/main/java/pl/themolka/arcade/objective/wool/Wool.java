@@ -31,8 +31,8 @@ public class Wool extends Objective {
     protected Wool(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        this.color = config.color();
-        this.craftable = config.craftable();
+        this.color = config.color().get();
+        this.craftable = config.craftable().get();
         this.monument = library.getOrDefine(game, config.monument().get());
 
         this.pickupTracker = new WoolPickupTracker(this);
@@ -159,8 +159,8 @@ public class Wool extends Objective {
         boolean DEFAULT_IS_CRAFTABLE = false;
         String DEFAULT_NAME = "Wool";
 
-        DyeColor color();
-        default boolean craftable() { return DEFAULT_IS_CRAFTABLE; }
+        Ref<DyeColor> color();
+        default Ref<Boolean> craftable() { return Ref.ofProvided(DEFAULT_IS_CRAFTABLE); }
         Ref<AbstractRegion.Config<?>> monument();
 
         @Override

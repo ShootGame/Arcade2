@@ -46,9 +46,9 @@ public class MatchGameParser extends GameModuleParser<MatchGame, MatchGame.Confi
         Observers.Config observers = this.observersParser.parse(node.firstChild("observers")).orFail();
 
         return ParserResult.fine(node, name, value, new MatchGame.Config() {
-            public boolean autoCycle() { return autoCycle; }
-            public boolean autoStart() { return autoStart; }
-            public Time startCountdown() { return startCountdown; }
+            public Ref<Boolean> autoCycle() { return Ref.ofProvided(autoCycle); }
+            public Ref<Boolean> autoStart() { return Ref.ofProvided(autoStart); }
+            public Ref<Time> startCountdown() { return Ref.ofProvided(startCountdown); }
             public Ref<Observers.Config> observers() { return Ref.ofProvided(observers); }
         });
     }

@@ -143,16 +143,16 @@ public class PointManifest extends ObjectiveManifest {
             return ParserResult.fine(node, name, value, new Point.Config() {
                 public String id() { return id; }
                 public Ref<Capture.Config> capture() { return Ref.ofProvided(capture); }
-                public Time captureTime() { return captureTime; }
+                public Ref<Time> captureTime() { return Ref.ofProvided(captureTime); }
                 public Ref<Filter.Config<?>> dominateFilter() { return dominateFilter; }
-                public Dominator dominatorStrategy() { return dominatorStrategy; }
-                public Time loseTime() { return loseTime; }
-                public String name() { return pointName; }
-                public Color neutralColor() { return neutralColor; }
-                public boolean objective() { return objective; }
+                public Ref<Dominator> dominatorStrategy() { return Ref.ofProvided(dominatorStrategy); }
+                public Ref<Time> loseTime() { return Ref.ofProvided(loseTime); }
+                public Ref<String> name() { return Ref.ofProvided(pointName); }
+                public Ref<Color> neutralColor() { return Ref.ofProvided(neutralColor); }
+                public Ref<Boolean> objective() { return Ref.ofProvided(objective); }
                 public Ref<Participator.Config<?>> owner() { return owner; }
-                public boolean permanent() { return permanent; }
-                public double pointReward() { return pointReward; }
+                public Ref<Boolean> permanent() { return Ref.ofProvided(permanent); }
+                public Ref<Double> pointReward() { return Ref.ofProvided(pointReward); }
                 public Ref<AbstractRegion.Config<?>> stateRegion() { return Ref.ofProvided(stateRegion); }
             });
         }

@@ -1,5 +1,6 @@
 package pl.themolka.arcade.life;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -46,7 +47,7 @@ public class KillEnemiesGameParser extends GameModuleParser<KillEnemiesGame, Kil
         }
 
         return ParserResult.fine(node, name, new KillEnemiesGame.Config() {
-            public Set<KillEnemies.Config> objectives() { return objectives; }
+            public Ref<Set<KillEnemies.Config>> objectives() { return Ref.ofProvided(objectives); }
         });
     }
 }

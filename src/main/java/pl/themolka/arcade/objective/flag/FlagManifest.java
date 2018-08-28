@@ -70,9 +70,9 @@ public class FlagManifest extends ObjectiveManifest {
 
             return ParserResult.fine(node, name, value, new Flag.Config() {
                 public String id() { return id; }
-                public Set<Capture.Config> captures() { return captures; }
-                public String name() { return flagName; }
-                public boolean objective() { return objective; }
+                public Ref<Set<Capture.Config>> captures() { return Ref.ofProvided(captures); }
+                public Ref<String> name() { return Ref.ofProvided(flagName); }
+                public Ref<Boolean> objective() { return Ref.ofProvided(objective); }
                 public Ref<Participator.Config<?>> owner() { return owner; }
             });
         }

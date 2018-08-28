@@ -101,11 +101,11 @@ public class CoreManifest extends ObjectiveManifest {
 
             return ParserResult.fine(node, name, value, new Core.Config() {
                 public String id() { return id; }
-                public int detectorLevel() { return detectorLevel; }
-                public Liquid liquid() { return liquid; }
-                public Set<Material> material() { return finalMaterial; }
-                public String name() { return coreName; }
-                public boolean objective() { return objective; }
+                public Ref<Integer> detectorLevel() { return Ref.ofProvided(detectorLevel); }
+                public Ref<Liquid> liquid() { return Ref.ofProvided(liquid); }
+                public Ref<Set<Material>> material() { return Ref.ofProvided(finalMaterial); }
+                public Ref<String> name() { return Ref.ofProvided(coreName); }
+                public Ref<Boolean> objective() { return Ref.ofProvided(objective); }
                 public Ref<Participator.Config<?>> owner() { return owner; }
                 public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }
             });

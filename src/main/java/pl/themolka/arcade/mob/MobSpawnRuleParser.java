@@ -42,7 +42,7 @@ public class MobSpawnRuleParser extends ConfigParser<MobSpawnRule.Config>
         return ParserResult.fine(node, name, value, new MobSpawnRule.Config() {
             public String id() { return id; }
             public Ref<Filter.Config<?>> filter() { return filter; }
-            public boolean cancel() { return !allow; }
+            public Ref<Boolean> cancel() { return Ref.ofProvided(!allow); }
         });
     }
 }

@@ -3,6 +3,7 @@ package pl.themolka.arcade.match;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.config.ConfigParser;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
@@ -40,10 +41,13 @@ public class ObserversParser extends ConfigParser<Observers.Config>
         Color color = this.colorParser.parse(node.property("color")).orFail();
         String observersName = this.nameParser.parse(node.property("name", "title")).orFail();
 
+        ChatColor chatColor = Nulls.defaults(color.toChat(), Observers.OBSERVERS_CHAT_COLOR);
+        DyeColor dyeColor = Nulls.defaults(color.toDye(), Observers.OBSERVERS_DYE_COLOR);
+
         return ParserResult.fine(node, name, value, new Observers.Config() {
-            public ChatColor chatColor() { return Nulls.defaults(color.toChat(), Observers.OBSERVERS_CHAT_COLOR); }
-            public DyeColor dyeColor() { return Nulls.defaults(color.toDye(), Observers.OBSERVERS_DYE_COLOR); }
-            public String name() { return observersName; }
+            public Ref<ChatColor> chatColor() { return Ref.ofProvided(chatColor); }
+            public Ref<DyeColor> dyeColor() { return Ref.ofProvided(dyeColor); }
+            public Ref<String> name() { return Ref.ofProvided(observersName); }
         });
     }
 }

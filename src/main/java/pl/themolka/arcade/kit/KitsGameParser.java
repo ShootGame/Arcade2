@@ -1,5 +1,6 @@
 package pl.themolka.arcade.kit;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -46,7 +47,7 @@ public class KitsGameParser extends GameModuleParser<KitsGame, KitsGame.Config>
         }
 
         return ParserResult.fine(node, name, new KitsGame.Config() {
-            public Set<Kit.Config> kits() { return kits; }
+            public Ref<Set<Kit.Config>> kits() { return Ref.ofProvided(kits); }
         });
     }
 }

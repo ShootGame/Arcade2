@@ -42,9 +42,9 @@ public class MatchGame extends GameModule {
     private MatchStartCountdown startCountdown;
 
     protected MatchGame(Game game, IGameConfig.Library library, Config config) {
-        this.autoCycle = config.autoCycle();
-        this.autoStart = config.autoStart();
-        this.defaultStartCountdown = (int) config.startCountdown().toSeconds();
+        this.autoCycle = config.autoCycle().get();
+        this.autoStart = config.autoStart().get();
+        this.defaultStartCountdown = (int) config.startCountdown().get().toSeconds();
         this.observers = (Observers) library.getOrDefine(game, config.observers().get());
     }
 
@@ -302,9 +302,9 @@ public class MatchGame extends GameModule {
         boolean DEFAULT_IS_AUTO_START = true;
         Time DEFAULT_START_COUNTDOWN = Time.ofSeconds(15);
 
-        default boolean autoCycle() { return DEFAULT_IS_AUTO_CYCLE; }
-        default boolean autoStart() { return DEFAULT_IS_AUTO_START; }
-        default Time startCountdown() { return DEFAULT_START_COUNTDOWN; };
+        default Ref<Boolean> autoCycle() { return Ref.ofProvided(DEFAULT_IS_AUTO_CYCLE); }
+        default Ref<Boolean> autoStart() { return Ref.ofProvided(DEFAULT_IS_AUTO_START); }
+        default Ref<Time> startCountdown() { return Ref.ofProvided(DEFAULT_START_COUNTDOWN); };
         Ref<Observers.Config> observers();
 
         @Override

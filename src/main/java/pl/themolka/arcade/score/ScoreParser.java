@@ -51,11 +51,11 @@ public class ScoreParser extends ConfigParser<Score.Config>
         Ref<Participator.Config<?>> owner = this.ownerParser.parse(node.property("owner")).orFail();
 
         return ParserResult.fine(node, name, value, new Score.Config() {
-            public double deathLoss() { return deathLoss; }
-            public double initialScore() { return initialScore; }
-            public double killReward() { return killReward; }
-            public double limit() { return limit; }
-            public String name() { return scoreName; }
+            public Ref<Double> deathLoss() { return Ref.ofProvided(deathLoss); }
+            public Ref<Double> initialScore() { return Ref.ofProvided(initialScore); }
+            public Ref<Double> killReward() { return Ref.ofProvided(killReward); }
+            public Ref<Double> limit() { return Ref.ofProvided(limit); }
+            public Ref<String> name() { return Ref.ofProvided(scoreName); }
             public Ref<Participator.Config<?>> owner() { return owner; }
         });
     }

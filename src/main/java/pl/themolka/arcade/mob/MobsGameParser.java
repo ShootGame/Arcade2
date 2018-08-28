@@ -1,5 +1,6 @@
 package pl.themolka.arcade.mob;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -38,20 +39,22 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
 
     @Override
     protected ParserResult<MobsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        List<MobSpawnRule.Config> rules = new ArrayList<>();
-        for (Node ruleNode : node.children("rule")) {
-            rules.add(this.ruleParser.parse(ruleNode).orFail());
-        }
-
         boolean denyNatural = this.denyNautralParser.parse(node.property("deny-natural")).orDefault(false);
 
-        if (!denyNatural && ParserUtils.ensureNotEmpty(rules)) {
-            throw this.fail(node, name, value, "No rules defined");
+        List<MobSpawnRule.Config> rules = new ArrayList<>();
+        if (!denyNatural) {
+            for (Node ruleNode : node.children("rule")) {
+                rules.add(this.ruleParser.parse(ruleNode).orFail());
+            }
+
+            if (ParserUtils.ensureNotEmpty(rules)) {
+                throw this.fail(node, name, value, "No rules defined");
+            }
         }
 
         return ParserResult.fine(node, name, value, new MobsGame.Config() {
-            public List<MobSpawnRule.Config> rules() { return rules; }
-            public boolean denyNatural() { return denyNatural; }
+            public Ref<List<MobSpawnRule.Config>> rules() { return Ref.ofProvided(rules); }
+            public Ref<Boolean> denyNatural() { return Ref.ofProvided(denyNatural); }
         });
     }
 }

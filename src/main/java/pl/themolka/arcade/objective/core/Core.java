@@ -36,9 +36,9 @@ public class Core extends Objective {
     protected Core(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        this.detectorLevel = config.detectorLevel();
-        this.liquid = config.liquid();
-        this.material = config.material();
+        this.detectorLevel = config.detectorLevel().get();
+        this.liquid = config.liquid().get();
+        this.material = config.material().get();
         this.region = library.getOrDefine(game, config.region().get());
     }
 
@@ -217,9 +217,9 @@ public class Core extends Objective {
         Set<Material> DEFAULT_MATERIAL = ImmutableSet.of(Material.OBSIDIAN);
         String DEFAULT_NAME = "Core";
 
-        default int detectorLevel() { return DEFAULT_DETECTOR_LEVEL; }
-        default Liquid liquid() { return DEFAULT_LIQUID; }
-        default Set<Material> material() { return DEFAULT_MATERIAL; }
+        default Ref<Integer> detectorLevel() { return Ref.ofProvided(DEFAULT_DETECTOR_LEVEL); }
+        default Ref<Liquid> liquid() { return Ref.ofProvided(DEFAULT_LIQUID); }
+        default Ref<Set<Material>> material() { return Ref.ofProvided(DEFAULT_MATERIAL); }
         Ref<AbstractRegion.Config<?>> region();
 
         @Override

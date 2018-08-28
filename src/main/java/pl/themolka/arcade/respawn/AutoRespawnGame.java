@@ -19,7 +19,7 @@ public class AutoRespawnGame extends GameModule {
 
     protected AutoRespawnGame(Game game, IGameConfig.Library library, Config config) {
         this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
-        this.cooldown = config.cooldown();
+        this.cooldown = config.cooldown().get();
     }
 
     public boolean canAutoRespawn(GamePlayer victim) {
@@ -42,8 +42,10 @@ public class AutoRespawnGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<AutoRespawnGame> {
+        Time DEFAULT_COOLDOWN = PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN;
+
         default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
-        default Time cooldown() { return PlayerDeathEvent.DEFAULT_AUTO_RESPAWN_COOLDOWN; }
+        default Ref<Time> cooldown() { return Ref.ofProvided(DEFAULT_COOLDOWN); }
 
         @Override
         default AutoRespawnGame create(Game game, Library library) {

@@ -47,13 +47,13 @@ public class LivesGameParser extends GameModuleParser<LivesGame, LivesGame.Confi
 
         Ref<Team.Config> fallbackTeam = this.fallbackParser.parse(node.property("fallback", "return")).orDefault(Ref.empty());
         boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(true);
-        Sound sound = this.soundParser.parse(node.property("sound")).orDefault(LivesGame.DEFAULT_SOUND);
+        Sound sound = this.soundParser.parse(node.property("sound")).orDefault(LivesGame.Config.DEFAULT_SOUND);
 
         return ParserResult.fine(node, name, value, new LivesGame.Config() {
-            public int lives() { return lives; }
+            public Ref<Integer> lives() { return Ref.ofProvided(lives); }
             public Ref<Team.Config> fallbackTeam() { return fallbackTeam; }
-            public boolean announce() { return announce; }
-            public Sound sound() { return sound; }
+            public Ref<Boolean> announce() { return Ref.ofProvided(announce); }
+            public Ref<Sound> sound() { return Ref.ofProvided(sound); }
         });
     }
 }

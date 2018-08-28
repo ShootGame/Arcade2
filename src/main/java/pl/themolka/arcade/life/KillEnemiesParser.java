@@ -46,9 +46,9 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
 
         return ParserResult.fine(node, name, value, new KillEnemies.Config() {
             public String id() { return id; }
-            public Set<Ref<Participator.Config<?>>> enemies() { return enemies; }
+            public Ref<Set<Ref<Participator.Config<?>>>> enemies() { return Ref.ofProvided(enemies); }
             public Ref<Participator.Config<?>> owner() { return owner; }
-            public String name() { return goalName; }
+            public Ref<String> name() { return Ref.ofProvided(goalName); }
         });
     }
 
@@ -61,9 +61,9 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
 
         return ParserResult.fine(node, name, new KillEnemies.Config() {
             public String id() { return id; }
-            public Set<Ref<Participator.Config<?>>> enemies() { return enemies; }
+            public Ref<Set<Ref<Participator.Config<?>>>> enemies() { return Ref.ofProvided(enemies); }
             public Ref<Participator.Config<?>> owner() { return owner; }
-            public String name() { return goalName; }
+            public Ref<String> name() { return Ref.ofProvided(goalName); }
         });
     }
 

@@ -20,7 +20,7 @@ public class MessageContent implements KitContent<String> {
 
     protected MessageContent(Config config) {
         this.result = config.result().get();
-        this.channel = config.channel();
+        this.channel = config.channel().get();
     }
 
     @Override
@@ -131,7 +131,7 @@ public class MessageContent implements KitContent<String> {
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<String> result() { return Ref.ofProvided(text); }
-                public Channel channel() { return channel; }
+                public Ref<Channel> channel() { return Ref.ofProvided(channel); }
             });
         }
     }
@@ -139,7 +139,7 @@ public class MessageContent implements KitContent<String> {
     public interface Config extends KitContent.Config<MessageContent, String> {
         Channel DEFAULT_CHANNEL = Channel.getDefault();
 
-        default Channel channel() { return DEFAULT_CHANNEL; }
+        default Ref<Channel> channel() { return Ref.ofProvided(DEFAULT_CHANNEL); }
 
         @Override
         default MessageContent create(Game game, Library library) {

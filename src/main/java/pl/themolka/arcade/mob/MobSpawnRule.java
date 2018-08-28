@@ -16,7 +16,7 @@ public class MobSpawnRule implements Cancelable {
 
     protected MobSpawnRule(Game game, IGameConfig.Library library, Config config) {
         this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
-        this.cancel = config.cancel();
+        this.cancel = config.cancel().get();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class MobSpawnRule implements Cancelable {
 
     public interface Config extends IGameConfig<MobSpawnRule> {
         default Ref<Filter.Config<?>> filter() { return Ref.empty(); }
-        default boolean cancel() { return true; }
+        default Ref<Boolean> cancel() { return Ref.ofProvided(true); }
 
         @Override
         default MobSpawnRule create(Game game, Library library) {

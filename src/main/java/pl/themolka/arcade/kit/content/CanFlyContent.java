@@ -20,7 +20,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
 
     protected CanFlyContent(Config config) {
         this.result = config.result().getOrDefault(this.defaultValue());
-        this.force = config.force();
+        this.force = config.force().get();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(canFly); }
-                public boolean force() { return force; }
+                public Ref<Boolean> force() { return Ref.ofProvided(force); }
             });
         }
     }
@@ -84,7 +84,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
         boolean DEFAULT_CAN_FLY = false;
         boolean DEFAULT_FORCE = false;
 
-        default boolean force() { return DEFAULT_FORCE; }
+        default Ref<Boolean> force() { return Ref.ofProvided(DEFAULT_FORCE); }
 
         @Override
         default CanFlyContent create(Game game, Library library) {

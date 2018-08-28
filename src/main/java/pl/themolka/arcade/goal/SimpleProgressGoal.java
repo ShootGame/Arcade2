@@ -1,5 +1,6 @@
 package pl.themolka.arcade.goal;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.util.FinitePercentage;
@@ -12,8 +13,8 @@ public abstract class SimpleProgressGoal extends SimpleGoal {
     protected SimpleProgressGoal(Game game, IGameConfig.Library library, Config<?> config) {
         super(game, library, config);
 
-        this.initialProgress = config.initialProgress();
-        this.progress = config.initialProgress();
+        this.initialProgress = config.initialProgress().get();
+        this.progress = config.initialProgress().get();
     }
 
     @Override
@@ -32,6 +33,6 @@ public abstract class SimpleProgressGoal extends SimpleGoal {
     public interface Config<T extends SimpleProgressGoal> extends SimpleGoal.Config<T> {
         FinitePercentage DEFAULT_INITIAL_PROGRESS = Goal.PROGRESS_UNTOUCHED;
 
-        default FinitePercentage initialProgress() { return DEFAULT_INITIAL_PROGRESS; }
+        default Ref<FinitePercentage> initialProgress() { return Ref.ofProvided(DEFAULT_INITIAL_PROGRESS); }
     }
 }

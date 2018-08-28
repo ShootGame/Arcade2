@@ -1,5 +1,6 @@
 package pl.themolka.arcade.firework;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -41,9 +42,9 @@ public class FireworksGameParser extends GameModuleParser<FireworksGame, Firewor
         }
 
         return ParserResult.fine(node, name, value, new FireworksGame.Config() {
-            public boolean onCoreLeak() { return onCoreLeak; }
-            public boolean onPointCapture() { return onPointCapture; }
-            public boolean onWoolPlace() { return onWoolPlace; }
+            public Ref<Boolean> onCoreLeak() { return Ref.ofProvided(onCoreLeak); }
+            public Ref<Boolean> onPointCapture() { return Ref.ofProvided(onPointCapture); }
+            public Ref<Boolean> onWoolPlace() { return Ref.ofProvided(onWoolPlace); }
         });
     }
 }

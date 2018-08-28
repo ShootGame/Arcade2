@@ -2,16 +2,19 @@ package pl.themolka.arcade.spawn;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.PlayerApplicable;
 
 public class SpawnApply implements PlayerApplicable {
     private final Spawn spawn;
     private final AgentFactory agentFactory;
 
-    public SpawnApply(Spawn spawn, AgentFactory agentFactory) {
-        this.spawn = spawn;
-        this.agentFactory = agentFactory;
+    protected SpawnApply(Game game, IGameConfig.Library library, Config config) {
+        this.spawn = library.getOrDefine(game, config.spawn().get());
+        this.agentFactory = config.agentFactory().get();
     }
 
     @Override
@@ -41,16 +44,17 @@ public class SpawnApply implements PlayerApplicable {
         return null;
     }
 
-    public static SpawnApply parse(String id, SpawnsGame spawns, AgentFactory factory) {
-        if (id != null) {
-            Spawn spawn = spawns.getSpawn(id.trim());
-            return spawn != null ? new SpawnApply(spawn, factory) : null;
-        }
-
-        return null;
-    }
-
     public interface AgentFactory {
         SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit);
+    }
+
+    public interface Config extends IGameConfig<SpawnApply> {
+        Ref<Spawn.Config<?>> spawn();
+        Ref<AgentFactory> agentFactory();
+
+        @Override
+        default SpawnApply create(Game game, Library library) {
+            return new SpawnApply(game, library, this);
+        }
     }
 }

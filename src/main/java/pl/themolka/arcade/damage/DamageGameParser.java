@@ -1,5 +1,6 @@
 package pl.themolka.arcade.damage;
 
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.parser.InstallableParser;
@@ -46,7 +47,7 @@ public class DamageGameParser extends GameModuleParser<DamageGame, DamageGame.Co
         }
 
         return ParserResult.fine(node, name, new DamageGame.Config() {
-            public Set<DamageRule.Config> rules() { return rules; }
+            public Ref<Set<DamageRule.Config>> rules() { return Ref.ofProvided(rules); }
         });
     }
 }

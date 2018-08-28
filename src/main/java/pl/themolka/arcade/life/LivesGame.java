@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public class LivesGame extends GameModule {
-    public static final Sound DEFAULT_SOUND = Sound.ENTITY_IRONGOLEM_DEATH;
-
     public static final int DEATH_REVOKE = -1;
     public static final int ZERO = 0;
 
@@ -45,10 +43,10 @@ public class LivesGame extends GameModule {
     private final Set<GamePlayer> eliminated = new LinkedHashSet<>();
 
     protected LivesGame(Game game, IGameConfig.Library library, Config config) {
-        this.lives = config.lives();
+        this.lives = config.lives().get();
         this.fallbackTeam = library.getOrDefine(game, config.fallbackTeam().getIfPresent());
-        this.announce = config.announce();
-        this.sound = config.sound();
+        this.announce = config.announce().get();
+        this.sound = config.sound().get();
     }
 
     @Override
@@ -219,10 +217,12 @@ public class LivesGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<LivesGame> {
-        default int lives() { return 1; }
+        Sound DEFAULT_SOUND = Sound.ENTITY_IRONGOLEM_DEATH;
+
+        Ref<Integer> lives();
         default Ref<Team.Config> fallbackTeam() { return Ref.empty(); }
-        default boolean announce() { return true; }
-        default Sound sound() { return DEFAULT_SOUND; }
+        Ref<Boolean> announce();
+        default Ref<Sound> sound() { return Ref.ofProvided(DEFAULT_SOUND); }
 
         @Override
         default LivesGame create(Game game, Library library) {

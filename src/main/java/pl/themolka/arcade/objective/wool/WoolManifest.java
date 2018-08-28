@@ -88,11 +88,11 @@ public class WoolManifest extends ObjectiveManifest {
 
             return ParserResult.fine(node, name, value, new Wool.Config() {
                 public String id() { return id; }
-                public DyeColor color() { return color; }
-                public boolean craftable() { return craftable; }
+                public Ref<DyeColor> color() { return Ref.ofProvided(color); }
+                public Ref<Boolean> craftable() { return Ref.ofProvided(craftable); }
                 public Ref<AbstractRegion.Config<?>> monument() { return Ref.ofProvided(monument); }
-                public String name() { return woolName; }
-                public boolean objective() { return objective; }
+                public Ref<String> name() { return Ref.ofProvided(woolName); }
+                public Ref<Boolean> objective() { return Ref.ofProvided(objective); }
                 public Ref<Participator.Config<?>> owner() { return owner; }
             });
         }

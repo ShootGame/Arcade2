@@ -23,7 +23,7 @@ public class TeamContent implements RemovableKitContent<Team> {
 
     protected TeamContent(Game game, IGameConfig.Library library, Config config) {
         this.result = Nulls.defaults(library.getOrDefine(game, config.result().getIfPresent()), this.defaultValue());
-        this.announce = config.announce();
+        this.announce = config.announce().get();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class TeamContent implements RemovableKitContent<Team> {
 
             return ParserResult.fine(node, name, value, new Config() {
                 public Ref<Team.Config> result() { return team; }
-                public boolean announce() { return announce; }
+                public Ref<Boolean> announce() { return Ref.ofProvided(announce); }
             });
         }
     }
@@ -84,7 +84,7 @@ public class TeamContent implements RemovableKitContent<Team> {
         boolean DEFAULT_ANNOUNCE = true;
 
         default Ref<Team.Config> result() { return DEFAULT_TEAM; }
-        default boolean announce() { return DEFAULT_ANNOUNCE; }
+        default Ref<Boolean> announce() { return Ref.ofProvided(DEFAULT_ANNOUNCE); }
 
         @Override
         default TeamContent create(Game game, Library library) {

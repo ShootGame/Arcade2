@@ -6,8 +6,10 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class UnionRegion extends AbstractRegion {
     private final RegionBounds bounds;
@@ -198,12 +200,12 @@ public class UnionRegion extends AbstractRegion {
     }
 
     public interface Config extends AbstractRegion.Config<UnionRegion> {
-        List<Ref<AbstractRegion.Config<AbstractRegion>>> regions();
+        Ref<Set<Ref<AbstractRegion.Config<AbstractRegion>>>> regions();
 
         @Override
         default UnionRegion create(Game game, Library library) {
-            List<Region> regions = new ArrayList<>();
-            for (Ref<AbstractRegion.Config<AbstractRegion>> region : this.regions()) {
+            Set<Region> regions = new LinkedHashSet<>();
+            for (Ref<AbstractRegion.Config<AbstractRegion>> region : this.regions().get()) {
                 AbstractRegion.Config<?> config = region.getIfPresent();
                 if (config == null) {
                     continue;

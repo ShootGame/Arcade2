@@ -2,6 +2,7 @@ package pl.themolka.arcade.objective.point;
 
 import net.engio.mbassy.bus.IMessagePublication;
 import org.bukkit.Location;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
@@ -20,8 +21,8 @@ public class Capture extends pl.themolka.arcade.objective.Capture implements Pla
     public Capture(Game game, IGameConfig.Library library, Config config) {
         super(game, library, config);
 
-        this.captureTime = config.captureTime();
-        this.loseTime = config.loseTime();
+        this.captureTime = config.captureTime().get();
+        this.loseTime = config.loseTime().get();
     }
 
     @Override
@@ -68,8 +69,8 @@ public class Capture extends pl.themolka.arcade.objective.Capture implements Pla
         Time DEFAULT_CAPTURE_TIME = Time.ofSeconds(10);
         Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
 
-        default Time captureTime() { return DEFAULT_CAPTURE_TIME; }
-        default Time loseTime() { return DEFAULT_LOSE_TIME; }
+        default Ref<Time> captureTime() { return Ref.ofProvided(DEFAULT_CAPTURE_TIME); }
+        default Ref<Time> loseTime() { return Ref.ofProvided(DEFAULT_LOSE_TIME); }
 
         @Override
         default Capture create(Game game, Library library) {

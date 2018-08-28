@@ -1,6 +1,7 @@
 package pl.themolka.arcade.life;
 
 import net.engio.mbassy.listener.Handler;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
@@ -31,7 +32,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     private Match match;
 
     protected KillEnemiesGame(Game game, IGameConfig.Library library, Config config) {
-        for (KillEnemies.Config objective : config.objectives()) {
+        for (KillEnemies.Config objective : config.objectives().get()) {
             this.byOwner.put(library.getOrDefine(game, objective.owner().get()),
                              library.getOrDefine(game, objective));
         }
@@ -142,7 +143,7 @@ public class KillEnemiesGame extends GameModule implements DynamicWinnable {
     }
 
     public interface Config extends IGameModuleConfig<KillEnemiesGame> {
-        Set<KillEnemies.Config> objectives();
+        Ref<Set<KillEnemies.Config>> objectives();
 
         @Override
         default KillEnemiesGame create(Game game, Library library) {
