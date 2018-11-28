@@ -40,6 +40,19 @@ public class ColorParser extends ElementParser<Color>
 
     @Override
     protected ParserResult<Color> parseElement(Element element, String name, String value) throws ParserException {
+        if (value.startsWith("#")) { // HEX
+            try {
+                java.awt.Color awtColor = java.awt.Color.decode(value);
+
+                int red = this.color(element, name, value, "Red", awtColor.getRed());
+                int green = this.color(element, name, value, "Green", awtColor.getGreen());
+                int blue = this.color(element, name, value, "Blue", awtColor.getBlue());
+                return ParserResult.fine(element, name, value, Color.fromRGB(red, green, blue));
+            } catch (NumberFormatException e) {
+                throw this.fail(element, name, value, "Illegal hexadecimal syntax", e);
+            }
+        }
+
         List<String> array = ParserUtils.array(value, 3);
         if (array.size() == 1) { // maybe predefined
             DyeColor predefined = this.predefinedParser.parseWithDefinition(element, name, value).orNull();
@@ -60,7 +73,7 @@ public class ColorParser extends ElementParser<Color>
 
     private int color(Element element, String name, String value, String friendly, int color) throws ParserException {
         if (color < 0 || color > 255) {
-            throw this.fail(element, name, value, friendly + " must be in range 0-255");
+            throw this.fail(element, name, value, friendly + " (" + color + ") must be in range of 0-255");
         }
 
         return color;
