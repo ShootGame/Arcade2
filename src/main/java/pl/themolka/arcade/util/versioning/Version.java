@@ -16,7 +16,7 @@ public interface Version<T extends Version<T>> extends Comparable<T> {
 
     T previous() throws NoPreviousException;
 
-    T next();
+    T next() throws NoNextException;
 
     static <T extends Version<T>> int compare(Version<T> a, Version<T> b) {
         Objects.requireNonNull(a, "a cannot be null");
@@ -48,5 +48,8 @@ public interface Version<T extends Version<T>> extends Comparable<T> {
     }
 
     class NoPreviousException extends RuntimeException {
+    }
+
+    class NoNextException extends RuntimeException {
     }
 }

@@ -13,7 +13,6 @@ import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.util.StringId;
-import pl.themolka.arcade.util.Version;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.logging.Logger;
 public class Module<GM extends GameModule> extends SimpleModuleListener
                        implements GameHolder, Listener, StringId {
     public static final String DEFAULT_VERSION_STRING = "1.0";
-    public static final Version DEFAULT_VERSION = Version.valueOf(DEFAULT_VERSION_STRING);
 
     private ArcadePlugin plugin;
 
@@ -34,7 +32,6 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
     private final List<Object> listenerObjects = new CopyOnWriteArrayList<>();
     private boolean loaded = false;
     private String name;
-    private Version version = DEFAULT_VERSION;
 
     public Module() {
     }
@@ -56,15 +53,6 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
         this.dependency = info.dependency();
         this.loadBefore = info.loadBefore();
         this.name = info.id();
-
-        ModuleVersion versionInfo = this.getClass().getAnnotation(ModuleVersion.class);
-        if (versionInfo != null && versionInfo.value() != null) {
-            Version version = Version.valueOf(versionInfo.value());
-
-            if (version != null) {
-                this.setVersion(version);
-            }
-        }
     }
 
     @Override
@@ -132,10 +120,6 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
         return this.getPlugin().getServer();
     }
 
-    public Version getVersion() {
-        return this.version;
-    }
-
     public boolean isGameModuleEnabled() {
         return this.getGame() != null && this.getGameModule() != null;
     }
@@ -186,10 +170,6 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
 
     public void setLoadBefore(Class<? extends Module<?>>[] loadBefore) {
         this.loadBefore = loadBefore;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
     }
 
     public boolean unregisterListenerObject(Object object) {

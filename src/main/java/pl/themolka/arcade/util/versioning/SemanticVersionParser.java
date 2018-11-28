@@ -32,7 +32,7 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
 
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("Semantic version (read " + SemanticVersion.MANUAL + ")");
+        return Collections.singleton("semantic version (read " + SemanticVersion.MANUAL + ")");
     }
 
     @Override

@@ -16,7 +16,6 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.module.ModuleVersion;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.spawn.SpawnsModule;
@@ -31,7 +30,6 @@ import java.util.Collection;
                 FiltersModule.class,
                 KitsModule.class,
                 SpawnsModule.class})
-@ModuleVersion("1.0")
 @FormatModule
 public class TeamsModule extends Module<TeamsGame> {
     /** Permission node which allow to edit teams in runtime. */

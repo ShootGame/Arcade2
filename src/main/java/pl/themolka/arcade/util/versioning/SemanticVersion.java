@@ -104,7 +104,7 @@ public class SemanticVersion extends Version.Impl<SemanticVersion> {
     }
 
     @Override
-    public SemanticVersion next() {
+    public SemanticVersion next() throws NoNextException {
         return new SemanticVersion(this.major, this.minor, this.patch + 1, true);
     }
 

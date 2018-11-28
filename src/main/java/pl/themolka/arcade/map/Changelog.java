@@ -1,24 +1,26 @@
 package pl.themolka.arcade.map;
 
+import pl.themolka.arcade.util.versioning.Version;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
-public class Changelog extends ArrayList<String> {
-    private final MapVersion version;
+public class Changelog<T extends Version<T>> extends ArrayList<String> {
+    private final T version;
     private LocalDate release;
 
-    public Changelog(MapVersion version) {
+    public Changelog(T version) {
         this.version = version;
     }
 
-    public Changelog(MapVersion version, LocalDate release) {
+    public Changelog(T version, LocalDate release) {
         this(version);
 
         this.release = release;
     }
 
-    public MapVersion getVersion() {
+    public T getVersion() {
         return this.version;
     }
 

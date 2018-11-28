@@ -2,6 +2,7 @@ package pl.themolka.arcade.map;
 
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.util.pagination.Paginationable;
+import pl.themolka.arcade.util.versioning.SemanticVersion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,16 +18,16 @@ public class OfflineMap implements Paginationable {
 
     private final MapFileVersion fileVersion;
     private final String name;
-    private final MapVersion version;
+    private final SemanticVersion version;
     private final String description;
     private final List<Author> authors = new ArrayList<>();
-    private final Map<MapVersion, Changelog> changelogMap = new TreeMap<>();
+    private final Map<SemanticVersion, Changelog<SemanticVersion>> changelogMap = new TreeMap<>();
 
     private File directory;
     private File settings;
 
-    public OfflineMap(MapFileVersion fileVersion, String name, MapVersion version,
-                      String description, List<Author> authors, List<Changelog> changelogs) {
+    public OfflineMap(MapFileVersion fileVersion, String name, SemanticVersion version, String description,
+                      List<Author> authors, List<Changelog<SemanticVersion>> changelogs) {
         this.fileVersion = fileVersion;
         this.name = name;
         this.version = version;
@@ -67,7 +68,7 @@ public class OfflineMap implements Paginationable {
                 this.getVersion() + authorsString;
     }
 
-    public boolean addChangelog(Changelog changelog) {
+    public boolean addChangelog(Changelog<SemanticVersion> changelog) {
         boolean result = !this.hasChangelog(changelog);
         if (result) {
             this.changelogMap.put(changelog.getVersion(), changelog);
@@ -84,7 +85,7 @@ public class OfflineMap implements Paginationable {
         return this.name;
     }
 
-    public MapVersion getVersion() {
+    public SemanticVersion getVersion() {
         return this.version;
     }
 
@@ -123,15 +124,15 @@ public class OfflineMap implements Paginationable {
         return primary + ChatColor.ITALIC.toString() + "(unknown)";
     }
 
-    public Changelog getChangelog() {
+    public Changelog<SemanticVersion> getChangelog() {
         return this.getChangelog(this.getVersion());
     }
 
-    public Changelog getChangelog(MapVersion version) {
+    public Changelog<SemanticVersion> getChangelog(SemanticVersion version) {
         return this.changelogMap.get(version);
     }
 
-    public Collection<Changelog> getChangelogs() {
+    public Collection<Changelog<SemanticVersion>> getChangelogs() {
         return this.changelogMap.values();
     }
 
@@ -147,11 +148,11 @@ public class OfflineMap implements Paginationable {
         return this.hasChangelog(this.getVersion());
     }
 
-    public boolean hasChangelog(Changelog changelog) {
+    public boolean hasChangelog(Changelog<SemanticVersion> changelog) {
         return this.hasChangelog(changelog.getVersion());
     }
 
-    public boolean hasChangelog(MapVersion version) {
+    public boolean hasChangelog(SemanticVersion version) {
         return this.getChangelog(version) != null;
     }
 
@@ -163,11 +164,11 @@ public class OfflineMap implements Paginationable {
         return !this.authors.isEmpty();
     }
 
-    public boolean removeChangelog(Changelog changelog) {
+    public boolean removeChangelog(Changelog<SemanticVersion> changelog) {
         return this.removeChangelog(changelog.getVersion());
     }
 
-    public boolean removeChangelog(MapVersion version) {
+    public boolean removeChangelog(SemanticVersion version) {
         boolean result = this.hasChangelog(version);
         if (result) {
             this.changelogMap.remove(version);

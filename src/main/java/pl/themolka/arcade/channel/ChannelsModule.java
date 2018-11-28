@@ -7,12 +7,10 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.module.ModuleVersion;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Channels")
-@ModuleVersion("1.0")
 public class ChannelsModule extends Module<ChannelsGame> {
     @Override
     public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {

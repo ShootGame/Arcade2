@@ -85,8 +85,8 @@ public class GameModule extends SimpleGameListener
                     dependency, ChatColor.YELLOW + ", " + ChatColor.DARK_AQUA);
         }
 
-        return ChatColor.GRAY + "#" + index + " " + color + this.getName() + " v" + this.getModule().getVersion() +
-                ChatColor.YELLOW + " (" + this.getId() + ")" + global + dependencies;
+        return ChatColor.GRAY + "#" + index + " " + color + this.getName() + ChatColor.YELLOW +
+                " (" + this.getId() + ")" + global + dependencies;
     }
 
     public int cancelAllTasks() {

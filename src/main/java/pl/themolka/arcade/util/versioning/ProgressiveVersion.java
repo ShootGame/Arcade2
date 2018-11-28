@@ -51,7 +51,7 @@ public class ProgressiveVersion extends Version.Impl<ProgressiveVersion> {
     }
 
     @Override
-    public ProgressiveVersion next() {
+    public ProgressiveVersion next() throws NoNextException {
         return new ProgressiveVersion(this.value + 1);
     }
 
