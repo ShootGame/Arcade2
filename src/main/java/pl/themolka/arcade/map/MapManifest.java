@@ -14,23 +14,17 @@ public class MapManifest {
     public static final String FILENAME = "map.xml";
 
     private final Set<IGameModuleConfig<?>> modules;
-    private final ScoreboardInfo scoreboard;
     private final Node source;
     private final WorldInfo world;
 
-    public MapManifest(Set<IGameModuleConfig<?>> modules, ScoreboardInfo scoreboard, Node source, WorldInfo world) {
-        this.modules = modules != null          ? modules       : new LinkedHashSet<>();
-        this.scoreboard = scoreboard != null    ? scoreboard    : new ScoreboardInfo();
+    public MapManifest(Set<IGameModuleConfig<?>> modules, Node source, WorldInfo world) {
+        this.modules = modules != null      ? modules   : new LinkedHashSet<>();
         this.source = this.detach(source);
-        this.world = world != null              ? world         : new WorldInfo();
+        this.world = world != null          ? world     : new WorldInfo();
     }
 
     public Set<IGameModuleConfig<?>> getModules() {
         return new LinkedHashSet<>(this.modules);
-    }
-
-    public ScoreboardInfo getScoreboard() {
-        return this.scoreboard;
     }
 
     public Node getSource() {

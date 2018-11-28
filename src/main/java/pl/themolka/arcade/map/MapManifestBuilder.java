@@ -9,14 +9,12 @@ import java.util.Set;
 
 public class MapManifestBuilder implements Builder<MapManifest> {
     private Set<IGameModuleConfig<?>> modules;
-    private ScoreboardInfo scoreboard;
     private Node source;
     private WorldInfo world;
 
     @Override
     public MapManifest build() {
         return new MapManifest(this.modules(),
-                               this.scoreboard(),
                                this.source(),
                                this.world());
     }
@@ -27,15 +25,6 @@ public class MapManifestBuilder implements Builder<MapManifest> {
 
     public MapManifestBuilder modules(Set<IGameModuleConfig<?>> modules) {
         this.modules = modules;
-        return this;
-    }
-
-    public ScoreboardInfo scoreboard() {
-        return this.scoreboard;
-    }
-
-    public MapManifestBuilder scoreboard(ScoreboardInfo scoreboard) {
-        this.scoreboard = scoreboard;
         return this;
     }
 

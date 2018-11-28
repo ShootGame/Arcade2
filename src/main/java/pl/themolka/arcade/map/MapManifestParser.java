@@ -21,14 +21,12 @@ import java.util.Set;
 public class MapManifestParser extends NodeParser<MapManifest>
                                implements InstallableParser {
     private Parser<WorldInfo> worldInfoParser;
-    private Parser<ScoreboardInfo> scoreboardInfoParser;
 
     private Set<GameModuleParser<?, ?>> moduleParsers;
 
     @Override
     public void install(ParserContext context) throws ParserNotSupportedException {
         this.worldInfoParser = context.type(WorldInfo.class);
-        this.scoreboardInfoParser = context.type(ScoreboardInfo.class);
 
         this.moduleParsers = new LinkedHashSet<>();
         for (Parser<?> parser : context.getContainer().getParsers()) {
@@ -46,7 +44,6 @@ public class MapManifestParser extends NodeParser<MapManifest>
     @Override
     protected ParserResult<MapManifest> parseTree(Node node, String name) throws ParserException {
         WorldInfo world = this.worldInfoParser.parse(node.child("world")).orDefaultNull();
-        ScoreboardInfo scoreboard = this.scoreboardInfoParser.parse(node.child("scoreboard")).orDefaultNull();
 
         Set<IGameModuleConfig<?>> modules = new LinkedHashSet<>();
         Node modulesNode = this.getModulesNode(node);
@@ -58,10 +55,27 @@ public class MapManifestParser extends NodeParser<MapManifest>
             }
         }
 
-        return ParserResult.fine(node, name, new MapManifest(modules, scoreboard, node, world));
+        return ParserResult.fine(node, name, new MapManifest(modules, node, world));
     }
 
-    protected Node getModulesNode(Node root) {
-        return Nulls.defaults(root.firstChild("modules", "module", "components", "component"), root);
+    protected Node getModulesNode(Node root) throws ParserException {
+        return Nulls.defaults(this.findJustOne(root, "modules", "module", "components", "component"), root);
+    }
+
+    private Node findJustOne(Node parent, String... names) throws ParserException {
+        Node result = null;
+        for (String name : names) {
+            Node child = parent.firstChild(name);
+            if (child == null) {
+                continue;
+            }
+
+            if (result != null) {
+                throw this.fail(child, "Modules node is already defined");
+            }
+            result = child;
+        }
+
+        return result;
     }
 }
