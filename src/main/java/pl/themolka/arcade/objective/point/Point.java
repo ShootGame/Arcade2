@@ -12,6 +12,7 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.game.ParticipatorResolver;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalHolder;
 import pl.themolka.arcade.goal.GoalLoseEvent;
@@ -122,22 +123,8 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
             return;
         }
 
-        Multimap<Participator, GamePlayer> participators = ArrayListMultimap.create();
-        for (GamePlayer player : this.capture.getTracker().getTracking()) {
-            if (this.canCapture(player) && this.canDominate(player)) {
-                Participator participator = match.resolve(player);
-
-                if (participator != null && (participator.equals(player) || this.canCapture(participator))) {
-                    participators.put(participator, player);
-                }
-            }
-        }
-
+        Multimap<Participator, GamePlayer> participators = this.resolveParticipators(match);
         Multimap<Participator, GamePlayer> dominators = this.resolveDominators(participators);
-
-//        Multimap<Participator, GamePlayer> dominators = Nulls.defaults(
-//                this.dominatorStrategy.getDominators(ImmutableMultimap.copyOf(participators)),
-//                ImmutableMultimap.of());
 
         Participator oldOwner = this.getOwner();
         this.tick(new Tick(tick, participators, dominators, oldOwner));
@@ -147,6 +134,35 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
             // Give reward points for owning the point.
             this.tickPointReward(oldOwner, this.pointReward);
         }
+    }
+
+    private Multimap<Participator, GamePlayer> resolveParticipators(ParticipatorResolver resolver) {
+        Map<Participator, Boolean> canCaptureCache = new HashMap<>();
+
+        Multimap<Participator, GamePlayer> results = ArrayListMultimap.create();
+        for (GamePlayer player : this.capture.getTracker().getTracking()) {
+            if (!this.canCapture(player) || !this.canDominate(player)) {
+                continue;
+            }
+
+            Participator participator = resolver.resolve(player);
+            if (participator == null) {
+                continue;
+            }
+
+            boolean participate;
+            if (canCaptureCache.containsKey(participator)) {
+                participate = canCaptureCache.get(participator);
+            } else {
+                canCaptureCache.put(participator, participate = participator.equals(player) || this.canCapture(participator));
+            }
+
+            if (participate) {
+                results.put(participator, player);
+            }
+        }
+
+        return results;
     }
 
     private Multimap<Participator, GamePlayer> resolveDominators(Multimap<Participator, GamePlayer> participators) {
