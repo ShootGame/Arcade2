@@ -4,7 +4,7 @@ import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.Property;
 
 /**
- * Simple and easy {@link PropertyParser} parsing.
+ * Simple and easy {@link Property} parsing.
  */
 public abstract class PropertyParser<T> extends ElementParser<T> {
     public PropertyParser() {

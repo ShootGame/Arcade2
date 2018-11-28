@@ -49,7 +49,7 @@ public class Losing extends PointState.Progressive {
         }
 
         // Progress the state if there are any dominators on the point.
-        if (!dominators.isEmpty()) {
+        if (!dominators.isEmpty() && !dominators.containsKey(this.loser)) {
             this.progress(point.getTickInterval());
         }
 

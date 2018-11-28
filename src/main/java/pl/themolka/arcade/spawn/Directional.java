@@ -4,7 +4,7 @@ import pl.themolka.arcade.config.IConfig;
 
 public interface Directional {
     default org.bukkit.geometry.Direction createDirection() {
-        return org.bukkit.geometry.Direction.of(this.getYaw(), getPitch());
+        return org.bukkit.geometry.Direction.of(this.getYaw(), this.getPitch());
     }
 
     default float getYaw() {

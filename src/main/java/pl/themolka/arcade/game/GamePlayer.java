@@ -387,6 +387,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.setAbsorption(AbsorptionContent.Config.DEFAULT_ABSORPTION);
         bukkit.setAllowFlight(CanFlyContent.Config.DEFAULT_CAN_FLY);
         bukkit.setArrowsStuck(RemoveArrowsContent.FINAL_COUNT);
+        bukkit.setCompassTarget(this.game.getWorld().getSpawnLocation());
         bukkit.setExhaustion(ExhaustionContent.Config.DEFAULT_LEVEL);
         bukkit.setExp((float) ExperienceContent.Config.DEFAULT_EXPERIENCE.getValue());
         bukkit.setFallDistance(FallDistanceContent.Config.DEFAULT_DISTANCE);

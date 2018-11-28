@@ -7,9 +7,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class OfflineMap implements Paginationable {
     public static final int NAME_MIN_LENGTH = 3;
@@ -20,7 +20,7 @@ public class OfflineMap implements Paginationable {
     private final MapVersion version;
     private final String description;
     private final List<Author> authors = new ArrayList<>();
-    private final Map<MapVersion, Changelog> changelogMap = new HashMap<>();
+    private final Map<MapVersion, Changelog> changelogMap = new TreeMap<>();
 
     private File directory;
     private File settings;

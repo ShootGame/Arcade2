@@ -1,5 +1,7 @@
 package pl.themolka.arcade.dominator;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Map;
 
 /**
@@ -8,6 +10,6 @@ import java.util.Map;
 public class Everybody<T> extends AbstractDominator<T> {
     @Override
     public Map<T, Integer> getDominators(Map<T, Integer> input) {
-        return input;
+        return ImmutableMap.copyOf(input);
     }
 }

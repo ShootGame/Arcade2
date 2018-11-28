@@ -27,7 +27,7 @@ public class Captured extends PointState {
         Multimap<Participator, GamePlayer> dominators = tick.getDominators();
         Participator owner = tick.getOwner();
 
-        if (!dominators.keySet().isEmpty() && !dominators.containsKey(owner)) {
+        if (!dominators.isEmpty() && !dominators.containsKey(owner)) {
             this.startLosing(this.getObjective().getStateFactory(), owner, Progressive.DONE);
         }
     }

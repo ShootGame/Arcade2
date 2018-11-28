@@ -123,7 +123,7 @@ public class ObserversKit extends Kit {
         this.addContent(CLEAR_INVENTORY,
                         GAME_MODE,
                         NAVIGATION_ITEM, // slot 0
-                        PLAY_ITEM, // slot 1
+                        PLAY_ITEM, // slot 2
                         HELD_SLOT,
                         NIGHT_VISION_EFFECT,
                         CAN_FLY,

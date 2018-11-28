@@ -96,7 +96,7 @@ public class WoolChestTracker implements Listener {
                 if (humanViewer instanceof Player) {
                     GamePlayer viewer = this.game.resolve((Player) humanViewer);
 
-                    if (viewer != null) {
+                    if (viewer != null && viewer.isParticipating()) {
                         viewers.add(viewer);
                     }
                 }

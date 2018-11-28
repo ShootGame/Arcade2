@@ -1,5 +1,6 @@
 package pl.themolka.arcade.kit.content;
 
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
@@ -28,7 +29,8 @@ public class CompassTargetContent implements KitContent<Vector> {
 
     @Override
     public void apply(GamePlayer player) {
-        player.getBukkit().setCompassTarget(this.result.toLocation(null));
+        World world = player.getBukkit().getWorld();
+        player.getBukkit().setCompassTarget(this.result.toLocation(world));
     }
 
     @Override

@@ -202,4 +202,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.time.LocalDateTimeParser" />
     <parser class="pl.themolka.arcade.time.LocalTimeParser" />
     <parser class="pl.themolka.arcade.time.TimeParser" />
+    <parser class="pl.themolka.arcade.util.versioning.ProgressiveVersionParser" />
+    <parser class="pl.themolka.arcade.util.versioning.SemanticVersionParser" />
 </parsers>

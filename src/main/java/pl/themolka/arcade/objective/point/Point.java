@@ -32,7 +32,6 @@ import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.util.FinitePercentage;
 import pl.themolka.arcade.util.Tickable;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
