@@ -328,7 +328,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
 
         bukkit.setAffectsSpawning(participating);
         bukkit.setCollidesWithEntities(participating);
-        bukkit.showInvisibles(!participating);
     }
 
     public void refreshVisibilityArcadePlayer(Iterable<ArcadePlayer> viewers) {

@@ -33,7 +33,7 @@ public class VoidGenerator extends ChunkGenerator implements Generator {
 
     @Override
     public Location getFixedSpawnLocation(World world, Random random) {
-        return WorldInfo.DEFAULT_SPAWN;
+        return WorldInfo.DEFAULT_SPAWN.clone();
     }
 
     @NestedParserName("void")

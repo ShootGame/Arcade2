@@ -81,7 +81,7 @@ public class WoolManifest extends ObjectiveManifest {
             String id = this.parseRequiredId(node);
             DyeColor color = this.colorParser.parse(node.property("color", "of")).orFail();
             boolean craftable = this.craftableParser.parse(node.property("craftable")).orDefault(Wool.Config.DEFAULT_IS_CRAFTABLE);
-            UnionRegion.Config monument = this.monumentParser.parse(node.firstChild("monument")).orFail();
+            UnionRegion.Config monument = this.monumentParser.parse(node.firstChild("monument", "monuments")).orFail();
             String woolName = this.parseName(node).orDefaultNull();
             boolean objective = this.parseObjective(node).orDefault(Wool.Config.DEFAULT_IS_OBJECTIVE);
             Ref<Participator.Config<?>> owner = this.parseOwner(node).orFail();

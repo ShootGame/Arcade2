@@ -19,7 +19,7 @@ public class KillReward implements PlayerApplicable, StringId {
     protected KillReward(Game game, IGameConfig.Library library, Config config) {
         this.filter = Filters.secure(library.getOrDefine(game, config.filter().getIfPresent()));
         this.id = config.id();
-        this.kit = library.getOrDefine(game, config.kit().getIfPresent());
+        this.kit = library.getOrDefine(game, config.kit().get());
     }
 
     @Override

@@ -17,7 +17,7 @@ public class ByteParser extends NumberParser<Byte> {
 
     @Override
     protected Byte parse(String input) throws NumberFormatException {
-        return Byte.valueOf(input);
+        return Byte.parseByte(input);
     }
 
     @Override

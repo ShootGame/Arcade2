@@ -1,15 +1,13 @@
 package pl.themolka.arcade.dominator;
 
-import com.google.common.collect.Multimap;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.Participator;
+import java.util.Map;
 
 /**
  * Nobody dominates.
  */
-public class Nobody extends AbstractDominator {
+public class Nobody<T> extends AbstractDominator<T> {
     @Override
-    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
+    public Map<T, Integer> getDominators(Map<T, Integer> input) {
         return this.empty();
     }
 }

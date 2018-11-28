@@ -32,7 +32,7 @@ public class PlayerLevelParser extends ElementParser<PlayerLevel>
     protected ParserResult<PlayerLevel> parseElement(Element element, String name, String value) throws ParserException {
         int level = this.levelParser.parseWithDefinition(element, name, value).orFail();
         if (level < 0) {
-            throw this.fail(element, name, value, "Level cannot be negative (smaller or equal to 0)");
+            throw this.fail(element, name, value, "Level cannot be negative (smaller than 0)");
         }
 
         return ParserResult.fine(element, name, value, new PlayerLevel(level));

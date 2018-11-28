@@ -1,55 +1,48 @@
 package pl.themolka.arcade.dominator;
 
-import com.google.common.collect.Multimap;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.Participator;
-
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * Only the one participator and if has more players than other dominates.
+ * Only one object dominates and when it has more power than all other together.
  */
-public class Majority extends AbstractDominator {
-    private final Exclusive exclusive = new Exclusive();
-    private final Lead lead = new Lead();
+public class Majority<T> extends AbstractDominator<T> {
+    private final Exclusive<T> exclusive = new Exclusive<>();
+    private final Lead<T> lead = new Lead<>();
 
     @Override
-    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
-        Map.Entry<Participator, Collection<GamePlayer>> dominator = this.findDominator(input);
+    public Map<T, Integer> getDominators(Map<T, Integer> input) {
+        Map.Entry<T, Integer> dominator = this.findSingleLeader(input);
         if (dominator == null) {
             return this.empty();
         }
 
-        Participator leader = dominator.getKey();
-        int playerCount = dominator.getValue().size();
+        T leader = dominator.getKey();
+        int power = dominator.getValue();
 
-        for (Map.Entry<Participator, Collection<GamePlayer>> original : input.asMap().entrySet()) {
+        for (Map.Entry<T, Integer> original : input.entrySet()) {
             if (!original.getKey().equals(leader)) { // Don't iterate the current leader
-                playerCount -= original.getValue().size();
+                power -= original.getValue();
 
-                if (playerCount <= 0) {
+                if (power <= 0) {
                     break;
                 }
             }
         }
 
-        return playerCount > 0 ? this.singleton(dominator) : this.empty();
+        return power > 0 ? this.singleton(dominator) : this.empty();
     }
 
-    private Map.Entry<Participator, Collection<GamePlayer>> findDominator(Multimap<Participator, GamePlayer> original) {
-        Multimap<Participator, GamePlayer> results = this.lead.getDominators(original);
-        if (results == null) {
-            return null;
-        }
+    private Map.Entry<T, Integer> findSingleLeader(Map<T, Integer> original) {
+        original = this.lead.getDominators(original);
 
-        results = this.exclusive.getDominators(results);
-        if (results == null) {
-            return null;
-        }
+        if (original != null) {
+            original = this.exclusive.getDominators(original);
 
-        for (Map.Entry<Participator, Collection<GamePlayer>> entry : results.asMap().entrySet()) {
-            return entry;
+            if (original != null) {
+                for (Map.Entry<T, Integer> entry : original.entrySet()) {
+                    return entry;
+                }
+            }
         }
 
         return null;

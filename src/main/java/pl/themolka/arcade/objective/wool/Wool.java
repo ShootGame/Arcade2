@@ -120,29 +120,31 @@ public class Wool extends Objective {
             return;
         }
 
+        // Wool in a monument - cancel the event.
+        event.setCanceled(true);
+
+        if (!WoolUtils.isWool(block, this.color)) {
+            // Wrong wool color for this monument.
+            return;
+        }
+
         GamePlayer player = event.getGamePlayer();
         if (player == null) {
             // Endermans, TNTs and other entities are not permitted to place wools.
-            event.setCanceled(true);
             return;
         }
 
-        if (!WoolUtils.isWool(block, this.color)) {
-            event.setCanceled(true);
+        Participator participator = this.getParticipatorResolver().resolve(player);
+        if (participator == null) {
+            // The player must participate in the game.
             return;
         }
 
-        event.setCanceled(true);
         if (this.isCompleted()) {
             player.sendError(ChatColor.GOLD + this.getColoredName() + Messageable.ERROR_COLOR + " has already been captured!");
         } else if (this.hasOwner() && this.getOwner().contains(player)) {
             player.sendError("You may not capture your own " + ChatColor.GOLD + this.getColoredName() + Messageable.ERROR_COLOR + "!");
         } else {
-            Participator participator = this.getParticipatorResolver().resolve(player);
-            if (participator == null) {
-                return;
-            }
-
             WoolPlaceEvent placeEvent = new WoolPlaceEvent(this, player, participator);
             this.getPlugin().getEventBus().publish(placeEvent);
 
@@ -151,7 +153,7 @@ public class Wool extends Objective {
             }
 
             event.setCanceled(false);
-            this.completeObjective(placeEvent.getCompleter(), player);
+            this.completeObjective(placeEvent.getParticipator(), placeEvent.getCompleter());
         }
     }
 

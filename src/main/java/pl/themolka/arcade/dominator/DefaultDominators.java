@@ -1,10 +1,8 @@
 package pl.themolka.arcade.dominator;
 
-import com.google.common.collect.Multimap;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.Participator;
+import java.util.Map;
 
-public enum DefaultDominators implements Dominator {
+public enum DefaultDominators implements Dominator<Object> {
     EVERYBODY(new Everybody()),
     EXCLUSIVE(new Exclusive()),
     LEAD(new Lead()),
@@ -12,22 +10,22 @@ public enum DefaultDominators implements Dominator {
     NOBODY(new Nobody()),
     ;
 
-    private final Dominator target;
+    private final Dominator<Object> target;
 
-    DefaultDominators(Dominator target) {
+    DefaultDominators(Dominator<Object> target) {
         this.target = target;
     }
 
     @Override
-    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
+    public Map<Object, Integer> getDominators(Map<Object, Integer> input) {
         return this.target.getDominators(input);
     }
 
-    public Dominator getDominator() {
+    public Dominator<Object> getDominator() {
         return this.target;
     }
 
-    public static Dominator getDefault() {
-        return LEAD.target;
+    public static <T> Dominator<T> getDefault() {
+        return (Dominator<T>) LEAD.target;
     }
 }

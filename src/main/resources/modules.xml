@@ -15,7 +15,6 @@ All Arcade modules **sorted in alphabetical order**
     <module class="pl.themolka.arcade.life.KillEnemiesModule" />
     <module class="pl.themolka.arcade.life.KillRewardsModule" />
     <module class="pl.themolka.arcade.life.LivesModule" />
-    <module class="pl.themolka.arcade.lobby.LobbyModule" />
     <module class="pl.themolka.arcade.map.ArchiveModule" />
     <module class="pl.themolka.arcade.map.MapLoaderModule" />
     <module class="pl.themolka.arcade.match.MatchModule" />

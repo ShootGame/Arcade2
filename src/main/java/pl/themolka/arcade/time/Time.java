@@ -255,11 +255,11 @@ public class Time {
     }
 
     public long toMonths() {
-        return this.toWeeks() / 31L;
+        return this.toDays() / 31L;
     }
 
     public long toYears() {
-        return this.toMonths() / 365L;
+        return this.toDays() / 365L;
     }
 
     //
@@ -334,11 +334,11 @@ public class Time {
     }
 
     public static Time ofMonths(long months) {
-        return ofWeeks(months * 31L);
+        return ofDays(months * 31L);
     }
 
     public static Time ofYears(long years) {
-        return ofMonths(years * 365L);
+        return ofDays(years * 365L);
     }
 
     //

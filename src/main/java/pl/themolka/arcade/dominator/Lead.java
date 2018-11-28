@@ -1,42 +1,35 @@
 package pl.themolka.arcade.dominator;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.Participator;
-
-import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Participator(s) with most {@link GamePlayer}s dominates.
+ * Objects(s) with the highest power dominates.
  */
-public class Lead extends AbstractDominator {
+public class Lead<T> extends AbstractDominator<T> {
     @Override
-    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
-        Multimap<Participator, GamePlayer> results = ArrayListMultimap.create();
-        for (Map.Entry<Participator, Collection<GamePlayer>> participator : input.asMap().entrySet()) {
-            Collection<GamePlayer> players = participator.getValue();
+    public Map<T, Integer> getDominators(Map<T, Integer> input) {
+        Map<T, Integer> results = new LinkedHashMap<>();
+        for (Map.Entry<T, Integer> dominator : input.entrySet()) {
+            int power = dominator.getValue();
 
-            int playerCount = players.size();
-            int dominatorCount = 0;
-
-            for (Map.Entry<Participator, Collection<GamePlayer>> previous : results.asMap().entrySet()) {
+            int previousPower = 0;
+            for (Map.Entry<T, Integer> previous : results.entrySet()) {
                 // All participators in this map have same player counts - break the loop.
-                dominatorCount = previous.getValue().size();
+                previousPower = previous.getValue();
                 break;
             }
 
-            if (playerCount < dominatorCount) {
+            if (power < previousPower) {
                 // Not enough participators, continue
                 continue;
-            } else if (playerCount > dominatorCount) {
+            } else if (power > previousPower) {
                 // Clear the map so we have just this record in it.
                 results.clear();
             }
 
             // Record the current participator to the map.
-            results.putAll(participator.getKey(), players);
+            results.put(dominator.getKey(), power);
         }
 
         return results;

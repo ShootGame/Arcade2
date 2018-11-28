@@ -6,7 +6,7 @@ import pl.themolka.arcade.util.Applicable;
 import java.util.Objects;
 
 public class GameRule implements Applicable<World> {
-    private String key;
+    private final String key;
     private Object value;
 
     public GameRule(String key) {

@@ -30,11 +30,13 @@ import pl.themolka.arcade.score.ScoreModule;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.Color;
 import pl.themolka.arcade.util.FinitePercentage;
-import pl.themolka.arcade.util.Nulls;
 import pl.themolka.arcade.util.Tickable;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Point extends StatableObjective<PointState> implements IPoint, Tickable {
@@ -43,7 +45,7 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
     private final Capture capture;
     private final Time captureTime;
     private final Filter dominateFilter;
-    private final Dominator dominatorStrategy;
+    private final Dominator<Participator> dominatorStrategy;
     private final Time loseTime;
     private final Color neutralColor;
     private final boolean permanent;
@@ -132,9 +134,11 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
             }
         }
 
-        Multimap<Participator, GamePlayer> dominators = Nulls.defaults(
-                this.dominatorStrategy.getDominators(ImmutableMultimap.copyOf(participators)),
-                ImmutableMultimap.of());
+        Multimap<Participator, GamePlayer> dominators = this.resolveDominators(participators);
+
+//        Multimap<Participator, GamePlayer> dominators = Nulls.defaults(
+//                this.dominatorStrategy.getDominators(ImmutableMultimap.copyOf(participators)),
+//                ImmutableMultimap.of());
 
         Participator oldOwner = this.getOwner();
         this.tick(new Tick(tick, participators, dominators, oldOwner));
@@ -144,6 +148,27 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
             // Give reward points for owning the point.
             this.tickPointReward(oldOwner, this.pointReward);
         }
+    }
+
+    private Multimap<Participator, GamePlayer> resolveDominators(Multimap<Participator, GamePlayer> participators) {
+        Map<Participator, Integer> input = new HashMap<>();
+        for (Map.Entry<Participator, GamePlayer> entry : participators.entries()) {
+            Participator participator = entry.getKey();
+            input.put(participator, input.getOrDefault(participator, 1));
+        }
+
+        Map<Participator, Integer> dominators = this.dominatorStrategy.getDominators(input);
+        if (dominators == null) {
+            return ImmutableMultimap.of();
+        }
+
+        Multimap<Participator, GamePlayer> results = ArrayListMultimap.create();
+        for (Map.Entry<Participator, Integer> dominator : dominators.entrySet()) {
+            Participator participator = dominator.getKey();
+            results.putAll(participator, participators.get(participator));
+        }
+
+        return ImmutableMultimap.copyOf(results);
     }
 
     public void tickPointReward(Participator owner, double pointReward) {
@@ -256,7 +281,7 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
 
     public interface Config extends StatableObjective.Config<Point> {
         Time DEFAULT_CAPTURE_TIME = Time.ofSeconds(10);
-        Dominator DEFAULT_DOMINATOR_STRATEGY = DefaultDominators.getDefault();
+        Dominator<Participator> DEFAULT_DOMINATOR_STRATEGY = DefaultDominators.getDefault();
         Time DEFAULT_LOSE_TIME = Time.ofSeconds(10);
         String DEFAULT_NAME = "Point";
         Color DEFAULT_NEUTRAL_COLOR = Color.GOLD;
@@ -267,7 +292,7 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         Ref<Capture.Config> capture();
         default Ref<Time> captureTime() { return Ref.ofProvided(DEFAULT_CAPTURE_TIME); }
         default Ref<Filter.Config<?>> dominateFilter() { return Ref.empty(); }
-        default Ref<Dominator> dominatorStrategy() { return Ref.ofProvided(DEFAULT_DOMINATOR_STRATEGY); }
+        default Ref<Dominator<Participator>> dominatorStrategy() { return Ref.ofProvided(DEFAULT_DOMINATOR_STRATEGY); }
         default Ref<Time> loseTime() { return Ref.ofProvided(DEFAULT_LOSE_TIME); }
         default Ref<Color> neutralColor() { return Ref.ofProvided(DEFAULT_NEUTRAL_COLOR); }
         default Ref<Boolean> permanent() { return Ref.ofProvided(DEFAULT_IS_PERMANENT); }

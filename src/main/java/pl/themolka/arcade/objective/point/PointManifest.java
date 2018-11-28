@@ -128,7 +128,7 @@ public class PointManifest extends ObjectiveManifest {
             Capture.Config capture = this.captureParser.parse(node.firstChild("capture")).orFail();
             Time captureTime = this.captureTimeParser.parse(node.property("capture-time", "capturetime")).orDefault(Point.Config.DEFAULT_CAPTURE_TIME);
             Ref<Filter.Config<?>> dominateFilter = this.dominateFilterParser.parse(node.property("filter")).orDefault(Ref.empty());
-            Dominator dominatorStrategy = this.dominatorStrategyParser.parse(node.firstChild(
+            Dominator<Participator> dominatorStrategy = this.dominatorStrategyParser.parse(node.firstChild(
                     "dominator-strategy", "dominatorstrategy", "dominator")).orDefault(Point.Config.DEFAULT_DOMINATOR_STRATEGY);
             Time loseTime = this.loseTimeParser.parse(node.property("lose-time", "losetime")).orDefault(Point.Config.DEFAULT_LOSE_TIME);
             String pointName = this.parseName(node).orDefaultNull();
@@ -145,7 +145,7 @@ public class PointManifest extends ObjectiveManifest {
                 public Ref<Capture.Config> capture() { return Ref.ofProvided(capture); }
                 public Ref<Time> captureTime() { return Ref.ofProvided(captureTime); }
                 public Ref<Filter.Config<?>> dominateFilter() { return dominateFilter; }
-                public Ref<Dominator> dominatorStrategy() { return Ref.ofProvided(dominatorStrategy); }
+                public Ref<Dominator<Participator>> dominatorStrategy() { return Ref.ofProvided(dominatorStrategy); }
                 public Ref<Time> loseTime() { return Ref.ofProvided(loseTime); }
                 public Ref<String> name() { return Ref.ofProvided(pointName); }
                 public Ref<Color> neutralColor() { return Ref.ofProvided(neutralColor); }

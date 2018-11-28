@@ -4,7 +4,9 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Firework;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.firework.FireworkHandler;
 import pl.themolka.arcade.firework.FireworkUtils;
 import pl.themolka.arcade.game.Participator;
@@ -22,12 +24,16 @@ public class GoalFireworkHandler extends FireworkHandler {
         super(enabled);
     }
 
-    public Firework fireComplete(Location at, Color color) {
-        return this.fireComplete(at, color.getFireworkColor());
+    public GoalFireworkHandler(Ref<Boolean> enabled) {
+        this(enabled.get());
     }
 
-    public Firework fireComplete(Location at, org.bukkit.Color color) {
-        return FireworkUtils.spawn(at, FIREWORK_POWER,
+    public Firework fireComplete(Plugin plugin, Location at, Color color) {
+        return this.fireComplete(plugin, at, color.getFireworkColor());
+    }
+
+    public Firework fireComplete(Plugin plugin, Location at, org.bukkit.Color color) {
+        return FireworkUtils.spawn(plugin, at, FIREWORK_POWER, false,
                 FireworkEffect.builder().with(FireworkEffect.Type.STAR)
                                         .withColor(color)
                                         .withFlicker()
@@ -40,8 +46,8 @@ public class GoalFireworkHandler extends FireworkHandler {
                                         .build());
     }
 
-    public Firework fireComplete(Location at, Participator participator) {
-        return this.fireComplete(at, participator.getColor());
+    public Firework fireComplete(Plugin plugin, Location at, Participator participator) {
+        return this.fireComplete(plugin, at, participator.getColor());
     }
 
     public List<Location> getRegionCorners(CuboidRegion region) {

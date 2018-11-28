@@ -2,28 +2,15 @@ package pl.themolka.arcade.map;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
+import pl.themolka.arcade.util.FastUUID;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class WorldNameGenerator {
     public static final char SLUG_MAGIC_KEY = '_';
 
-    private OfflineMap map;
-
-    public WorldNameGenerator() {
-    }
-
-    public WorldNameGenerator(ArcadeMap map) {
-        this(map.getMapInfo());
-    }
-
-    public WorldNameGenerator(OfflineMap map) {
-        this.map = map;
-    }
-
-    public OfflineMap getMap() {
-        return this.map;
-    }
+    private final FastUUID fastUUID = new FastUUID();
 
     public String nextWorldName() {
         return this.nextWorldName(null, null);
@@ -38,12 +25,8 @@ public class WorldNameGenerator {
     }
 
     public String nextWorldName(String name, UUID randomId) {
-        if (name == null) {
-//            name = this.getMap().getDirectory().getName();
-        }
-
         if (randomId == null) {
-            randomId = UUID.randomUUID();
+            randomId = this.fastUUID.random();
         }
 
         return this.normalizeWorldName(randomId.toString().replace("-", ""));
@@ -53,19 +36,21 @@ public class WorldNameGenerator {
         char[] array = StringUtils.stripAccents(worldName).toCharArray();
         char[] result = new char[array.length];
 
+        int index = 0;
         for (int i = 0; i < array.length; i++) {
-            char c = array[i];
+            char c = array[index];
             if (CharUtils.isAsciiAlphanumeric(c)) {
                 result[i] = Character.toLowerCase(c);
-            } else {
+            } else if (Character.isWhitespace(c)) {
                 result[i] = SLUG_MAGIC_KEY;
+            } else {
+                result = Arrays.copyOf(result, result.length - 1);
+                continue;
             }
+
+            index++;
         }
 
         return String.valueOf(result);
-    }
-
-    public void setMap(OfflineMap map) {
-        this.map = map;
     }
 }

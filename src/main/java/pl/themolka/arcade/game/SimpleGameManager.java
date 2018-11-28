@@ -2,6 +2,7 @@ package pl.themolka.arcade.game;
 
 import net.minecraft.server.PlayerList;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.config.Ref;
+import pl.themolka.arcade.config.RefContainer;
 import pl.themolka.arcade.config.RefFinder;
 import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.cycle.CycleRestartEvent;
@@ -57,8 +59,9 @@ public class SimpleGameManager implements GameManager {
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
     private final RefFinder refFinder = new RefFinder();
-    private final RestartCountdown restartCountdown;
     private MapQueue queue = new MapQueue();
+    private final RestartCountdown restartCountdown;
+    private final WorldNameGenerator worldNameGenerator = new WorldNameGenerator();
 
     public SimpleGameManager(ArcadePlugin plugin) {
         this.plugin = plugin;
@@ -132,10 +135,27 @@ public class SimpleGameManager implements GameManager {
         MapManifest manifest = parser.parse(document).orFail();
 
         ConfigContext config = new ConfigContext(this.refFinder);
+
+        List<Ref<?>> refs;
         try {
-            List<Ref<?>> refs = config.getRefFinder().find((Iterable) manifest.getModules());
+            refs = config.getRefFinder().find((Iterable) manifest.getModules());
+            System.out.println(StringUtils.join(refs, ", "));
         } catch (InvocationTargetException e) {
             throw new DOMException(null, e);
+        }
+
+        RefContainer container = new RefContainer();
+        container.registerMany(refs);
+
+        for (Ref<?> ref : container) {
+            if (ref.isProvided()) {
+                continue;
+            }
+
+            String id = ref.getId();
+            Ref<?> value = container.query(id);
+
+            // ?
         }
 
         ArcadeMap realMap = new ArcadeMap(map, manifest, config);
@@ -146,8 +166,7 @@ public class SimpleGameManager implements GameManager {
         // create IGameConfig.Library and create module configs, catch all NPEs
         // enable the modules :D
 
-        WorldNameGenerator worldNameGenerator = new WorldNameGenerator(map);
-        realMap.setWorldName(worldNameGenerator.nextWorldName());
+        realMap.setWorldName(this.worldNameGenerator.nextWorldName());
         return this.createGame(realMap);
     }
 
@@ -315,7 +334,7 @@ public class SimpleGameManager implements GameManager {
                 continue;
             }
 
-            // We have force player to respawn. The only way to do it is to
+            // We have to force player to respawn. The only way to do it is to
             // teleport the player between worlds. Bukkit's Entity.teleport()
             // will not teleport the player it is in the dead state. We must use
             // NMS to teleport the player (and skip firing PlayerTeleportEvent).

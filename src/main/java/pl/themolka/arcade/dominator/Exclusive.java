@@ -1,15 +1,13 @@
 package pl.themolka.arcade.dominator;
 
-import com.google.common.collect.Multimap;
-import pl.themolka.arcade.game.GamePlayer;
-import pl.themolka.arcade.game.Participator;
+import java.util.Map;
 
 /**
- * The only one participator dominates.
+ * Only one object dominates.
  */
-public class Exclusive extends AbstractDominator {
+public class Exclusive<T> extends AbstractDominator<T> {
     @Override
-    public Multimap<Participator, GamePlayer> getDominators(Multimap<Participator, GamePlayer> input) {
+    public Map<T, Integer> getDominators(Map<T, Integer> input) {
         return input.keySet().size() == 1 ? input : this.empty();
     }
 }

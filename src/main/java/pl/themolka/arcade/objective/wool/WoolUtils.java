@@ -52,7 +52,7 @@ public final class WoolUtils {
         int count = 0;
         for (ItemStack item : inventory.getContents()) {
             if (isWool(item)) {
-                count = count + item.getAmount();
+                count += item.getAmount();
             }
         }
 
@@ -63,7 +63,7 @@ public final class WoolUtils {
         int count = 0;
         for (ItemStack item : inventory.getContents()) {
             if (isWool(item, color)) {
-                count = count + item.getAmount();
+                count += item.getAmount();
             }
         }
 
@@ -79,7 +79,7 @@ public final class WoolUtils {
     }
 
     public static org.bukkit.material.Wool fromItem(ItemStack item) {
-        return item != null && isWool(item) ? ((org.bukkit.material.Wool) item.getData()) : null;
+        return isWool(item) ? ((org.bukkit.material.Wool) item.getData()) : null;
     }
 
     public static boolean isWool(Block block) {
@@ -91,8 +91,7 @@ public final class WoolUtils {
             return false;
         }
 
-        MaterialData data = new MaterialData(block.getType(), block.getData());
-        return color != null && isWool(data, color);
+        return isWool(new MaterialData(block.getType(), block.getData()), color);
     }
 
     public static boolean isWool(ItemStack item) {
@@ -119,12 +118,12 @@ public final class WoolUtils {
     }
 
     public static boolean isWool(MaterialData data, DyeColor color) {
-        return data != null && color != null && isWool(data) &&
+        return color != null && isWool(data) &&
                 DyeColor.getByWoolData(data.getData()).equals(color);
     }
 
     public static String name(DyeColor color) {
-        return EnumParser.toPrettyCapitalizedValue(color.name());
+        return EnumParser.toPrettyCapitalized(color.name());
     }
 
     public static String name(org.bukkit.material.Wool wool) {

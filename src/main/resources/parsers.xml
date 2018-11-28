@@ -126,7 +126,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.life.KillRewardParser" />
     <parser class="pl.themolka.arcade.life.KillRewardsGame" />
     <parser class="pl.themolka.arcade.life.LivesGameParser" />
-    <parser class="pl.themolka.arcade.lobby.LobbyGameParser" />
     <parser class="pl.themolka.arcade.map.AuthorParser" />
     <parser class="pl.themolka.arcade.map.ChangelogParser" />
     <parser class="pl.themolka.arcade.map.MapManifestParser" />

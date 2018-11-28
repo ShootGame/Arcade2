@@ -76,7 +76,7 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
         return input.toLowerCase().replace("_", " ");
     }
 
-    public static String toPrettyCapitalizedValue(String input) {
+    public static String toPrettyCapitalized(String input) {
         String[] words = toPrettyValue(input).split(" ");
         for (int i = 0; i < words.length; i++) {
             words[i] = words[0].length() == 1 ? words[0] : StringUtils.capitalize(words[0]);

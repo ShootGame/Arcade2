@@ -28,7 +28,8 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
     private Selection location;
 
     protected Ref(T provider) {
-        this.id = this.fetchId(Objects.requireNonNull(provider, "provider cannot be null"));
+        this(fetchId(Objects.requireNonNull(provider, "provider cannot be null")));
+
         this.provide(provider);
     }
 
@@ -68,11 +69,11 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
     }
 
     /**
-     * @throws NullPointerException if there is no provider.
+     * @throws NotProvidedException if there is no provider in this reference.
      */
-    public T get() {
+    public T get() throws NotProvidedException {
         if (!this.isProvided()) {
-            throw new NullPointerException("There is no provider object in this reference");
+            throw new NotProvidedException(this, "There is no provider object in this reference");
         }
 
         return this.provider.get();
@@ -120,7 +121,7 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
                 .build();
     }
 
-    private String fetchId(T provider) {
+    private static String fetchId(Object provider) {
         if (provider instanceof StringId) {
             String providerId = ((StringId) provider).getId();
             if (providerId != null && !providerId.isEmpty()) {
@@ -128,10 +129,10 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
             }
         }
 
-        return this.generateRandomId(provider);
+        return generateRandomId(provider);
     }
 
-    private String generateRandomId(T provider) {
+    private static String generateRandomId(Object provider) {
         return "_undefined-" + RandomStringUtils.randomAlphabetic(10) + "-" + provider.hashCode();
     }
 
