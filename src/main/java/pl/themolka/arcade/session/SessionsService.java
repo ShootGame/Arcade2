@@ -5,32 +5,27 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.event.Event;
 import pl.themolka.arcade.event.PluginReadyEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.service.Service;
+import pl.themolka.arcade.service.ServiceId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sessions implements Listener {
-    private final ArcadePlugin plugin;
-
-    public Sessions(ArcadePlugin plugin) {
-        this.plugin = plugin;
-    }
-
+@ServiceId("Sessions")
+public class SessionsService extends Service {
     private void publish(Event event) {
-        this.plugin.getEventBus().publish(event);
+        this.getPlugin().getEventBus().publish(event);
     }
 
     private void replaceDrops(List<ItemStack> source, List<ItemStack> drops) {
@@ -44,7 +39,7 @@ public class Sessions implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInitialSpawn(PlayerInitialSpawnEvent event) {
-        Game game = this.plugin.getGames().getCurrentGame();
+        Game game = this.getPlugin().getGames().getCurrentGame();
         if (game != null) {
             event.setSpawnLocation(game.getMap().getManifest().getWorld().getSpawn());
         }
@@ -88,19 +83,19 @@ public class Sessions implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        ArcadePlayer victim = this.plugin.getPlayer(event.getEntity());
+        ArcadePlayer victim = this.getPlugin().getPlayer(event.getEntity());
 
         Player victimBukkit = victim.getBukkit();
         if (victimBukkit == null) {
             return;
         }
 
-        ArcadePlayer killer = this.plugin.getPlayer(victimBukkit.getKiller());
+        ArcadePlayer killer = this.getPlugin().getPlayer(victimBukkit.getKiller());
 
-        Game game = this.plugin.getGames().getCurrentGame();
+        Game game = this.getPlugin().getGames().getCurrentGame();
         if (game != null) {
             pl.themolka.arcade.life.PlayerDeathEvent deathEvent = new pl.themolka.arcade.life.PlayerDeathEvent(
-                    this.plugin,
+                    this.getPlugin(),
                     victim,
                     killer != null ? killer.getGamePlayer() : null,
                     event.getDeathMessage(),
@@ -123,7 +118,7 @@ public class Sessions implements Listener {
             event.setNewLevel(deathEvent.getNewLevel());
 
             if (deathEvent.willAutoRespawn()) {
-                this.plugin.getServer().getScheduler().runTaskLater(this.plugin, new Runnable() {
+                this.getPlugin().getServer().getScheduler().runTaskLater(this.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
                         victim.respawn();
@@ -139,12 +134,12 @@ public class Sessions implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        ArcadePlayer player = this.plugin.getPlayer(event.getPlayer().getUniqueId());
+        ArcadePlayer player = this.getPlugin().getPlayer(event.getPlayer().getUniqueId());
 
-        Game game = this.plugin.getGames().getCurrentGame();
+        Game game = this.getPlugin().getGames().getCurrentGame();
         if (game != null) {
             pl.themolka.arcade.respawn.PlayerRespawnEvent respawnEvent = new pl.themolka.arcade.respawn.PlayerRespawnEvent(
-                    this.plugin,
+                    this.getPlugin(),
                     player);
             respawnEvent.setRespawnPosition(game.getMap().getManifest().getWorld().getSpawn());
 
@@ -162,10 +157,10 @@ public class Sessions implements Listener {
     //
 
     public CreatedPlayerInfo createSession(Player bukkit) {
-        ArcadePlayer player = new ArcadePlayer(this.plugin, bukkit);
+        ArcadePlayer player = new ArcadePlayer(this.getPlugin(), bukkit);
         boolean restored = false;
 
-        Game game = this.plugin.getGames().getCurrentGame();
+        Game game = this.getPlugin().getGames().getCurrentGame();
         if (game != null) {
             // try to restore the GamePlayer first
             GamePlayer gamePlayer = game.resolve(bukkit);
@@ -184,11 +179,11 @@ public class Sessions implements Listener {
 
             gamePlayer.setParticipating(false); // I don't know ;d
             gamePlayer.reset();
-            gamePlayer.refreshVisibilityArcadePlayer(this.plugin.getPlayers());
+            gamePlayer.refreshVisibilityArcadePlayer(this.getPlugin().getPlayers());
         }
 
-        this.plugin.addPlayer(player);
-        this.publish(new pl.themolka.arcade.session.PlayerJoinEvent(this.plugin, player, restored));
+        this.getPlugin().addPlayer(player);
+        this.publish(new pl.themolka.arcade.session.PlayerJoinEvent(this.getPlugin(), player, restored));
 
         return new CreatedPlayerInfo(player, restored);
     }
@@ -208,13 +203,13 @@ public class Sessions implements Listener {
     //
 
     public DestroyedPlayerInfo destroySession(Player bukkit) {
-        ArcadePlayer player = this.plugin.getPlayer(bukkit.getUniqueId());
+        ArcadePlayer player = this.getPlugin().getPlayer(bukkit.getUniqueId());
         if (player == null) {
             return null;
         }
 
-        this.publish(new pl.themolka.arcade.session.PlayerQuitEvent(this.plugin, player));
-        this.plugin.removePlayer(player);
+        this.publish(new pl.themolka.arcade.session.PlayerQuitEvent(this.getPlugin(), player));
+        this.getPlugin().removePlayer(player);
 
         return new DestroyedPlayerInfo(player);
     }

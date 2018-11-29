@@ -23,7 +23,6 @@ import pl.themolka.arcade.dom.preprocess.Import;
 import pl.themolka.arcade.dom.preprocess.Include;
 import pl.themolka.arcade.dom.preprocess.Preprocessor;
 import pl.themolka.arcade.environment.Environment;
-import pl.themolka.arcade.event.DeadListeners;
 import pl.themolka.arcade.event.EventBus;
 import pl.themolka.arcade.event.PluginFreshEvent;
 import pl.themolka.arcade.event.PluginReadyEvent;
@@ -32,9 +31,6 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameManager;
 import pl.themolka.arcade.game.SimpleGameManager;
 import pl.themolka.arcade.generator.Generator;
-import pl.themolka.arcade.listener.BlockTransformListeners;
-import pl.themolka.arcade.listener.GeneralListeners;
-import pl.themolka.arcade.listener.ProtectionListeners;
 import pl.themolka.arcade.map.Author;
 import pl.themolka.arcade.map.MapContainerFillEvent;
 import pl.themolka.arcade.map.MapContainerLoader;
@@ -53,7 +49,6 @@ import pl.themolka.arcade.parser.ParsersFile;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
 import pl.themolka.arcade.session.ArcadePlayer;
-import pl.themolka.arcade.session.Sessions;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
 import pl.themolka.arcade.task.SimpleTaskListener;
@@ -62,7 +57,6 @@ import pl.themolka.arcade.task.TaskManager;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.util.ManifestFile;
 import pl.themolka.arcade.util.Tickable;
-import pl.themolka.arcade.window.WindowListeners;
 import pl.themolka.arcade.window.WindowRegistry;
 
 import java.io.IOException;
@@ -683,19 +677,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         if (name != null && this.serverName.equals(DEFAULT_SERVER_NAME)) {
             this.serverName = name;
         }
-
-        this.registerListenerObject(new BlockTransformListeners(this));
-        this.registerListenerObject(new GeneralListeners(this));
-        this.registerListenerObject(new ProtectionListeners(this));
-
-        // dead events
-        this.registerListenerObject(new DeadListeners(this));
-
-        // sessions
-        this.registerListenerObject(new Sessions(this));
-
-        // windows
-        this.registerListenerObject(new WindowListeners(this));
     }
 
     private void loadTasks() {

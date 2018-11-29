@@ -4,21 +4,16 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.service.Service;
+import pl.themolka.arcade.service.ServiceId;
 import pl.themolka.arcade.session.ArcadePlayer;
 
-public class WindowListeners implements Listener {
-    private final ArcadePlugin plugin;
-
-    public WindowListeners(ArcadePlugin plugin) {
-        this.plugin = plugin;
-    }
-
+@ServiceId("Window")
+public class WindowService extends Service {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         Window window = this.fetchWindow(event.getInventory());
@@ -59,7 +54,7 @@ public class WindowListeners implements Listener {
     }
 
     private GamePlayer fetchPlayer(HumanEntity human) {
-        ArcadePlayer player = this.plugin.getPlayer(human);
+        ArcadePlayer player = this.getPlugin().getPlayer(human);
         if (player != null) {
             return player.getGamePlayer();
         }
@@ -68,6 +63,6 @@ public class WindowListeners implements Listener {
     }
 
     private Window fetchWindow(Inventory view) {
-        return this.plugin.getWindowRegistry().getWindow(view);
+        return this.getPlugin().getWindowRegistry().getWindow(view);
     }
 }

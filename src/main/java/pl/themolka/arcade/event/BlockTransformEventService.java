@@ -1,4 +1,4 @@
-package pl.themolka.arcade.listener;
+package pl.themolka.arcade.event;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,7 +10,6 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -34,7 +33,8 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import pl.themolka.arcade.ArcadePlugin;
-import pl.themolka.arcade.event.BlockTransformEvent;
+import pl.themolka.arcade.service.Service;
+import pl.themolka.arcade.service.ServiceId;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 import java.util.ArrayList;
@@ -42,13 +42,8 @@ import java.util.ArrayList;
 /**
  * Listeners related to {@link BlockTransformEvent}.
  */
-public class BlockTransformListeners implements Listener {
-    private final ArcadePlugin plugin;
-
-    public BlockTransformListeners(ArcadePlugin plugin) {
-        this.plugin = plugin;
-    }
-
+@ServiceId("BlockTransformEvent")
+public class BlockTransformEventService extends Service {
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         this.post(event,
@@ -347,14 +342,15 @@ public class BlockTransformListeners implements Listener {
 
     private boolean post(Event cause, Block block, BlockState oldState,
                          BlockState newState, Player bukkit, boolean cancel) {
+        ArcadePlugin plugin = this.getPlugin();
+
         ArcadePlayer player = null;
         if (bukkit != null) {
-            player = this.plugin.getPlayer(bukkit);
+            player = plugin.getPlayer(bukkit);
         }
 
-        BlockTransformEvent event = new BlockTransformEvent(
-                this.plugin, block, cause, newState, oldState, player);
-        this.plugin.getEventBus().publish(event);
+        BlockTransformEvent event = new BlockTransformEvent(plugin, block, cause, newState, oldState, player);
+        plugin.getEventBus().publish(event);
 
         boolean canceled = cancel && event.isCanceled() &&
                 cause instanceof Cancellable;
