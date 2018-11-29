@@ -164,8 +164,6 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.getEventBus().publish(new PluginStartEvent(this));
         this.loadServer();
 
-        this.getLogger().log(Level.INFO, "Loaded " + this.services.load() + " services");
-
         try {
             this.loadEnvironment();
             this.getEnvironment().onEnable();
@@ -182,6 +180,8 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.loadGames();
 
         this.tickableTask = this.getServer().getScheduler().runTaskTimer(this, this, 1L, 1L);
+
+        this.getLogger().log(Level.INFO, "Loaded " + this.services.load() + " services");
 
         this.getEventBus().publish(new PluginReadyEvent(this));
 

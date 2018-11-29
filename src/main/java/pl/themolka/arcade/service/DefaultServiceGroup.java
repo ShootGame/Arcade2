@@ -25,6 +25,7 @@ public class DefaultServiceGroup extends ServiceGroup {
             .add(PlayerMoveEventService.class)
             .add(SafeWorkbenchesService.class)
             .add(SessionsService.class)
+            .add(SetNextRestartService.class)
             .add(WeatherService.class)
             .add(WindowService.class)
             .add(WorldInitEventService.class)
@@ -34,7 +35,7 @@ public class DefaultServiceGroup extends ServiceGroup {
         super(SERVICE_GROUP_NAMESPACE);
     }
 
-    public void registerDefaults() throws ReflectiveOperationException {
+    public void registerDefaults() {
         for (Class<? extends Service> defaultService : defaultServices) {
             this.addService(defaultService);
         }
