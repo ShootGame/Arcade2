@@ -37,8 +37,6 @@ import java.util.logging.Logger;
 
 public class Module<GM extends GameModule> extends SimpleModuleListener
                        implements GameHolder, Listener, StringId {
-    public static final String DEFAULT_VERSION_STRING = "1.0";
-
     private ArcadePlugin plugin;
 
     private String id;
