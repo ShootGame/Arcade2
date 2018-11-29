@@ -36,7 +36,7 @@ public class DefaultServiceGroup extends ServiceGroup {
 
     public void registerDefaults() throws ReflectiveOperationException {
         for (Class<? extends Service> defaultService : defaultServices) {
-            this.addService(defaultService.newInstance());
+            this.addService(defaultService);
         }
     }
 }

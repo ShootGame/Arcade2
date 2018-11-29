@@ -48,6 +48,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParsersFile;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Silent;
+import pl.themolka.arcade.service.DefaultServiceGroup;
+import pl.themolka.arcade.service.ServiceManager;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
 import pl.themolka.arcade.settings.SettingsReloadEvent;
@@ -98,6 +100,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
     private final Map<UUID, ArcadePlayer> players = new HashMap<>();
     private boolean running;
     private String serverName = DEFAULT_SERVER_NAME;
+    private ServiceManager services;
     private Settings settings;
     private Time startTime;
     private TaskManager tasks;
@@ -150,10 +153,18 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             return;
         }
 
+        this.services = new ServiceManager(this);
+
         this.domPreprocessor.install(new Include(this.domEngines, this.domPreprocessor, this.settings.getIncludeRepository()));
+
+        DefaultServiceGroup defaultServiceGroup = new DefaultServiceGroup();
+        defaultServiceGroup.registerDefaults();
+        this.services.registerServiceGroup(defaultServiceGroup);
 
         this.getEventBus().publish(new PluginStartEvent(this));
         this.loadServer();
+
+        this.getLogger().log(Level.INFO, "Loaded " + this.services.load() + " services");
 
         try {
             this.loadEnvironment();
@@ -229,6 +240,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             }
 
             module.destroy();
+        }
+
+        if (this.services != null) {
+            this.getLogger().log(Level.INFO, "Unloaded " + this.services.unload() + " services");
         }
 
         try {
@@ -410,6 +425,10 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
 
     public String getServerName() {
         return this.serverName;
+    }
+
+    public ServiceManager getServices() {
+        return this.services;
     }
 
     public Settings getSettings() {

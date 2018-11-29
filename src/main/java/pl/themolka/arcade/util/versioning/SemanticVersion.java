@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class SemanticVersion extends Version.Impl<SemanticVersion> {
     public static final String MANUAL = "https://semver.org/";
-    public static final SemanticVersion DEFAULT = new SemanticVersion(1, 0, 0);
+    public static final SemanticVersion DEFAULT = new SemanticVersion(1, 0, 0, false);
 
     private final int major;
     private final int minor;

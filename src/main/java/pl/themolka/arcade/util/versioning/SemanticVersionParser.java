@@ -54,11 +54,7 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
             throw this.fail(element, name, value, "Minor (1.X.0) cannot be negative");
         }
 
-        String patchValue = null;
-        if (parts.length > 2) {
-            patchValue = parts[2];
-        }
-
+        String patchValue = parts.length > 2 ? parts[2] : "";
         int patch = this.patchParser.parseWithDefinition(element, name, patchValue).orDefault(SemanticVersion.DEFAULT.getPatch());
         if (patch < 0) {
             throw this.fail(element, name, value, "Patch (1.0.X) cannot be negative");
