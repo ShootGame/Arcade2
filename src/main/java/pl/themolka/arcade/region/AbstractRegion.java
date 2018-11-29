@@ -130,7 +130,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public World getWorld() {
-        return this.getMap().getWorld();
+        return this.getGame().getWorld();
     }
 
     @Override

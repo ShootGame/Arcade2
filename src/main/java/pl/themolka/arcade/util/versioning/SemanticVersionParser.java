@@ -37,16 +37,11 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
 
     @Override
     protected ParserResult<SemanticVersion> parseElement(Element element, String name, String value) throws ParserException {
-        String[] sections = value.split("-");
+        String[] sections = value.split("-", 2);
 
-        String[] parts = sections[0].split("\\.");
+        String[] parts = sections[0].split("\\.", 3);
         if (parts.length < 2) {
             throw this.fail(element, name, value, "Semantic version does not contain minor (1.X)");
-        }
-
-        String patchValue = null;
-        if (parts.length > 2) {
-            patchValue = parts[2];
         }
 
         int major = this.majorParser.parseWithDefinition(element, name, parts[0]).orFail();
@@ -57,6 +52,11 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
         int minor = this.minorParser.parseWithDefinition(element, name, parts[1]).orFail();
         if (minor < 0) {
             throw this.fail(element, name, value, "Minor (1.X.0) cannot be negative");
+        }
+
+        String patchValue = null;
+        if (parts.length > 2) {
+            patchValue = parts[2];
         }
 
         int patch = this.patchParser.parseWithDefinition(element, name, patchValue).orDefault(SemanticVersion.DEFAULT.getPatch());

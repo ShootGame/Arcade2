@@ -1,6 +1,5 @@
 package pl.themolka.arcade.map;
 
-import org.bukkit.World;
 import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
@@ -19,7 +18,6 @@ public class ArcadeMap implements GameHolder {
     private final ConfigContext config;
 
     private Reference<Game> game;
-    private Reference<World> world;
     private String worldName;
 
     public ArcadeMap(OfflineMap mapInfo, MapManifest manifest, ConfigContext config) {
@@ -50,22 +48,14 @@ public class ArcadeMap implements GameHolder {
         return this.manifest;
     }
 
-    public World getWorld() {
-        return this.world != null ? this.world.get() : null;
-    }
-
     public String getWorldName() {
         return this.worldName;
     }
 
     public void setGame(Game game) {
-        if (this.game == null) {
+        if (this.game == null || this.game.get() == null) {
             this.game = new WeakReference<>(game);
         }
-    }
-
-    public void setWorld(World world) {
-        this.world = new WeakReference<>(world);
     }
 
     public void setWorldName(String worldName) {

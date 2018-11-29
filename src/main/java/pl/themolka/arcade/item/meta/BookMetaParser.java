@@ -15,6 +15,8 @@ import java.util.List;
 
 @Produces(BookMeta.class)
 class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
+    public static final int PAGE_LIMIT = 99;
+
     private Parser<String> authorParser;
     private Parser<BookMeta.Generation> generationParser;
     private Parser<String> titleParser;
@@ -49,8 +51,13 @@ class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
 
             List<String> pages = new ArrayList<>();
             for (Node page : node.children("page")) {
+                if (pages.size() > PAGE_LIMIT) {
+                    throw this.fail(page, "Whoops! Book page limit of " + PAGE_LIMIT + " exceed, sorry!");
+                }
+
                 pages.add(this.pageParser.parse(page).orFail());
             }
+
             itemMeta.setPages(pages);
         }
 

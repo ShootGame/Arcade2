@@ -16,6 +16,7 @@ public final class FireworkUtils {
     }
 
     public static FireworkMeta createMeta(FireworkMeta meta, int power, FireworkEffect... effects) {
+        meta.clearEffects();
         meta.addEffects(effects);
         meta.setPower(power);
         return meta;

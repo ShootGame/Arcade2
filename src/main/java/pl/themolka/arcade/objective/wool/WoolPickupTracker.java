@@ -30,7 +30,7 @@ public class WoolPickupTracker implements Listener {
     }
 
     public boolean pickup(ItemStack itemStack, GamePlayer picker) {
-        if (this.wool.isCompleted() || !WoolUtils.isWool(itemStack)) {
+        if (this.wool.isCompleted() || this.isNotWool(itemStack)) {
             return false;
         }
 
@@ -46,7 +46,7 @@ public class WoolPickupTracker implements Listener {
         WoolPickupEvent event = new WoolPickupEvent(this.wool, firstParticipatorPickup,firstPickerPickup, itemStack, participator, picker);
         this.wool.getPlugin().getEventBus().publish(event);
 
-        if (event.isCanceled() || firstPickerPickup) {
+        if (event.isCanceled() || !firstPickerPickup) {
             return false;
         }
 
@@ -76,7 +76,7 @@ public class WoolPickupTracker implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void pickupBetweenInventories(InventoryClickEvent event) {
         ItemStack item = event.getCurrentItem();
-        if (this.isWool(item)) {
+        if (this.isNotWool(item)) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class WoolPickupTracker implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void pickupFromGround(PlayerPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
-        if (!this.isWool(item)) {
+        if (this.isNotWool(item)) {
             return;
         }
 
@@ -123,7 +123,7 @@ public class WoolPickupTracker implements Listener {
                 this.wool.describeOwner() + this.wool.describeObjective() + ChatColor.YELLOW + ".";
     }
 
-    private boolean isWool(ItemStack item) {
-        return WoolUtils.isWool(item, this.wool.getColor());
+    private boolean isNotWool(ItemStack item) {
+        return !WoolUtils.isWool(item, this.wool.getColor());
     }
 }

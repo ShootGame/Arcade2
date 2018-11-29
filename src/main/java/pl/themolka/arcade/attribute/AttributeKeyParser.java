@@ -38,15 +38,7 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
         }
 
         String namespace = this.normalizeInput(this.namespaceParser.parseWithDefinition(element, name, input[0]).orFail());
-        if (namespace == null) {
-            throw this.fail(element, name, value, "Missing namespace");
-        }
-
         String key = this.normalizeInput(this.keyParser.parseWithDefinition(element, name, input[1]).orFail());
-        if (key == null) {
-            throw this.fail(element, name, value, "Missing key");
-        }
-
         return ParserResult.fine(element, name, value, new FixedAttributeKey(namespace, key));
     }
 }

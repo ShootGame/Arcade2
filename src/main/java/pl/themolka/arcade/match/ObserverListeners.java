@@ -194,7 +194,7 @@ public class ObserverListeners implements Listener {
             int y = event.getTo().getBlockY();
 
             // Teleport observers when they are in the void.
-            if (y < 0 - BORDER_Y || y > map.getWorld().getMaxHeight() + BORDER_Y) {
+            if (y < 0 - BORDER_Y || y > map.getGame().getWorld().getMaxHeight() + BORDER_Y) {
                 event.getPlayer().getBukkit().teleport(map.getManifest().getWorld().getSpawn(), TELEPORT_CAUSE);
             }
         }

@@ -18,7 +18,7 @@ public class GameRulesGame extends GameModule {
 
     @Override
     public void onEnable() {
-        World world = this.getGame().getMap().getWorld();
+        World world = this.getGame().getWorld();
         for (GameRule rule : this.rules) {
             GameRuleType type = GameRuleType.byKey(rule.getKey());
             if (type != null && !type.isApplicable()) {
