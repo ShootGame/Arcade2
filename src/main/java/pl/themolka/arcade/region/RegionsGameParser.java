@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class RegionsGameParser extends GameModuleParser<RegionsGame, RegionsGame
     }
 
     @Override
-    protected ParserResult<RegionsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<RegionsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Set<AbstractRegion.Config<?>> regions = new LinkedHashSet<>();
         for (Node regionNode : node.children()) {
             regions.add(this.regionParser.parse(regionNode).orFail());
@@ -46,7 +46,7 @@ public class RegionsGameParser extends GameModuleParser<RegionsGame, RegionsGame
             throw this.fail(node, name, value, "No regions defined");
         }
 
-        return ParserResult.fine(node, name, value, new RegionsGame.Config() {
+        return Result.fine(node, name, value, new RegionsGame.Config() {
             public Ref<Set<AbstractRegion.Config<?>>> regions() { return Ref.ofProvided(regions); }
         });
     }

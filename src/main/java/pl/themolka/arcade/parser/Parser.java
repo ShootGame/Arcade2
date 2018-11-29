@@ -12,28 +12,28 @@ import java.util.Set;
 public interface Parser<T> {
     Set<Object> expect();
 
-    default ParserResult<T> parse(Document document) {
+    default Result<T> parse(Document document) {
         return document != null && document.hasRoot() ? this.parse(document.getRoot())
-                                                      : ParserResult.empty();
+                                                      : Result.empty();
     }
 
-    default ParserResult<T> parse(Element element) {
+    default Result<T> parse(Element element) {
         return element != null ? this.parseWithDefinition(element, element.getName(), element.getValue())
-                               : ParserResult.empty();
+                               : Result.empty();
     }
 
-    default ParserResult<T> parseWithDefinition(String name, String value) {
+    default Result<T> parseWithDefinition(String name, String value) {
         return this.parseWithDefinition(null, name, value);
     }
 
-    ParserResult<T> parseWithDefinition(Element element, String name, String value);
+    Result<T> parseWithDefinition(Element element, String name, String value);
 
-    default ParserResult<T> parseWithName(Element element, String name) {
+    default Result<T> parseWithName(Element element, String name) {
         return this.parseWithDefinition(element, name, element != null ? element.getValue() : null);
     }
 
-    default ParserResult<T> parseWithValue(Element element, String value) {
+    default Result<T> parseWithValue(Element element, String value) {
         return element != null ? this.parseWithDefinition(element, element.getName(), value)
-                               : ParserResult.empty();
+                               : Result.empty();
     }
 }

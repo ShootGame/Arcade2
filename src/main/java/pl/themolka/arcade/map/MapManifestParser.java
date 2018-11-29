@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.Nulls;
 
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class MapManifestParser extends NodeParser<MapManifest>
     }
 
     @Override
-    protected ParserResult<MapManifest> parseTree(Node node, String name) throws ParserException {
+    protected Result<MapManifest> parseTree(Node node, String name) throws ParserException {
         WorldInfo world = this.worldInfoParser.parse(node.child("world")).orDefaultNull();
 
         Set<IGameModuleConfig<?>> modules = new LinkedHashSet<>();
@@ -55,7 +55,7 @@ public class MapManifestParser extends NodeParser<MapManifest>
             }
         }
 
-        return ParserResult.fine(node, name, new MapManifest(modules, node, world));
+        return Result.fine(node, name, new MapManifest(modules, node, world));
     }
 
     protected Node getModulesNode(Node root) throws ParserException {

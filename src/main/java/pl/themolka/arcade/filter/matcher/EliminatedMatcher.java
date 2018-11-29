@@ -7,8 +7,8 @@ import pl.themolka.arcade.life.LivesGame;
 import pl.themolka.arcade.life.LivesModule;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 public class EliminatedMatcher extends Matcher<GamePlayer> {
@@ -46,8 +46,8 @@ public class EliminatedMatcher extends Matcher<GamePlayer> {
     @Produces(Config.class)
     public static class MatcherParser extends BaseMatcherParser<Config> {
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, new Config() {});
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, new Config() {});
         }
     }
 

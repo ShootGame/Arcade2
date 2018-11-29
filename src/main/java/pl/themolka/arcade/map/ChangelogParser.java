@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.versioning.SemanticVersion;
 
 import java.time.LocalDate;
@@ -37,13 +37,13 @@ public class ChangelogParser extends NodeParser<Changelog>
     }
 
     @Override
-    protected ParserResult<Changelog> parseTree(Node node, String name) throws ParserException {
+    protected Result<Changelog> parseTree(Node node, String name) throws ParserException {
         SemanticVersion version = this.versionParser.parse(node.property("version")).orFail();
         LocalDate release = this.releaseParser.parse(node.property("release")).orDefaultNull();
 
         Changelog<SemanticVersion> result = new Changelog<>(version, release);
         result.addAll(this.parseLogs(node));
-        return ParserResult.fine(node, name, result);
+        return Result.fine(node, name, result);
     }
 
     private List<String> parseLogs(Node node) throws ParserException {

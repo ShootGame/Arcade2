@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -62,11 +62,11 @@ public interface BaseModeContent {
         }
 
         @Override
-        protected ParserResult<Mode> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Mode> parseNode(Node node, String name, String value) throws ParserException {
             boolean defTake = !Config.DEFAULT_MODE.toBoolean();
             boolean take = this.modeParser.parse(node.property("take", "remove")).orDefault(defTake);
 
-            return ParserResult.fine(node, name, value, Mode.fromBoolean(!take));
+            return Result.fine(node, name, value, Mode.fromBoolean(!take));
         }
     }
 

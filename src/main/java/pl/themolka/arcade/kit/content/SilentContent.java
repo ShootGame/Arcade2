@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class SilentContent implements RemovableKitContent<Boolean> {
     private final boolean result;
@@ -53,16 +53,16 @@ public class SilentContent implements RemovableKitContent<Boolean> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Boolean> result() { return Ref.empty(); }
                 });
             }
 
             boolean silent = this.silentParser.parseWithDefinition(node, name, value).orFail();
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(silent); }
             });
         }

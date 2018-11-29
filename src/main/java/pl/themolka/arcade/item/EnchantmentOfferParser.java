@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.session.PlayerLevel;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ public class EnchantmentOfferParser extends NodeParser<EnchantmentOffer>
     }
 
     @Override
-    protected ParserResult<EnchantmentOffer> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<EnchantmentOffer> parseNode(Node node, String name, String value) throws ParserException {
         ItemEnchantment enchantment = this.enchantmentParser.parseWithDefinition(node, name, value).orFail();
 
         int cost = this.costParser.parse(node.property("cost")).orFail().getLevel();
@@ -42,6 +42,6 @@ public class EnchantmentOfferParser extends NodeParser<EnchantmentOffer>
         }
 
         EnchantmentOffer offer = new EnchantmentOffer(enchantment.getType(), enchantment.getLevel(), cost);
-        return ParserResult.fine(node, name, value, offer);
+        return Result.fine(node, name, value, offer);
     }
 }

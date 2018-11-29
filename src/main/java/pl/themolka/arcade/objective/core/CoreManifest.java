@@ -15,9 +15,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.UnionRegion;
 
@@ -78,7 +78,7 @@ public class CoreManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected ParserResult<Core.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Core.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseRequiredId(node);
             int detectorLevel = this.detectorLevelParser.parse(node.property("detector-level", "detectorlevel", "detector")).orDefault(Core.Config.DEFAULT_DETECTOR_LEVEL);
             Liquid liquid = this.liquidParser.parse(node.property("liquid", "type", "or")).orDefault(Core.Config.DEFAULT_LIQUID);
@@ -99,7 +99,7 @@ public class CoreManifest extends ObjectiveManifest {
             Ref<Participator.Config<?>> owner = this.parseOwner(node).orDefault(Ref.empty());
             UnionRegion.Config region = this.regionParser.parse(node.firstChild("region")).orFail();
 
-            return ParserResult.fine(node, name, value, new Core.Config() {
+            return Result.fine(node, name, value, new Core.Config() {
                 public String id() { return id; }
                 public Ref<Integer> detectorLevel() { return Ref.ofProvided(detectorLevel); }
                 public Ref<Liquid> liquid() { return Ref.ofProvided(liquid); }

@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 @Produces(HungerGame.Config.class)
 public class HungerGameParser extends GameModuleParser<HungerGame, HungerGame.Config>
@@ -33,10 +33,10 @@ public class HungerGameParser extends GameModuleParser<HungerGame, HungerGame.Co
     }
 
     @Override
-    protected ParserResult<HungerGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<HungerGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orFail();
 
-        return ParserResult.fine(node, name, value, new HungerGame.Config() {
+        return Result.fine(node, name, value, new HungerGame.Config() {
             public Ref<Filter.Config<?>> filter() { return filter; }
         });
     }

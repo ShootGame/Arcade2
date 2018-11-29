@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,10 +25,10 @@ public class BooleanParser extends ElementParser<Boolean> {
     }
 
     @Override
-    protected ParserResult<Boolean> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Boolean> parseElement(Element element, String name, String value) throws ParserException {
         Boolean result = values.get(value.toLowerCase());
         if (result != null) {
-            return ParserResult.fine(element, name, value, result);
+            return Result.fine(element, name, value, result);
         }
 
         throw this.fail(element, name, value, "Unknown boolean property");

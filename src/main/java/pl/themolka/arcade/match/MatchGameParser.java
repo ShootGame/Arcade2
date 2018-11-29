@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.time.Time;
 
 @Produces(MatchGame.Config.class)
@@ -39,13 +39,13 @@ public class MatchGameParser extends GameModuleParser<MatchGame, MatchGame.Confi
     }
 
     @Override
-    protected ParserResult<MatchGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<MatchGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         boolean autoCycle = this.autoCycleParser.parse(node.property("auto-cycle", "autocycle")).orDefault(MatchGame.Config.DEFAULT_IS_AUTO_CYCLE);
         boolean autoStart = this.autoStartParser.parse(node.property("auto-start", "autostart")).orDefault(MatchGame.Config.DEFAULT_IS_AUTO_START);
         Time startCountdown = this.startCountdownParser.parse(node.property("start-countdown", "startcountdown")).orDefault(MatchGame.Config.DEFAULT_START_COUNTDOWN);
         Observers.Config observers = this.observersParser.parse(node.firstChild("observers")).orFail();
 
-        return ParserResult.fine(node, name, value, new MatchGame.Config() {
+        return Result.fine(node, name, value, new MatchGame.Config() {
             public Ref<Boolean> autoCycle() { return Ref.ofProvided(autoCycle); }
             public Ref<Boolean> autoStart() { return Ref.ofProvided(autoStart); }
             public Ref<Time> startCountdown() { return Ref.ofProvided(startCountdown); }

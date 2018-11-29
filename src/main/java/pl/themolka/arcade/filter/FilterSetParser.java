@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class FilterSetParser extends ConfigParser<FilterSet.Config>
     }
 
     @Override
-    protected ParserResult<FilterSet.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<FilterSet.Config> parseTree(Node node, String name) throws ParserException {
         String id = this.parseRequiredId(node);
 
         Set<Filter.Config<?>> filters = new HashSet<>();
@@ -45,7 +45,7 @@ public class FilterSetParser extends ConfigParser<FilterSet.Config>
             throw this.fail(node, name, null, "No filters defined");
         }
 
-        return ParserResult.fine(node, name, new FilterSet.Config() {
+        return Result.fine(node, name, new FilterSet.Config() {
             public String id() { return id; }
             public Ref<Set<Filter.Config<?>>> filters() { return Ref.ofProvided(filters); }
         });

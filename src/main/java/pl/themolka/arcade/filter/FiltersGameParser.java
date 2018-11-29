@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame
     }
 
     @Override
-    protected ParserResult<FiltersGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<FiltersGame.Config> parseTree(Node node, String name) throws ParserException {
         Set<FilterSet.Config> filterSets = new LinkedHashSet<>();
         for (Node filterSetNode : node.children("filter")) {
             filterSets.add(this.filterSetParser.parse(filterSetNode).orFail());
@@ -46,7 +46,7 @@ public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame
             throw this.fail(node, name, null, "No filter groups defined");
         }
 
-        return ParserResult.fine(node, name, null, new FiltersGame.Config() {
+        return Result.fine(node, name, null, new FiltersGame.Config() {
             public Ref<Set<FilterSet.Config>> filterSets() { return Ref.ofProvided(filterSets); }
         });
     }

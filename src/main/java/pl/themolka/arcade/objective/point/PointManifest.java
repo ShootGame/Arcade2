@@ -15,8 +15,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.UnionRegion;
 import pl.themolka.arcade.task.Task;
@@ -123,7 +123,7 @@ public class PointManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected ParserResult<Point.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Point.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseRequiredId(node);
             Capture.Config capture = this.captureParser.parse(node.firstChild("capture")).orFail();
             Time captureTime = this.captureTimeParser.parse(node.property("capture-time", "capturetime")).orDefault(Point.Config.DEFAULT_CAPTURE_TIME);
@@ -140,7 +140,7 @@ public class PointManifest extends ObjectiveManifest {
             AbstractRegion.Config<?> stateRegion = Nulls.defaults(this.stateRegionParser.parse(node.firstChild("state")).orDefaultNull(),
                     capture.region().get());
 
-            return ParserResult.fine(node, name, value, new Point.Config() {
+            return Result.fine(node, name, value, new Point.Config() {
                 public String id() { return id; }
                 public Ref<Capture.Config> capture() { return Ref.ofProvided(capture); }
                 public Ref<Time> captureTime() { return Ref.ofProvided(captureTime); }

@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Set;
 
@@ -31,14 +31,14 @@ public class DifficultyParser extends ElementParser<Difficulty>
     }
 
     @Override
-    protected ParserResult<Difficulty> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Difficulty> parseElement(Element element, String name, String value) throws ParserException {
         // Try to find legacy ID first.
         Integer id = this.idParser.parseWithDefinition(element, name, value).orNull();
         if (id != null) {
             Difficulty difficulty = Difficulty.getByValue(id);
 
             if (difficulty != null) {
-                return ParserResult.fine(element, name, value, difficulty);
+                return Result.fine(element, name, value, difficulty);
             }
         }
 

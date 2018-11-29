@@ -11,8 +11,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     }
 
     @Override
-    protected ParserResult<WorldInfo> parseTree(Node node, String name) throws ParserException {
+    protected Result<WorldInfo> parseTree(Node node, String name) throws ParserException {
         WorldInfo info = new WorldInfo();
         info.setDifficulty(this.difficultyParser.parse(node.property("difficulty")).orNull());
         info.setEnvironment(this.environmentParser.parse(node.property("environment")).orNull());
@@ -57,6 +57,6 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
         info.setRandomSeed(this.randomSeedParser.parse(node.property("seed", "random-seed")).orDefault(WorldInfo.DEFAULT_RANDOM_SEED));
         info.setSpawn(this.spawnParser.parse(node.firstChild("spawn")).orNull());
         info.setTime(this.timeParser.parse(node.firstChild("time")).orNull());
-        return ParserResult.fine(node, name, info);
+        return Result.fine(node, name, info);
     }
 }

@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -35,10 +35,10 @@ public class BoundedItemModifierParser extends NodeParser<BoundedItemModifier>
     }
 
     @Override
-    protected ParserResult<BoundedItemModifier> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<BoundedItemModifier> parseNode(Node node, String name, String value) throws ParserException {
         AttributeKey key = this.keyParser.parse(node.property("attribute", "attribute-key", "attributekey", "attr", "key")).orFail();
         ItemAttributeModifier itemModifier = this.itemModifierParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, new BoundedItemModifier(key, itemModifier));
+        return Result.fine(node, name, value, new BoundedItemModifier(key, itemModifier));
     }
 }

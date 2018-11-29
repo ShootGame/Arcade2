@@ -31,7 +31,7 @@ public abstract class AbstractParser<T> extends ParserValidation
     }
 
     @Override
-    public ParserResult<T> parseWithDefinition(Element element, String name, String value) {
+    public Result<T> parseWithDefinition(Element element, String name, String value) {
         if (element == null) {
             element = EmptyElement.empty();
         } else if (name == null) {
@@ -47,7 +47,7 @@ public abstract class AbstractParser<T> extends ParserValidation
             String normalizedValue = this.normalizeValue(value);
 
             if (normalizedName != null) {
-                ParserResult<T> result = this.parse(element, normalizedName, normalizedValue);
+                Result<T> result = this.parse(element, normalizedName, normalizedValue);
                 if (result != null) {
                     return result;
                 }
@@ -55,10 +55,10 @@ public abstract class AbstractParser<T> extends ParserValidation
                 throw new NullPointerException(this.getClass().getSimpleName() + " parser returned null");
             }
         } catch (ParserException cause) {
-            return ParserResult.fail(cause, name, value);
+            return Result.fail(cause, name, value);
         }
 
-        return ParserResult.empty(element, name);
+        return Result.empty(element, name);
     }
 
     protected String normalizeInput(String input) {
@@ -79,7 +79,7 @@ public abstract class AbstractParser<T> extends ParserValidation
     @Override
     public abstract Set<Object> expect();
 
-    protected abstract ParserResult<T> parse(Element element, String name, String value) throws ParserException;
+    protected abstract Result<T> parse(Element element, String name, String value) throws ParserException;
 
     protected String normalizeName(String name) throws ParserException {
         return this.normalizeInput(name);

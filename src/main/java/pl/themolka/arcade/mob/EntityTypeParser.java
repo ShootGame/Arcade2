@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Set;
 
@@ -32,10 +32,10 @@ public class EntityTypeParser extends ElementParser<EntityType>
     }
 
     @Override
-    protected ParserResult<EntityType> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<EntityType> parseElement(Element element, String name, String value) throws ParserException {
         EntityType entityType = EntityType.fromName(this.parseEntityName(element, name, value));
         if (entityType != null) {
-            return ParserResult.fine(element, name, value, entityType);
+            return Result.fine(element, name, value, entityType);
         }
 
         return this.entityTypeParser.parseWithDefinition(element, name, value);

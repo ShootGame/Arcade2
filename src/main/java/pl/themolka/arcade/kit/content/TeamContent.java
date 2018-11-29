@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.team.Team;
 import pl.themolka.arcade.util.Nulls;
 
@@ -67,12 +67,12 @@ public class TeamContent implements RemovableKitContent<Team> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             Ref<Team.Config> team = this.reset(node) ? Config.DEFAULT_TEAM
                                                      : this.teamParser.parseWithDefinition(node, name, value).orFail();
             boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Team.Config> result() { return team; }
                 public Ref<Boolean> announce() { return Ref.ofProvided(announce); }
             });

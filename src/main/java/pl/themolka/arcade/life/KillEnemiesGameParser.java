@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class KillEnemiesGameParser extends GameModuleParser<KillEnemiesGame, Kil
     }
 
     @Override
-    protected ParserResult<KillEnemiesGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KillEnemiesGame.Config> parseTree(Node node, String name) throws ParserException {
         Set<KillEnemies.Config> objectives = new HashSet<>();
         for (Node objectiveNode : node.children("participator", "competitor", "team")) {
             objectives.add(this.objectiveParser.parse(objectiveNode).orFail());
@@ -46,7 +46,7 @@ public class KillEnemiesGameParser extends GameModuleParser<KillEnemiesGame, Kil
             throw this.fail(node, name, null, "No objectives defined");
         }
 
-        return ParserResult.fine(node, name, new KillEnemiesGame.Config() {
+        return Result.fine(node, name, new KillEnemiesGame.Config() {
             public Ref<Set<KillEnemies.Config>> objectives() { return Ref.ofProvided(objectives); }
         });
     }

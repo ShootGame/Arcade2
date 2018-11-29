@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.Percentage;
 
 public class ChanceMatcher extends ConfigurableMatcher<Percentage> {
@@ -51,13 +51,13 @@ public class ChanceMatcher extends ConfigurableMatcher<Percentage> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             Percentage chance = this.chanceParser.parseWithDefinition(node, name, value).orFail();
             if (!chance.isNormalized()) {
                 throw this.fail(node, name, value, "Chance must be normalized");
             }
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Percentage> value() { return Ref.ofProvided(chance); }
             });
         }

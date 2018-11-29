@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.IRegionFieldStrategy;
 import pl.themolka.arcade.region.UnionRegion;
@@ -39,13 +39,13 @@ public class CaptureParser extends ConfigParser<Capture.Config>
     }
 
     @Override
-    protected ParserResult<Capture.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Capture.Config> parseNode(Node node, String name, String value) throws ParserException {
         IRegionFieldStrategy fieldStrategy = this.fieldStrategyParser.parse(node.property(
                 "field-strategy", "fieldstrategy")).orDefault(Capture.Config.DEFAULT_FIELD_STRATEGY);
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.firstChild("filter")).orDefault(Ref.empty());
         UnionRegion.Config region = this.regionParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, new Capture.Config() {
+        return Result.fine(node, name, value, new Capture.Config() {
             public Ref<IRegionFieldStrategy> fieldStrategy() { return Ref.ofProvided(fieldStrategy); }
             public Ref<Filter.Config<?>> filter() { return filter; }
             public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }

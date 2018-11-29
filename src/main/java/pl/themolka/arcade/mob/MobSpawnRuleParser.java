@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,12 +34,12 @@ public class MobSpawnRuleParser extends ConfigParser<MobSpawnRule.Config>
     }
 
     @Override
-    protected ParserResult<MobSpawnRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<MobSpawnRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orFail();
         boolean allow = this.allowParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, new MobSpawnRule.Config() {
+        return Result.fine(node, name, value, new MobSpawnRule.Config() {
             public String id() { return id; }
             public Ref<Filter.Config<?>> filter() { return filter; }
             public Ref<Boolean> cancel() { return Ref.ofProvided(!allow); }

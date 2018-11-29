@@ -13,8 +13,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class MaxHealthContent implements RemovableKitContent<Double> {
     public static final AttributeKey MAX_HEALTH = new BukkitAttributeKey(Attribute.GENERIC_MAX_HEALTH);
@@ -68,9 +68,9 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Double> result() { return Ref.empty(); }
                 });
             }
@@ -80,7 +80,7 @@ public class MaxHealthContent implements RemovableKitContent<Double> {
                 throw this.fail(node, name, value, "Max health must be positive (greater than 0)");
             }
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Double> result() { return Ref.ofProvided(maxHealth); }
             });
         }

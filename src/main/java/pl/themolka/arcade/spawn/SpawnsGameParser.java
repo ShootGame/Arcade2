@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class SpawnsGameParser extends GameModuleParser<SpawnsGame, SpawnsGame.Co
     }
 
     @Override
-    protected ParserResult<SpawnsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<SpawnsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         List<Spawn.Config<?>> spawns = new ArrayList<>();
         for (Node spawnNode : node.children()) {
             spawns.add(this.spawnParser.parse(spawnNode).orFail());
@@ -46,7 +46,7 @@ public class SpawnsGameParser extends GameModuleParser<SpawnsGame, SpawnsGame.Co
             throw this.fail(node, name, value, "No spawns defined");
         }
 
-        return ParserResult.fine(node, name, value, new SpawnsGame.Config() {
+        return Result.fine(node, name, value, new SpawnsGame.Config() {
             public Ref<List<Spawn.Config<?>>> spawns() { return Ref.ofProvided(spawns); }
         });
     }

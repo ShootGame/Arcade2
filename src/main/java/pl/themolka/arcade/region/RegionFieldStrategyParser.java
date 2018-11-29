@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -32,7 +32,7 @@ public class RegionFieldStrategyParser extends ElementParser<IRegionFieldStrateg
     }
 
     @Override
-    protected ParserResult<IRegionFieldStrategy> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<IRegionFieldStrategy> parseElement(Element element, String name, String value) throws ParserException {
         String text = this.textParser.parseWithDefinition(element, name, value).orFail();
 
         try {
@@ -40,7 +40,7 @@ public class RegionFieldStrategyParser extends ElementParser<IRegionFieldStrateg
 
             if (field.isAccessible() && Modifier.isStatic(field.getModifiers())) {
                 if (RegionFieldStrategy.class.isAssignableFrom(field.getType())) {
-                    return ParserResult.fine(element, name, value, (RegionFieldStrategy) field.get(null));
+                    return Result.fine(element, name, value, (RegionFieldStrategy) field.get(null));
                 }
             }
         } catch (NoSuchFieldException | IllegalAccessException ignored) {

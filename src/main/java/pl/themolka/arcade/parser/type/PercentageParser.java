@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.Silent;
 import pl.themolka.arcade.util.Percentage;
 
@@ -26,7 +26,7 @@ public abstract class PercentageParser extends ElementParser<Percentage>
     }
 
     @Override
-    protected ParserResult<Percentage> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Percentage> parseElement(Element element, String name, String value) throws ParserException {
         double result;
         if (StringUtils.contains(value, Percentage.SYMBOL)) {
             result = this.percentageParser.parseWithDefinition(element, name,
@@ -36,7 +36,7 @@ public abstract class PercentageParser extends ElementParser<Percentage>
         }
 
         try {
-            return ParserResult.fine(element, name, value, this.parse(result));
+            return Result.fine(element, name, value, this.parse(result));
         } catch (IllegalArgumentException ex) {
             throw this.fail(element, name, value, ex.getMessage(), ex);
         }

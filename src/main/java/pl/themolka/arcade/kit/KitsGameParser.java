@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class KitsGameParser extends GameModuleParser<KitsGame, KitsGame.Config>
     }
 
     @Override
-    protected ParserResult<KitsGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KitsGame.Config> parseTree(Node node, String name) throws ParserException {
         Set<Kit.Config> kits = new LinkedHashSet<>();
         for (Node kitNode : node.children("kit", "set", "package")) {
             kits.add(this.kitParser.parse(kitNode).orFail());
@@ -46,7 +46,7 @@ public class KitsGameParser extends GameModuleParser<KitsGame, KitsGame.Config>
             throw this.fail(node, name, null, "No kits defined");
         }
 
-        return ParserResult.fine(node, name, new KitsGame.Config() {
+        return Result.fine(node, name, new KitsGame.Config() {
             public Ref<Set<Kit.Config>> kits() { return Ref.ofProvided(kits); }
         });
     }

@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class CompassTargetContent implements KitContent<Vector> {
     private final Vector result;
@@ -51,10 +51,10 @@ public class CompassTargetContent implements KitContent<Vector> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             Vector target = this.targetParser.parseWithDefinition(node, name, value).orFail();
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Vector> result() { return Ref.ofProvided(target); }
             });
         }

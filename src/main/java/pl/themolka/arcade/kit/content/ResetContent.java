@@ -5,8 +5,8 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class ResetContent implements BaseVoidKitContent {
     protected ResetContent() {
@@ -26,8 +26,8 @@ public class ResetContent implements BaseVoidKitContent {
     @Produces(Config.class)
     public static class ContentParser extends BaseContentParser<Config> {
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, new Config() {});
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, new Config() {});
         }
     }
 

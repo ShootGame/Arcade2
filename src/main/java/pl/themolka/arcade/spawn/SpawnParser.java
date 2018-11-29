@@ -10,9 +10,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.Silent;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.RegionParser;
@@ -76,7 +76,7 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
         }
 
         @Override
-        protected ParserResult<?> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<?> parseNode(Node node, String name, String value) throws ParserException {
             SpawnParser<?> parser = this.nested.parse(name);
             if (parser != null) {
                 return parser.parseWithDefinition(node, name, value);
@@ -108,7 +108,7 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
         }
 
         @Override
-        protected ParserResult<MultiSpawn.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<MultiSpawn.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
 
             List<Spawn.Config<?>> spawns = new ArrayList<>();
@@ -120,7 +120,7 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
                 throw this.fail(node, name, value, "No spawns defined");
             }
 
-            return ParserResult.fine(node, name, value, new MultiSpawn.Config() {
+            return Result.fine(node, name, value, new MultiSpawn.Config() {
                 public String id() { return id; }
                 public Ref<List<Spawn.Config<?>>> spawns() { return Ref.ofProvided(spawns); }
             });
@@ -149,13 +149,13 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
         }
 
         @Override
-        protected ParserResult<RegionSpawnVector.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<RegionSpawnVector.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             AbstractRegion.Config region = this.regionParser.parseWithDefinition(node, name, value).orFail();
             float yaw = this.parseYaw(node);
             float pitch = this.parsePitch(node);
 
-            return ParserResult.fine(node, name, value, new RegionSpawnVector.Config() {
+            return Result.fine(node, name, value, new RegionSpawnVector.Config() {
                 public String id() { return id; }
                 public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }
                 public float yaw() { return yaw; }
@@ -186,13 +186,13 @@ public abstract class SpawnParser<T extends Spawn.Config<?>> extends ConfigParse
         }
 
         @Override
-        protected ParserResult<RegionSpawnVector.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<RegionSpawnVector.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             AbstractRegion.Config<?> region = this.regionParser.parseWithDefinition(node, name, value).orFail();
             float yaw = this.parseYaw(node);
             float pitch = this.parsePitch(node);
 
-            return ParserResult.fine(node, name, value, new RegionSpawnVector.Config() {
+            return Result.fine(node, name, value, new RegionSpawnVector.Config() {
                 public String id() { return id; }
                 public Ref<AbstractRegion.Config<?>> region() { return Ref.ofProvided(region); }
                 public float yaw() { return yaw; }

@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
     }
 
     @Override
-    protected ParserResult<MobsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<MobsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         boolean denyNatural = this.denyNautralParser.parse(node.property("deny-natural")).orDefault(false);
 
         List<MobSpawnRule.Config> rules = new ArrayList<>();
@@ -52,7 +52,7 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
             }
         }
 
-        return ParserResult.fine(node, name, value, new MobsGame.Config() {
+        return Result.fine(node, name, value, new MobsGame.Config() {
             public Ref<List<MobSpawnRule.Config>> rules() { return Ref.ofProvided(rules); }
             public Ref<Boolean> denyNatural() { return Ref.ofProvided(denyNatural); }
         });

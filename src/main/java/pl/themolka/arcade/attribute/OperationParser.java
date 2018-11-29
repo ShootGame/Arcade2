@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,7 +34,7 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
     }
 
     @Override
-    protected ParserResult<AttributeModifier.Operation> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<AttributeModifier.Operation> parseElement(Element element, String name, String value) throws ParserException {
         String operationInput = this.operationParser.parseWithDefinition(element, name, value).orDefaultNull();
         AttributeModifier.Operation operation = this.getOperation(operationInput);
 
@@ -50,7 +50,7 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
             throw this.fail(element, name, value, "Unknown attribute modifier operation type");
         }
 
-        return ParserResult.fine(element, name, value, operation);
+        return Result.fine(element, name, value, operation);
     }
 
     protected AttributeModifier.Operation getOperation(String input) {

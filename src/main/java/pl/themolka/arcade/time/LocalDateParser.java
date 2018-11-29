@@ -3,8 +3,8 @@ package pl.themolka.arcade.time;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,9 +22,9 @@ public class LocalDateParser extends ElementParser<LocalDate> {
     }
 
     @Override
-    protected ParserResult<LocalDate> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<LocalDate> parseElement(Element element, String name, String value) throws ParserException {
         try {
-            return ParserResult.fine(element, name, value, LocalDate.parse(value, FORMATTER));
+            return Result.fine(element, name, value, LocalDate.parse(value, FORMATTER));
         } catch (DateTimeParseException ex) {
             throw this.fail(element, name, value, "Illegal date format", ex);
         }

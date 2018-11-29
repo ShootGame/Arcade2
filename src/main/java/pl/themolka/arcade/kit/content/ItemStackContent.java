@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class ItemStackContent extends BaseInventoryContent<ItemStack>
                               implements BaseModeContent {
@@ -81,12 +81,12 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             ItemStack itemStack = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
             BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(node, name, value).orDefault(Config.DEFAULT_MODE);
             Integer slot = this.slotParser.parse(node.property("slot")).orDefaultNull();
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(itemStack); }
                 public BaseModeContent.Mode mode() { return mode; }
                 public Ref<Integer> slot() { return slot != null ? Ref.ofProvided(slot) : Ref.empty(); }

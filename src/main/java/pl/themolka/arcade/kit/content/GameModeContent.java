@@ -11,8 +11,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class GameModeContent implements KitContent<GameMode>  {
     private final GameMode result;
@@ -49,10 +49,10 @@ public class GameModeContent implements KitContent<GameMode>  {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             GameMode gameMode = this.gameModeParser.parseWithDefinition(node, name, value).orFail();
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<GameMode> result() { return Ref.ofProvided(gameMode); }
             });
         }

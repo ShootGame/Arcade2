@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.spawn.Directional;
 
 import java.util.Collections;
@@ -37,10 +37,10 @@ public class LocationParser extends NodeParser<Location>
     }
 
     @Override
-    protected ParserResult<Location> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Location> parseNode(Node node, String name, String value) throws ParserException {
         Vector vector = this.vectorParser.parseWithDefinition(node, name, value).orFail();
         float yaw = this.yawParser.parse(node.property("yaw", "horizontal")).orDefault(Directional.Config.DEFAULT_YAW);
         float pitch = this.pitchParser.parse(node.property("pitch", "vertical")).orDefault(Directional.Config.DEFAULT_PITCH);
-        return ParserResult.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
+        return Result.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
     }
 }

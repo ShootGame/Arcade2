@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.portal.Portal;
 import pl.themolka.arcade.portal.PortalParser;
 import pl.themolka.arcade.region.AbstractRegion;
@@ -28,11 +28,11 @@ public class ScoreBoxParser extends PortalParser
     }
 
     @Override
-    protected ParserResult<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
         Portal.Config portal = super.parseNode(node, name, value).orFail();
         double points = this.pointsParser.parse(node.property("points")).orFail();
 
-        return ParserResult.fine(node, name, value, new ScoreBox.Config() {
+        return Result.fine(node, name, value, new ScoreBox.Config() {
             public Ref<SpawnApply.Config> destination() { return portal.destination(); }
             public Ref<Filter.Config<?>> filter() { return portal.filter(); }
             public String id() { return portal.id(); }

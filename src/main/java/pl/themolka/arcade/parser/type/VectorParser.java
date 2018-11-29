@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,10 +34,10 @@ public class VectorParser extends NodeParser<Vector>
     }
 
     @Override
-    protected ParserResult<Vector> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Vector> parseNode(Node node, String name, String value) throws ParserException {
         double x = this.xParser.parse(node.property("x")).orFail();
         double y = this.yParser.parse(node.property("y")).orFail();
         double z = this.zParser.parse(node.property("z")).orFail();
-        return ParserResult.fine(node, name, value, new Vector(x, y, z));
+        return Result.fine(node, name, value, new Vector(x, y, z));
     }
 }

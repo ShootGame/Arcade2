@@ -14,8 +14,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.UnionRegion;
 
@@ -77,7 +77,7 @@ public class WoolManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected ParserResult<Wool.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Wool.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseRequiredId(node);
             DyeColor color = this.colorParser.parse(node.property("color", "of")).orFail();
             boolean craftable = this.craftableParser.parse(node.property("craftable")).orDefault(Wool.Config.DEFAULT_IS_CRAFTABLE);
@@ -86,7 +86,7 @@ public class WoolManifest extends ObjectiveManifest {
             boolean objective = this.parseObjective(node).orDefault(Wool.Config.DEFAULT_IS_OBJECTIVE);
             Ref<Participator.Config<?>> owner = this.parseOwner(node).orFail();
 
-            return ParserResult.fine(node, name, value, new Wool.Config() {
+            return Result.fine(node, name, value, new Wool.Config() {
                 public String id() { return id; }
                 public Ref<DyeColor> color() { return Ref.ofProvided(color); }
                 public Ref<Boolean> craftable() { return Ref.ofProvided(craftable); }

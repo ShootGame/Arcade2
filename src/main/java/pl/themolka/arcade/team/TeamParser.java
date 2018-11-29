@@ -11,8 +11,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.Color;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class TeamParser extends ConfigParser<Team.Config>
     }
 
     @Override
-    protected ParserResult<Team.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Team.Config> parseNode(Node node, String name, String value) throws ParserException {
         String id = this.parseRequiredId(node);
         ChatColor chatColor = this.chatColorParser.parse(node.property("color", "chat-color", "chatcolor", "chat")).orFail();
         DyeColor dyeColor = this.parseDyeColor(chatColor, node.property("dye-color", "dyecolor", "dye"));
@@ -58,7 +58,7 @@ public class TeamParser extends ConfigParser<Team.Config>
         String teamName = this.nameParser.parse(node.property("name", "title")).orFail();
         int slots = this.slotsParser.parse(node.property("slots")).orFail();
 
-        return ParserResult.fine(node, name, value, new Team.Config() {
+        return Result.fine(node, name, value, new Team.Config() {
             public String id() { return id; }
             public Ref<ChatColor> chatColor() { return Ref.ofProvided(chatColor); }
             public Ref<DyeColor> dyeColor() { return Ref.ofProvided(dyeColor); }

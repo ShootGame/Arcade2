@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.time.Time;
 import pl.themolka.arcade.time.TimeUtils;
 
@@ -44,7 +44,7 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     }
 
     @Override
-    protected ParserResult<PotionEffect> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<PotionEffect> parsePrimitive(Node node, String name, String value) throws ParserException {
         boolean ambient = this.ambientParser.parse(node.property("ambient")).orDefault(true);
         int amplifier = this.amplifierParser.parse(node.property("amplifier")).orDefault(0);
         Color color = this.colorParser.parse(node.property("color")).orDefaultNull();
@@ -56,7 +56,7 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
             throw this.fail(node, name, value, "Amplifier must be positive or zero (greater than, or equal to 0)");
         }
 
-        return ParserResult.fine(node, name, value, new PotionEffect(
+        return Result.fine(node, name, value, new PotionEffect(
                 type, TimeUtils.toTicksInt(duration), amplifier, ambient, particles, color));
     }
 }

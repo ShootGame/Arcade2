@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.NestedParserMap;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,12 +37,12 @@ public class ObjectiveParser extends ConfigParser<Objective.Config<?>>
     }
 
     @Override
-    protected ParserResult<Objective.Config<?>> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Objective.Config<?>> parseNode(Node node, String name, String value) throws ParserException {
         ObjectiveManifest.ObjectiveParser<?> parser = this.parsers.parse(name);
         if (parser == null) {
             throw this.fail(node, name, value, "Unknown objective type");
         }
 
-        return ParserResult.fine(node, name, value, parser.parseWithDefinition(node, name, value).orFail());
+        return Result.fine(node, name, value, parser.parseWithDefinition(node, name, value).orFail());
     }
 }

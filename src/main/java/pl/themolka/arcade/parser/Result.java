@@ -6,11 +6,11 @@ import pl.themolka.arcade.util.NamedValue;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class ParserResult<T> implements IParserResult<T> {
+public abstract class Result<T> implements IResult<T> {
     private final Element element; // DOM element
     private final Source source; // DOM name and value
 
-    public ParserResult(Element element, String name, String value) {
+    public Result(Element element, String name, String value) {
         this.element = element;
         this.source = new Source(name, value);
     }
@@ -34,37 +34,37 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     //
 
     // empty
-    public static <T> ParserResult<T> empty() {
+    public static <T> Result<T> empty() {
         return empty(null);
     }
 
-    public static <T> ParserResult<T> empty(Element element) {
+    public static <T> Result<T> empty(Element element) {
         return empty(element, null);
     }
 
-    public static <T> ParserResult<T> empty(Element element, String name) {
+    public static <T> Result<T> empty(Element element, String name) {
         return new EmptyResult<>(element, name);
     }
 
     // fail
-    public static <T> ParserResult<T> fail(ParserException fail) {
+    public static <T> Result<T> fail(ParserException fail) {
         return fail(fail, null);
     }
 
-    public static <T> ParserResult<T> fail(ParserException fail, String name) {
+    public static <T> Result<T> fail(ParserException fail, String name) {
         return fail(fail, name, null);
     }
 
-    public static <T> ParserResult<T> fail(ParserException fail, String name, String value) {
+    public static <T> Result<T> fail(ParserException fail, String name, String value) {
         return new FailResult<>(fail, name, value);
     }
 
     // fine
-    public static <T> ParserResult<T> fine(Element element, String name, T result) {
+    public static <T> Result<T> fine(Element element, String name, T result) {
         return fine(element, name, null, result);
     }
 
-    public static <T> ParserResult<T> fine(Element element, String name, String value, T result) {
+    public static <T> Result<T> fine(Element element, String name, String value, T result) {
         return new FineResult<>(
                 Objects.requireNonNull(element, "element cannot be null (use maybe(...) instead?)"),
                 Objects.requireNonNull(name, "name cannot be null (use maybe(...) instead?)"),
@@ -73,14 +73,14 @@ public abstract class ParserResult<T> implements IParserResult<T> {
     }
 
     // auto
-    public static <T> ParserResult<T> maybe(Element element, String name, String value, T maybe) {
+    public static <T> Result<T> maybe(Element element, String name, String value, T maybe) {
         return element != null && name != null && value != null && maybe != null
                 ? fine(element, name, value, maybe)
                 : empty(element, name);
     }
 
     // java.util.Optional<T>
-    public static <T> ParserResult<T> ofOptional(Element element, String name, String value, Optional<T> optional) {
+    public static <T> Result<T> ofOptional(Element element, String name, String value, Optional<T> optional) {
         return maybe(element, name, value, Objects.requireNonNull(optional.get(), "optional cannot be null"));
     }
 }
@@ -105,7 +105,7 @@ class EmptyResult<T> extends FailResult<T> {
     }
 }
 
-class FailResult<T> extends ParserResult<T> {
+class FailResult<T> extends Result<T> {
     final ParserException fail;
 
     FailResult(ParserException fail, String name, String value) {
@@ -144,7 +144,7 @@ class FailResult<T> extends ParserResult<T> {
     }
 }
 
-class FineResult<T> extends ParserResult<T> {
+class FineResult<T> extends Result<T> {
     final T result;
 
     FineResult(Element element, String name, String value, T result) {

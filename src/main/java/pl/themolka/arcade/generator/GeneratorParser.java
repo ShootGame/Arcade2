@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.Silent;
 
 import java.util.Collections;
@@ -41,13 +41,13 @@ public class GeneratorParser extends NodeParser<Generator>
     }
 
     @Override
-    protected ParserResult<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
         BaseGeneratorParser<?> parser = this.nested.parse(value);
         if (parser == null) {
             throw this.fail(node, null, name, "Unknown world generator type");
         }
 
-        return ParserResult.fine(node, name, value, parser.parse(node).orFail());
+        return Result.fine(node, name, value, parser.parse(node).orFail());
     }
 
     @NestedParserName("default")
@@ -60,8 +60,8 @@ public class GeneratorParser extends NodeParser<Generator>
         }
 
         @Override
-        protected ParserResult<Generator> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, Generator.DEFAULT_GENERATOR);
+        protected Result<Generator> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, Generator.DEFAULT_GENERATOR);
         }
     }
 }

@@ -15,12 +15,12 @@ public class IdParser extends PropertyParser<String> {
     }
 
     @Override
-    protected ParserResult<String> parseProperty(Property property, String name, String value) throws ParserException {
+    protected Result<String> parseProperty(Property property, String name, String value) throws ParserException {
         if (!this.validId(value)) {
             throw this.fail(property, name, value, "Invalid ID syntax");
         }
 
-        return ParserResult.fine(property, name, value, value);
+        return Result.fine(property, name, value, value);
     }
 
     private boolean validId(String id) throws ParserException {

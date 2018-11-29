@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.session.ArcadePlayer;
 
 public class MessageContent implements KitContent<String> {
@@ -125,11 +125,11 @@ public class MessageContent implements KitContent<String> {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             String text = this.textParser.parseWithDefinition(node, name, value).orFail();
             Channel channel = this.channelParser.parse(node.property("channel")).orDefault(Config.DEFAULT_CHANNEL);
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<String> result() { return Ref.ofProvided(text); }
                 public Ref<Channel> channel() { return Ref.ofProvided(channel); }
             });

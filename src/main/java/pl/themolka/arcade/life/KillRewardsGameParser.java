@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class KillRewardsGameParser extends GameModuleParser<KillRewardsGame, Kil
     }
 
     @Override
-    protected ParserResult<KillRewardsGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KillRewardsGame.Config> parseTree(Node node, String name) throws ParserException {
         List<KillReward.Config> rewards = new ArrayList<>();
         for (Node rewardNode : node.children("reward")) {
             rewards.add(this.killRewardParser.parse(rewardNode).orFail());
@@ -46,7 +46,7 @@ public class KillRewardsGameParser extends GameModuleParser<KillRewardsGame, Kil
             throw this.fail(node, name, null, "No rewards defined");
         }
 
-        return ParserResult.fine(node, name, new KillRewardsGame.Config() {
+        return Result.fine(node, name, new KillRewardsGame.Config() {
             public Ref<List<KillReward.Config>> rewards() { return Ref.ofProvided(rewards); }
         });
     }

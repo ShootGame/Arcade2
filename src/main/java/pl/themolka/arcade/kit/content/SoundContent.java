@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.session.ArcadeSound;
 
 public class SoundContent implements KitContent<Sound> {
@@ -96,13 +96,13 @@ public class SoundContent implements KitContent<Sound> {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             Sound sound = this.soundParser.parseWithDefinition(node, name, value).orFail();
             Location location = this.locationParser.parse(node.property("location", "at")).orDefaultNull();
             float pitch = this.pitchParser.parse(node.property("pitch")).orDefault(Config.DEFAULT_PITCH);
             float volume = this.volumeParser.parse(node.property("volume")).orDefault(Config.DEFAULT_VOLUME);
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Sound> result() { return Ref.ofProvided(sound); }
                 public Ref<Location> location() { return location != null ? Ref.ofProvided(location) : Ref.empty(); }
                 public Ref<Float> pitch() { return Ref.ofProvided(pitch); }

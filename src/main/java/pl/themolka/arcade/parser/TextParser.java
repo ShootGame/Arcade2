@@ -16,7 +16,7 @@ public class TextParser extends ElementParser<String> {
     }
 
     @Override
-    protected ParserResult<String> parseElement(Element element, String name, String value) throws ParserException {
-        return ParserResult.fine(element, name, value, value);
+    protected Result<String> parseElement(Element element, String name, String value) throws ParserException {
+        return Result.fine(element, name, value, value);
     }
 }

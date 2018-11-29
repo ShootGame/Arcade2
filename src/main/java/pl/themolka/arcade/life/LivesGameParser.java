@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.team.Team;
 
 @Produces(LivesGame.Config.class)
@@ -40,8 +40,8 @@ public class LivesGameParser extends GameModuleParser<LivesGame, LivesGame.Confi
     }
 
     @Override
-    protected ParserResult<LivesGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        ParserResult<Integer> livesResult = this.livesParser.parse(node);
+    protected Result<LivesGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+        Result<Integer> livesResult = this.livesParser.parse(node);
         int lives = node.getName().equals("life") ? livesResult.orDefault(1) : livesResult.orFail();
         // ^ 1 is the default if the node name is singular form
 
@@ -49,7 +49,7 @@ public class LivesGameParser extends GameModuleParser<LivesGame, LivesGame.Confi
         boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(true);
         Sound sound = this.soundParser.parse(node.property("sound")).orDefault(LivesGame.Config.DEFAULT_SOUND);
 
-        return ParserResult.fine(node, name, value, new LivesGame.Config() {
+        return Result.fine(node, name, value, new LivesGame.Config() {
             public Ref<Integer> lives() { return Ref.ofProvided(lives); }
             public Ref<Team.Config> fallbackTeam() { return fallbackTeam; }
             public Ref<Boolean> announce() { return Ref.ofProvided(announce); }

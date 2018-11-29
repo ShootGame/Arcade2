@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -29,12 +29,12 @@ public class ProgressiveVersionParser extends ElementParser<ProgressiveVersion>
     }
 
     @Override
-    protected ParserResult<ProgressiveVersion> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<ProgressiveVersion> parseElement(Element element, String name, String value) throws ParserException {
         int integer = this.valueParser.parseWithDefinition(element, name, value).orFail();
         if (integer < 0) {
             throw this.fail(element, name, value, "Progressive version value cannot be negative");
         }
 
-        return ParserResult.fine(element, name, value, new ProgressiveVersion(integer));
+        return Result.fine(element, name, value, new ProgressiveVersion(integer));
     }
 }

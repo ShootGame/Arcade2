@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,8 +31,8 @@ public class ComponentParser extends ElementParser<BaseComponent>
     }
 
     @Override
-    protected ParserResult<BaseComponent> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<BaseComponent> parseElement(Element element, String name, String value) throws ParserException {
         BaseComponent[] text = TextComponent.fromLegacyText(this.messageParser.parse(element).orFail());
-        return ParserResult.fine(element, name, value, new TextComponent(text));
+        return Result.fine(element, name, value, new TextComponent(text));
     }
 }

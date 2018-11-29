@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class GiveExperienceContent implements KitContent<Integer> {
     public static boolean testValue(int value) {
@@ -53,7 +53,7 @@ public class GiveExperienceContent implements KitContent<Integer> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             int experience = this.experienceParser.parseWithDefinition(node, name, value).orFail();
             if (experience <= 0) {
                 throw this.fail(node, name, value, "Experience must be positive (greater than 0)");
@@ -64,7 +64,7 @@ public class GiveExperienceContent implements KitContent<Integer> {
             }
 
             final int finalExperience = experience;
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Integer> result() { return Ref.ofProvided(finalExperience); }
             });
         }

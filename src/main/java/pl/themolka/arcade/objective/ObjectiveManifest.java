@@ -14,7 +14,7 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -83,15 +83,15 @@ public abstract class ObjectiveManifest {
         // Shared Parsing
         //
 
-        protected ParserResult<String> parseName(Node node) throws ParserException {
+        protected Result<String> parseName(Node node) throws ParserException {
             return this.nameParser.parse(node.property("name", "title"));
         }
 
-        protected ParserResult<Boolean> parseObjective(Node node) throws ParserException {
+        protected Result<Boolean> parseObjective(Node node) throws ParserException {
             return this.objectiveParser.parse(node.property("objective"));
         }
 
-        protected ParserResult<Ref> parseOwner(Node node) throws ParserException {
+        protected Result<Ref> parseOwner(Node node) throws ParserException {
             return this.ownerParser.parse(node.property("owner"));
         }
     }

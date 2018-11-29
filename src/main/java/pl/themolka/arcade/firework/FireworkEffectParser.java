@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -39,7 +39,7 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
     }
 
     @Override
-    protected ParserResult<FireworkEffect> parseTree(Node node, String name) throws ParserException {
+    protected Result<FireworkEffect> parseTree(Node node, String name) throws ParserException {
         FireworkEffect.Builder builder = FireworkEffect.builder()
                 .with(this.typeParser.parse(node.property("type", "of")).orDefault(FireworkEffect.Type.BALL))
                 .flicker(this.flickerParser.parse(node.property("flicker")).orDefault(false))
@@ -59,6 +59,6 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
             builder.withFade(this.fadeColorParser.parse(fadeColor).orFail());
         }
 
-        return ParserResult.fine(node, name, builder.build());
+        return Result.fine(node, name, builder.build());
     }
 }

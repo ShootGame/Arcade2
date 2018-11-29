@@ -10,9 +10,9 @@ public abstract class ElementParser<T> extends AbstractParser<T> {
     }
 
     @Override
-    protected ParserResult<T> parse(Element element, String name, String value) throws ParserException {
+    protected Result<T> parse(Element element, String name, String value) throws ParserException {
         if (this.missingValue(value)) {
-            return ParserResult.empty(element, name);
+            return Result.empty(element, name);
         }
 
         return this.parseElement(element, name, value);
@@ -22,5 +22,5 @@ public abstract class ElementParser<T> extends AbstractParser<T> {
         return value == null;
     }
 
-    protected abstract ParserResult<T> parseElement(Element element, String name, String value) throws ParserException;
+    protected abstract Result<T> parseElement(Element element, String name, String value) throws ParserException;
 }

@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,15 +33,15 @@ public class GameRuleParser extends NodeParser<GameRule>
     }
 
     @Override
-    protected ParserResult<GameRule> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<GameRule> parsePrimitive(Node node, String name, String value) throws ParserException {
         GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orNull(); // name is the value
         String ruleValue = this.valueParser.parseWithDefinition(node, name, value).orFail();
 
         if (type != null) {
-            return ParserResult.fine(node, name, value, type.create(ruleValue));
+            return Result.fine(node, name, value, type.create(ruleValue));
         }
 
         String ruleKey = this.keyParser.parseWithValue(node, name).orFail();
-        return ParserResult.fine(node, name, value, new GameRule(ruleKey, ruleValue));
+        return Result.fine(node, name, value, new GameRule(ruleKey, ruleValue));
     }
 }

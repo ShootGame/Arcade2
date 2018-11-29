@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -35,12 +35,12 @@ public class KillRewardParser extends ConfigParser<KillReward.Config>
     }
 
     @Override
-    protected ParserResult<KillReward.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<KillReward.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
         Ref<Kit.Config> kit = this.kitParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, new KillReward.Config() {
+        return Result.fine(node, name, value, new KillReward.Config() {
             public String id() { return id; }
             public Ref<Filter.Config<?>> filter() { return filter; }
             public Ref<Kit.Config> kit() { return kit; }

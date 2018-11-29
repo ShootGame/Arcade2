@@ -11,8 +11,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class CanFlyContent implements RemovableKitContent<Boolean> {
     private final boolean result;
@@ -63,9 +63,9 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Boolean> result() { return Ref.empty(); }
                 });
             }
@@ -73,7 +73,7 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
             boolean canFly = this.canFlyParser.parseWithDefinition(node, name, value).orFail();
             boolean force = this.forceParser.parse(node.property("force")).orDefault(Config.DEFAULT_FORCE);
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(canFly); }
                 public Ref<Boolean> force() { return Ref.ofProvided(force); }
             });

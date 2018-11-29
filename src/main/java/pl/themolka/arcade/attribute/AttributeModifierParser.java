@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.FastUUID;
 
 import java.util.Collections;
@@ -39,12 +39,12 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
     }
 
     @Override
-    protected ParserResult<AttributeModifier> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<AttributeModifier> parsePrimitive(Node node, String name, String value) throws ParserException {
         AttributeModifier.Operation operation = this.operationParser.parse(node.property("operation"))
                 .orDefault(AttributeModifier.Operation.ADD_NUMBER);
         double amount = this.amountParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, this.createModifier(this.fastUUID.random(), operation, amount));
+        return Result.fine(node, name, value, this.createModifier(this.fastUUID.random(), operation, amount));
     }
 
     protected AttributeModifier createModifier(UUID uniqueId, AttributeModifier.Operation operation, double amount) {

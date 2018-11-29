@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.versioning.SemanticVersion;
 
 import java.util.Collections;
@@ -30,8 +30,8 @@ public class MapFileVersionParser extends ElementParser<MapFileVersion>
     }
 
     @Override
-    protected ParserResult<MapFileVersion> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<MapFileVersion> parseElement(Element element, String name, String value) throws ParserException {
         SemanticVersion semantic = this.semanticVersionParser.parseWithDefinition(element, name, value).orFail();
-        return ParserResult.fine(element, name, value, MapFileVersion.convertFrom(semantic));
+        return Result.fine(element, name, value, MapFileVersion.convertFrom(semantic));
     }
 }

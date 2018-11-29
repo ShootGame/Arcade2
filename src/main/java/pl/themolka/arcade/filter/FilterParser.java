@@ -37,8 +37,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.Silent;
 
 import java.util.Collections;
@@ -95,13 +95,13 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
     }
 
     @Override
-    protected ParserResult<Filter.Config<?>> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Filter.Config<?>> parseNode(Node node, String name, String value) throws ParserException {
         BaseFilterParser<?> parser = this.nested.parse(name);
         if (parser == null) {
             throw this.fail(node, null, name, "Unknown filter type");
         }
 
-        return ParserResult.fine(node, name, value, parser.parse(node).orFail());
+        return Result.fine(node, name, value, parser.parse(node).orFail());
     }
 
     //
@@ -113,8 +113,8 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
     @Produces(StaticFilter.Config.class)
     public static class Abstain extends BaseFilterParser<StaticFilter.Config> {
         @Override
-        protected ParserResult<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, StaticFilter.ABSTAIN.config());
+        protected Result<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, StaticFilter.ABSTAIN.config());
         }
     }
 
@@ -123,8 +123,8 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
     @Produces(StaticFilter.Config.class)
     public static class Allow extends BaseFilterParser<StaticFilter.Config> {
         @Override
-        protected ParserResult<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, StaticFilter.ALLOW.config());
+        protected Result<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, StaticFilter.ALLOW.config());
         }
     }
 
@@ -133,8 +133,8 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
     @Produces(StaticFilter.Config.class)
     public static class Deny extends BaseFilterParser<StaticFilter.Config> {
         @Override
-        protected ParserResult<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, StaticFilter.DENY.config());
+        protected Result<StaticFilter.Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, StaticFilter.DENY.config());
         }
     }
 
@@ -152,13 +152,13 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
         }
 
         @Override
-        protected ParserResult<EntityMatcher.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<EntityMatcher.Config> parseNode(Node node, String name, String value) throws ParserException {
             EntityType entity = this.entityParser.parseWithDefinition(node, name, value).orFail();
             if (!entity.isAlive()) {
                 throw this.fail(node, name, value, "Unknown mob type");
             }
 
-            return ParserResult.fine(node, name, value, new EntityMatcher.Config() {
+            return Result.fine(node, name, value, new EntityMatcher.Config() {
                 public Ref<EntityType> value() { return Ref.ofProvided(entity); }
             });
         }
@@ -169,8 +169,8 @@ public class FilterParser extends ConfigParser<Filter.Config<?>>
     @Produces(ParticipatingMatcher.Config.class)
     public static class Observing extends BaseMatcherParser<ParticipatingMatcher.Config> {
         @Override
-        protected ParserResult<ParticipatingMatcher.Config> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, new ParticipatingMatcher.Config() {
+        protected Result<ParticipatingMatcher.Config> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, new ParticipatingMatcher.Config() {
                 public Ref<Boolean> value() { return Ref.ofProvided(false); }
             });
         }

@@ -11,7 +11,7 @@ public abstract class PropertyParser<T> extends ElementParser<T> {
     }
 
     @Override
-    protected ParserResult<T> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<T> parseElement(Element element, String name, String value) throws ParserException {
         if (element instanceof Property) {
             return this.parseProperty((Property) element, name, value);
         }
@@ -19,5 +19,5 @@ public abstract class PropertyParser<T> extends ElementParser<T> {
         throw this.fail(element, name, value, "Not a property");
     }
 
-    protected abstract ParserResult<T> parseProperty(Property property, String name, String value) throws ParserException;
+    protected abstract Result<T> parseProperty(Property property, String name, String value) throws ParserException;
 }

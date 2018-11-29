@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class PortalsGameParser extends GameModuleParser<PortalsGame, PortalsGame
     }
 
     @Override
-    protected ParserResult<PortalsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<PortalsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Set<Portal.Config> portals = new LinkedHashSet<>();
         for (Node portalNode : node.children("portal")) {
             portals.add(this.portalParser.parse(portalNode).orFail());
@@ -46,7 +46,7 @@ public class PortalsGameParser extends GameModuleParser<PortalsGame, PortalsGame
             throw this.fail(node, name, value, "No portals defined");
         }
 
-        return ParserResult.fine(node, name, value, new PortalsGame.Config() {
+        return Result.fine(node, name, value, new PortalsGame.Config() {
             public Ref<Set<Portal.Config>> portals() { return Ref.ofProvided(portals); }
         });
     }

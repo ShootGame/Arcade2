@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -29,7 +29,7 @@ public class DominatorParser extends ElementParser<Dominator>
     }
 
     @Override
-    protected ParserResult<Dominator> parseElement(Element element, String name, String value) throws ParserException {
-        return ParserResult.fine(element, name, value, this.defaultDominatorParser.parseWithDefinition(element, name, value).orFail());
+    protected Result<Dominator> parseElement(Element element, String name, String value) throws ParserException {
+        return Result.fine(element, name, value, this.defaultDominatorParser.parseWithDefinition(element, name, value).orFail());
     }
 }

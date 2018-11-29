@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class GameRulesGameParser extends GameModuleParser<GameRulesGame, GameRul
     }
 
     @Override
-    protected ParserResult<GameRulesGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<GameRulesGame.Config> parseTree(Node node, String name) throws ParserException {
         Set<GameRule> rules = new LinkedHashSet<>();
         for (Node ruleNode : node.children()) {
             GameRule rule = this.ruleParser.parse(ruleNode).orFail();
@@ -53,7 +53,7 @@ public class GameRulesGameParser extends GameModuleParser<GameRulesGame, GameRul
             throw this.fail(node, name, null, "No rules defined");
         }
 
-        return ParserResult.fine(node, name, new GameRulesGame.Config() {
+        return Result.fine(node, name, new GameRulesGame.Config() {
             public Ref<Set<GameRule>> rules() { return Ref.ofProvided(rules); }
         });
     }

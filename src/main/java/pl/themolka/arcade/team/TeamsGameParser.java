@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ public class TeamsGameParser extends GameModuleParser<TeamsGame, TeamsGame.Confi
     }
 
     @Override
-    protected ParserResult<TeamsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<TeamsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Set<Team.Config> teams = new LinkedHashSet<>();
         for (Node teamNode : node.children("team")) {
             teams.add(this.teamParser.parse(teamNode).orFail());
@@ -47,7 +47,7 @@ public class TeamsGameParser extends GameModuleParser<TeamsGame, TeamsGame.Confi
             throw this.fail(node, name, value, "Too many teams, reached limit of " + TeamsGame.Config.TEAMS_LIMIT + " teams");
         }
 
-        return ParserResult.fine(node, name, value, new TeamsGame.Config() {
+        return Result.fine(node, name, value, new TeamsGame.Config() {
             public Ref<Set<Team.Config>> teams() { return Ref.ofProvided(teams); }
         });
     }

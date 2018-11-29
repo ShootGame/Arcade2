@@ -8,8 +8,8 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.map.WorldInfo;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Random;
@@ -45,8 +45,8 @@ public class VoidGenerator extends ChunkGenerator implements Generator {
         }
 
         @Override
-        protected ParserResult<VoidGenerator> parseNode(Node node, String name, String value) throws ParserException {
-            return ParserResult.fine(node, name, value, new VoidGenerator());
+        protected Result<VoidGenerator> parseNode(Node node, String name, String value) throws ParserException {
+            return Result.fine(node, name, value, new VoidGenerator());
         }
     }
 }

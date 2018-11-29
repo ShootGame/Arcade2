@@ -15,8 +15,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.type.MaterialParser;
 
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
     }
 
     @Override
-    protected ParserResult<ItemStack> parseTree(Node node, String name) throws ParserException {
+    protected Result<ItemStack> parseTree(Node node, String name) throws ParserException {
         Property amountProperty = node.property("amount", "total");
         Property durabilityProperty = node.property("durability");
 
@@ -120,7 +120,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         itemMeta.addItemFlags(flags.toArray(new ItemFlag[flags.size()]));
 
         itemStack.setItemMeta(this.itemMetaParser.parse(node, itemStack, itemMeta));
-        return ParserResult.fine(node, name, itemStack);
+        return Result.fine(node, name, itemStack);
     }
 
     //

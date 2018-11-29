@@ -9,9 +9,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class KitParser extends ConfigParser<Kit.Config>
     }
 
     @Override
-    protected ParserResult<Kit.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<Kit.Config> parseTree(Node node, String name) throws ParserException {
         String id = this.parseRequiredId(node);
 
         List<KitContent.Config<?, ?>> contents = new ArrayList<>();
@@ -54,7 +54,7 @@ public class KitParser extends ConfigParser<Kit.Config>
             inherit.addAll(ParserUtils.array(inheritValue));
         }
 
-        return ParserResult.fine(node, name, new Kit.Config() {
+        return Result.fine(node, name, new Kit.Config() {
             public String id() { return id; }
             public Ref<List<KitContent.Config<?, ?>>> contents() { return Ref.ofProvided(contents); }
             public Ref<Set<String>> inherit() { return Ref.ofProvided(inherit); }

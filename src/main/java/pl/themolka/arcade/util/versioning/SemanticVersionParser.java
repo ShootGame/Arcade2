@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
     }
 
     @Override
-    protected ParserResult<SemanticVersion> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<SemanticVersion> parseElement(Element element, String name, String value) throws ParserException {
         String[] sections = value.split("-", 2);
 
         String[] parts = sections[0].split("\\.", 3);
@@ -69,7 +69,7 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
             pre = this.isPre(sections[1].toLowerCase());
         }
 
-        return ParserResult.fine(element, name, value, new SemanticVersion(major, minor, patch, pre));
+        return Result.fine(element, name, value, new SemanticVersion(major, minor, patch, pre));
     }
 
     private boolean isPre(String input) {

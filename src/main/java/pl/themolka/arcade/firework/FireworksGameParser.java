@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 @Produces(FireworksGame.Config.class)
 public class FireworksGameParser extends GameModuleParser<FireworksGame, FireworksGame.Config>
@@ -32,16 +32,16 @@ public class FireworksGameParser extends GameModuleParser<FireworksGame, Firewor
     }
 
     @Override
-    protected ParserResult<FireworksGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<FireworksGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         boolean onCoreLeak = this.enabledParser.parse(node.property("core-leak")).orDefault(true);
         boolean onPointCapture = this.enabledParser.parse(node.property("point-capture")).orDefault(true);
         boolean onWoolPlace = this.enabledParser.parse(node.property("wool-place")).orDefault(true);
 
         if (!onCoreLeak && !onPointCapture && !onWoolPlace) {
-            return ParserResult.empty(node, name);
+            return Result.empty(node, name);
         }
 
-        return ParserResult.fine(node, name, value, new FireworksGame.Config() {
+        return Result.fine(node, name, value, new FireworksGame.Config() {
             public Ref<Boolean> onCoreLeak() { return Ref.ofProvided(onCoreLeak); }
             public Ref<Boolean> onPointCapture() { return Ref.ofProvided(onPointCapture); }
             public Ref<Boolean> onWoolPlace() { return Ref.ofProvided(onWoolPlace); }

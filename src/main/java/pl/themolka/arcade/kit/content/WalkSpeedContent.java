@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class WalkSpeedContent implements RemovableKitContent<Float> {
     public static final float MIN_VALUE = -1F;
@@ -60,9 +60,9 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Float> result() { return Ref.empty(); }
                 });
             }
@@ -74,7 +74,7 @@ public class WalkSpeedContent implements RemovableKitContent<Float> {
                 throw this.fail(node, name, value, "Walk speed is too fast (max " + MAX_VALUE + ")");
             }
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Float> result() { return Ref.ofProvided(speed); }
             });
         }

@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.parser.type.PercentageParser;
 import pl.themolka.arcade.util.Percentage;
 
@@ -42,7 +42,7 @@ public class DamageRuleParser extends ConfigParser<DamageRule.Config>
     }
 
     @Override
-    protected ParserResult<DamageRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<DamageRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseOptionalId(node);
         Ref<Filter.Config<?>> entityFilter = this.entityFilterParser.parse(node.property("entity-filter", "filter")).orDefault(Ref.empty());
         Ref<Filter.Config<?>> playerFilter = this.playerFilterParser.parse(node.property("player-filter", "filter")).orDefault(Ref.empty());
@@ -52,7 +52,7 @@ public class DamageRuleParser extends ConfigParser<DamageRule.Config>
                                   : DamageRule.Config.DENY_DAMAGE;
         Percentage multiplier = this.multiplierParser.parse(node.property("multiplier", "multiply")).orDefault(Percentage.DONE);
 
-        return ParserResult.fine(node, name, value, new DamageRule.Config() {
+        return Result.fine(node, name, value, new DamageRule.Config() {
             public String id() { return id; }
             public Ref<Double> damage() { return Ref.ofProvided(damage); }
             public Ref<Filter.Config<?>> entityFilter() { return entityFilter; }

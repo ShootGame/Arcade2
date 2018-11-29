@@ -38,24 +38,24 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
     }
 
     @Override
-    protected ParserResult<T> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<T> parseElement(Element element, String name, String value) throws ParserException {
         String input = toEnumValue(value);
 
         try {
             // try the fastest way first
-            return ParserResult.fine(element, name, value, Enum.valueOf(this.type, input));
+            return Result.fine(element, name, value, Enum.valueOf(this.type, input));
         } catch (IllegalArgumentException ex) {
             // try case-insensitive
             for (T constant : this.type.getEnumConstants()) {
                 if (constant.name().equalsIgnoreCase(input)) {
-                    return ParserResult.fine(element, name, value, constant);
+                    return Result.fine(element, name, value, constant);
                 }
             }
 
             // try contains
             for (T constant : this.type.getEnumConstants()) {
                 if (constant.name().toUpperCase().contains(input)) {
-                    return ParserResult.fine(element, name, value, constant);
+                    return Result.fine(element, name, value, constant);
                 }
             }
         }

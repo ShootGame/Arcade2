@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,13 +33,13 @@ public class MaterialDataParser extends ElementParser<MaterialData>
     }
 
     @Override
-    protected ParserResult<MaterialData> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<MaterialData> parseElement(Element element, String name, String value) throws ParserException {
         String[] split = value.split(":", 2);
 
         Material material = this.materialParser.parseWithDefinition(element, name, split[0]).orFail();
         byte data = split.length > 1 ? this.dataParser.parseWithDefinition(element, name, split[1]).orFail()
                                      : 0;
 
-        return ParserResult.fine(element, name, value, new MaterialData(material, data));
+        return Result.fine(element, name, value, new MaterialData(material, data));
     }
 }

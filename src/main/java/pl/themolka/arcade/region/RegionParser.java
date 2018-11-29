@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -69,7 +69,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<?> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<?> parseNode(Node node, String name, String value) throws ParserException {
             RegionParser<?> parser = this.nested.parse(name);
             if (parser == null) {
                 throw this.fail(node, null, name, "Unknown region type");
@@ -92,12 +92,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<CuboidRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<CuboidRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             Vector min = this.parseVector(node, "min", CuboidRegion.MIN_HEIGHT);
             Vector max = this.parseVector(node, "max", CuboidRegion.MAX_HEIGHT);
 
-            return ParserResult.fine(node, name, value, new CuboidRegion.Config() {
+            return Result.fine(node, name, value, new CuboidRegion.Config() {
                 public String id() { return id; }
                 public Ref<Vector> min() { return Ref.ofProvided(min); }
                 public Ref<Vector> max() { return Ref.ofProvided(max); }
@@ -129,13 +129,13 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<CylinderRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<CylinderRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             Vector center = this.parseVector(node, null, CylinderRegion.MIN_HEIGHT);
             double radius = this.radiusParser.parse(node.property("radius", "r")).orFail();
             double height = this.heightParser.parse(node.property("height")).orDefault(CylinderRegion.MAX_HEIGHT);
 
-            return ParserResult.fine(node, name, value, new CylinderRegion.Config() {
+            return Result.fine(node, name, value, new CylinderRegion.Config() {
                 public String id() { return id; }
                 public Ref<Vector> center() { return Ref.ofProvided(center); }
                 public Ref<Double> radius() { return Ref.ofProvided(radius); }
@@ -157,10 +157,10 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<GlobalRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<GlobalRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
 
-            return ParserResult.fine(node, name, value, new GlobalRegion.Config() {
+            return Result.fine(node, name, value, new GlobalRegion.Config() {
                 public String id() { return id; }
             });
         }
@@ -188,11 +188,11 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<NegativeRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<NegativeRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             Ref<UnionRegion.Config> region = Ref.ofProvided(this.regionParser.parseWithDefinition(node, name, value).orFail());
 
-            return ParserResult.fine(node, name, value, new NegativeRegion.Config() {
+            return Result.fine(node, name, value, new NegativeRegion.Config() {
                 public String id() { return id; }
                 public Ref<UnionRegion.Config> region() { return region; }
             });
@@ -212,11 +212,11 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<PointRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<PointRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             Vector point = this.parseVector(node, null, null);
 
-            return ParserResult.fine(node, name, value, new PointRegion.Config() {
+            return Result.fine(node, name, value, new PointRegion.Config() {
                 public String id() { return id; }
                 public Ref<Vector> point() { return Ref.ofProvided(point); }
             });
@@ -245,12 +245,12 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<SphereRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<SphereRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
             Vector center = this.parseVector(node, null, null);
             double radius = this.radiusParser.parse(node.property("radius", "r")).orFail();
 
-            return ParserResult.fine(node, name, value, new SphereRegion.Config() {
+            return Result.fine(node, name, value, new SphereRegion.Config() {
                 public String id() { return id; }
                 public Ref<Vector> center() { return Ref.ofProvided(center); }
                 public Ref<Double> radius() { return Ref.ofProvided(radius); }
@@ -280,7 +280,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
         }
 
         @Override
-        protected ParserResult<UnionRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<UnionRegion.Config> parseNode(Node node, String name, String value) throws ParserException {
             String id = this.parseOptionalId(node);
 
             Set<Ref<AbstractRegion.Config<AbstractRegion>>> regions = new LinkedHashSet<>();
@@ -292,7 +292,7 @@ public abstract class RegionParser<T extends AbstractRegion.Config<?>> extends C
                 throw this.fail(node, name, value, "No union region members defined");
             }
 
-            return ParserResult.fine(node, name, value, new UnionRegion.Config() {
+            return Result.fine(node, name, value, new UnionRegion.Config() {
                 public String id() { return id; }
                 public Ref<Set<Ref<AbstractRegion.Config<AbstractRegion>>>> regions() { return Ref.ofProvided(regions); }
             });

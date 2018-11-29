@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,7 +31,7 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
     }
 
     @Override
-    protected ParserResult<AttributeKey> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<AttributeKey> parseElement(Element element, String name, String value) throws ParserException {
         String[] input = value.split(".", 2);
         if (input.length != 2) {
             throw this.fail(element, name, value, "Requires a namespace and a key separated with a dot");
@@ -39,6 +39,6 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
 
         String namespace = this.normalizeInput(this.namespaceParser.parseWithDefinition(element, name, input[0]).orFail());
         String key = this.normalizeInput(this.keyParser.parseWithDefinition(element, name, input[1]).orFail());
-        return ParserResult.fine(element, name, value, new FixedAttributeKey(namespace, key));
+        return Result.fine(element, name, value, new FixedAttributeKey(namespace, key));
     }
 }

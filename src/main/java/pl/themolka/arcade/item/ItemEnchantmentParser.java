@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,7 +33,7 @@ public class ItemEnchantmentParser extends NodeParser<ItemEnchantment>
     }
 
     @Override
-    protected ParserResult<ItemEnchantment> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<ItemEnchantment> parsePrimitive(Node node, String name, String value) throws ParserException {
         Enchantment type = this.typeParser.parseWithDefinition(node, name, value).orFail();
 
         Property levelProperty = node.property("level", "lvl");
@@ -42,6 +42,6 @@ public class ItemEnchantmentParser extends NodeParser<ItemEnchantment>
             throw this.fail(levelProperty, "Level must be positive (greater than 0)");
         }
 
-        return ParserResult.fine(node, name, value, new ItemEnchantment(type, level));
+        return Result.fine(node, name, value, new ItemEnchantment(type, level));
     }
 }

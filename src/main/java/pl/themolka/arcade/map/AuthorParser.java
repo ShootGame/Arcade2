@@ -7,8 +7,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,10 +34,10 @@ public class AuthorParser extends NodeParser<Author>
     }
 
     @Override
-    protected ParserResult<Author> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<Author> parsePrimitive(Node node, String name, String value) throws ParserException {
         UUID uuid = this.uuidParser.parse(node.property("uuid", "uid")).orDefaultNull();
         String username = this.usernameParser.parseWithDefinition(node, name, value).orFail(); // required
         String description = this.descriptionParser.parse(node.property("description", "contribution")).orDefaultNull();
-        return ParserResult.fine(node, name, value, Author.of(uuid, username, description));
+        return Result.fine(node, name, value, Author.of(uuid, username, description));
     }
 }

@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class HealthContent implements RemovableKitContent<Double> {
     public static final double MIN_VALUE = 0D;
@@ -59,9 +59,9 @@ public class HealthContent implements RemovableKitContent<Double> {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Double> result() { return Ref.empty(); }
                 });
             }
@@ -71,7 +71,7 @@ public class HealthContent implements RemovableKitContent<Double> {
                 throw this.fail(node, name, value, "Health cannot be negative (smaller than 0)");
             }
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Double> result() { return Ref.ofProvided(health); }
             });
         }

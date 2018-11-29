@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 @Produces(RageGame.Config.class)
 public class RageGameParser extends GameModuleParser<RageGame, RageGame.Config>
@@ -33,10 +33,10 @@ public class RageGameParser extends GameModuleParser<RageGame, RageGame.Config>
     }
 
     @Override
-    protected ParserResult<RageGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<RageGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
 
-        return ParserResult.fine(node, name, value, new RageGame.Config() {
+        return Result.fine(node, name, value, new RageGame.Config() {
             public Ref<Filter.Config<?>> filter() { return filter; }
         });
     }

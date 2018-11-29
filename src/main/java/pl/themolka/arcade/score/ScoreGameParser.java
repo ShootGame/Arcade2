@@ -8,9 +8,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -38,7 +38,7 @@ public class ScoreGameParser extends GameModuleParser<ScoreGame, ScoreGame.Confi
     }
 
     @Override
-    protected ParserResult<ScoreGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<ScoreGame.Config> parseNode(Node node, String name, String value) throws ParserException {
         Set<Score.Config> scores = new LinkedHashSet<>();
         for (Node scoreNode : node.children("score")) {
             scores.add(this.scoreParser.parse(scoreNode).orFail());
@@ -53,7 +53,7 @@ public class ScoreGameParser extends GameModuleParser<ScoreGame, ScoreGame.Confi
             scoreBoxes.add(this.scoreBoxParser.parse(scoreBoxNode).orFail());
         }
 
-        return ParserResult.fine(node, name, value, new ScoreGame.Config() {
+        return Result.fine(node, name, value, new ScoreGame.Config() {
             public Ref<Set<Score.Config>> scores() { return Ref.ofProvided(scores); }
             public Ref<Set<ScoreBox.Config>> scoreBoxes() { return Ref.ofProvided(scoreBoxes); }
         });

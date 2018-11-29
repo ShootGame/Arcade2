@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class ScoreParser extends ConfigParser<Score.Config>
     }
 
     @Override
-    protected ParserResult<Score.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Score.Config> parseNode(Node node, String name, String value) throws ParserException {
         double deathLoss = this.deathLossParser.parse(node.property("death-loss", "deathloss", "death")).orDefault(Score.Config.DEFAULT_DEATH_LOSS);
         double initialScore = this.initialScoreParser.parse(node.property("initial-score", "initialscore")).orDefault(Score.Config.DEFAULT_INITIAL_SCORE);
         double killReward = this.killRewardParser.parse(node.property("kill-reward", "killreward", "kill")).orDefault(Score.Config.DEFAULT_KILL_REWARD);
@@ -50,7 +50,7 @@ public class ScoreParser extends ConfigParser<Score.Config>
         String scoreName = this.nameParser.parse(node.property("name")).orDefaultNull();
         Ref<Participator.Config<?>> owner = this.ownerParser.parse(node.property("owner")).orFail();
 
-        return ParserResult.fine(node, name, value, new Score.Config() {
+        return Result.fine(node, name, value, new Score.Config() {
             public Ref<Double> deathLoss() { return Ref.ofProvided(deathLoss); }
             public Ref<Double> initialScore() { return Ref.ofProvided(initialScore); }
             public Ref<Double> killReward() { return Ref.ofProvided(killReward); }

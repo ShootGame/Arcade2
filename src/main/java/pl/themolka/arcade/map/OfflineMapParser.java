@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.util.versioning.SemanticVersion;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
     }
 
     @Override
-    protected ParserResult<OfflineMap> parseTree(Node node, String name) throws ParserException {
+    protected Result<OfflineMap> parseTree(Node node, String name) throws ParserException {
         Property fileVersionProperty = node.property("fileversion", "file-version", "ver", "version", "proto", "manifest");
         MapFileVersion fileVersion = this.fileVersionParser.parse(fileVersionProperty).orDefault(MapFileVersions.NEWEST);
 
@@ -81,12 +81,12 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
             changelogs.addAll(this.parseChangelogs(changelogsNode));
         }
 
-        return ParserResult.fine(node, name, new OfflineMap(fileVersion,
-                                                            mapName,
-                                                            version,
-                                                            description,
-                                                            authors,
-                                                            changelogs));
+        return Result.fine(node, name, new OfflineMap(fileVersion,
+                                                      mapName,
+                                                      version,
+                                                      description,
+                                                      authors,
+                                                      changelogs));
     }
 
     private List<Author> parseAuthors(Node node) throws ParserException {

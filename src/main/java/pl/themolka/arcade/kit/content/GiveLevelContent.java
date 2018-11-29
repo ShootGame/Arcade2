@@ -10,8 +10,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.session.PlayerLevel;
 
 public class GiveLevelContent implements KitContent<PlayerLevel> {
@@ -54,7 +54,7 @@ public class GiveLevelContent implements KitContent<PlayerLevel> {
         }
 
         @Override
-        protected ParserResult<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
             PlayerLevel level = this.levelParser.parseWithDefinition(node, name, value).orFail();
 
             if (name.toLowerCase().startsWith("take")) {
@@ -62,7 +62,7 @@ public class GiveLevelContent implements KitContent<PlayerLevel> {
             }
 
             final PlayerLevel finalLevel = level;
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<PlayerLevel> result() { return Ref.ofProvided(finalLevel); }
             });
         }

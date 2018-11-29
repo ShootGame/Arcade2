@@ -9,8 +9,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.Set;
@@ -33,16 +33,16 @@ public class BarColorParser extends ElementParser<BarColor>
     }
 
     @Override
-    protected ParserResult<BarColor> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<BarColor> parseElement(Element element, String name, String value) throws ParserException {
         DyeColor dye = this.dyeParser.parseWithDefinition(element, name, value).orNull();
         if (dye != null) {
             BarColor result = BossBarUtils.color(dye);
 
             if (result != null) {
-                return ParserResult.fine(element, name, value, result);
+                return Result.fine(element, name, value, result);
             }
         }
 
-        return ParserResult.fine(element, name, value, this.colorParser.parseWithDefinition(element, name, value).orFail());
+        return Result.fine(element, name, value, this.colorParser.parseWithDefinition(element, name, value).orFail());
     }
 }

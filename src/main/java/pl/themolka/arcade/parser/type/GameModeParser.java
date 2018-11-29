@@ -8,8 +8,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Set;
 
@@ -31,14 +31,14 @@ public class GameModeParser extends ElementParser<GameMode>
     }
 
     @Override
-    protected ParserResult<GameMode> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<GameMode> parseElement(Element element, String name, String value) throws ParserException {
         // Try to find legacy ID first.
         Integer id = this.idParser.parseWithDefinition(element, name, value).orNull();
         if (id != null) {
             GameMode gameMode = GameMode.getByValue(id);
 
             if (gameMode != null) {
-                return ParserResult.fine(element, name, value, gameMode);
+                return Result.fine(element, name, value, gameMode);
             }
         }
 

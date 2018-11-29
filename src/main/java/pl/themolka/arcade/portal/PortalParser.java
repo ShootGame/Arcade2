@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.RegionParser;
 import pl.themolka.arcade.region.UnionRegion;
@@ -55,14 +55,14 @@ public class PortalParser extends ConfigParser<Portal.Config>
     }
 
     @Override
-    protected ParserResult<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
         SpawnApply.Config destination = this.parseDestination(node, name, value);
         Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
         String id = this.parseOptionalId(node);
         Ref<Kit.Config> kit = this.kitParser.parse(node.property("kit")).orDefault(Ref.empty());
         AbstractRegion.Config<?> region = this.regionParser.parseWithDefinition(node, name, value).orFail();
 
-        return ParserResult.fine(node, name, value, new Portal.Config() {
+        return Result.fine(node, name, value, new Portal.Config() {
             public Ref<SpawnApply.Config> destination() { return Ref.ofProvided(destination); }
             public Ref<Filter.Config<?>> filter() { return filter; }
             public String id() { return id; }

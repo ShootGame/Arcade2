@@ -9,9 +9,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ColorParser extends ElementParser<Color>
     }
 
     @Override
-    protected ParserResult<Color> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Color> parseElement(Element element, String name, String value) throws ParserException {
         if (value.startsWith("#")) { // HEX
             try {
                 java.awt.Color awtColor = java.awt.Color.decode(value);
@@ -47,7 +47,7 @@ public class ColorParser extends ElementParser<Color>
                 int red = this.color(element, name, value, "Red", awtColor.getRed());
                 int green = this.color(element, name, value, "Green", awtColor.getGreen());
                 int blue = this.color(element, name, value, "Blue", awtColor.getBlue());
-                return ParserResult.fine(element, name, value, Color.fromRGB(red, green, blue));
+                return Result.fine(element, name, value, Color.fromRGB(red, green, blue));
             } catch (NumberFormatException e) {
                 throw this.fail(element, name, value, "Illegal hexadecimal syntax", e);
             }
@@ -57,7 +57,7 @@ public class ColorParser extends ElementParser<Color>
         if (array.size() == 1) { // maybe predefined
             DyeColor predefined = this.predefinedParser.parseWithDefinition(element, name, value).orNull();
             if (predefined != null) {
-                return ParserResult.fine(element, name, value, predefined.getColor());
+                return Result.fine(element, name, value, predefined.getColor());
             }
         }
 
@@ -68,7 +68,7 @@ public class ColorParser extends ElementParser<Color>
         int red = this.color(element, name, value, "Red", this.redParser.parseWithValue(element, value).orFail());
         int green = this.color(element, name, value, "Green", this.greenParser.parseWithValue(element, value).orFail());
         int blue = this.color(element, name, value, "Blue", this.blueParser.parseWithValue(element, value).orFail());
-        return ParserResult.fine(element, name, value, Color.fromRGB(red, green, blue));
+        return Result.fine(element, name, value, Color.fromRGB(red, green, blue));
     }
 
     private int color(Element element, String name, String value, String friendly, int color) throws ParserException {

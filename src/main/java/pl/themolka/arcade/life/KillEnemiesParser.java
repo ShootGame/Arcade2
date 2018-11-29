@@ -9,9 +9,9 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.ParserUtils;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -38,13 +38,13 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
     }
 
     @Override
-    protected ParserResult<KillEnemies.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<KillEnemies.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
         String id = this.parseId(node);
         Set<Ref<Participator.Config<?>>> enemies = Collections.singleton(this.enemyParser.parse(node).orFail());
         Ref<Participator.Config<?>> owner = this.parseOwner(node);
         String goalName = this.parseName(node);
 
-        return ParserResult.fine(node, name, value, new KillEnemies.Config() {
+        return Result.fine(node, name, value, new KillEnemies.Config() {
             public String id() { return id; }
             public Ref<Set<Ref<Participator.Config<?>>>> enemies() { return Ref.ofProvided(enemies); }
             public Ref<Participator.Config<?>> owner() { return owner; }
@@ -53,13 +53,13 @@ public class KillEnemiesParser extends ConfigParser<KillEnemies.Config>
     }
 
     @Override
-    protected ParserResult<KillEnemies.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KillEnemies.Config> parseTree(Node node, String name) throws ParserException {
         String id = this.parseId(node);
         Set<Ref<Participator.Config<?>>> enemies = this.parseEnemies(node, name, null);
         Ref<Participator.Config<?>> owner = this.parseOwner(node);
         String goalName = this.parseName(node);
 
-        return ParserResult.fine(node, name, new KillEnemies.Config() {
+        return Result.fine(node, name, new KillEnemies.Config() {
             public String id() { return id; }
             public Ref<Set<Ref<Participator.Config<?>>>> enemies() { return Ref.ofProvided(enemies); }
             public Ref<Participator.Config<?>> owner() { return owner; }

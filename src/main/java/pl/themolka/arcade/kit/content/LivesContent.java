@@ -12,8 +12,8 @@ import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContext;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
-import pl.themolka.arcade.parser.ParserResult;
 import pl.themolka.arcade.parser.Produces;
+import pl.themolka.arcade.parser.Result;
 
 public class LivesContent implements RemovableKitContent<Integer> {
     private final int result;
@@ -58,9 +58,9 @@ public class LivesContent implements RemovableKitContent<Integer> {
         }
 
         @Override
-        protected ParserResult<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
             if (this.reset(node)) {
-                return ParserResult.fine(node, name, value, new Config() {
+                return Result.fine(node, name, value, new Config() {
                     public Ref<Integer> result() { return Ref.empty(); }
                 });
             }
@@ -70,7 +70,7 @@ public class LivesContent implements RemovableKitContent<Integer> {
                 throw this.fail(node, name, value, "No lives to increment or decrement");
             }
 
-            return ParserResult.fine(node, name, value, new Config() {
+            return Result.fine(node, name, value, new Config() {
                 public Ref<Integer> result() { return Ref.ofProvided(lives); }
             });
         }
