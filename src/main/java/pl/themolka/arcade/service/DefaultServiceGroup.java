@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.command.BanCommandsService;
 import pl.themolka.arcade.dom.Namespace;
 import pl.themolka.arcade.event.BlockTransformEventService;
+import pl.themolka.arcade.firework.DenyFireworkDamageService;
 import pl.themolka.arcade.map.MapTimeService;
 import pl.themolka.arcade.session.PlayerMoveEventService;
 import pl.themolka.arcade.session.SessionsService;
@@ -35,6 +36,7 @@ public class DefaultServiceGroup extends ServiceGroup {
             .add(BanCommandsService.class)
             .add(BanEnderChestsService.class)
             .add(BlockTransformEventService.class)
+            .add(DenyFireworkDamageService.class)
             .add(DimensionPortalsService.class)
             .add(FixArrowsStuckService.class)
             .add(MapTimeService.class)

@@ -18,7 +18,7 @@ package pl.themolka.arcade.objective.point;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.goal.GoalFireworkHandler;
@@ -37,7 +37,7 @@ public class PointCaptureFireworks extends GoalFireworkHandler {
     @Handler(priority = Priority.LAST)
     public void onPointCaptured(PointCaptureEvent event) {
         if (this.isEnabled()) {
-            Plugin plugin = event.getPlugin();
+            ArcadePlugin plugin = event.getPlugin();
             Point point = event.getGoal();
             Region region = point.getCapture().getRegion();
             Color color = event.getCapturer().getColor();

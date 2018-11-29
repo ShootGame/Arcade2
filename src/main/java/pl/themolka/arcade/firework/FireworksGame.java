@@ -17,12 +17,6 @@
 package pl.themolka.arcade.firework;
 
 import com.google.common.collect.ImmutableMap;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Firework;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.metadata.MetadataValue;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameModule;
@@ -91,19 +85,6 @@ public class FireworksGame extends GameModule {
 
     public List<FireworkHandler> getHandlers() {
         return new ArrayList<>(this.handlers);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void cancelDamageFromFireworks(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        if (damager instanceof Firework) {
-            Firework firework = (Firework) damager;
-
-            MetadataValue metadata = firework.getMetadata(FireworkUtils.DamageMetadata.KEY, this.getPlugin());
-            if (metadata instanceof FireworkUtils.DamageMetadata && !((FireworkUtils.DamageMetadata) metadata).value()) {
-                event.setCancelled(true);
-            }
-        }
     }
 
     public interface Config extends IGameModuleConfig<FireworksGame> {

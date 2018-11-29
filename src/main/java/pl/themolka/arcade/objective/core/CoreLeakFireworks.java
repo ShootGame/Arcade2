@@ -18,7 +18,7 @@ package pl.themolka.arcade.objective.core;
 
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.goal.GoalFireworkHandler;
@@ -39,7 +39,7 @@ public class CoreLeakFireworks extends GoalFireworkHandler {
     @Handler(priority = Priority.LAST)
     public void onCoreLeak(CoreLeakEvent event) {
         if (this.isEnabled() && !event.isCanceled()) {
-            Plugin plugin = event.getPlugin();
+            ArcadePlugin plugin = event.getPlugin();
 
             for (Location at : this.getRegionCorners(event.getGoal().getRegion().getBounds())) {
                 this.fireComplete(plugin, at, FIREWORK_COLOR);
