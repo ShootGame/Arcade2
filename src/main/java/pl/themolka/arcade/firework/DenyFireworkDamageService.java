@@ -52,6 +52,21 @@ public class DenyFireworkDamageService extends Service {
         }
     }
 
+    static class DamageMetadata extends FixedMetadataValue {
+        DamageMetadata(Plugin owningPlugin, boolean denyDamage) {
+            super(owningPlugin, denyDamage);
+        }
+
+        @Override
+        public Boolean value() {
+            return (boolean) super.value();
+        }
+    }
+
+    //
+    // Applying Metadata to Fireworks
+    //
+
     public static Firework apply(GameModule module, Firework firework, boolean denyDamage) {
         return apply(Objects.requireNonNull(module, "module cannot be null").getModule(), firework, denyDamage);
     }
@@ -69,16 +84,5 @@ public class DenyFireworkDamageService extends Service {
         Objects.requireNonNull(firework, "firework cannot be null");
         firework.setMetadata(METADATA_KEY, new DamageMetadata(plugin, denyDamage));
         return firework;
-    }
-
-    public static class DamageMetadata extends FixedMetadataValue {
-        public DamageMetadata(Plugin owningPlugin, boolean denyDamage) {
-            super(owningPlugin, denyDamage);
-        }
-
-        @Override
-        public Boolean value() {
-            return (boolean) super.value();
-        }
     }
 }

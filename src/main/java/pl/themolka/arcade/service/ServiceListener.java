@@ -16,7 +16,7 @@
 
 package pl.themolka.arcade.service;
 
-public interface ServerListener {
+public interface ServiceListener {
     void load();
 
     void unload();

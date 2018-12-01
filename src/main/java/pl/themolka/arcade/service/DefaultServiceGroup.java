@@ -18,10 +18,13 @@ package pl.themolka.arcade.service;
 
 import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.command.BanCommandsService;
+import pl.themolka.arcade.cycle.SetNextRestartService;
 import pl.themolka.arcade.dom.Namespace;
 import pl.themolka.arcade.event.BlockTransformEventService;
+import pl.themolka.arcade.example.ExampleService;
 import pl.themolka.arcade.firework.DenyFireworkDamageService;
 import pl.themolka.arcade.map.MapTimeService;
+import pl.themolka.arcade.map.WorldInfoService;
 import pl.themolka.arcade.session.PlayerMoveEventService;
 import pl.themolka.arcade.session.SessionsService;
 import pl.themolka.arcade.window.WindowService;
@@ -38,6 +41,7 @@ public class DefaultServiceGroup extends ServiceGroup {
             .add(BlockTransformEventService.class)
             .add(DenyFireworkDamageService.class)
             .add(DimensionPortalsService.class)
+            .add(ExampleService.class)
             .add(FixArrowsStuckService.class)
             .add(MapTimeService.class)
             .add(PlayerMoveEventService.class)
@@ -46,7 +50,7 @@ public class DefaultServiceGroup extends ServiceGroup {
             .add(SetNextRestartService.class)
             .add(WeatherService.class)
             .add(WindowService.class)
-            .add(WorldInitEventService.class)
+            .add(WorldInfoService.class)
             .build();
 
     public DefaultServiceGroup() {

@@ -81,7 +81,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
     public static final ChatColor DEFAULT_CHAT_COLOR = ChatColor.YELLOW;
 
     private TrackingAttributeMap attributeMap;
-    private final BossBarFacet bossBarFacet;
+    private final BossBarFacet bossBarFacet; // this shouldn't be here
     private ChatChannel channel;
     private ChatColor chatColor;
     private String displayName;

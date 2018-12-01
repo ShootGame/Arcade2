@@ -56,7 +56,8 @@ public class WindowService extends Service {
             return;
         }
 
-        GamePlayer player = this.fetchPlayer(event.getPlayer());
+        HumanEntity closer = event.getPlayer();
+        GamePlayer player = this.fetchPlayer(closer);
         if (player == null) {
             return;
         }
@@ -65,7 +66,7 @@ public class WindowService extends Service {
         if (!close) {
             // don't use the open(...) method in Window, because
             // it will handle the onOpen(...) event.
-            event.getPlayer().openInventory(window.getContainer());
+            closer.openInventory(window.getContainer());
         }
     }
 

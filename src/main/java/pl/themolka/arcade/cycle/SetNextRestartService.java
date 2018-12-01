@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package pl.themolka.arcade.service;
+package pl.themolka.arcade.cycle;
 
 import pl.themolka.arcade.ArcadePlugin;
+import pl.themolka.arcade.service.Service;
+import pl.themolka.arcade.service.ServiceId;
 import pl.themolka.arcade.task.SimpleTaskListener;
 
 @ServiceId("SetNextRestart")

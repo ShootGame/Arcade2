@@ -20,7 +20,7 @@ import pl.themolka.arcade.ArcadePlugin;
 
 import java.util.Objects;
 
-class LocalService implements ServerListener {
+class LocalService implements ServiceListener {
     final Class<? extends Service> clazz;
     final String id;
     Service instance;
@@ -83,22 +83,28 @@ class LocalService implements ServerListener {
         this.instance.initalize(this.id, Objects.requireNonNull(plugin, "plugin cannot be null"));
     }
 
+    void destroyInstance() {
+        if (this.isLoaded()) {
+            this.unload();
+        }
+
+        this.instance = null;
+    }
+
     boolean isLoaded() {
         return this.instance != null && this.instance.isLoaded();
     }
 
-    void reload(ArcadePlugin plugin) throws IllegalAccessException, InstantiationException {
-        if (this.instance != null) {
-            try {
-                this.unload();
-            } catch (IllegalStateException ignored) {
-                // We don't care
+    void restart(ArcadePlugin plugin) throws IllegalAccessException, InstantiationException {
+        try {
+            if (this.instance != null) {
+                this.destroyInstance();
             }
-
-            this.instance = null;
+        } catch (IllegalStateException ignored) {
+            // We don't care
+        } finally {
+            this.createNewInstance(plugin);
+            this.load();
         }
-
-        this.createNewInstance(plugin);
-        this.load();
     }
 }

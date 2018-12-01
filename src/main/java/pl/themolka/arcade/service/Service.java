@@ -22,7 +22,21 @@ import pl.themolka.arcade.ArcadePlugin;
 
 import java.util.Objects;
 
-public abstract class Service implements ServerListener, Listener {
+/**
+ * This is a new concept of modularity of the Arcade plugin. Services are small
+ * independent by default pieces of the core logic, which (I hope) will make the
+ * code more organized and easier to develop in the future.
+ * Services should be able to be loaded and unloaded at runtime without any side
+ * effects. I want to make the services being categorized in different groups,
+ * so they 'll be easier to manage in the future. Services should somehow be
+ * configurable (using XML structure), but I don't know you exactly yet.
+ * - service = separate XML file
+ * - services.xml with all the configurations
+ * Not all services are configurable, what should we do with them?
+ * Server admins should have a way to disable any of the service.
+ * There should be a wait to install third party services from outside.
+ */
+public abstract class Service implements ServiceListener, Listener {
     private ArcadePlugin plugin;
 
     private String id;

@@ -18,6 +18,7 @@ package pl.themolka.arcade.service;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -33,14 +34,13 @@ public class SafeWorkbenchesService extends Service {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void safeWorkbenches(PlayerInteractEvent event) {
-        if (event.hasBlock() || !event.getPlayer().isSneaking()) {
-            if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-                Block block = event.getClickedBlock();
+        Player opener = event.getPlayer();
+        if (!opener.isSneaking() && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            Block block = event.getClickedBlock();
 
-                if (block.getType().equals(Material.WORKBENCH)) {
-                    event.setCancelled(true);
-                    event.getPlayer().openWorkbench(null, true);
-                }
+            if (block != null && block.getType().equals(Material.WORKBENCH)) {
+                event.setCancelled(true);
+                opener.openWorkbench(null, true);
             }
         }
     }

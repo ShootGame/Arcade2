@@ -35,6 +35,13 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+/**
+ * @deprecated Modules became unnecessary when I wrote the new parser system.
+ * All {@code GameModule}s are being parsed and instantiated using the parsers.
+ * I still want to have a way to create commands and such (which must be
+ * global), probably in the services.
+ */
+@Deprecated
 public class Module<GM extends GameModule> extends SimpleModuleListener
                        implements GameHolder, Listener, StringId {
     private ArcadePlugin plugin;

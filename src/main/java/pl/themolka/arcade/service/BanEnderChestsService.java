@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * We need to disable ender chests on the whole server due to the plugin logic
@@ -39,11 +40,10 @@ public class BanEnderChestsService extends Service {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEnderChestCraft(CraftItemEvent event) {
-        if (event.getInventory().getResult() != null && event.getInventory()
-                .getResult().getType().equals(Material.ENDER_CHEST)) {
+        ItemStack result = event.getInventory().getResult();
+        if (result != null && result.getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(
-                    ENDER_CHEST_MESSAGE, "craft"));
+            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "craft"));
         }
     }
 
@@ -51,8 +51,7 @@ public class BanEnderChestsService extends Service {
     public void onEnderChestOpen(InventoryOpenEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(
-                    ENDER_CHEST_MESSAGE, "open"));
+            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "open"));
         }
     }
 
@@ -60,8 +59,7 @@ public class BanEnderChestsService extends Service {
     public void onEnderChestPlace(BlockPlaceEvent event) {
         if (event.getBlock().getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(String.format(
-                    ENDER_CHEST_MESSAGE, "place"));
+            event.getPlayer().sendMessage(String.format(ENDER_CHEST_MESSAGE, "place"));
         }
     }
 
@@ -69,8 +67,7 @@ public class BanEnderChestsService extends Service {
     public void onEnderChestUse(InventoryClickEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getWhoClicked().sendMessage(String.format(
-                    ENDER_CHEST_MESSAGE, "use"));
+            event.getWhoClicked().sendMessage(String.format(ENDER_CHEST_MESSAGE, "use"));
         }
     }
 }

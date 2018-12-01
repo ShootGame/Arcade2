@@ -19,7 +19,7 @@ package pl.themolka.arcade.service;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityPortalEvent;
-import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 
 /**
  * Other dimensions like Nether or The End are not supported. Players should
@@ -28,12 +28,12 @@ import org.bukkit.event.world.PortalCreateEvent;
 @ServiceId("DimensionPortals")
 public class DimensionPortalsService extends Service {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPortalCreate(PortalCreateEvent event) {
+    public void onEntityPortalUse(EntityPortalEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPortalUse(EntityPortalEvent event) {
+    public void onPlayerPortalUse(PlayerPortalEvent event) {
         event.setCancelled(true);
     }
 }

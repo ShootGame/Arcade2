@@ -44,7 +44,6 @@ public final class FireworkUtils {
     public static Firework spawn(ArcadePlugin plugin, Location at, int power, boolean denyDamage, FireworkEffect... effects) {
         Firework firework = at.getWorld().spawn(at, Firework.class);
         firework.setFireworkMeta(createMeta(firework, power, effects));
-        DenyFireworkDamageService.apply(plugin, firework, denyDamage);
-        return firework;
+        return DenyFireworkDamageService.apply(plugin, firework, denyDamage); // this is ugly
     }
 }

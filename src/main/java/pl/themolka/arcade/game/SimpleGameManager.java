@@ -121,12 +121,13 @@ public class SimpleGameManager implements GameManager {
         // Don't forget to setup the world object!
         map.getManifest().getWorld().getSpawn().setWorld(world);
 
+        GamePlayerManager playerManager = game.getPlayers();
         for (ArcadePlayer player : this.plugin.getPlayers()) {
             GamePlayer gamePlayer = player.getGamePlayer();
-            gamePlayer.getBossBarFacet().removeAll();
+            gamePlayer.getBossBarFacet().removeAll(); // this should be moved to a service
 
             player.setGamePlayer(new GamePlayer(game, player));
-            game.getPlayers().playerJoin(player.getGamePlayer());
+            playerManager.playerJoin(player.getGamePlayer());
         }
 
         this.resetPlayers(game);

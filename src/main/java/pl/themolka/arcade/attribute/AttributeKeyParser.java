@@ -48,7 +48,7 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
 
     @Override
     protected Result<AttributeKey> parseElement(Element element, String name, String value) throws ParserException {
-        String[] input = value.split(".", 2);
+        String[] input = value.split("\\.", 2);
         if (input.length != 2) {
             throw this.fail(element, name, value, "Requires a namespace and a key separated with a dot");
         }

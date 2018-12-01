@@ -48,7 +48,7 @@ public class ServiceManager {
                 service.load();
                 loaded++;
             } catch (Throwable th) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not load '" + service + "' service", th);
+                this.plugin.getLogger().log(Level.SEVERE, "Could not start '" + service + "' service", th);
             }
         }
 
@@ -66,7 +66,7 @@ public class ServiceManager {
                 service.unload();
                 unloaded++;
             } catch (Throwable th) {
-                this.plugin.getLogger().log(Level.SEVERE, "Could not unload '" + service + "' service", th);
+                this.plugin.getLogger().log(Level.SEVERE, "Could not stop '" + service + "' service", th);
             }
         }
 

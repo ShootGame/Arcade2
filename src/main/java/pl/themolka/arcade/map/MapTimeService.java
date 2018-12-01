@@ -26,7 +26,7 @@ import pl.themolka.arcade.service.Service;
 import pl.themolka.arcade.service.ServiceId;
 
 /**
- * The core plugin can set time in world. Make it happend on the {@link World}
+ * The core plugin can set time in world. Make it happen on the {@link World}
  * object too.
  */
 @ServiceId("MapTime")
