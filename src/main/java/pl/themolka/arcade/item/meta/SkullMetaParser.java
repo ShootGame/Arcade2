@@ -41,13 +41,17 @@ class SkullMetaParser extends ItemMetaParser.Nested<SkullMeta>
     @Override
     public SkullMeta parse(Context context, Node root, ItemStack itemStack, SkullMeta itemMeta) throws ParserException {
         Node node = root.firstChild("skull", "head");
-        if (node != null) {
-            Property owner = node.property("owner", "of");
-            if (owner != null) {
-                itemMeta.setOwner(this.ownerParser.parse(context, owner).orFail());
-            }
+
+        Property owner = node != null ? this.resolveProperty(node)
+                                      : this.resolveProperty(root);
+        if (owner != null) {
+            itemMeta.setOwner(this.ownerParser.parse(context, owner).orFail());
         }
 
         return itemMeta;
+    }
+
+    private Property resolveProperty(Node source) {
+        return source.property("owner", "of");
     }
 }

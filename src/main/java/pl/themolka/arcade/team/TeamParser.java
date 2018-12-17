@@ -75,6 +75,10 @@ public class TeamParser extends ConfigParser<Team.Config>
         String teamName = this.nameParser.parse(context, node.property("name", "title")).orFail();
         int slots = this.slotsParser.parse(context, node.property("slots")).orFail();
 
+        if (maxPlayers < minPlayers) {
+            throw this.fail(node, name, value, "max-players cannot be smaller than min-players");
+        }
+
         return Result.fine(node, name, value, new Team.Config() {
             public String id() { return id; }
             public Ref<ChatColor> chatColor() { return Ref.ofProvided(chatColor); }
