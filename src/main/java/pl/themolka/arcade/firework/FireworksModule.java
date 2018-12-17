@@ -16,16 +16,9 @@
 
 package pl.themolka.arcade.firework;
 
-import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserLibrary;
-import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Fireworks")
 public class FireworksModule extends Module<FireworksGame> {
-    @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
-        return library.of(FireworksGameParser.class);
-    }
 }

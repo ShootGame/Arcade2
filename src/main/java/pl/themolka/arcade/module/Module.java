@@ -23,11 +23,8 @@ import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GameHolder;
 import pl.themolka.arcade.game.GameModule;
-import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.parser.ParserLibrary;
-import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.util.StringId;
 
 import java.util.ArrayList;
@@ -84,10 +81,6 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
     @Override
     public final String getId() {
         return this.id;
-    }
-
-    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
-        return null;
     }
 
     public void defineGameModule(Game game, IGameModuleConfig<GM> config, IGameConfig.Library library, ConfigContext context) {

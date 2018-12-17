@@ -25,15 +25,12 @@ import pl.themolka.arcade.command.CommandInfo;
 import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.filter.FiltersModule;
-import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.match.FormatModule;
 import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserLibrary;
-import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.spawn.SpawnsModule;
 
 import java.util.Collection;
@@ -50,11 +47,6 @@ import java.util.Collection;
 public class TeamsModule extends Module<TeamsGame> {
     /** Permission node which allow to edit teams in runtime. */
     public static final String TEAMS_MANAGE_PERMISSION = "arcade.command.teams.manage";
-
-    @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
-        return library.of(TeamsGameParser.class);
-    }
 
     //
     // Commands
