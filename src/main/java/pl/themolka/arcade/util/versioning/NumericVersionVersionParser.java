@@ -30,9 +30,9 @@ import pl.themolka.arcade.parser.Result;
 import java.util.Collections;
 import java.util.Set;
 
-@Produces(ProgressiveVersion.class)
-public class ProgressiveVersionParser extends ElementParser<ProgressiveVersion>
-                                      implements InstallableParser {
+@Produces(NumericVersion.class)
+public class NumericVersionVersionParser extends ElementParser<NumericVersion>
+                                         implements InstallableParser {
     private Parser<Integer> valueParser;
 
     @Override
@@ -46,12 +46,12 @@ public class ProgressiveVersionParser extends ElementParser<ProgressiveVersion>
     }
 
     @Override
-    protected Result<ProgressiveVersion> parseElement(Context context, Element element, String name, String value) throws ParserException {
+    protected Result<NumericVersion> parseElement(Context context, Element element, String name, String value) throws ParserException {
         int integer = this.valueParser.parseWithDefinition(context, element, name, value).orFail();
         if (integer < 0) {
             throw this.fail(element, name, value, "Progressive version value cannot be negative");
         }
 
-        return Result.fine(element, name, value, new ProgressiveVersion(integer));
+        return Result.fine(element, name, value, new NumericVersion(integer));
     }
 }

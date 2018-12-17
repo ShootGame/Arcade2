@@ -20,12 +20,12 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.Objects;
 
-public class ProgressiveVersion extends Version.Impl<ProgressiveVersion> {
-    public static final ProgressiveVersion DEFAULT = new ProgressiveVersion(0);
+public class NumericVersion extends Version.Impl<NumericVersion> {
+    public static final NumericVersion DEFAULT = new NumericVersion(0);
 
     private final int value;
 
-    public ProgressiveVersion(int value) {
+    public NumericVersion(int value) {
         Validate.isTrue(value >= 0, "value cannot be negative");
         this.value = value;
     }
@@ -34,17 +34,17 @@ public class ProgressiveVersion extends Version.Impl<ProgressiveVersion> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProgressiveVersion that = (ProgressiveVersion) o;
+        NumericVersion that = (NumericVersion) o;
         return value == that.value;
     }
 
     @Override
-    public boolean isOldenThan(ProgressiveVersion than) {
+    public boolean isOldenThan(NumericVersion than) {
         return this.value < Objects.requireNonNull(than, "than cannot be null").value;
     }
 
     @Override
-    public boolean isNewerThan(ProgressiveVersion than) {
+    public boolean isNewerThan(NumericVersion than) {
         return this.value > Objects.requireNonNull(than, "than cannot be null").value;
     }
 
@@ -58,17 +58,17 @@ public class ProgressiveVersion extends Version.Impl<ProgressiveVersion> {
     }
 
     @Override
-    public ProgressiveVersion previous() throws NoPreviousException {
-        if (this.value == 0) {
+    public NumericVersion previous() throws NoPreviousException {
+        if (this.value <= 0) {
             throw new NoPreviousException();
         }
 
-        return new ProgressiveVersion(this.value - 1);
+        return new NumericVersion(this.value - 1);
     }
 
     @Override
-    public ProgressiveVersion next() throws NoNextException {
-        return new ProgressiveVersion(this.value + 1);
+    public NumericVersion next() throws NoNextException {
+        return new NumericVersion(this.value + 1);
     }
 
     @Override
