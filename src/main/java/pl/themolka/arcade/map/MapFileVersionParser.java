@@ -17,10 +17,11 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,8 +37,8 @@ public class MapFileVersionParser extends ElementParser<MapFileVersion>
     private Parser<SemanticVersion> semanticVersionParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.semanticVersionParser = context.type(SemanticVersion.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.semanticVersionParser = library.type(SemanticVersion.class);
     }
 
     @Override
@@ -46,8 +47,8 @@ public class MapFileVersionParser extends ElementParser<MapFileVersion>
     }
 
     @Override
-    protected Result<MapFileVersion> parseElement(Element element, String name, String value) throws ParserException {
-        SemanticVersion semantic = this.semanticVersionParser.parseWithDefinition(element, name, value).orFail();
+    protected Result<MapFileVersion> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        SemanticVersion semantic = this.semanticVersionParser.parseWithDefinition(context, element, name, value).orFail();
         return Result.fine(element, name, value, MapFileVersion.convertFrom(semantic));
     }
 }

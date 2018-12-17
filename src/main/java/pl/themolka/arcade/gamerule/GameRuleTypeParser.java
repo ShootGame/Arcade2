@@ -17,6 +17,7 @@
 package pl.themolka.arcade.gamerule;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -33,7 +34,7 @@ public class GameRuleTypeParser extends ElementParser<GameRuleType> {
     }
 
     @Override
-    protected Result<GameRuleType> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<GameRuleType> parseElement(Context context, Element element, String name, String value) throws ParserException {
         GameRuleType type = GameRuleType.byKey(value);
         if (type == null) {
             throw this.fail(element, name, value, "Unknown game rule type");

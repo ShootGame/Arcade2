@@ -17,6 +17,7 @@
 package pl.themolka.arcade.parser.type;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -34,7 +35,7 @@ public class UUIDParser extends ElementParser<UUID> {
     }
 
     @Override
-    protected Result<UUID> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<UUID> parseElement(Context context, Element element, String name, String value) throws ParserException {
         try {
             UUID result = this.parseUnknown(value);
             if (result != null) {

@@ -19,9 +19,10 @@ package pl.themolka.arcade.life;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class KillEnemiesGameParser extends GameModuleParser<KillEnemiesGame, Kil
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.objectiveParser = context.type(KillEnemies.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.objectiveParser = library.type(KillEnemies.Config.class);
     }
 
     @Override
-    protected Result<KillEnemiesGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KillEnemiesGame.Config> parseTree(Context context, Node node, String name) throws ParserException {
         Set<KillEnemies.Config> objectives = new HashSet<>();
         for (Node objectiveNode : node.children("participator", "competitor", "team")) {
-            objectives.add(this.objectiveParser.parse(objectiveNode).orFail());
+            objectives.add(this.objectiveParser.parse(context, objectiveNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(objectives)) {

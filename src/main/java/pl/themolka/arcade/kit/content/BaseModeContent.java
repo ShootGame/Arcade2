@@ -17,10 +17,11 @@
 package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -73,14 +74,14 @@ public interface BaseModeContent {
         }
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            this.modeParser = context.type(Boolean.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            this.modeParser = library.type(Boolean.class);
         }
 
         @Override
-        protected Result<Mode> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Mode> parseNode(Context context, Node node, String name, String value) throws ParserException {
             boolean defTake = !Config.DEFAULT_MODE.toBoolean();
-            boolean take = this.modeParser.parse(node.property("take", "remove")).orDefault(defTake);
+            boolean take = this.modeParser.parse(context, node.property("take", "remove")).orDefault(defTake);
 
             return Result.fine(node, name, value, Mode.fromBoolean(!take));
         }

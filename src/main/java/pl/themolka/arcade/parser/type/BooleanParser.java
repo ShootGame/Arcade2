@@ -18,6 +18,7 @@ package pl.themolka.arcade.parser.type;
 
 import com.google.common.collect.ImmutableMap;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,7 +42,7 @@ public class BooleanParser extends ElementParser<Boolean> {
     }
 
     @Override
-    protected Result<Boolean> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Boolean> parseElement(Context context, Element element, String name, String value) throws ParserException {
         Boolean result = values.get(value.toLowerCase());
         if (result != null) {
             return Result.fine(element, name, value, result);

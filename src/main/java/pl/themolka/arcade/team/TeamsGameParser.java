@@ -19,9 +19,10 @@ package pl.themolka.arcade.team;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,15 +47,15 @@ public class TeamsGameParser extends GameModuleParser<TeamsGame, TeamsGame.Confi
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.teamParser = context.type(Team.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.teamParser = library.type(Team.Config.class);
     }
 
     @Override
-    protected Result<TeamsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<TeamsGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
         Set<Team.Config> teams = new LinkedHashSet<>();
         for (Node teamNode : node.children("team")) {
-            teams.add(this.teamParser.parse(teamNode).orFail());
+            teams.add(this.teamParser.parse(context, teamNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(teams)) {

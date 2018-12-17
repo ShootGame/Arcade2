@@ -17,6 +17,7 @@
 package pl.themolka.arcade.parser.number;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Result;
@@ -36,7 +37,7 @@ public abstract class NumberParser<T extends Number> extends ElementParser<T> {
     }
 
     @Override
-    protected Result<T> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<T> parseElement(Context context, Element element, String name, String value) throws ParserException {
         if (isPositiveInfinity(value)) {
             return Result.fine(element, name, value, this.positiveInfinity());
         } else if (isNegativeInfinity(value)) {

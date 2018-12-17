@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -58,14 +59,14 @@ public class ClearInventoryContent implements KitContent<Boolean> {
         private Parser<Boolean> armorParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.armorParser = context.type(Boolean.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.armorParser = library.type(Boolean.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            boolean armor = this.armorParser.parse(node.property("armor", "full")).orDefault(false);
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            boolean armor = this.armorParser.parse(context, node.property("armor", "full")).orDefault(false);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(armor); }

@@ -19,6 +19,7 @@ package pl.themolka.arcade.parser;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.EmptyElement;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -47,7 +48,9 @@ public abstract class AbstractParser<T> extends ParserValidation
     }
 
     @Override
-    public Result<T> parseWithDefinition(Element element, String name, String value) {
+    public Result<T> parseWithDefinition(Context context, Element element, String name, String value) {
+        Objects.requireNonNull(context, "context cannot be null");
+
         if (element == null) {
             element = EmptyElement.empty();
         } else if (name == null) {
@@ -63,7 +66,7 @@ public abstract class AbstractParser<T> extends ParserValidation
             String normalizedValue = this.normalizeValue(value);
 
             if (normalizedName != null) {
-                Result<T> result = this.parse(element, normalizedName, normalizedValue);
+                Result<T> result = this.parse(context, element, normalizedName, normalizedValue);
                 if (result != null) {
                     return result;
                 }
@@ -95,7 +98,7 @@ public abstract class AbstractParser<T> extends ParserValidation
     @Override
     public abstract Set<Object> expect();
 
-    protected abstract Result<T> parse(Element element, String name, String value) throws ParserException;
+    protected abstract Result<T> parse(Context context, Element element, String name, String value) throws ParserException;
 
     protected String normalizeName(String name) throws ParserException {
         return this.normalizeInput(name);

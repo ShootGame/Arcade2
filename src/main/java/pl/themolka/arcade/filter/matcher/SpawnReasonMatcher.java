@@ -21,10 +21,11 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -57,14 +58,14 @@ public class SpawnReasonMatcher extends ConfigurableMatcher<SpawnReason> {
         private Parser<SpawnReason> reasonParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.reasonParser = context.type(SpawnReason.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.reasonParser = library.type(SpawnReason.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            SpawnReason reason = this.reasonParser.parseWithDefinition(node, name, value).orFail();
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            SpawnReason reason = this.reasonParser.parseWithDefinition(context, node, name, value).orFail();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<SpawnReason> value() { return Ref.ofProvided(reason); }

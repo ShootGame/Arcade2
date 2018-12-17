@@ -19,9 +19,10 @@ package pl.themolka.arcade.firework;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -42,16 +43,16 @@ public class FireworksGameParser extends GameModuleParser<FireworksGame, Firewor
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.enabledParser = context.type(Boolean.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.enabledParser = library.type(Boolean.class);
     }
 
     @Override
-    protected Result<FireworksGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        boolean onCoreLeak = this.enabledParser.parse(node.property("core-leak")).orDefault(true);
-        boolean onPointCapture = this.enabledParser.parse(node.property("point-capture")).orDefault(true);
-        boolean onWoolPlace = this.enabledParser.parse(node.property("wool-place")).orDefault(true);
+    protected Result<FireworksGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        boolean onCoreLeak = this.enabledParser.parse(context, node.property("core-leak", "coreleak")).orDefault(true);
+        boolean onPointCapture = this.enabledParser.parse(context, node.property("point-capture", "pointcapture")).orDefault(true);
+        boolean onWoolPlace = this.enabledParser.parse(context, node.property("wool-place", "woolplace")).orDefault(true);
 
         if (!onCoreLeak && !onPointCapture && !onWoolPlace) {
             return Result.empty(node, name);

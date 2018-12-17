@@ -23,14 +23,14 @@ import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Filters")
 public class FiltersModule extends Module<FiltersGame> {
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(FiltersGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(FiltersGameParser.class);
     }
 
     @Override

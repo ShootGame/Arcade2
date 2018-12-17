@@ -27,7 +27,7 @@ public class ParserManager {
     private final ArcadePlugin plugin;
 
     private final ParserContainer container = new ParserContainer();
-    private ParserContext.Factory contextFactory;
+    private ParserLibrary.Factory libraryFactory;
     private final Map<Class<?>, Class<? extends Parser>> byType = new HashMap<>();
     private boolean installed = false;
 
@@ -35,8 +35,8 @@ public class ParserManager {
         this.plugin = plugin;
     }
 
-    public ParserContext createContext() {
-        return Objects.requireNonNull(this.contextFactory, "contextFactory cannot be null").createContext(this);
+    public ParserLibrary createLibrary() {
+        return Objects.requireNonNull(this.libraryFactory, "libraryFactory cannot be null").createLibrary(this);
     }
 
     public <T extends Enum<T>> Parser<T> forEnumType(Class<T> type) {
@@ -64,8 +64,8 @@ public class ParserManager {
         return this.container;
     }
 
-    public ParserContext.Factory getContextFactory() {
-        return this.contextFactory;
+    public ParserLibrary.Factory getLibraryFactory() {
+        return this.libraryFactory;
     }
 
     public Set<Class<?>> getTypes() {
@@ -78,10 +78,10 @@ public class ParserManager {
         }
 
         int done = 0;
-        ParserContext context = this.createContext();
+        ParserLibrary library = this.createLibrary();
         for (Parser<?> parser : this.container.getParsers()) {
             if (parser instanceof InstallableParser) {
-                ((InstallableParser) parser).install(context);
+                ((InstallableParser) parser).install(library);
                 done++;
             }
         }
@@ -98,8 +98,8 @@ public class ParserManager {
         this.byType.put(type, parser);
     }
 
-    public void setContextFactory(ParserContext.Factory contextFactory) {
-        this.contextFactory = contextFactory;
+    public void setLibraryFactory(ParserLibrary.Factory libraryFactory) {
+        this.libraryFactory = libraryFactory;
     }
 
     public boolean supportsType(Class<?> type) {

@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -63,20 +64,20 @@ public class ExhaustionContent implements RemovableKitContent<Float> {
         private Parser<Float> levelParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.levelParser = context.type(Float.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.levelParser = library.type(Float.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            if (this.reset(node)) {
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            if (this.reset(context, node)) {
                 return Result.fine(node, name, value, new Config() {
                     public Ref<Float> result() { return Ref.empty(); }
                 });
             }
 
-            float level = this.levelParser.parseWithDefinition(node, name, value).orFail();
+            float level = this.levelParser.parseWithDefinition(context, node, name, value).orFail();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Float> result() { return Ref.ofProvided(level); }

@@ -17,10 +17,11 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -35,8 +36,8 @@ public class RandomSeedParser extends ElementParser<RandomSeed>
     private Parser<Long> seedParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.seedParser = context.type(Long.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.seedParser = library.type(Long.class);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class RandomSeedParser extends ElementParser<RandomSeed>
     }
 
     @Override
-    protected Result<RandomSeed> parseElement(Element element, String name, String value) throws ParserException {
-        long seed = this.seedParser.parseWithDefinition(element, name, value).orDefault(RandomSeed.DEFAULT_SEED);
+    protected Result<RandomSeed> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        long seed = this.seedParser.parseWithDefinition(context, element, name, value).orDefault(RandomSeed.DEFAULT_SEED);
         return Result.fine(element, name, value, new RandomSeed(seed));
     }
 }

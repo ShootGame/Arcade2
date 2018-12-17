@@ -21,10 +21,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -54,14 +55,14 @@ public class HeldSlotContent extends BaseInventoryContent<Integer> {
         private Parser<Integer> slotParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.slotParser = context.type(Integer.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.slotParser = library.type(Integer.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            int slot = this.slotParser.parseWithDefinition(node, name, value).orFail();
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            int slot = this.slotParser.parseWithDefinition(context, node, name, value).orFail();
             if (slot < MIN_VALUE || slot > MAX_VALUE) {
                 throw this.fail(node, name, value, "Unknown slot number (not in " + MIN_VALUE + "-" + MAX_VALUE + " range)");
             }

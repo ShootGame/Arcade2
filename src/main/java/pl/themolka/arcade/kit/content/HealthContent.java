@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -69,20 +70,20 @@ public class HealthContent implements RemovableKitContent<Double> {
         private Parser<Double> healthParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.healthParser = context.type(Double.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.healthParser = library.type(Double.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            if (this.reset(node)) {
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            if (this.reset(context, node)) {
                 return Result.fine(node, name, value, new Config() {
                     public Ref<Double> result() { return Ref.empty(); }
                 });
             }
 
-            double health = this.healthParser.parseWithDefinition(node, name, value).orFail();
+            double health = this.healthParser.parseWithDefinition(context, node, name, value).orFail();
             if (health < MIN_VALUE) {
                 throw this.fail(node, name, value, "Health cannot be negative (smaller than 0)");
             }

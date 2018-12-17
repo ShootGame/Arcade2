@@ -18,10 +18,11 @@ package pl.themolka.arcade.environment;
 
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,8 +37,8 @@ public class EnvironmentParser extends NodeParser<Environment>
     private Parser<EnvironmentType> environmentTypeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.environmentTypeParser = context.type(EnvironmentType.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.environmentTypeParser = library.type(EnvironmentType.class);
     }
 
     @Override
@@ -46,8 +47,8 @@ public class EnvironmentParser extends NodeParser<Environment>
     }
 
     @Override
-    protected Result<Environment> parseNode(Node node, String name, String value) throws ParserException {
-        EnvironmentType type = this.environmentTypeParser.parse(node.property("type", "of")).orDefault(Environment.DEFAULT_TYPE);
+    protected Result<Environment> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        EnvironmentType type = this.environmentTypeParser.parse(context, node.property("type", "of")).orDefault(Environment.DEFAULT_TYPE);
         try {
             return Result.fine(node, name, value, type.buildEnvironment(node));
         } catch (DOMException ex) {

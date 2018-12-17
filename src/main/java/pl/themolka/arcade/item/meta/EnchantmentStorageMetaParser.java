@@ -20,9 +20,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.item.ItemEnchantment;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -33,16 +34,16 @@ class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStor
     private Parser<ItemEnchantment> enchantmentParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.enchantmentParser = context.type(ItemEnchantment.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.enchantmentParser = library.type(ItemEnchantment.class);
     }
 
     @Override
-    public EnchantmentStorageMeta parse(Node root, ItemStack itemStack, EnchantmentStorageMeta itemMeta) throws ParserException {
+    public EnchantmentStorageMeta parse(Context context, Node root, ItemStack itemStack, EnchantmentStorageMeta itemMeta) throws ParserException {
         Node node = root.firstChild("enchanted-book");
         if (node != null) {
             for (Node enchantment : node.children("enchantment")) {
-                this.enchantmentParser.parse(enchantment).orFail().apply(itemMeta);
+                this.enchantmentParser.parse(context, enchantment).orFail().apply(itemMeta);
             }
         }
 

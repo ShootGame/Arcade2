@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -43,14 +44,14 @@ public class RageGameParser extends GameModuleParser<RageGame, RageGame.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.filterParser = context.type(Ref.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.filterParser = library.type(Ref.class);
     }
 
     @Override
-    protected Result<RageGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
+    protected Result<RageGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(context, node.property("filter")).orDefault(Ref.empty());
 
         return Result.fine(node, name, value, new RageGame.Config() {
             public Ref<Filter.Config<?>> filter() { return filter; }

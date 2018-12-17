@@ -20,8 +20,9 @@ import com.google.common.collect.ImmutableSet;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserValidation;
@@ -49,7 +50,7 @@ public class ItemMetaParser implements InstallableParser {
     private Map<Class<? extends ItemMeta>, Nested<?>> parsers;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
         this.parsers = new HashMap<>();
         for (Class<? extends Nested> clazz : types) {
             Produces produces = clazz.getDeclaredAnnotation(Produces.class);
@@ -69,14 +70,14 @@ public class ItemMetaParser implements InstallableParser {
         }
 
         for (Nested<?> parser : this.parsers.values()) {
-            parser.install(context);
+            parser.install(library);
         }
     }
 
-    public ItemMeta parse(Node node, ItemStack itemStack, ItemMeta itemMeta) throws ParserException {
+    public ItemMeta parse(Context context, Node node, ItemStack itemStack, ItemMeta itemMeta) throws ParserException {
         Nested parser = this.parsers.get(itemMeta.getClass());
         if (parser != null) {
-            itemMeta = parser.parse(node, itemStack, itemMeta);
+            itemMeta = parser.parse(context, node, itemStack, itemMeta);
         }
 
         return itemMeta;
@@ -87,6 +88,6 @@ public class ItemMetaParser implements InstallableParser {
      */
     static abstract class Nested<T extends ItemMeta> extends ParserValidation
                                                      implements InstallableParser {
-        public abstract T parse(Node root, ItemStack itemStack, T itemMeta) throws ParserException;
+        public abstract T parse(Context context, Node root, ItemStack itemStack, T itemMeta) throws ParserException;
     }
 }

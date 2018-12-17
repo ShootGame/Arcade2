@@ -27,13 +27,13 @@ public abstract class PropertyParser<T> extends ElementParser<T> {
     }
 
     @Override
-    protected Result<T> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<T> parseElement(Context context, Element element, String name, String value) throws ParserException {
         if (element instanceof Property) {
-            return this.parseProperty((Property) element, name, value);
+            return this.parseProperty(context, (Property) element, name, value);
         }
 
         throw this.fail(element, name, value, "Not a property");
     }
 
-    protected abstract Result<T> parseProperty(Property property, String name, String value) throws ParserException;
+    protected abstract Result<T> parseProperty(Context context, Property property, String name, String value) throws ParserException;
 }

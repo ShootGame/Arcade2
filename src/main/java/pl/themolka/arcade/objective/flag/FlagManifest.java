@@ -23,8 +23,9 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.objective.ObjectiveManifest;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -53,8 +54,8 @@ public class FlagManifest extends ObjectiveManifest {
     }
 
     @Override
-    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(FlagParser.class);
+    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(FlagParser.class);
     }
 
     //
@@ -65,8 +66,8 @@ public class FlagManifest extends ObjectiveManifest {
     public static class FlagParser extends ObjectiveParser<Flag.Config>
                                    implements InstallableParser {
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
         }
 
         @Override
@@ -75,14 +76,14 @@ public class FlagManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected Result<Flag.Config> parseNode(Node node, String name, String value) throws ParserException {
-            String id = this.parseRequiredId(node);
+        protected Result<Flag.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            String id = this.parseRequiredId(context, node);
 
             Set<Capture.Config> captures = new HashSet<>();
 
-            String flagName = this.parseName(node).orDefaultNull();
-            boolean objective = this.parseObjective(node).orDefault(Flag.Config.DEFAULT_IS_OBJECTIVE);
-            Ref<Participator.Config<?>> owner = this.parseOwner(node).orDefault(Ref.empty());
+            String flagName = this.parseName(context, node).orDefaultNull();
+            boolean objective = this.parseObjective(context, node).orDefault(Flag.Config.DEFAULT_IS_OBJECTIVE);
+            Ref<Participator.Config<?>> owner = this.parseOwner(context, node).orDefault(Ref.empty());
 
             return Result.fine(node, name, value, new Flag.Config() {
                 public String id() { return id; }

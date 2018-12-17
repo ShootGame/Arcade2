@@ -24,6 +24,7 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.IGameConfig;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -45,8 +46,8 @@ public class NandOperator extends Operator {
     @Produces(Config.class)
     public static class OperatorParser extends BaseOperatorParser<Config> {
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Set<Filter.Config<?>> body = this.parseBody(node, name, value);
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            Set<Filter.Config<?>> body = this.parseBody(context, node, name, value);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Set<Filter.Config<?>>> body() { return Ref.ofProvided(body); }

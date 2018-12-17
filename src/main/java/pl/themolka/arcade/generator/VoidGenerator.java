@@ -22,6 +22,7 @@ import org.bukkit.WorldType;
 import org.bukkit.generator.ChunkGenerator;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.map.WorldInfo;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -61,7 +62,7 @@ public class VoidGenerator extends ChunkGenerator implements Generator {
         }
 
         @Override
-        protected Result<VoidGenerator> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<VoidGenerator> parseNode(Context context, Node node, String name, String value) throws ParserException {
             return Result.fine(node, name, value, new VoidGenerator());
         }
     }

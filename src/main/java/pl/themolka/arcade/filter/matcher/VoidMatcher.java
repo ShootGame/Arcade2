@@ -22,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -71,7 +72,7 @@ public class VoidMatcher extends Matcher<Block> {
     @Produces(Config.class)
     public static class MatcherParser extends BaseMatcherParser<Config> {
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
             return Result.fine(node, name, new Config() {});
         }
     }

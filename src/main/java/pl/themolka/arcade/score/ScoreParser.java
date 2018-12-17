@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Participator;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -42,14 +43,14 @@ public class ScoreParser extends ConfigParser<Score.Config>
     private Parser<Ref> ownerParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.deathLossParser = context.type(Double.class);
-        this.initialScoreParser = context.type(Double.class);
-        this.killRewardParser = context.type(Double.class);
-        this.limitParser = context.type(Double.class);
-        this.nameParser = context.type(String.class);
-        this.ownerParser = context.type(Ref.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.deathLossParser = library.type(Double.class);
+        this.initialScoreParser = library.type(Double.class);
+        this.killRewardParser = library.type(Double.class);
+        this.limitParser = library.type(Double.class);
+        this.nameParser = library.type(String.class);
+        this.ownerParser = library.type(Ref.class);
     }
 
     @Override
@@ -58,13 +59,13 @@ public class ScoreParser extends ConfigParser<Score.Config>
     }
 
     @Override
-    protected Result<Score.Config> parseNode(Node node, String name, String value) throws ParserException {
-        double deathLoss = this.deathLossParser.parse(node.property("death-loss", "deathloss", "death")).orDefault(Score.Config.DEFAULT_DEATH_LOSS);
-        double initialScore = this.initialScoreParser.parse(node.property("initial-score", "initialscore")).orDefault(Score.Config.DEFAULT_INITIAL_SCORE);
-        double killReward = this.killRewardParser.parse(node.property("kill-reward", "killreward", "kill")).orDefault(Score.Config.DEFAULT_KILL_REWARD);
-        double limit = this.limitParser.parse(node.property("limit")).orDefault(Score.Config.DEFAULT_LIMIT);
-        String scoreName = this.nameParser.parse(node.property("name")).orDefaultNull();
-        Ref<Participator.Config<?>> owner = this.ownerParser.parse(node.property("owner")).orFail();
+    protected Result<Score.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        double deathLoss = this.deathLossParser.parse(context, node.property("death-loss", "deathloss", "death")).orDefault(Score.Config.DEFAULT_DEATH_LOSS);
+        double initialScore = this.initialScoreParser.parse(context, node.property("initial-score", "initialscore")).orDefault(Score.Config.DEFAULT_INITIAL_SCORE);
+        double killReward = this.killRewardParser.parse(context, node.property("kill-reward", "killreward", "kill")).orDefault(Score.Config.DEFAULT_KILL_REWARD);
+        double limit = this.limitParser.parse(context, node.property("limit")).orDefault(Score.Config.DEFAULT_LIMIT);
+        String scoreName = this.nameParser.parse(context, node.property("name")).orDefaultNull();
+        Ref<Participator.Config<?>> owner = this.ownerParser.parse(context, node.property("owner")).orFail();
 
         return Result.fine(node, name, value, new Score.Config() {
             public Ref<Double> deathLoss() { return Ref.ofProvided(deathLoss); }

@@ -17,10 +17,11 @@
 package pl.themolka.arcade.session;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -35,8 +36,8 @@ public class PlayerLevelParser extends ElementParser<PlayerLevel>
     private Parser<Integer> levelParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.levelParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.levelParser = library.type(Integer.class);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class PlayerLevelParser extends ElementParser<PlayerLevel>
     }
 
     @Override
-    protected Result<PlayerLevel> parseElement(Element element, String name, String value) throws ParserException {
-        int level = this.levelParser.parseWithDefinition(element, name, value).orFail();
+    protected Result<PlayerLevel> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        int level = this.levelParser.parseWithDefinition(context, element, name, value).orFail();
         if (level < 0) {
             throw this.fail(element, name, value, "Level cannot be negative (smaller than 0)");
         }

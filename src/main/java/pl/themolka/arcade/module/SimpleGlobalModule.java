@@ -22,12 +22,12 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 public class SimpleGlobalModule extends Module<GameModule> {
     @Override
-    public final GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
+    public final GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
         return null;
     }
 

@@ -21,9 +21,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -34,16 +35,16 @@ class SpawnEggMetaParser extends ItemMetaParser.Nested<SpawnEggMeta>
     private Parser<EntityType> spawnedTypeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.spawnedTypeParser = context.type(EntityType.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.spawnedTypeParser = library.type(EntityType.class);
     }
 
-    public SpawnEggMeta parse(Node root, ItemStack itemStack, SpawnEggMeta itemMeta) throws ParserException {
+    public SpawnEggMeta parse(Context context, Node root, ItemStack itemStack, SpawnEggMeta itemMeta) throws ParserException {
         Node node = root.firstChild("spawner-egg");
         if (node != null) {
             Property spawnedType = node.property("spawned-type", "entity-type", "mob-type");
             if (spawnedType != null) {
-                itemMeta.setSpawnedType(this.spawnedTypeParser.parse(spawnedType).orFail());
+                itemMeta.setSpawnedType(this.spawnedTypeParser.parse(context, spawnedType).orFail());
             }
         }
 

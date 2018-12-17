@@ -20,10 +20,11 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.attribute.ItemAttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -39,9 +40,9 @@ public class ItemAttributeModifierParser extends NodeParser<ItemAttributeModifie
     private Parser<AttributeModifier> modifierParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.slotParser = context.type(EquipmentSlot.class);
-        this.modifierParser = context.type(AttributeModifier.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.slotParser = library.type(EquipmentSlot.class);
+        this.modifierParser = library.type(AttributeModifier.class);
     }
 
     @Override
@@ -50,9 +51,9 @@ public class ItemAttributeModifierParser extends NodeParser<ItemAttributeModifie
     }
 
     @Override
-    protected Result<ItemAttributeModifier> parseNode(Node node, String name, String value) throws ParserException {
-        EquipmentSlot slot = this.slotParser.parse(node.property("slot", "equipment-slot", "equipmentslot")).orDefaultNull();
-        AttributeModifier modifier = this.modifierParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<ItemAttributeModifier> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        EquipmentSlot slot = this.slotParser.parse(context, node.property("slot", "equipment-slot", "equipmentslot")).orDefaultNull();
+        AttributeModifier modifier = this.modifierParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, new ItemAttributeModifier(slot, modifier));
     }

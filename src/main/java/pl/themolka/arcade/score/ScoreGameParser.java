@@ -19,9 +19,10 @@ package pl.themolka.arcade.score;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -47,17 +48,17 @@ public class ScoreGameParser extends GameModuleParser<ScoreGame, ScoreGame.Confi
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.scoreParser = context.type(Score.Config.class);
-        this.scoreBoxParser = context.type(ScoreBox.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.scoreParser = library.type(Score.Config.class);
+        this.scoreBoxParser = library.type(ScoreBox.Config.class);
     }
 
     @Override
-    protected Result<ScoreGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<ScoreGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
         Set<Score.Config> scores = new LinkedHashSet<>();
         for (Node scoreNode : node.children("score")) {
-            scores.add(this.scoreParser.parse(scoreNode).orFail());
+            scores.add(this.scoreParser.parse(context, scoreNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(scores)) {
@@ -66,7 +67,7 @@ public class ScoreGameParser extends GameModuleParser<ScoreGame, ScoreGame.Confi
 
         Set<ScoreBox.Config> scoreBoxes = new LinkedHashSet<>();
         for (Node scoreBoxNode : node.children("score-box", "scorebox")) {
-            scoreBoxes.add(this.scoreBoxParser.parse(scoreBoxNode).orFail());
+            scoreBoxes.add(this.scoreBoxParser.parse(context, scoreBoxNode).orFail());
         }
 
         return Result.fine(node, name, value, new ScoreGame.Config() {

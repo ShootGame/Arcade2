@@ -19,10 +19,11 @@ package pl.themolka.arcade.generator;
 import org.bukkit.WorldType;
 import org.bukkit.generator.ChunkGenerator;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -56,8 +57,8 @@ public class VanillaGenerator implements Generator {
         private Parser<WorldType> worldTypeParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            this.worldTypeParser = context.type(WorldType.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            this.worldTypeParser = library.type(WorldType.class);
         }
 
         @Override
@@ -66,8 +67,8 @@ public class VanillaGenerator implements Generator {
         }
 
         @Override
-        protected Result<VanillaGenerator> parseNode(Node node, String name, String value) throws ParserException {
-            WorldType worldType = this.worldTypeParser.parse(node.property("world-type", "worldtype")).orDefault(WorldType.NORMAL);
+        protected Result<VanillaGenerator> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            WorldType worldType = this.worldTypeParser.parse(context, node.property("world-type", "worldtype")).orDefault(WorldType.NORMAL);
 
             return Result.fine(node, name, value, new VanillaGenerator(worldType));
         }

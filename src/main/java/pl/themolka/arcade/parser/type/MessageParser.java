@@ -18,6 +18,7 @@ package pl.themolka.arcade.parser.type;
 
 import org.bukkit.ChatColor;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,7 +37,7 @@ public class MessageParser extends ElementParser<String> {
     }
 
     @Override
-    protected Result<String> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<String> parseElement(Context context, Element element, String name, String value) throws ParserException {
         return Result.fine(element, name, value, this.color(value) + ChatColor.RESET);
     }
 

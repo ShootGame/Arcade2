@@ -16,14 +16,14 @@
 
 package pl.themolka.arcade.parser;
 
-public class ParserContext {
+public class ParserLibrary {
     private final ParserManager source;
 
-    public ParserContext(ParserManager source) {
+    public ParserLibrary(ParserManager source) {
         this.source = source;
     }
 
-    public <T extends Enum<T>> Parser<T> enumType(Class<T> type) throws ParserNotSupportedException {
+    public <T extends Enum<T>> Parser<T> enumType(Class<T> type) {
         return this.source.forEnumType(type);
     }
 
@@ -57,8 +57,8 @@ public class ParserContext {
     }
 
     public static class Factory {
-        public ParserContext createContext(ParserManager source) {
-            return new ParserContext(source);
+        public ParserLibrary createLibrary(ParserManager source) {
+            return new ParserLibrary(source);
         }
     }
 }

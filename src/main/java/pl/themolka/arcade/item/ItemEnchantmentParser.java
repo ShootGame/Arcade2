@@ -19,10 +19,11 @@ package pl.themolka.arcade.item;
 import org.bukkit.enchantments.Enchantment;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,9 +39,9 @@ public class ItemEnchantmentParser extends NodeParser<ItemEnchantment>
     private Parser<Integer> levelParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.type(Enchantment.class);
-        this.levelParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.typeParser = library.type(Enchantment.class);
+        this.levelParser = library.type(Integer.class);
     }
 
     @Override
@@ -49,11 +50,11 @@ public class ItemEnchantmentParser extends NodeParser<ItemEnchantment>
     }
 
     @Override
-    protected Result<ItemEnchantment> parsePrimitive(Node node, String name, String value) throws ParserException {
-        Enchantment type = this.typeParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<ItemEnchantment> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        Enchantment type = this.typeParser.parseWithDefinition(context, node, name, value).orFail();
 
         Property levelProperty = node.property("level", "lvl");
-        int level = this.levelParser.parse(levelProperty).orDefault(1);
+        int level = this.levelParser.parse(context, levelProperty).orDefault(1);
         if (level <= 0) {
             throw this.fail(levelProperty, "Level must be positive (greater than 0)");
         }

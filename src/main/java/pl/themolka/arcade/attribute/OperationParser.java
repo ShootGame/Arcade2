@@ -18,10 +18,11 @@ package pl.themolka.arcade.attribute;
 
 import org.bukkit.attribute.AttributeModifier;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,10 +39,10 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
     private Parser<Integer> vanillaIdParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.operationParser = context.text();
-        this.enumParser = context.enumType(AttributeModifier.Operation.class);
-        this.vanillaIdParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.operationParser = library.text();
+        this.enumParser = library.enumType(AttributeModifier.Operation.class);
+        this.vanillaIdParser = library.type(Integer.class);
     }
 
     @Override
@@ -50,16 +51,16 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
     }
 
     @Override
-    protected Result<AttributeModifier.Operation> parseElement(Element element, String name, String value) throws ParserException {
-        String operationInput = this.operationParser.parseWithDefinition(element, name, value).orDefaultNull();
+    protected Result<AttributeModifier.Operation> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        String operationInput = this.operationParser.parseWithDefinition(context, element, name, value).orDefaultNull();
         AttributeModifier.Operation operation = this.getOperation(operationInput);
 
         if (operation == null) {
-            operation = this.parseOperationEnum(element, name, value);
+            operation = this.parseOperationEnum(context, element, name, value);
         }
 
         if (operation == null) {
-            operation = this.parseOperationVanillaId(element, name, value);
+            operation = this.parseOperationVanillaId(context, element, name, value);
         }
 
         if (operation == null) {
@@ -78,12 +79,12 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
         }
     }
 
-    protected AttributeModifier.Operation parseOperationEnum(Element element, String name, String value) throws ParserException {
-        return this.enumParser.parseWithDefinition(element, name, value).orNull();
+    protected AttributeModifier.Operation parseOperationEnum(Context context, Element element, String name, String value) throws ParserException {
+        return this.enumParser.parseWithDefinition(context, element, name, value).orNull();
     }
 
-    protected AttributeModifier.Operation parseOperationVanillaId(Element element, String name, String value) throws ParserException {
-        Integer vanillaId = this.vanillaIdParser.parseWithDefinition(element, name, value).orNull();
+    protected AttributeModifier.Operation parseOperationVanillaId(Context context, Element element, String name, String value) throws ParserException {
+        Integer vanillaId = this.vanillaIdParser.parseWithDefinition(context, element, name, value).orNull();
         return vanillaId != null && isValidOperationVanillaId(vanillaId)
                 ? AttributeModifier.Operation.fromOpcode(vanillaId)
                 : null;

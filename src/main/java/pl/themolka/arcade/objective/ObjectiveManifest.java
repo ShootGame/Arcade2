@@ -25,9 +25,10 @@ import pl.themolka.arcade.objective.core.CoreManifest;
 import pl.themolka.arcade.objective.flag.FlagManifest;
 import pl.themolka.arcade.objective.point.PointManifest;
 import pl.themolka.arcade.objective.wool.WoolManifest;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Result;
@@ -68,7 +69,7 @@ public abstract class ObjectiveManifest {
     public abstract Set<String> defineObjective();
 
     public abstract ObjectiveParser<? extends Objective.Config<?>> defineParser(
-            ParserContext context) throws ParserNotSupportedException;
+            ParserLibrary library) throws ParserNotSupportedException;
 
     //
     // Parser
@@ -81,11 +82,11 @@ public abstract class ObjectiveManifest {
         private Parser<Ref> ownerParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.nameParser = context.type(String.class);
-            this.objectiveParser = context.type(Boolean.class);
-            this.ownerParser = context.type(Ref.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.nameParser = library.type(String.class);
+            this.objectiveParser = library.type(Boolean.class);
+            this.ownerParser = library.type(Ref.class);
         }
 
         @Override
@@ -99,16 +100,16 @@ public abstract class ObjectiveManifest {
         // Shared Parsing
         //
 
-        protected Result<String> parseName(Node node) throws ParserException {
-            return this.nameParser.parse(node.property("name", "title"));
+        protected Result<String> parseName(Context context, Node node) throws ParserException {
+            return this.nameParser.parse(context, node.property("name", "title"));
         }
 
-        protected Result<Boolean> parseObjective(Node node) throws ParserException {
-            return this.objectiveParser.parse(node.property("objective"));
+        protected Result<Boolean> parseObjective(Context context, Node node) throws ParserException {
+            return this.objectiveParser.parse(context, node.property("objective"));
         }
 
-        protected Result<Ref> parseOwner(Node node) throws ParserException {
-            return this.ownerParser.parse(node.property("owner"));
+        protected Result<Ref> parseOwner(Context context, Node node) throws ParserException {
+            return this.ownerParser.parse(context, node.property("owner"));
         }
     }
 }

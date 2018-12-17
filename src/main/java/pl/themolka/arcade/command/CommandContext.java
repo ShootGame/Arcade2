@@ -17,7 +17,9 @@
 package pl.themolka.arcade.command;
 
 import org.apache.commons.lang3.StringUtils;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.EmptyElement;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.type.BooleanParser;
@@ -29,13 +31,17 @@ import java.util.Set;
 public class CommandContext {
     private static final Parser<Boolean> booleanParser = new BooleanParser();
 
+    private final ArcadePlugin plugin;
+
     private final String[] args;
     private final Command command;
     private final Map<String, String> flags;
     private final String label;
     private final List<String> params;
 
-    public CommandContext(String[] args, Command command, Map<String, String> flags, String label, List<String> params) {
+    public CommandContext(ArcadePlugin plugin, String[] args, Command command, Map<String, String> flags, String label, List<String> params) {
+        this.plugin = plugin;
+
         this.args = args;
         this.command = command;
         this.flags = flags;
@@ -175,25 +181,25 @@ public class CommandContext {
 
     protected boolean parseBoolean(String bool, boolean def) {
         try {
-            return booleanParser.parseWithValue(EmptyElement.empty(), bool).orDefault(def);
+            return booleanParser.parseWithValue(new Context(null), EmptyElement.empty(), bool).orDefault(def);
         } catch (ParserException e) {
             return def;
         }
     }
 
-    public static CommandContext parse(Command command, String label, String[] args) {
-        return parse(command, label, args, null);
+    public static CommandContext parse(ArcadePlugin plugin, Command command, String label, String[] args) {
+        return parse(plugin, command, label, args, null);
     }
 
-    public static CommandContext parse(Command command, String label, String[] args, IContextParser parser) {
+    public static CommandContext parse(ArcadePlugin plugin, Command command, String label, String[] args, IContextParser parser) {
         if (parser == null) {
             parser = new CommandContextParser();
         }
 
-        return parser.parse(command, label, args);
+        return parser.parse(plugin, command, label, args);
     }
 
     public interface IContextParser {
-        CommandContext parse(Command command, String label, String[] args);
+        CommandContext parse(ArcadePlugin plugin, Command command, String label, String[] args);
     }
 }

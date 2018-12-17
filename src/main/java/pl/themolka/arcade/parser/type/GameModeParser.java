@@ -18,10 +18,11 @@ package pl.themolka.arcade.parser.type;
 
 import org.bukkit.GameMode;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,9 +37,9 @@ public class GameModeParser extends ElementParser<GameMode>
     private Parser<GameMode> gameModeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.idParser = context.type(Integer.class);
-        this.gameModeParser = context.enumType(GameMode.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.idParser = library.type(Integer.class);
+        this.gameModeParser = library.enumType(GameMode.class);
     }
 
     @Override
@@ -47,9 +48,9 @@ public class GameModeParser extends ElementParser<GameMode>
     }
 
     @Override
-    protected Result<GameMode> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<GameMode> parseElement(Context context, Element element, String name, String value) throws ParserException {
         // Try to find legacy ID first.
-        Integer id = this.idParser.parseWithDefinition(element, name, value).orNull();
+        Integer id = this.idParser.parseWithDefinition(context, element, name, value).orNull();
         if (id != null) {
             GameMode gameMode = GameMode.getByValue(id);
 
@@ -58,6 +59,6 @@ public class GameModeParser extends ElementParser<GameMode>
             }
         }
 
-        return this.gameModeParser.parseWithDefinition(element, name, value);
+        return this.gameModeParser.parseWithDefinition(context, element, name, value);
     }
 }

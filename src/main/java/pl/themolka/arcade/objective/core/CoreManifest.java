@@ -25,10 +25,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.objective.ObjectiveManifest;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -60,8 +61,8 @@ public class CoreManifest extends ObjectiveManifest {
     }
 
     @Override
-    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(CoreParser.class);
+    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(CoreParser.class);
     }
 
     //
@@ -79,13 +80,13 @@ public class CoreManifest extends ObjectiveManifest {
         private Parser<UnionRegion.Config> regionParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.detectorLevelParser = context.type(Integer.class);
-            this.liquidParser = context.type(Liquid.class);
-            this.materialParser = context.type(Material.class);
-            this.materialTextParser = context.text();
-            this.regionParser = context.type(UnionRegion.Config.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.detectorLevelParser = library.type(Integer.class);
+            this.liquidParser = library.type(Liquid.class);
+            this.materialParser = library.type(Material.class);
+            this.materialTextParser = library.text();
+            this.regionParser = library.type(UnionRegion.Config.class);
         }
 
         @Override
@@ -94,15 +95,15 @@ public class CoreManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected Result<Core.Config> parseNode(Node node, String name, String value) throws ParserException {
-            String id = this.parseRequiredId(node);
-            int detectorLevel = this.detectorLevelParser.parse(node.property("detector-level", "detectorlevel", "detector")).orDefault(Core.Config.DEFAULT_DETECTOR_LEVEL);
-            Liquid liquid = this.liquidParser.parse(node.property("liquid", "type", "or")).orDefault(Core.Config.DEFAULT_LIQUID);
+        protected Result<Core.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            String id = this.parseRequiredId(context, node);
+            int detectorLevel = this.detectorLevelParser.parse(context, node.property("detector-level", "detectorlevel", "detector")).orDefault(Core.Config.DEFAULT_DETECTOR_LEVEL);
+            Liquid liquid = this.liquidParser.parse(context, node.property("liquid", "type", "or")).orDefault(Core.Config.DEFAULT_LIQUID);
 
             Set<Material> material = new HashSet<>();
             Property materialProperty = node.property("material", "type", "of");
-            for (String maybeMaterial : ParserUtils.array(this.materialTextParser.parse(materialProperty).orFail())) {
-                material.add(this.materialParser.parseWithValue(materialProperty, maybeMaterial).orFail());
+            for (String maybeMaterial : ParserUtils.array(this.materialTextParser.parse(context, materialProperty).orFail())) {
+                material.add(this.materialParser.parseWithValue(context, materialProperty, maybeMaterial).orFail());
             }
 
             if (ParserUtils.ensureNotEmpty(material)) {
@@ -110,10 +111,10 @@ public class CoreManifest extends ObjectiveManifest {
             }
             Set<Material> finalMaterial = material;
 
-            String coreName = this.parseName(node).orDefaultNull();
-            boolean objective = this.parseObjective(node).orDefault(Core.Config.DEFAULT_IS_OBJECTIVE);
-            Ref<Participator.Config<?>> owner = this.parseOwner(node).orDefault(Ref.empty());
-            UnionRegion.Config region = this.regionParser.parse(node.firstChild("region")).orFail();
+            String coreName = this.parseName(context, node).orDefaultNull();
+            boolean objective = this.parseObjective(context, node).orDefault(Core.Config.DEFAULT_IS_OBJECTIVE);
+            Ref<Participator.Config<?>> owner = this.parseOwner(context, node).orDefault(Ref.empty());
+            UnionRegion.Config region = this.regionParser.parse(context, node.firstChild("region")).orFail();
 
             return Result.fine(node, name, value, new Core.Config() {
                 public String id() { return id; }

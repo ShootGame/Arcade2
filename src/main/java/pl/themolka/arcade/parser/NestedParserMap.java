@@ -22,10 +22,10 @@ import java.util.LinkedHashMap;
  * A map holding nested parsers by their name given in the {@link NestedParserName}.
  */
 public class NestedParserMap<T extends Parser<?>> extends LinkedHashMap<String, T> {
-    private final ParserContext context;
+    private final ParserLibrary library;
 
-    public NestedParserMap(ParserContext context) {
-        this.context = context;
+    public NestedParserMap(ParserLibrary library) {
+        this.library = library;
     }
 
     public T parse(String name) {
@@ -46,9 +46,9 @@ public class NestedParserMap<T extends Parser<?>> extends LinkedHashMap<String, 
 
         String[] names = nameProvider.value();
         if (names != null) {
-            T parser = this.context.of((Class<T>) clazz);
+            T parser = this.library.of((Class<T>) clazz);
             if (parser instanceof InstallableParser) {
-                ((InstallableParser) parser).install(this.context);
+                ((InstallableParser) parser).install(this.library);
             }
 
             for (String name : names) {

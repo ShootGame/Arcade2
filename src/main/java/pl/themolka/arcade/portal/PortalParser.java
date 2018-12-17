@@ -23,9 +23,10 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.kit.Kit;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -54,15 +55,15 @@ public class PortalParser extends ConfigParser<Portal.Config>
     private Parser<Boolean> smoothParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.destinationParser = context.type(Ref.class);
-        this.yawDirectionParser = context.type(Direction.class);
-        this.pitchDirectionParser = context.type(Direction.class);
-        this.filterParser = context.type(Ref.class);
-        this.kitParser = context.type(Ref.class);
-        this.regionParser = context.of(RegionParser.Union.class);
-        this.smoothParser = context.type(Boolean.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.destinationParser = library.type(Ref.class);
+        this.yawDirectionParser = library.type(Direction.class);
+        this.pitchDirectionParser = library.type(Direction.class);
+        this.filterParser = library.type(Ref.class);
+        this.kitParser = library.type(Ref.class);
+        this.regionParser = library.of(RegionParser.Union.class);
+        this.smoothParser = library.type(Boolean.class);
     }
 
     @Override
@@ -71,12 +72,12 @@ public class PortalParser extends ConfigParser<Portal.Config>
     }
 
     @Override
-    protected Result<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
-        SpawnApply.Config destination = this.parseDestination(node, name, value);
-        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orDefault(Ref.empty());
-        String id = this.parseOptionalId(node);
-        Ref<Kit.Config> kit = this.kitParser.parse(node.property("kit")).orDefault(Ref.empty());
-        AbstractRegion.Config<?> region = this.regionParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<Portal.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        SpawnApply.Config destination = this.parseDestination(context, node, name, value);
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(context, node.property("filter")).orDefault(Ref.empty());
+        String id = this.parseOptionalId(context, node);
+        Ref<Kit.Config> kit = this.kitParser.parse(context, node.property("kit")).orDefault(Ref.empty());
+        AbstractRegion.Config<?> region = this.regionParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, new Portal.Config() {
             public Ref<SpawnApply.Config> destination() { return Ref.ofProvided(destination); }
@@ -87,12 +88,12 @@ public class PortalParser extends ConfigParser<Portal.Config>
         });
     }
 
-    protected SpawnApply.Config parseDestination(Node node, String name, String value) throws ParserException {
-        Ref<Spawn.Config<?>> destination = this.destinationParser.parse(node.property("destination")).orFail();
-        boolean smooth = this.smoothParser.parse(node.property("smooth")).orDefault(false);
+    protected SpawnApply.Config parseDestination(Context context, Node node, String name, String value) throws ParserException {
+        Ref<Spawn.Config<?>> destination = this.destinationParser.parse(context, node.property("destination")).orFail();
+        boolean smooth = this.smoothParser.parse(context, node.property("smooth")).orDefault(false);
 
-        Direction yaw = this.yawDirectionParser.parse(node.property("yaw")).orDefault(Direction.ENTITY);
-        Direction pitch = this.pitchDirectionParser.parse(node.property("pitch")).orDefault(Direction.ENTITY);
+        Direction yaw = this.yawDirectionParser.parse(context, node.property("yaw")).orDefault(Direction.ENTITY);
+        Direction pitch = this.pitchDirectionParser.parse(context, node.property("pitch")).orDefault(Direction.ENTITY);
 
         return new SpawnApply.Config() {
             public Ref<Spawn.Config<?>> spawn() { return destination; }

@@ -32,7 +32,7 @@ import pl.themolka.arcade.match.MatchModule;
 import pl.themolka.arcade.match.Observers;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.spawn.SpawnsModule;
 
@@ -52,8 +52,8 @@ public class TeamsModule extends Module<TeamsGame> {
     public static final String TEAMS_MANAGE_PERMISSION = "arcade.command.teams.manage";
 
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(TeamsGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(TeamsGameParser.class);
     }
 
     //

@@ -17,10 +17,11 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,10 +42,10 @@ public class ChangelogParser extends NodeParser<Changelog>
     private Parser<String> logParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.versionParser = context.type(SemanticVersion.class);
-        this.releaseParser = context.type(LocalDate.class);
-        this.logParser = context.text();
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.versionParser = library.type(SemanticVersion.class);
+        this.releaseParser = library.type(LocalDate.class);
+        this.logParser = library.text();
     }
 
     @Override
@@ -53,19 +54,19 @@ public class ChangelogParser extends NodeParser<Changelog>
     }
 
     @Override
-    protected Result<Changelog> parseTree(Node node, String name) throws ParserException {
-        SemanticVersion version = this.versionParser.parse(node.property("version")).orFail();
-        LocalDate release = this.releaseParser.parse(node.property("release")).orDefaultNull();
+    protected Result<Changelog> parseTree(Context context, Node node, String name) throws ParserException {
+        SemanticVersion version = this.versionParser.parse(context, node.property("version")).orFail();
+        LocalDate release = this.releaseParser.parse(context, node.property("release", "date")).orDefaultNull();
 
         Changelog<SemanticVersion> result = new Changelog<>(version, release);
-        result.addAll(this.parseLogs(node));
+        result.addAll(this.parseLogs(context, node));
         return Result.fine(node, name, result);
     }
 
-    private List<String> parseLogs(Node node) throws ParserException {
+    private List<String> parseLogs(Context context, Node node) throws ParserException {
         List<String> logs = new ArrayList<>();
         for (Node log : node.children()) {
-            String text = this.logParser.parse(log).orDefaultNull();
+            String text = this.logParser.parse(context, log).orDefaultNull();
 
             if (text != null) {
                 logs.add(text);

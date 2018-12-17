@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.kit.content.KitContent;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,18 +47,18 @@ public class KitParser extends ConfigParser<Kit.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.contentParser = context.type(KitContent.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.contentParser = library.type(KitContent.Config.class);
     }
 
     @Override
-    protected Result<Kit.Config> parseTree(Node node, String name) throws ParserException {
-        String id = this.parseRequiredId(node);
+    protected Result<Kit.Config> parseTree(Context context, Node node, String name) throws ParserException {
+        String id = this.parseRequiredId(context, node);
 
         List<KitContent.Config<?, ?>> contents = new ArrayList<>();
         for (Node contentNode : node.children()) {
-            contents.add(this.contentParser.parse(contentNode).orFail());
+            contents.add(this.contentParser.parse(context, contentNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(contents)) {

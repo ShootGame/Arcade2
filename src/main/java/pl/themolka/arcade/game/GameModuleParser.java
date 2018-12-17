@@ -19,7 +19,7 @@ package pl.themolka.arcade.game;
 import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.parser.InstallableParser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.util.Collections;
@@ -44,8 +44,8 @@ public abstract class GameModuleParser<M extends GameModule,
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
     }
 
     public abstract Node define(Node source);

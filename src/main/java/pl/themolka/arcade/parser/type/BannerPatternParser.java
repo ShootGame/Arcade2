@@ -20,10 +20,11 @@ import org.bukkit.DyeColor;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -39,9 +40,9 @@ public class BannerPatternParser extends NodeParser<Pattern>
     private Parser<DyeColor> colorParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.type(PatternType.class);
-        this.colorParser = context.type(DyeColor.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.typeParser = library.type(PatternType.class);
+        this.colorParser = library.type(DyeColor.class);
     }
 
     @Override
@@ -50,9 +51,9 @@ public class BannerPatternParser extends NodeParser<Pattern>
     }
 
     @Override
-    protected Result<Pattern> parsePrimitive(Node node, String name, String value) throws ParserException {
-        PatternType type = this.typeParser.parseWithDefinition(node, name, value).orFail();
-        DyeColor color = this.colorParser.parse(node.property("color")).orFail();
+    protected Result<Pattern> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        PatternType type = this.typeParser.parseWithDefinition(context, node, name, value).orFail();
+        DyeColor color = this.colorParser.parse(context, node.property("color")).orFail();
         return Result.fine(node, name, value, new Pattern(color, type));
     }
 }

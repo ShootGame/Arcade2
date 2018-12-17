@@ -17,9 +17,10 @@
 package pl.themolka.arcade.kit.content;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
@@ -28,12 +29,12 @@ public class BaseRemovableContentParser<T extends RemovableKitContent.Config<? e
     private Parser<Boolean> resetParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.resetParser = context.type(Boolean.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.resetParser = library.type(Boolean.class);
     }
 
-    protected boolean reset(Node node) throws ParserException {
-        return this.resetParser.parse(node.property("reset")).orDefault(false);
+    protected boolean reset(Context context, Node node) throws ParserException {
+        return this.resetParser.parse(context, node.property("reset")).orDefault(false);
     }
 }

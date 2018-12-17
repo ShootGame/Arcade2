@@ -17,10 +17,11 @@
 package pl.themolka.arcade.gamerule;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -37,10 +38,10 @@ public class GameRuleParser extends NodeParser<GameRule>
     private Parser<String> keyParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.type(GameRuleType.class);
-        this.valueParser = context.text();
-        this.keyParser = context.text();
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.typeParser = library.type(GameRuleType.class);
+        this.valueParser = library.text();
+        this.keyParser = library.text();
     }
 
     @Override
@@ -49,15 +50,15 @@ public class GameRuleParser extends NodeParser<GameRule>
     }
 
     @Override
-    protected Result<GameRule> parsePrimitive(Node node, String name, String value) throws ParserException {
-        GameRuleType type = this.typeParser.parseWithDefinition(node, name, name).orNull(); // name is the value
-        String ruleValue = this.valueParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<GameRule> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        GameRuleType type = this.typeParser.parseWithDefinition(context, node, name, name).orNull(); // name is the value
+        String ruleValue = this.valueParser.parseWithDefinition(context, node, name, value).orFail();
 
         if (type != null) {
             return Result.fine(node, name, value, type.create(ruleValue));
         }
 
-        String ruleKey = this.keyParser.parseWithValue(node, name).orFail();
+        String ruleKey = this.keyParser.parseWithValue(context, node, name).orFail();
         return Result.fine(node, name, value, new GameRule(ruleKey, ruleValue));
     }
 }

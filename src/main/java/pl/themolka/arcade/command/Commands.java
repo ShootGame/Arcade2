@@ -135,7 +135,7 @@ public class Commands {
     }
 
     public void handleCommand(Sender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
-        this.handleCommand(sender, parser.parse(command, label, args));
+        this.handleCommand(sender, parser.parse(sender.getGamePlayer().getPlugin(), command, label, args));
     }
 
     public List<String> handleCompleter(Sender sender, CommandContext context) {
@@ -199,7 +199,7 @@ public class Commands {
     }
 
     public List<String> handleCompleter(Sender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
-        return this.handleCompleter(sender, parser.parse(command, label, args));
+        return this.handleCompleter(sender, parser.parse(sender.getGamePlayer().getPlugin(), command, label, args));
     }
 
     public boolean hasPrefix() {

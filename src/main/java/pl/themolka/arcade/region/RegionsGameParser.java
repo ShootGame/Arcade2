@@ -19,9 +19,10 @@ package pl.themolka.arcade.region;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class RegionsGameParser extends GameModuleParser<RegionsGame, RegionsGame
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.regionParser = context.type(AbstractRegion.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.regionParser = library.type(AbstractRegion.Config.class);
     }
 
     @Override
-    protected Result<RegionsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<RegionsGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
         Set<AbstractRegion.Config<?>> regions = new LinkedHashSet<>();
         for (Node regionNode : node.children()) {
-            regions.add(this.regionParser.parse(regionNode).orFail());
+            regions.add(this.regionParser.parse(context, regionNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(regions)) {

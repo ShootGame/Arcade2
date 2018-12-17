@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.kit.Kit;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,15 +39,15 @@ public class ScoreBoxParser extends PortalParser
     private Parser<Double> pointsParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.pointsParser = context.type(Double.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.pointsParser = library.type(Double.class);
     }
 
     @Override
-    protected Result<Portal.Config> parseNode(Node node, String name, String value) throws ParserException {
-        Portal.Config portal = super.parseNode(node, name, value).orFail();
-        double points = this.pointsParser.parse(node.property("points")).orFail();
+    protected Result<Portal.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        Portal.Config portal = super.parseNode(context, node, name, value).orFail();
+        double points = this.pointsParser.parse(context, node.property("points")).orFail();
 
         return Result.fine(node, name, value, new ScoreBox.Config() {
             public Ref<SpawnApply.Config> destination() { return portal.destination(); }

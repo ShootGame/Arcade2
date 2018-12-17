@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -70,20 +71,20 @@ public class FlySpeedContent implements RemovableKitContent<Float> {
         private Parser<Float> speedParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.speedParser = context.type(Float.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.speedParser = library.type(Float.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            if (this.reset(node)) {
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            if (this.reset(context, node)) {
                 return Result.fine(node, name, value, new Config() {
                     public Ref<Float> result() { return Ref.empty(); }
                 });
             }
 
-            float speed = this.speedParser.parseWithDefinition(node, name, value).orFail();
+            float speed = this.speedParser.parseWithDefinition(context, node, name, value).orFail();
             if (speed < MIN_VALUE) {
                 throw this.fail(node, name, value, "Fly speed is too slow (min " + MIN_VALUE + ")");
             } else if (speed > MAX_VALUE) {

@@ -46,8 +46,9 @@ import pl.themolka.arcade.map.OfflineMap;
 import pl.themolka.arcade.map.WorldNameGenerator;
 import pl.themolka.arcade.map.queue.MapQueue;
 import pl.themolka.arcade.map.queue.MapQueueFillEvent;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -149,7 +150,8 @@ public class SimpleGameManager implements GameManager {
         Document document = engine.read(file);
         this.plugin.getDomPreprocessor().preprocess(document);
 
-        MapManifest manifest = parser.parse(document).orFail();
+        Context context = new Context(this.plugin);
+        MapManifest manifest = parser.parse(context, document).orFail();
 
         ConfigContext config = new ConfigContext(this.refFinder);
 
@@ -376,8 +378,9 @@ public class SimpleGameManager implements GameManager {
         }
 
         try {
-            ParserContext context = this.plugin.getParsers().createContext();
-            this.setMaxGameId(context.type(Integer.class).parse(node.property("restart-after")).orFail());
+            ParserLibrary library = this.plugin.getParsers().createLibrary();
+            Context context = new Context(this.plugin);
+            this.setMaxGameId(library.type(Integer.class).parse(context, node.property("restart-after")).orFail());
         } catch (ParserNotSupportedException | ParserException ex) {
             ex.printStackTrace();
         }

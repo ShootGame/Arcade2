@@ -18,11 +18,12 @@ package pl.themolka.arcade.mob;
 
 import org.bukkit.entity.EntityType;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -37,9 +38,9 @@ public class EntityTypeParser extends ElementParser<EntityType>
     private Parser<String> textParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.entityTypeParser = context.enumType(EntityType.class);
-        this.textParser = context.text();
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.entityTypeParser = library.enumType(EntityType.class);
+        this.textParser = library.text();
     }
 
     @Override
@@ -48,16 +49,16 @@ public class EntityTypeParser extends ElementParser<EntityType>
     }
 
     @Override
-    protected Result<EntityType> parseElement(Element element, String name, String value) throws ParserException {
-        EntityType entityType = EntityType.fromName(this.parseEntityName(element, name, value));
+    protected Result<EntityType> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        EntityType entityType = EntityType.fromName(this.parseEntityName(context, element, name, value));
         if (entityType != null) {
             return Result.fine(element, name, value, entityType);
         }
 
-        return this.entityTypeParser.parseWithDefinition(element, name, value);
+        return this.entityTypeParser.parseWithDefinition(context, element, name, value);
     }
 
-    private String parseEntityName(Element element, String name, String value) {
-        return this.textParser.parseWithDefinition(element, name, EnumParser.toEnumValue(value)).orNull();
+    private String parseEntityName(Context context, Element element, String name, String value) {
+        return this.textParser.parseWithDefinition(context, element, name, EnumParser.toEnumValue(value)).orNull();
     }
 }

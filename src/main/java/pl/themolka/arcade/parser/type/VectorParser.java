@@ -18,10 +18,11 @@ package pl.themolka.arcade.parser.type;
 
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,10 +39,10 @@ public class VectorParser extends NodeParser<Vector>
     private Parser<Double> zParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.xParser = context.type(Double.class);
-        this.yParser = context.type(Double.class);
-        this.zParser = context.type(Double.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.xParser = library.type(Double.class);
+        this.yParser = library.type(Double.class);
+        this.zParser = library.type(Double.class);
     }
 
     @Override
@@ -50,10 +51,10 @@ public class VectorParser extends NodeParser<Vector>
     }
 
     @Override
-    protected Result<Vector> parseNode(Node node, String name, String value) throws ParserException {
-        double x = this.xParser.parse(node.property("x")).orFail();
-        double y = this.yParser.parse(node.property("y")).orFail();
-        double z = this.zParser.parse(node.property("z")).orFail();
+    protected Result<Vector> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        double x = this.xParser.parse(context, node.property("x")).orFail();
+        double y = this.yParser.parse(context, node.property("y")).orFail();
+        double z = this.zParser.parse(context, node.property("z")).orFail();
         return Result.fine(node, name, value, new Vector(x, y, z));
     }
 }

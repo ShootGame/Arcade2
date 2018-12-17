@@ -24,6 +24,7 @@ import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.SimpleGlobalModule;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
@@ -138,7 +139,9 @@ public class MapLoaderModule extends SimpleGlobalModule implements MapContainerL
         Document document = engine.read(file);
         this.getPlugin().getDomPreprocessor().preprocess(document);
 
-        OfflineMap map = parser.parse(document).orFail();
+        Context context = new Context(this.getPlugin());
+
+        OfflineMap map = parser.parse(context, document).orFail();
         map.setDirectory(worldDirectory);
         map.setSettings(file);
         return map;

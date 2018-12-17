@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -42,11 +43,11 @@ public class CaptureParser extends ConfigParser<Capture.Config>
     private Parser<UnionRegion.Config> regionParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.fieldStrategyParser = context.type(IRegionFieldStrategy.class);
-        this.filterParser = context.type(Ref.class);
-        this.regionParser = context.type(UnionRegion.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.fieldStrategyParser = library.type(IRegionFieldStrategy.class);
+        this.filterParser = library.type(Ref.class);
+        this.regionParser = library.type(UnionRegion.Config.class);
     }
 
     @Override
@@ -55,11 +56,11 @@ public class CaptureParser extends ConfigParser<Capture.Config>
     }
 
     @Override
-    protected Result<Capture.Config> parseNode(Node node, String name, String value) throws ParserException {
-        IRegionFieldStrategy fieldStrategy = this.fieldStrategyParser.parse(node.property(
+    protected Result<Capture.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        IRegionFieldStrategy fieldStrategy = this.fieldStrategyParser.parse(context, node.property(
                 "field-strategy", "fieldstrategy")).orDefault(Capture.Config.DEFAULT_FIELD_STRATEGY);
-        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.firstChild("filter")).orDefault(Ref.empty());
-        UnionRegion.Config region = this.regionParser.parseWithDefinition(node, name, value).orFail();
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(context, node.firstChild("filter")).orDefault(Ref.empty());
+        UnionRegion.Config region = this.regionParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, new Capture.Config() {
             public Ref<IRegionFieldStrategy> fieldStrategy() { return Ref.ofProvided(fieldStrategy); }

@@ -31,7 +31,7 @@ public class IdParser extends PropertyParser<String> {
     }
 
     @Override
-    protected Result<String> parseProperty(Property property, String name, String value) throws ParserException {
+    protected Result<String> parseProperty(Context context, Property property, String name, String value) throws ParserException {
         if (!this.validId(value)) {
             throw this.fail(property, name, value, "Invalid ID syntax");
         }

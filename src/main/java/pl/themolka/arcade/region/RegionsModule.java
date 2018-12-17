@@ -24,7 +24,7 @@ import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Regions",
@@ -32,8 +32,8 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
                 FiltersModule.class})
 public class RegionsModule extends Module<RegionsGame> {
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(RegionsGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(RegionsGameParser.class);
     }
 
     @Override

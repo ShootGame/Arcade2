@@ -25,10 +25,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.objective.ObjectiveManifest;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -97,8 +98,8 @@ public class PointManifest extends ObjectiveManifest {
     }
 
     @Override
-    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(PointParser.class);
+    public ObjectiveParser<? extends Objective.Config<?>> defineParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(PointParser.class);
     }
 
     //
@@ -120,17 +121,17 @@ public class PointManifest extends ObjectiveManifest {
         private Parser<UnionRegion.Config> stateRegionParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.captureParser = context.type(Capture.Config.class);
-            this.captureTimeParser = context.type(Time.class);
-            this.dominateFilterParser = context.type(Ref.class);
-            this.dominatorStrategyParser = context.type(Dominator.class);
-            this.loseTimeParser = context.type(Time.class);
-            this.neutralColorParser = context.type(Color.class);
-            this.permanentParser = context.type(Boolean.class);
-            this.pointRewardParser = context.type(Double.class);
-            this.stateRegionParser = context.type(UnionRegion.Config.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.captureParser = library.type(Capture.Config.class);
+            this.captureTimeParser = library.type(Time.class);
+            this.dominateFilterParser = library.type(Ref.class);
+            this.dominatorStrategyParser = library.type(Dominator.class);
+            this.loseTimeParser = library.type(Time.class);
+            this.neutralColorParser = library.type(Color.class);
+            this.permanentParser = library.type(Boolean.class);
+            this.pointRewardParser = library.type(Double.class);
+            this.stateRegionParser = library.type(UnionRegion.Config.class);
         }
 
         @Override
@@ -139,21 +140,21 @@ public class PointManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected Result<Point.Config> parseNode(Node node, String name, String value) throws ParserException {
-            String id = this.parseRequiredId(node);
-            Capture.Config capture = this.captureParser.parse(node.firstChild("capture")).orFail();
-            Time captureTime = this.captureTimeParser.parse(node.property("capture-time", "capturetime")).orDefault(Point.Config.DEFAULT_CAPTURE_TIME);
-            Ref<Filter.Config<?>> dominateFilter = this.dominateFilterParser.parse(node.property("filter")).orDefault(Ref.empty());
-            Dominator<Participator> dominatorStrategy = this.dominatorStrategyParser.parse(node.firstChild(
+        protected Result<Point.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            String id = this.parseRequiredId(context, node);
+            Capture.Config capture = this.captureParser.parse(context, node.firstChild("capture")).orFail();
+            Time captureTime = this.captureTimeParser.parse(context, node.property("capture-time", "capturetime")).orDefault(Point.Config.DEFAULT_CAPTURE_TIME);
+            Ref<Filter.Config<?>> dominateFilter = this.dominateFilterParser.parse(context, node.property("filter")).orDefault(Ref.empty());
+            Dominator<Participator> dominatorStrategy = this.dominatorStrategyParser.parse(context, node.firstChild(
                     "dominator-strategy", "dominatorstrategy", "dominator")).orDefault(Point.Config.DEFAULT_DOMINATOR_STRATEGY);
-            Time loseTime = this.loseTimeParser.parse(node.property("lose-time", "losetime")).orDefault(Point.Config.DEFAULT_LOSE_TIME);
-            String pointName = this.parseName(node).orDefaultNull();
-            Color neutralColor = this.neutralColorParser.parse(node.firstChild("color")).orDefault(Point.Config.DEFAULT_NEUTRAL_COLOR);
-            boolean objective = this.parseObjective(node).orDefault(Point.Config.DEFAULT_IS_OBJECTIVE);
-            Ref<Participator.Config<?>> owner = this.parseOwner(node).orDefault(Ref.empty());
-            boolean permanent = this.permanentParser.parse(node.property("permanent")).orDefault(Point.Config.DEFAULT_IS_PERMANENT);
-            double pointReward = this.pointRewardParser.parse(node.property("point-reward", "pointreward")).orDefault(Point.Config.DEFAULT_POINT_REWARD);
-            AbstractRegion.Config<?> stateRegion = Nulls.defaults(this.stateRegionParser.parse(node.firstChild("state")).orDefaultNull(),
+            Time loseTime = this.loseTimeParser.parse(context, node.property("lose-time", "losetime")).orDefault(Point.Config.DEFAULT_LOSE_TIME);
+            String pointName = this.parseName(context, node).orDefaultNull();
+            Color neutralColor = this.neutralColorParser.parse(context, node.firstChild("color")).orDefault(Point.Config.DEFAULT_NEUTRAL_COLOR);
+            boolean objective = this.parseObjective(context, node).orDefault(Point.Config.DEFAULT_IS_OBJECTIVE);
+            Ref<Participator.Config<?>> owner = this.parseOwner(context, node).orDefault(Ref.empty());
+            boolean permanent = this.permanentParser.parse(context, node.property("permanent")).orDefault(Point.Config.DEFAULT_IS_PERMANENT);
+            double pointReward = this.pointRewardParser.parse(context, node.property("point-reward", "pointreward")).orDefault(Point.Config.DEFAULT_POINT_REWARD);
+            AbstractRegion.Config<?> stateRegion = Nulls.defaults(this.stateRegionParser.parse(context, node.firstChild("state")).orDefaultNull(),
                     capture.region().get());
 
             return Result.fine(node, name, value, new Point.Config() {

@@ -19,10 +19,11 @@ package pl.themolka.arcade.session;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -49,18 +50,18 @@ public class PlayerTitleParser extends NodeParser<PlayerTitle>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.primaryParser = context.type(BaseComponent.class);
-        this.secondaryParser = context.type(BaseComponent.class);
-        this.fadeInParser = context.type(Time.class);
-        this.viewTimeParser = context.type(Time.class);
-        this.fadeOutParser = context.type(Time.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.primaryParser = library.type(BaseComponent.class);
+        this.secondaryParser = library.type(BaseComponent.class);
+        this.fadeInParser = library.type(Time.class);
+        this.viewTimeParser = library.type(Time.class);
+        this.fadeOutParser = library.type(Time.class);
     }
 
     @Override
-    protected Result<PlayerTitle> parseTree(Node node, String name) throws ParserException {
-        BaseComponent primary = this.primaryParser.parse(node.firstChild("title", "primary")).orDefaultNull();
-        BaseComponent secondary = this.secondaryParser.parse(node.firstChild("subtitle", "sub-title", "secondary")).orDefaultNull();
+    protected Result<PlayerTitle> parseTree(Context context, Node node, String name) throws ParserException {
+        BaseComponent primary = this.primaryParser.parse(context, node.firstChild("title", "primary")).orDefaultNull();
+        BaseComponent secondary = this.secondaryParser.parse(context, node.firstChild("subtitle", "sub-title", "secondary")).orDefaultNull();
 
         if (primary == null && secondary == null) {
             return Result.empty(node, "Missing <title> or <subtitle>");
@@ -68,17 +69,17 @@ public class PlayerTitleParser extends NodeParser<PlayerTitle>
 
         PlayerTitle title = new PlayerTitle(primary != null ? primary : empty, secondary != null ? secondary : empty);
 
-        Time fadeIn = this.fadeInParser.parse(node.property("fade-in", "fadein")).orDefaultNull();
+        Time fadeIn = this.fadeInParser.parse(context, node.property("fade-in", "fadein")).orDefaultNull();
         if (fadeIn != null) {
             title.setFadeIn(fadeIn);
         }
 
-        Time viewTime = this.viewTimeParser.parse(node.property("view-time", "viewtime", "time", "timeout")).orDefaultNull();
+        Time viewTime = this.viewTimeParser.parse(context, node.property("view-time", "viewtime", "time", "timeout")).orDefaultNull();
         if (viewTime != null) {
             title.setViewTime(viewTime);
         }
 
-        Time fadeOut = this.fadeOutParser.parse(node.property("fade-out", "fadeout")).orDefaultNull();
+        Time fadeOut = this.fadeOutParser.parse(context, node.property("fade-out", "fadeout")).orDefaultNull();
         if (fadeOut != null) {
             title.setFadeOut(fadeOut);
         }

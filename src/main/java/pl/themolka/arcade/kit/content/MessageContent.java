@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -134,16 +135,16 @@ public class MessageContent implements KitContent<String> {
         private Parser<Channel> channelParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.textParser = context.type(String.class);
-            this.channelParser = context.type(Channel.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.textParser = library.type(String.class);
+            this.channelParser = library.type(Channel.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            String text = this.textParser.parseWithDefinition(node, name, value).orFail();
-            Channel channel = this.channelParser.parse(node.property("channel")).orDefault(Config.DEFAULT_CHANNEL);
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            String text = this.textParser.parseWithDefinition(context, node, name, value).orFail();
+            Channel channel = this.channelParser.parse(context, node.property("channel")).orDefault(Config.DEFAULT_CHANNEL);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<String> result() { return Ref.ofProvided(text); }

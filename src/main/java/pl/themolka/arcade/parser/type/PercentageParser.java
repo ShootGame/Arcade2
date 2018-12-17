@@ -18,10 +18,11 @@ package pl.themolka.arcade.parser.type;
 
 import org.apache.commons.lang3.StringUtils;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -37,18 +38,18 @@ public abstract class PercentageParser extends ElementParser<Percentage>
     private Parser<Double> percentageParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.percentageParser = context.type(Double.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.percentageParser = library.type(Double.class);
     }
 
     @Override
-    protected Result<Percentage> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Percentage> parseElement(Context context, Element element, String name, String value) throws ParserException {
         double result;
         if (StringUtils.contains(value, Percentage.SYMBOL)) {
-            result = this.percentageParser.parseWithDefinition(element, name,
+            result = this.percentageParser.parseWithDefinition(context, element, name,
                     StringUtils.remove(value, Percentage.SYMBOL)).orFail() / 100D;
         } else {
-            result = this.percentageParser.parseWithDefinition(element, name, value).orFail();
+            result = this.percentageParser.parseWithDefinition(context, element, name, value).orFail();
         }
 
         try {

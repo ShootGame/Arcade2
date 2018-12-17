@@ -17,6 +17,7 @@
 package pl.themolka.arcade.time;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -33,7 +34,7 @@ public class TimeParser extends ElementParser<Time> {
     }
 
     @Override
-    protected Result<Time> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Time> parseElement(Context context, Element element, String name, String value) throws ParserException {
         Time time = Time.parseTime(value, null);
         if (time != null) {
             return Result.fine(element, name, value, time);

@@ -24,9 +24,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,23 +42,23 @@ class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta>
     private Parser<PotionEffect> potionEffectParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.type(PotionType.class);
-        this.extendedParser = context.type(Boolean.class);
-        this.upgradedParser = context.type(Boolean.class);
-        this.colorParser = context.type(Color.class);
-        this.potionEffectParser = context.type(PotionEffect.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.typeParser = library.type(PotionType.class);
+        this.extendedParser = library.type(Boolean.class);
+        this.upgradedParser = library.type(Boolean.class);
+        this.colorParser = library.type(Color.class);
+        this.potionEffectParser = library.type(PotionEffect.class);
     }
 
     @Override
-    public PotionMeta parse(Node root, ItemStack itemStack, PotionMeta itemMeta) throws ParserException {
+    public PotionMeta parse(Context context, Node root, ItemStack itemStack, PotionMeta itemMeta) throws ParserException {
         Node node = root.firstChild("potion");
         if (node != null) {
             Property type = node.property("type", "of");
             if (type != null) {
-                PotionType value = this.typeParser.parse(type).orFail();
-                boolean extended = this.extendedParser.parse(node.property("extended")).orDefault(false);
-                boolean upgraded = this.upgradedParser.parse(node.property("upgraded")).orDefault(false);
+                PotionType value = this.typeParser.parse(context, type).orFail();
+                boolean extended = this.extendedParser.parse(context, node.property("extended")).orDefault(false);
+                boolean upgraded = this.upgradedParser.parse(context, node.property("upgraded")).orDefault(false);
 
                 if (extended && !value.isUpgradeable()) {
                     throw this.fail(type, "Potion is not extendable");
@@ -72,11 +73,11 @@ class PotionMetaParser extends ItemMetaParser.Nested<PotionMeta>
 
             Property color = node.property("color");
             if (color != null) {
-                itemMeta.setColor(this.colorParser.parse(color).orFail());
+                itemMeta.setColor(this.colorParser.parse(context, color).orFail());
             }
 
             for (Node effect : node.children("effect", "potion-effect", "potioneffect")) {
-                PotionEffect value = this.potionEffectParser.parse(effect).orFail();
+                PotionEffect value = this.potionEffectParser.parse(context, effect).orFail();
                 if (!itemMeta.hasCustomEffect(value.getType())) {
                     itemMeta.addCustomEffect(value, false);
                 }

@@ -17,10 +17,11 @@
 package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,10 +39,10 @@ public class AuthorParser extends NodeParser<Author>
     private Parser<String> descriptionParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.usernameParser = context.text();
-        this.uuidParser = context.type(UUID.class);
-        this.descriptionParser = context.text();
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.usernameParser = library.text();
+        this.uuidParser = library.type(UUID.class);
+        this.descriptionParser = library.text();
     }
 
     @Override
@@ -50,10 +51,10 @@ public class AuthorParser extends NodeParser<Author>
     }
 
     @Override
-    protected Result<Author> parsePrimitive(Node node, String name, String value) throws ParserException {
-        UUID uuid = this.uuidParser.parse(node.property("uuid", "uid")).orDefaultNull();
-        String username = this.usernameParser.parseWithDefinition(node, name, value).orFail(); // required
-        String description = this.descriptionParser.parse(node.property("description", "contribution")).orDefaultNull();
+    protected Result<Author> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        UUID uuid = this.uuidParser.parse(context, node.property("uuid", "uid")).orDefaultNull();
+        String username = this.usernameParser.parseWithDefinition(context, node, name, value).orFail(); // required
+        String description = this.descriptionParser.parse(context, node.property("description", "contribution")).orDefaultNull();
         return Result.fine(node, name, value, Author.of(uuid, username, description));
     }
 }

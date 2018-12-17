@@ -54,7 +54,7 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
     }
 
     @Override
-    protected Result<T> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<T> parseElement(Context context, Element element, String name, String value) throws ParserException {
         String input = toEnumValue(value);
 
         try {

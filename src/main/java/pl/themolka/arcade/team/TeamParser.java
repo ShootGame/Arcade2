@@ -22,9 +22,10 @@ import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -46,15 +47,15 @@ public class TeamParser extends ConfigParser<Team.Config>
     private Parser<Integer> slotsParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.chatColorParser = context.type(ChatColor.class);
-        this.dyeColorParser = context.type(DyeColor.class);
-        this.friendlyFireParser = context.type(Boolean.class);
-        this.minPlayers = context.type(Integer.class);
-        this.maxPlayers = context.type(Integer.class);
-        this.nameParser = context.type(String.class);
-        this.slotsParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.chatColorParser = library.type(ChatColor.class);
+        this.dyeColorParser = library.type(DyeColor.class);
+        this.friendlyFireParser = library.type(Boolean.class);
+        this.minPlayers = library.type(Integer.class);
+        this.maxPlayers = library.type(Integer.class);
+        this.nameParser = library.type(String.class);
+        this.slotsParser = library.type(Integer.class);
     }
 
     @Override
@@ -63,16 +64,16 @@ public class TeamParser extends ConfigParser<Team.Config>
     }
 
     @Override
-    protected Result<Team.Config> parseNode(Node node, String name, String value) throws ParserException {
-        String id = this.parseRequiredId(node);
-        ChatColor chatColor = this.chatColorParser.parse(node.property("color", "chat-color", "chatcolor", "chat")).orFail();
-        DyeColor dyeColor = this.parseDyeColor(chatColor, node.property("dye-color", "dyecolor", "dye"));
-        boolean friendlyFire = this.friendlyFireParser.parse(node.property("friendly-fire", "friendlyfire", "friendly"))
+    protected Result<Team.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        String id = this.parseRequiredId(context, node);
+        ChatColor chatColor = this.chatColorParser.parse(context, node.property("color", "chat-color", "chatcolor", "chat")).orFail();
+        DyeColor dyeColor = this.parseDyeColor(context, chatColor, node.property("dye-color", "dyecolor", "dye"));
+        boolean friendlyFire = this.friendlyFireParser.parse(context, node.property("friendly-fire", "friendlyfire", "friendly"))
                 .orDefault(Team.Config.DEFAULT_IS_FRIENDLY_FIRE);
-        int minPlayers = this.parseMinPlayers(node.property("min-players", "minplayers", "min"));
-        int maxPlayers = this.parseMaxPlayers(node.property("max-players", "maxplayers", "max", "overfill"));
-        String teamName = this.nameParser.parse(node.property("name", "title")).orFail();
-        int slots = this.slotsParser.parse(node.property("slots")).orFail();
+        int minPlayers = this.parseMinPlayers(context, node.property("min-players", "minplayers", "min"));
+        int maxPlayers = this.parseMaxPlayers(context, node.property("max-players", "maxplayers", "max", "overfill"));
+        String teamName = this.nameParser.parse(context, node.property("name", "title")).orFail();
+        int slots = this.slotsParser.parse(context, node.property("slots")).orFail();
 
         return Result.fine(node, name, value, new Team.Config() {
             public String id() { return id; }
@@ -86,8 +87,8 @@ public class TeamParser extends ConfigParser<Team.Config>
         });
     }
 
-    protected DyeColor parseDyeColor(ChatColor chatColor, Property property) throws ParserException {
-        DyeColor dyeColor = this.dyeColorParser.parse(property).orDefaultNull();
+    protected DyeColor parseDyeColor(Context context, ChatColor chatColor, Property property) throws ParserException {
+        DyeColor dyeColor = this.dyeColorParser.parse(context, property).orDefaultNull();
         if (dyeColor != null) {
             return dyeColor;
         }
@@ -105,8 +106,8 @@ public class TeamParser extends ConfigParser<Team.Config>
         return dyeColor;
     }
 
-    protected int parseMinPlayers(Property property) throws ParserException {
-        int minPlayers = this.minPlayers.parse(property).orDefault(Team.Config.DEFAULT_MIN_PLAYERS);
+    protected int parseMinPlayers(Context context, Property property) throws ParserException {
+        int minPlayers = this.minPlayers.parse(context, property).orDefault(Team.Config.DEFAULT_MIN_PLAYERS);
         if (minPlayers < 0) {
             throw this.fail(property, property.getName(), property.getValue(), "Minimal player count cannot be negative (smaller than 0)");
         }
@@ -114,8 +115,8 @@ public class TeamParser extends ConfigParser<Team.Config>
         return minPlayers;
     }
 
-    protected int parseMaxPlayers(Property property) throws ParserException {
-        int maxPlayers = this.maxPlayers.parse(property).orDefault(Team.Config.DEFAULT_MAX_PLAYERS);
+    protected int parseMaxPlayers(Context context, Property property) throws ParserException {
+        int maxPlayers = this.maxPlayers.parse(context, property).orDefault(Team.Config.DEFAULT_MAX_PLAYERS);
         if (maxPlayers < 0) {
             throw this.fail(property, property.getName(), property.getValue(), "Maximal player count cannot be negative (smaller than 0)");
         }

@@ -17,10 +17,11 @@
 package pl.themolka.arcade.util.versioning;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -35,8 +36,8 @@ public class ProgressiveVersionParser extends ElementParser<ProgressiveVersion>
     private Parser<Integer> valueParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.valueParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.valueParser = library.type(Integer.class);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class ProgressiveVersionParser extends ElementParser<ProgressiveVersion>
     }
 
     @Override
-    protected Result<ProgressiveVersion> parseElement(Element element, String name, String value) throws ParserException {
-        int integer = this.valueParser.parseWithDefinition(element, name, value).orFail();
+    protected Result<ProgressiveVersion> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        int integer = this.valueParser.parseWithDefinition(context, element, name, value).orFail();
         if (integer < 0) {
             throw this.fail(element, name, value, "Progressive version value cannot be negative");
         }

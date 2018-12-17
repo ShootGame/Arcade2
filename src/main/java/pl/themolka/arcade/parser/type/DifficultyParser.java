@@ -18,10 +18,11 @@ package pl.themolka.arcade.parser.type;
 
 import org.bukkit.Difficulty;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,9 +37,9 @@ public class DifficultyParser extends ElementParser<Difficulty>
     private Parser<Difficulty> difficultyParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.idParser = context.type(Integer.class);
-        this.difficultyParser = context.enumType(Difficulty.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.idParser = library.type(Integer.class);
+        this.difficultyParser = library.enumType(Difficulty.class);
     }
 
     @Override
@@ -47,9 +48,9 @@ public class DifficultyParser extends ElementParser<Difficulty>
     }
 
     @Override
-    protected Result<Difficulty> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Difficulty> parseElement(Context context, Element element, String name, String value) throws ParserException {
         // Try to find legacy ID first.
-        Integer id = this.idParser.parseWithDefinition(element, name, value).orNull();
+        Integer id = this.idParser.parseWithDefinition(context, element, name, value).orNull();
         if (id != null) {
             Difficulty difficulty = Difficulty.getByValue(id);
 
@@ -58,6 +59,6 @@ public class DifficultyParser extends ElementParser<Difficulty>
             }
         }
 
-        return this.difficultyParser.parseWithDefinition(element, name, value);
+        return this.difficultyParser.parseWithDefinition(context, element, name, value);
     }
 }

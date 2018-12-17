@@ -21,10 +21,11 @@ import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.GamePlayerSnapshot;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -70,14 +71,14 @@ public class ParticipatingMatcher extends ConfigurableMatcher<Boolean> {
         private Parser<Boolean> participatingParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.participatingParser = context.type(Boolean.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.participatingParser = library.type(Boolean.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            boolean participating = this.participatingParser.parseWithDefinition(node, name, value).orDefault(true);
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            boolean participating = this.participatingParser.parseWithDefinition(context, node, name, value).orDefault(true);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Boolean> value() { return Ref.ofProvided(participating); }

@@ -21,10 +21,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -59,14 +60,14 @@ public class GameModeContent implements KitContent<GameMode>  {
         private Parser<GameMode> gameModeParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.gameModeParser = context.type(GameMode.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.gameModeParser = library.type(GameMode.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            GameMode gameMode = this.gameModeParser.parseWithDefinition(node, name, value).orFail();
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            GameMode gameMode = this.gameModeParser.parseWithDefinition(context, node, name, value).orFail();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<GameMode> result() { return Ref.ofProvided(gameMode); }

@@ -23,14 +23,14 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Channels")
 public class ChannelsModule extends Module<ChannelsGame> {
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(ChannelsGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(ChannelsGameParser.class);
     }
 
     @CommandInfo(name = {"global", "g", "!"},

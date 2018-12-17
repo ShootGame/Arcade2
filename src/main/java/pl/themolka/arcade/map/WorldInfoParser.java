@@ -21,10 +21,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.generator.Generator;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -46,15 +47,15 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     private Parser<MapTime> timeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.difficultyParser = context.type(Difficulty.class);
-        this.environmentParser = context.type(World.Environment.class);
-        this.generatorParser = context.type(Generator.class);
-        this.hardcoreParser = context.type(Boolean.class);
-        this.pvpParser = context.type(Boolean.class);
-        this.randomSeedParser = context.type(RandomSeed.class);
-        this.spawnParser = context.type(Location.class);
-        this.timeParser = context.type(MapTime.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.difficultyParser = library.type(Difficulty.class);
+        this.environmentParser = library.type(World.Environment.class);
+        this.generatorParser = library.type(Generator.class);
+        this.hardcoreParser = library.type(Boolean.class);
+        this.pvpParser = library.type(Boolean.class);
+        this.randomSeedParser = library.type(RandomSeed.class);
+        this.spawnParser = library.type(Location.class);
+        this.timeParser = library.type(MapTime.class);
     }
 
     @Override
@@ -63,16 +64,16 @@ public class WorldInfoParser extends NodeParser<WorldInfo>
     }
 
     @Override
-    protected Result<WorldInfo> parseTree(Node node, String name) throws ParserException {
+    protected Result<WorldInfo> parseTree(Context context, Node node, String name) throws ParserException {
         WorldInfo info = new WorldInfo();
-        info.setDifficulty(this.difficultyParser.parse(node.property("difficulty")).orNull());
-        info.setEnvironment(this.environmentParser.parse(node.property("environment")).orNull());
-        info.setGenerator(this.generatorParser.parse(node.firstChild("generator")).orNull());
-        info.setHardcore(this.hardcoreParser.parse(node.property("hardcore")).orDefault(WorldInfo.DEFAULT_IS_HARDCORE));
-        info.setPvp(this.pvpParser.parse(node.property("pvp")).orDefault(WorldInfo.DEFAULT_IS_PVP));
-        info.setRandomSeed(this.randomSeedParser.parse(node.property("seed", "random-seed")).orDefault(WorldInfo.DEFAULT_RANDOM_SEED));
-        info.setSpawn(this.spawnParser.parse(node.firstChild("spawn")).orNull());
-        info.setTime(this.timeParser.parse(node.firstChild("time")).orNull());
+        info.setDifficulty(this.difficultyParser.parse(context, node.property("difficulty")).orNull());
+        info.setEnvironment(this.environmentParser.parse(context, node.property("environment")).orNull());
+        info.setGenerator(this.generatorParser.parse(context, node.firstChild("generator")).orNull());
+        info.setHardcore(this.hardcoreParser.parse(context, node.property("hardcore")).orDefault(WorldInfo.DEFAULT_IS_HARDCORE));
+        info.setPvp(this.pvpParser.parse(context, node.property("pvp")).orDefault(WorldInfo.DEFAULT_IS_PVP));
+        info.setRandomSeed(this.randomSeedParser.parse(context, node.property("seed", "random-seed")).orDefault(WorldInfo.DEFAULT_RANDOM_SEED));
+        info.setSpawn(this.spawnParser.parse(context, node.firstChild("spawn")).orNull());
+        info.setTime(this.timeParser.parse(context, node.firstChild("time")).orNull());
         return Result.fine(node, name, info);
     }
 }

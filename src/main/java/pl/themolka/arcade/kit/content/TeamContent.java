@@ -22,10 +22,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.match.Observers;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -76,17 +77,18 @@ public class TeamContent implements RemovableKitContent<Team> {
         private Parser<Ref> teamParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.announceParser = context.type(Boolean.class);
-            this.teamParser = context.type(Ref.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.announceParser = library.type(Boolean.class);
+            this.teamParser = library.type(Ref.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Ref<Team.Config> team = this.reset(node) ? Config.DEFAULT_TEAM
-                                                     : this.teamParser.parseWithDefinition(node, name, value).orFail();
-            boolean announce = this.announceParser.parse(node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            Ref<Team.Config> team = this.reset(context, node)
+                    ? Config.DEFAULT_TEAM
+                    : this.teamParser.parseWithDefinition(context, node, name, value).orFail();
+            boolean announce = this.announceParser.parse(context, node.property("announce", "message")).orDefault(Config.DEFAULT_ANNOUNCE);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Team.Config> result() { return team; }

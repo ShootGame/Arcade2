@@ -32,7 +32,7 @@ public class TextParser extends ElementParser<String> {
     }
 
     @Override
-    protected Result<String> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<String> parseElement(Context context, Element element, String name, String value) throws ParserException {
         return Result.fine(element, name, value, value);
     }
 }

@@ -21,10 +21,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -72,22 +73,22 @@ public class CanFlyContent implements RemovableKitContent<Boolean> {
         private Parser<Boolean> forceParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.canFlyParser = context.type(Boolean.class);
-            this.forceParser = context.type(Boolean.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.canFlyParser = library.type(Boolean.class);
+            this.forceParser = library.type(Boolean.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            if (this.reset(node)) {
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            if (this.reset(context, node)) {
                 return Result.fine(node, name, value, new Config() {
                     public Ref<Boolean> result() { return Ref.empty(); }
                 });
             }
 
-            boolean canFly = this.canFlyParser.parseWithDefinition(node, name, value).orFail();
-            boolean force = this.forceParser.parse(node.property("force")).orDefault(Config.DEFAULT_FORCE);
+            boolean canFly = this.canFlyParser.parseWithDefinition(context, node, name, value).orFail();
+            boolean force = this.forceParser.parse(context, node.property("force")).orDefault(Config.DEFAULT_FORCE);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Boolean> result() { return Ref.ofProvided(canFly); }

@@ -18,6 +18,7 @@ package pl.themolka.arcade.potion;
 
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
@@ -35,7 +36,7 @@ public class PotionEffectTypeParser extends ElementParser<PotionEffectType> {
     }
 
     @Override
-    protected Result<PotionEffectType> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<PotionEffectType> parseElement(Context context, Element element, String name, String value) throws ParserException {
         PotionEffectType type = PotionEffectType.getByName(this.normalizePotionEffectName(value));
         if (type == null) {
             throw this.fail(element, name, value, "Unknown potion effect type");

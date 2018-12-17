@@ -18,11 +18,12 @@ package pl.themolka.arcade.generator;
 
 import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserMap;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.NodeParser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -44,8 +45,8 @@ public class GeneratorParser extends NodeParser<Generator>
     private NestedParserMap<BaseGeneratorParser<?>> nested;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.nested = new NestedParserMap<>(context);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.nested = new NestedParserMap<>(library);
         for (Class<?> clazz : types) {
             this.nested.scan(clazz);
         }
@@ -57,13 +58,13 @@ public class GeneratorParser extends NodeParser<Generator>
     }
 
     @Override
-    protected Result<Generator> parsePrimitive(Node node, String name, String value) throws ParserException {
+    protected Result<Generator> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
         BaseGeneratorParser<?> parser = this.nested.parse(value);
         if (parser == null) {
             throw this.fail(node, null, name, "Unknown world generator type");
         }
 
-        return Result.fine(node, name, value, parser.parse(node).orFail());
+        return Result.fine(node, name, value, parser.parse(context, node).orFail());
     }
 
     @NestedParserName("default")
@@ -76,7 +77,7 @@ public class GeneratorParser extends NodeParser<Generator>
         }
 
         @Override
-        protected Result<Generator> parseNode(Node node, String name, String value) throws ParserException {
+        protected Result<Generator> parseNode(Context context, Node node, String name, String value) throws ParserException {
             return Result.fine(node, name, value, Generator.DEFAULT_GENERATOR);
         }
     }

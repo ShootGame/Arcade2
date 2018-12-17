@@ -24,10 +24,11 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.objective.ObjectiveManifest;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -63,8 +64,8 @@ public class WoolManifest extends ObjectiveManifest {
     }
 
     @Override
-    public ObjectiveParser<? extends Objective.Config> defineParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(WoolParser.class);
+    public ObjectiveParser<? extends Objective.Config> defineParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(WoolParser.class);
     }
 
     //
@@ -80,11 +81,11 @@ public class WoolManifest extends ObjectiveManifest {
         private Parser<UnionRegion.Config> monumentParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.colorParser = context.type(DyeColor.class);
-            this.craftableParser = context.type(Boolean.class);
-            this.monumentParser = context.type(UnionRegion.Config.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.colorParser = library.type(DyeColor.class);
+            this.craftableParser = library.type(Boolean.class);
+            this.monumentParser = library.type(UnionRegion.Config.class);
         }
 
         @Override
@@ -93,14 +94,14 @@ public class WoolManifest extends ObjectiveManifest {
         }
 
         @Override
-        protected Result<Wool.Config> parseNode(Node node, String name, String value) throws ParserException {
-            String id = this.parseRequiredId(node);
-            DyeColor color = this.colorParser.parse(node.property("color", "of")).orFail();
-            boolean craftable = this.craftableParser.parse(node.property("craftable")).orDefault(Wool.Config.DEFAULT_IS_CRAFTABLE);
-            UnionRegion.Config monument = this.monumentParser.parse(node.firstChild("monument", "monuments")).orFail();
-            String woolName = this.parseName(node).orDefaultNull();
-            boolean objective = this.parseObjective(node).orDefault(Wool.Config.DEFAULT_IS_OBJECTIVE);
-            Ref<Participator.Config<?>> owner = this.parseOwner(node).orFail();
+        protected Result<Wool.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            String id = this.parseRequiredId(context, node);
+            DyeColor color = this.colorParser.parse(context, node.property("color", "of")).orFail();
+            boolean craftable = this.craftableParser.parse(context, node.property("craftable")).orDefault(Wool.Config.DEFAULT_IS_CRAFTABLE);
+            UnionRegion.Config monument = this.monumentParser.parse(context, node.firstChild("monument", "monuments")).orFail();
+            String woolName = this.parseName(context, node).orDefaultNull();
+            boolean objective = this.parseObjective(context, node).orDefault(Wool.Config.DEFAULT_IS_OBJECTIVE);
+            Ref<Participator.Config<?>> owner = this.parseOwner(context, node).orFail();
 
             return Result.fine(node, name, value, new Wool.Config() {
                 public String id() { return id; }

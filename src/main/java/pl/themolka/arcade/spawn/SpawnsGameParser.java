@@ -19,9 +19,10 @@ package pl.themolka.arcade.spawn;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class SpawnsGameParser extends GameModuleParser<SpawnsGame, SpawnsGame.Co
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.spawnParser = context.type(Spawn.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.spawnParser = library.type(Spawn.Config.class);
     }
 
     @Override
-    protected Result<SpawnsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<SpawnsGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
         List<Spawn.Config<?>> spawns = new ArrayList<>();
         for (Node spawnNode : node.children()) {
-            spawns.add(this.spawnParser.parse(spawnNode).orFail());
+            spawns.add(this.spawnParser.parse(context, spawnNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(spawns)) {

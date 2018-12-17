@@ -22,10 +22,11 @@ import org.bukkit.event.entity.EntityEvent;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -64,14 +65,14 @@ public class EntityMatcher extends ConfigurableMatcher<EntityType> {
         private Parser<EntityType> entityParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.entityParser = context.type(EntityType.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.entityParser = library.type(EntityType.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            EntityType entity = this.entityParser.parseWithDefinition(node, name, value).orFail();
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            EntityType entity = this.entityParser.parseWithDefinition(context, node, name, value).orFail();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<EntityType> value() { return Ref.ofProvided(entity); }

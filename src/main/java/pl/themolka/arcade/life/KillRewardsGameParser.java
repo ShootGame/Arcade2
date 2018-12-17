@@ -19,9 +19,10 @@ package pl.themolka.arcade.life;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class KillRewardsGameParser extends GameModuleParser<KillRewardsGame, Kil
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.killRewardParser = context.type(KillReward.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.killRewardParser = library.type(KillReward.Config.class);
     }
 
     @Override
-    protected Result<KillRewardsGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KillRewardsGame.Config> parseTree(Context context, Node node, String name) throws ParserException {
         List<KillReward.Config> rewards = new ArrayList<>();
         for (Node rewardNode : node.children("reward")) {
-            rewards.add(this.killRewardParser.parse(rewardNode).orFail());
+            rewards.add(this.killRewardParser.parse(context, rewardNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(rewards)) {

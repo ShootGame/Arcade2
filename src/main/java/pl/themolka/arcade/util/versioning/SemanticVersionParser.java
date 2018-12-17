@@ -18,10 +18,11 @@ package pl.themolka.arcade.util.versioning;
 
 import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -40,10 +41,10 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
     private Parser<Integer> patchParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.majorParser = context.type(Integer.class);
-        this.minorParser = context.type(Integer.class);
-        this.patchParser = context.type(Integer.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.majorParser = library.type(Integer.class);
+        this.minorParser = library.type(Integer.class);
+        this.patchParser = library.type(Integer.class);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
     }
 
     @Override
-    protected Result<SemanticVersion> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<SemanticVersion> parseElement(Context context, Element element, String name, String value) throws ParserException {
         String[] sections = value.split("-", 2);
 
         String[] parts = sections[0].split("\\.", 3);
@@ -60,18 +61,18 @@ public class SemanticVersionParser extends ElementParser<SemanticVersion>
             throw this.fail(element, name, value, "Semantic version does not contain minor (1.X)");
         }
 
-        int major = this.majorParser.parseWithDefinition(element, name, parts[0]).orFail();
+        int major = this.majorParser.parseWithDefinition(context, element, name, parts[0]).orFail();
         if (major < 0) {
             throw this.fail(element, name, value, "Major (X.0.0) cannot be negative");
         }
 
-        int minor = this.minorParser.parseWithDefinition(element, name, parts[1]).orFail();
+        int minor = this.minorParser.parseWithDefinition(context, element, name, parts[1]).orFail();
         if (minor < 0) {
             throw this.fail(element, name, value, "Minor (1.X.0) cannot be negative");
         }
 
         String patchValue = parts.length > 2 ? parts[2] : "";
-        int patch = this.patchParser.parseWithDefinition(element, name, patchValue).orDefault(SemanticVersion.DEFAULT.getPatch());
+        int patch = this.patchParser.parseWithDefinition(context, element, name, patchValue).orDefault(SemanticVersion.DEFAULT.getPatch());
         if (patch < 0) {
             throw this.fail(element, name, value, "Patch (1.0.X) cannot be negative");
         }

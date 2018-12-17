@@ -19,10 +19,11 @@ package pl.themolka.arcade.firework;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,12 +42,12 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
     private Parser<Color> fadeColorParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.typeParser = context.type(FireworkEffect.Type.class);
-        this.flickerParser = context.type(Boolean.class);
-        this.trailParser = context.type(Boolean.class);
-        this.colorParser = context.type(Color.class);
-        this.fadeColorParser = context.type(Color.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.typeParser = library.type(FireworkEffect.Type.class);
+        this.flickerParser = library.type(Boolean.class);
+        this.trailParser = library.type(Boolean.class);
+        this.colorParser = library.type(Color.class);
+        this.fadeColorParser = library.type(Color.class);
     }
 
     @Override
@@ -55,15 +56,15 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
     }
 
     @Override
-    protected Result<FireworkEffect> parseTree(Node node, String name) throws ParserException {
+    protected Result<FireworkEffect> parseTree(Context context, Node node, String name) throws ParserException {
         FireworkEffect.Builder builder = FireworkEffect.builder()
-                .with(this.typeParser.parse(node.property("type", "of")).orDefault(FireworkEffect.Type.BALL))
-                .flicker(this.flickerParser.parse(node.property("flicker")).orDefault(false))
-                .trail(this.trailParser.parse(node.property("trail")).orDefault(false));
+                .with(this.typeParser.parse(context, node.property("type", "of")).orDefault(FireworkEffect.Type.BALL))
+                .flicker(this.flickerParser.parse(context, node.property("flicker")).orDefault(false))
+                .trail(this.trailParser.parse(context, node.property("trail")).orDefault(false));
 
         boolean colorsDefined = false;
         for (Node color : node.children("color")) {
-            builder.withColor(this.colorParser.parse(color).orFail());
+            builder.withColor(this.colorParser.parse(context, color).orFail());
             colorsDefined = true;
         }
 
@@ -72,7 +73,7 @@ public class FireworkEffectParser extends NodeParser<FireworkEffect>
         }
 
         for (Node fadeColor : node.children("fade-color", "fadecolor", "fade")) {
-            builder.withFade(this.fadeColorParser.parse(fadeColor).orFail());
+            builder.withFade(this.fadeColorParser.parse(context, fadeColor).orFail());
         }
 
         return Result.fine(node, name, builder.build());

@@ -22,6 +22,7 @@ import pl.themolka.arcade.command.CommandUtils;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.match.Observers;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.util.Color;
 
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class TeamCommands {
 
     public void paintCommand(Sender sender, String teamId, String paint) {
         Team team = this.fetchTeam(teamId);
-        ChatColor color = Color.parseChat(paint);
+        ChatColor color = Color.parseChat(new Context(this.game.getPlugin()), paint);
 
         if (color == null) {
             StringBuilder colors = new StringBuilder();

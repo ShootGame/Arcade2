@@ -18,6 +18,7 @@ package pl.themolka.arcade.item;
 
 import org.bukkit.enchantments.Enchantment;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.ParserException;
@@ -35,7 +36,7 @@ public class EnchantmentParser extends ElementParser<Enchantment> {
     }
 
     @Override
-    protected Result<Enchantment> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Enchantment> parseElement(Context context, Element element, String name, String value) throws ParserException {
         Enchantment enchantment = Enchantment.getByName(this.normalizeEnchantmentName(value));
 
         if (enchantment == null) {

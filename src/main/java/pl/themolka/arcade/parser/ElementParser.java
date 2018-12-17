@@ -26,17 +26,17 @@ public abstract class ElementParser<T> extends AbstractParser<T> {
     }
 
     @Override
-    protected Result<T> parse(Element element, String name, String value) throws ParserException {
+    protected Result<T> parse(Context context, Element element, String name, String value) throws ParserException {
         if (this.missingValue(value)) {
             return Result.empty(element, name);
         }
 
-        return this.parseElement(element, name, value);
+        return this.parseElement(context, element, name, value);
     }
 
     protected boolean missingValue(String value) {
         return value == null;
     }
 
-    protected abstract Result<T> parseElement(Element element, String name, String value) throws ParserException;
+    protected abstract Result<T> parseElement(Context context, Element element, String name, String value) throws ParserException;
 }

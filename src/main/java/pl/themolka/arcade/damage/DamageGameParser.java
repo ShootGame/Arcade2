@@ -19,9 +19,10 @@ package pl.themolka.arcade.damage;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class DamageGameParser extends GameModuleParser<DamageGame, DamageGame.Co
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.ruleParser = context.type(DamageRule.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.ruleParser = library.type(DamageRule.Config.class);
     }
 
     @Override
-    protected Result<DamageGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<DamageGame.Config> parseTree(Context context, Node node, String name) throws ParserException {
         Set<DamageRule.Config> rules = new LinkedHashSet<>();
         for (Node ruleNode : node.children("rule")) {
-            rules.add(this.ruleParser.parse(ruleNode).orFail());
+            rules.add(this.ruleParser.parse(context, ruleNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(rules)) {

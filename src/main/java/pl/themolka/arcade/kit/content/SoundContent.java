@@ -22,10 +22,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -103,20 +104,20 @@ public class SoundContent implements KitContent<Sound> {
         private Parser<Float> volumeParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.soundParser = context.type(Sound.class);
-            this.locationParser = context.type(Location.class);
-            this.pitchParser = context.type(Float.class);
-            this.volumeParser = context.type(Float.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.soundParser = library.type(Sound.class);
+            this.locationParser = library.type(Location.class);
+            this.pitchParser = library.type(Float.class);
+            this.volumeParser = library.type(Float.class);
         }
 
         @Override
-        protected Result<Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-            Sound sound = this.soundParser.parseWithDefinition(node, name, value).orFail();
-            Location location = this.locationParser.parse(node.property("location", "at")).orDefaultNull();
-            float pitch = this.pitchParser.parse(node.property("pitch")).orDefault(Config.DEFAULT_PITCH);
-            float volume = this.volumeParser.parse(node.property("volume")).orDefault(Config.DEFAULT_VOLUME);
+        protected Result<Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+            Sound sound = this.soundParser.parseWithDefinition(context, node, name, value).orFail();
+            Location location = this.locationParser.parse(context, node.property("location", "at")).orDefaultNull();
+            float pitch = this.pitchParser.parse(context, node.property("pitch")).orDefault(Config.DEFAULT_PITCH);
+            float volume = this.volumeParser.parse(context, node.property("volume")).orDefault(Config.DEFAULT_VOLUME);
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<Sound> result() { return Ref.ofProvided(sound); }

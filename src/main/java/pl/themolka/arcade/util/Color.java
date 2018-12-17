@@ -20,11 +20,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.EmptyElement;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.Parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -68,7 +70,7 @@ public enum Color {
     private static final Map<String, Color> byId = new HashMap<>();
     /** Indexed by {@link ChatColor}. */
     private static final Map<ChatColor, Color> byChat = new HashMap<>();
-    /** Indexed by component {@link net.md_5.bungee.api.ChatColor}. */
+    /** Indexed by component {@code ChatColor}. */
     private static final Map<net.md_5.bungee.api.ChatColor, Color> byComponent = new HashMap<>();
     /** Indexed by {@link DyeColor} */
     private static final Map<DyeColor, Color> byDye = new HashMap<>();
@@ -106,7 +108,7 @@ public enum Color {
 
     /** The unique ID of this color to be represented in chat components */
     private final String id;
-    /** Component {@link net.md_5.bungee.api.ChatColor} representation */
+    /** Component {@code ChatColor} representation */
     private final net.md_5.bungee.api.ChatColor component;
     /** {@link ChatColor} representation */
     private final ChatColor chat;
@@ -202,7 +204,7 @@ public enum Color {
     }
 
     /**
-     * Convert this color to a component {@link net.md_5.bungee.api.ChatColor}
+     * Convert this color to a component {@code ChatColor}
      */
     public net.md_5.bungee.api.ChatColor toComponent() {
         return this.component;
@@ -250,8 +252,8 @@ public enum Color {
     }
 
     /**
-     * Convert a component {@link net.md_5.bungee.api.ChatColor} to a color
-     * @param component Component {@link net.md_5.bungee.api.ChatColor} representation of a color
+     * Convert a component {@code ChatColor} to a color
+     * @param component Component {@code ChatColor} representation of a color
      */
     public static Color ofComponent(net.md_5.bungee.api.ChatColor component) {
         return byComponent.get(component);
@@ -320,8 +322,8 @@ public enum Color {
      * Parse a {@link Color} from the given query
      * @param color Query to search
      */
-    public static Color parse(String color) {
-        return parse(color, null);
+    public static Color parse(Context context, String color) {
+        return parse(context, color, null);
     }
 
     /**
@@ -329,24 +331,26 @@ public enum Color {
      * @param color Query to search
      * @param def Default {@link Color} value, if the result gives <code>null</code>
      */
-    public static Color parse(String color, Color def) {
+    public static Color parse(Context context, String color, Color def) {
+        Objects.requireNonNull(context, "context cannot be null");
+
         if (color != null) {
-            Color value = Parsers.color.parseWithValue(Parsers.element, color).orNull();
+            Color value = Parsers.color.parseWithValue(context, Parsers.element, color).orNull();
             if (value != null) {
                 return value;
             }
 
-            ChatColor chat = parseChat(color);
+            ChatColor chat = parseChat(context, color);
             if (chat != null) {
                 return ofChat(chat);
             }
 
-            net.md_5.bungee.api.ChatColor component = parseComponent(color);
+            net.md_5.bungee.api.ChatColor component = parseComponent(context, color);
             if (component != null) {
                 return ofComponent(component);
             }
 
-            DyeColor dye = parseDye(color);
+            DyeColor dye = parseDye(context, color);
             if (dye != null) {
                 return ofDye(dye);
             }
@@ -359,8 +363,8 @@ public enum Color {
      * Parse a {@link ChatColor} from the given query
      * @param chat Query to search
      */
-    public static ChatColor parseChat(String chat) {
-        return parseChat(chat, null);
+    public static ChatColor parseChat(Context context, String chat) {
+        return parseChat(context, chat, null);
     }
 
     /**
@@ -368,33 +372,35 @@ public enum Color {
      * @param chat Query to search
      * @param def Default {@link ChatColor} value, if the result gives <code>null</code>
      */
-    public static ChatColor parseChat(String chat, ChatColor def) {
-        return Parsers.chat.parseWithValue(Parsers.element, chat).or(def);
+    public static ChatColor parseChat(Context context, String chat, ChatColor def) {
+        Objects.requireNonNull(context, "context cannot be null");
+        return Parsers.chat.parseWithValue(context, Parsers.element, chat).or(def);
     }
 
     /**
-     * Parse a component {@link net.md_5.bungee.api.ChatColor} from the given query
+     * Parse a component {@code ChatColor} from the given query
      * @param component Query to search
      */
-    public static net.md_5.bungee.api.ChatColor parseComponent(String component) {
-        return parseComponent(component, null);
+    public static net.md_5.bungee.api.ChatColor parseComponent(Context context, String component) {
+        return parseComponent(context, component, null);
     }
 
     /**
-     * Parse a component {@link net.md_5.bungee.api.ChatColor} from the given query
+     * Parse a component {@code ChatColor} from the given query
      * @param component Query to search
-     * @param def Default component {@link net.md_5.bungee.api.ChatColor} value, if the result gives <code>null</code>
+     * @param def Default component {@code ChatColor} value, if the result gives <code>null</code>
      */
-    public static net.md_5.bungee.api.ChatColor parseComponent(String component, net.md_5.bungee.api.ChatColor def) {
-        return Parsers.component.parseWithValue(Parsers.element, component).or(def);
+    public static net.md_5.bungee.api.ChatColor parseComponent(Context context, String component, net.md_5.bungee.api.ChatColor def) {
+        Objects.requireNonNull(context, "context cannot be null");
+        return Parsers.component.parseWithValue(context, Parsers.element, component).or(def);
     }
 
     /**
      * Parse a {@link DyeColor} from the given query
      * @param dye Query to searach
      */
-    public static DyeColor parseDye(String dye) {
-        return parseDye(dye, null);
+    public static DyeColor parseDye(Context context, String dye) {
+        return parseDye(context, dye, null);
     }
 
     /**
@@ -402,8 +408,9 @@ public enum Color {
      * @param dye Query to search
      * @param def Default {@link DyeColor} value, if the result gives <code>null</code>
      */
-    public static DyeColor parseDye(String dye, DyeColor def) {
-        return Parsers.dye.parseWithValue(Parsers.element, dye).or(def);
+    public static DyeColor parseDye(Context context, String dye, DyeColor def) {
+        Objects.requireNonNull(context, "context cannot be null");
+        return Parsers.dye.parseWithValue(context, Parsers.element, dye).or(def);
     }
 
     /** Internal parsers used to parse the color objects */
@@ -441,7 +448,7 @@ public enum Color {
     }
 
     /**
-     * Return values of all component {@link net.md_5.bungee.api.ChatColor}s of this enum
+     * Return values of all component {@code ChatColor}s of this enum
      */
     public static net.md_5.bungee.api.ChatColor[] componentValues() {
         Set<net.md_5.bungee.api.ChatColor> values = byComponent.keySet();

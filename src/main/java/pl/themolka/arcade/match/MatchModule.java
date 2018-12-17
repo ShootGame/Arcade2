@@ -25,7 +25,7 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 import java.util.List;
@@ -33,8 +33,8 @@ import java.util.List;
 @ModuleInfo(id = "Match")
 public class MatchModule extends Module<MatchGame> {
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(MatchGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(MatchGameParser.class);
     }
 
     @CommandInfo(name = {"begin", "start"},

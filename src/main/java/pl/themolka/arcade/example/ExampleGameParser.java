@@ -18,6 +18,7 @@ package pl.themolka.arcade.example;
 
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Result;
@@ -34,7 +35,7 @@ public class ExampleGameParser extends GameModuleParser<ExampleGame, ExampleGame
     }
 
     @Override
-    protected Result<ExampleGame.Config> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<ExampleGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
         return Result.fine(node, name, value, new ExampleGame.Config() {});
     }
 }

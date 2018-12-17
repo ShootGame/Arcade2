@@ -17,6 +17,7 @@
 package pl.themolka.arcade.config;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -33,7 +34,7 @@ public class RefParser extends ElementParser<Ref> {
     }
 
     @Override
-    protected Result<Ref> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Ref> parseElement(Context context, Element element, String name, String value) throws ParserException {
         if (!this.validId(value)) {
             throw this.fail(element, name, value, "Invalid ID syntax");
         }

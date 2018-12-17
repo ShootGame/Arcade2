@@ -19,9 +19,10 @@ package pl.themolka.arcade.filter;
 import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -43,18 +44,18 @@ public class FilterSetParser extends ConfigParser<FilterSet.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.filterParser = context.type(Filter.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.filterParser = library.type(Filter.Config.class);
     }
 
     @Override
-    protected Result<FilterSet.Config> parseTree(Node node, String name) throws ParserException {
-        String id = this.parseRequiredId(node);
+    protected Result<FilterSet.Config> parseTree(Context context, Node node, String name) throws ParserException {
+        String id = this.parseRequiredId(context, node);
 
         Set<Filter.Config<?>> filters = new HashSet<>();
         for (Node filterNode : node.children()) {
-            filters.add(this.filterParser.parse(filterNode).orFail());
+            filters.add(this.filterParser.parse(context, filterNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(filters)) {

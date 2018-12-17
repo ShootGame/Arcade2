@@ -20,10 +20,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -70,20 +71,20 @@ public class LevelContent implements RemovableKitContent<PlayerLevel> {
         private Parser<PlayerLevel> levelParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.levelParser = context.type(PlayerLevel.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.levelParser = library.type(PlayerLevel.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            if (this.reset(node)) {
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            if (this.reset(context, node)) {
                 return Result.fine(node, name, value, new Config() {
                     public Ref<PlayerLevel> result() { return Ref.empty(); }
                 });
             }
 
-            PlayerLevel level = this.levelParser.parseWithDefinition(node, name, value).orFail();
+            PlayerLevel level = this.levelParser.parseWithDefinition(context, node, name, value).orFail();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<PlayerLevel> result() { return Ref.ofProvided(level); }

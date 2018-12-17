@@ -123,7 +123,7 @@ public class TeamWindow extends PlayMatchWindow {
         }
 
         GameCommands.JoinCommandEvent event = new GameCommands.JoinCommandEvent(
-                this.game.getPlugin(), player, CommandContext.parse(null, null, args), team == null);
+                this.game.getPlugin(), player, CommandContext.parse(this.game.getPlugin(), null, null, args), team == null);
         this.game.getPlugin().getEventBus().publish(event);
 
         if (!event.isCanceled() && !event.hasJoined()) {

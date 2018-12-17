@@ -22,7 +22,8 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Node;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.Context;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
@@ -37,7 +38,7 @@ public class Settings {
 
     private final ArcadePlugin plugin;
 
-    private final ParserContext context;
+    private final ParserLibrary library;
     private Document document;
     private boolean enabled;
     private final File file;
@@ -52,7 +53,7 @@ public class Settings {
     public Settings(ArcadePlugin plugin, File file) {
         this.plugin = plugin;
 
-        this.context = plugin.getParsers().createContext();
+        this.library = plugin.getParsers().createLibrary();
         this.file = file;
     }
 
@@ -126,14 +127,15 @@ public class Settings {
 
         Node root = document.getRoot();
         if (root != null) {
-            this.setup(root);
+            Context context = new Context(this.plugin);
+            this.setup(context, root);
         }
     }
 
-    private void setup(Node root) throws ParserException, ParserNotSupportedException {
-        this.enabled = this.context.type(Boolean.class).parse(root.property("enable", "enabled")).orFail();
-        this.includeRepository = this.context.type(Path.class).parse(root.firstChild("include-repository")).orFail();
-        this.spawn = this.context.type(Vector.class).parse(root.child("spawn")).orFail();
-        this.worldContainer = this.context.type(Path.class).parse(root.child("world-container")).orFail();
+    private void setup(Context context, Node root) throws ParserException, ParserNotSupportedException {
+        this.enabled = this.library.type(Boolean.class).parse(context, root.property("enable", "enabled")).orFail();
+        this.includeRepository = this.library.type(Path.class).parse(context, root.firstChild("include-repository")).orFail();
+        this.spawn = this.library.type(Vector.class).parse(context, root.child("spawn")).orFail();
+        this.worldContainer = this.library.type(Path.class).parse(context, root.child("world-container")).orFail();
     }
 }

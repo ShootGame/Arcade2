@@ -19,9 +19,10 @@ package pl.themolka.arcade.kit;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class KitsGameParser extends GameModuleParser<KitsGame, KitsGame.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.kitParser = context.type(Kit.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.kitParser = library.type(Kit.Config.class);
     }
 
     @Override
-    protected Result<KitsGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<KitsGame.Config> parseTree(Context context, Node node, String name) throws ParserException {
         Set<Kit.Config> kits = new LinkedHashSet<>();
         for (Node kitNode : node.children("kit", "set", "package")) {
-            kits.add(this.kitParser.parse(kitNode).orFail());
+            kits.add(this.kitParser.parse(context, kitNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(kits)) {

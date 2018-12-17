@@ -21,9 +21,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,24 +37,24 @@ class FireworkMetaParser extends ItemMetaParser.Nested<FireworkMeta>
     private Parser<FireworkEffect> fireworkEffectParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.clearEffects = context.type(Boolean.class);
-        this.powerParser = context.type(Integer.class);
-        this.fireworkEffectParser = context.type(FireworkEffect.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.clearEffects = library.type(Boolean.class);
+        this.powerParser = library.type(Integer.class);
+        this.fireworkEffectParser = library.type(FireworkEffect.class);
     }
 
     @Override
-    public FireworkMeta parse(Node root, ItemStack itemStack, FireworkMeta itemMeta) throws ParserException {
+    public FireworkMeta parse(Context context, Node root, ItemStack itemStack, FireworkMeta itemMeta) throws ParserException {
         Node node = root.firstChild("firework");
         if (node != null) {
             Property clearEffects = node.property("clear-effects");
-            if (clearEffects != null && this.clearEffects.parse(clearEffects).orDefault(false)) {
+            if (clearEffects != null && this.clearEffects.parse(context, clearEffects).orDefault(false)) {
                 itemMeta.clearEffects();
             }
 
             Property power = node.property("power");
             if (power != null) {
-                int powerInt = this.powerParser.parse(power).orFail();
+                int powerInt = this.powerParser.parse(context, power).orFail();
                 if (powerInt > 127) {
                     throw this.fail(power, "Power cannot be greater than 127");
                 } else if (powerInt < 0) {
@@ -64,7 +65,7 @@ class FireworkMetaParser extends ItemMetaParser.Nested<FireworkMeta>
             }
 
             for (Node effect : node.children("effect", "firework-effect", "fireworkeffect")) {
-                itemMeta.addEffect(this.fireworkEffectParser.parse(effect).orFail());
+                itemMeta.addEffect(this.fireworkEffectParser.parse(context, effect).orFail());
             }
         }
 

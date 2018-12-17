@@ -18,10 +18,11 @@ package pl.themolka.arcade.attribute;
 
 import org.bukkit.attribute.AttributeModifier;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -44,9 +45,9 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
     private final FastUUID fastUUID = new FastUUID();
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.operationParser = context.type(AttributeModifier.Operation.class);
-        this.amountParser = context.type(Double.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.operationParser = library.type(AttributeModifier.Operation.class);
+        this.amountParser = library.type(Double.class);
     }
 
     @Override
@@ -55,10 +56,10 @@ public class AttributeModifierParser extends NodeParser<AttributeModifier>
     }
 
     @Override
-    protected Result<AttributeModifier> parsePrimitive(Node node, String name, String value) throws ParserException {
-        AttributeModifier.Operation operation = this.operationParser.parse(node.property("operation"))
+    protected Result<AttributeModifier> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        AttributeModifier.Operation operation = this.operationParser.parse(context, node.property("operation"))
                 .orDefault(AttributeModifier.Operation.ADD_NUMBER);
-        double amount = this.amountParser.parseWithDefinition(node, name, value).orFail();
+        double amount = this.amountParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, this.createModifier(this.fastUUID.random(), operation, amount));
     }

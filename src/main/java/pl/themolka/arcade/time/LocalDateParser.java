@@ -17,6 +17,7 @@
 package pl.themolka.arcade.time;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,7 +39,7 @@ public class LocalDateParser extends ElementParser<LocalDate> {
     }
 
     @Override
-    protected Result<LocalDate> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<LocalDate> parseElement(Context context, Element element, String name, String value) throws ParserException {
         try {
             return Result.fine(element, name, value, LocalDate.parse(value, FORMATTER));
         } catch (DateTimeParseException ex) {

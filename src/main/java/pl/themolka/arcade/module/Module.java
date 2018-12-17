@@ -26,7 +26,7 @@ import pl.themolka.arcade.game.GameModule;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.IGameModuleConfig;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.util.StringId;
 
@@ -86,7 +86,7 @@ public class Module<GM extends GameModule> extends SimpleModuleListener
         return this.id;
     }
 
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
         return null;
     }
 

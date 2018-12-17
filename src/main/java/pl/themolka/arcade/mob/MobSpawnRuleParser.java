@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -43,17 +44,17 @@ public class MobSpawnRuleParser extends ConfigParser<MobSpawnRule.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.filterParser = context.type(Ref.class);
-        this.allowParser = context.type(Boolean.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.filterParser = library.type(Ref.class);
+        this.allowParser = library.type(Boolean.class);
     }
 
     @Override
-    protected Result<MobSpawnRule.Config> parsePrimitive(Node node, String name, String value) throws ParserException {
-        String id = this.parseOptionalId(node);
-        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orFail();
-        boolean allow = this.allowParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<MobSpawnRule.Config> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        String id = this.parseOptionalId(context, node);
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(context, node.property("filter")).orFail();
+        boolean allow = this.allowParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, new MobSpawnRule.Config() {
             public String id() { return id; }

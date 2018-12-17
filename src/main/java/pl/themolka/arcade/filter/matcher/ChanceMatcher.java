@@ -19,10 +19,11 @@ package pl.themolka.arcade.filter.matcher;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -61,14 +62,14 @@ public class ChanceMatcher extends ConfigurableMatcher<Percentage> {
         private Parser<Percentage> chanceParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.chanceParser = context.type(Percentage.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.chanceParser = library.type(Percentage.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            Percentage chance = this.chanceParser.parseWithDefinition(node, name, value).orFail();
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            Percentage chance = this.chanceParser.parseWithDefinition(context, node, name, value).orFail();
             if (!chance.isNormalized()) {
                 throw this.fail(node, name, value, "Chance must be normalized");
             }

@@ -18,10 +18,11 @@ package pl.themolka.arcade.attribute;
 
 import org.bukkit.attribute.AttributeModifier;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -37,9 +38,9 @@ public class BoundedModifierParser extends NodeParser<BoundedModifier>
     private Parser<AttributeModifier> modifierParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.keyParser = context.type(AttributeKey.class);
-        this.modifierParser = context.type(AttributeModifier.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.keyParser = library.type(AttributeKey.class);
+        this.modifierParser = library.type(AttributeModifier.class);
     }
 
     @Override
@@ -48,9 +49,10 @@ public class BoundedModifierParser extends NodeParser<BoundedModifier>
     }
 
     @Override
-    protected Result<BoundedModifier> parseNode(Node node, String name, String value) throws ParserException {
-        AttributeKey key = this.keyParser.parse(node.property("attribute", "attribute-key", "attributekey", "attr", "key")).orFail();
-        AttributeModifier modifier = this.modifierParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<BoundedModifier> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        AttributeKey key = this.keyParser.parse(context, node.property(
+                "attribute", "attribute-key", "attributekey", "attr", "key")).orFail();
+        AttributeModifier modifier = this.modifierParser.parseWithDefinition(context, node, name, value).orFail();
 
         return Result.fine(node, name, value, new BoundedModifier(key, modifier));
     }

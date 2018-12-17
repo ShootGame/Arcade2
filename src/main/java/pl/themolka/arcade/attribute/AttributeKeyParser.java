@@ -17,10 +17,11 @@
 package pl.themolka.arcade.attribute;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,9 +37,9 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
     private Parser<String> keyParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.namespaceParser = context.text();
-        this.keyParser = context.text();
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.namespaceParser = library.text();
+        this.keyParser = library.text();
     }
 
     @Override
@@ -47,14 +48,14 @@ public class AttributeKeyParser extends ElementParser<AttributeKey>
     }
 
     @Override
-    protected Result<AttributeKey> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<AttributeKey> parseElement(Context context, Element element, String name, String value) throws ParserException {
         String[] input = value.split("\\.", 2);
         if (input.length != 2) {
             throw this.fail(element, name, value, "Requires a namespace and a key separated with a dot");
         }
 
-        String namespace = this.normalizeInput(this.namespaceParser.parseWithDefinition(element, name, input[0]).orFail());
-        String key = this.normalizeInput(this.keyParser.parseWithDefinition(element, name, input[1]).orFail());
+        String namespace = this.normalizeInput(this.namespaceParser.parseWithDefinition(context, element, name, input[0]).orFail());
+        String key = this.normalizeInput(this.keyParser.parseWithDefinition(context, element, name, input[1]).orFail());
         return Result.fine(element, name, value, new FixedAttributeKey(namespace, key));
     }
 }

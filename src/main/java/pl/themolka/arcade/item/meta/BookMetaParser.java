@@ -20,8 +20,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -39,30 +40,30 @@ class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
     private Parser<String> pageParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.authorParser = context.type(String.class);
-        this.generationParser = context.type(BookMeta.Generation.class);
-        this.titleParser = context.type(String.class);
-        this.pageParser = context.type(String.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.authorParser = library.type(String.class);
+        this.generationParser = library.type(BookMeta.Generation.class);
+        this.titleParser = library.type(String.class);
+        this.pageParser = library.type(String.class);
     }
 
     @Override
-    public BookMeta parse(Node root, ItemStack itemStack, BookMeta itemMeta) throws ParserException {
+    public BookMeta parse(Context context, Node root, ItemStack itemStack, BookMeta itemMeta) throws ParserException {
         Node node = root.firstChild("book");
         if (node != null) {
             Property author = root.property("author", "signed", "signed-as");
             if (author != null) {
-                itemMeta.setAuthor(this.authorParser.parse(author).orFail());
+                itemMeta.setAuthor(this.authorParser.parse(context, author).orFail());
             }
 
             Property generation = root.property("generation");
             if (generation != null) {
-                itemMeta.setGeneration(this.generationParser.parse(generation).orFail());
+                itemMeta.setGeneration(this.generationParser.parse(context, generation).orFail());
             }
 
             Property title = root.property("title", "name");
             if (title != null) {
-                itemMeta.setTitle(this.titleParser.parse(title).orFail());
+                itemMeta.setTitle(this.titleParser.parse(context, title).orFail());
             }
 
             List<String> pages = new ArrayList<>();
@@ -71,7 +72,7 @@ class BookMetaParser extends ItemMetaParser.Nested<BookMeta> {
                     throw this.fail(page, "Whoops! Book page limit of " + PAGE_LIMIT + " exceed, sorry!");
                 }
 
-                pages.add(this.pageParser.parse(page).orFail());
+                pages.add(this.pageParser.parse(context, page).orFail());
             }
 
             itemMeta.setPages(pages);

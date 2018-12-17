@@ -21,7 +21,7 @@ import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.kit.KitsModule;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 
 @ModuleInfo(id = "Kill-Rewards",
@@ -30,7 +30,7 @@ import pl.themolka.arcade.parser.ParserNotSupportedException;
                 KitsModule.class})
 public class KillRewardsModule extends Module<KillRewardsGame> {
     @Override
-    public GameModuleParser<?, ?> getGameModuleParser(ParserContext context) throws ParserNotSupportedException {
-        return context.of(KillRewardsGameParser.class);
+    public GameModuleParser<?, ?> getGameModuleParser(ParserLibrary library) throws ParserNotSupportedException {
+        return library.of(KillRewardsGameParser.class);
     }
 }

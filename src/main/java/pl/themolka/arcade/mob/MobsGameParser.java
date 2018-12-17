@@ -19,9 +19,10 @@ package pl.themolka.arcade.mob;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -47,20 +48,20 @@ public class MobsGameParser extends GameModuleParser<MobsGame, MobsGame.Config>
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.ruleParser = context.type(MobSpawnRule.Config.class);
-        this.denyNautralParser = context.type(Boolean.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.ruleParser = library.type(MobSpawnRule.Config.class);
+        this.denyNautralParser = library.type(Boolean.class);
     }
 
     @Override
-    protected Result<MobsGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        boolean denyNatural = this.denyNautralParser.parse(node.property("deny-natural")).orDefault(false);
+    protected Result<MobsGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        boolean denyNatural = this.denyNautralParser.parse(context, node.property("deny-natural", "denynatural")).orDefault(false);
 
         List<MobSpawnRule.Config> rules = new ArrayList<>();
         if (!denyNatural) {
             for (Node ruleNode : node.children("rule")) {
-                rules.add(this.ruleParser.parse(ruleNode).orFail());
+                rules.add(this.ruleParser.parse(context, ruleNode).orFail());
             }
 
             if (ParserUtils.ensureNotEmpty(rules)) {

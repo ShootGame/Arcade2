@@ -29,7 +29,7 @@ import java.util.Objects;
  * Services should be able to be loaded and unloaded at runtime without any side
  * effects. I want to make the services being categorized in different groups,
  * so they 'll be easier to manage in the future. Services should somehow be
- * configurable (using XML structure), but I don't know you exactly yet.
+ * configurable (using XML structure), but I don't know how exactly yet.
  * - service = separate XML file
  * - services.xml with all the configurations
  * Not all services are configurable, what should we do with them?

@@ -28,28 +28,28 @@ import java.util.Set;
 public interface Parser<T> {
     Set<Object> expect();
 
-    default Result<T> parse(Document document) {
-        return document != null && document.hasRoot() ? this.parse(document.getRoot())
+    default Result<T> parse(Context context, Document document) {
+        return document != null && document.hasRoot() ? this.parse(context, document.getRoot())
                                                       : Result.empty();
     }
 
-    default Result<T> parse(Element element) {
-        return element != null ? this.parseWithDefinition(element, element.getName(), element.getValue())
+    default Result<T> parse(Context context, Element element) {
+        return element != null ? this.parseWithDefinition(context, element, element.getName(), element.getValue())
                                : Result.empty();
     }
 
-    default Result<T> parseWithDefinition(String name, String value) {
-        return this.parseWithDefinition(null, name, value);
+    default Result<T> parseWithDefinition(Context context, String name, String value) {
+        return this.parseWithDefinition(context, null, name, value);
     }
 
-    Result<T> parseWithDefinition(Element element, String name, String value);
+    Result<T> parseWithDefinition(Context context, Element element, String name, String value);
 
-    default Result<T> parseWithName(Element element, String name) {
-        return this.parseWithDefinition(element, name, element != null ? element.getValue() : null);
+    default Result<T> parseWithName(Context context, Element element, String name) {
+        return this.parseWithDefinition(context, element, name, element != null ? element.getValue() : null);
     }
 
-    default Result<T> parseWithValue(Element element, String value) {
-        return element != null ? this.parseWithDefinition(element, element.getName(), value)
+    default Result<T> parseWithValue(Context context, Element element, String value) {
+        return element != null ? this.parseWithDefinition(context, element, element.getName(), value)
                                : Result.empty();
     }
 }

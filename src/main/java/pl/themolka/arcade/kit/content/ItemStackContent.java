@@ -22,10 +22,11 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserName;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -89,18 +90,18 @@ public class ItemStackContent extends BaseInventoryContent<ItemStack>
         private Parser<Integer> slotParser;
 
         @Override
-        public void install(ParserContext context) throws ParserNotSupportedException {
-            super.install(context);
-            this.itemStackParser = context.type(ItemStack.class);
-            this.modeParser = context.type(Mode.class);
-            this.slotParser = context.type(Integer.class);
+        public void install(ParserLibrary library) throws ParserNotSupportedException {
+            super.install(library);
+            this.itemStackParser = library.type(ItemStack.class);
+            this.modeParser = library.type(Mode.class);
+            this.slotParser = library.type(Integer.class);
         }
 
         @Override
-        protected Result<Config> parseNode(Node node, String name, String value) throws ParserException {
-            ItemStack itemStack = this.itemStackParser.parseWithDefinition(node, name, value).orFail();
-            BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(node, name, value).orDefault(Config.DEFAULT_MODE);
-            Integer slot = this.slotParser.parse(node.property("slot")).orDefaultNull();
+        protected Result<Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+            ItemStack itemStack = this.itemStackParser.parseWithDefinition(context, node, name, value).orFail();
+            BaseModeContent.Mode mode = this.modeParser.parseWithDefinition(context, node, name, value).orDefault(Config.DEFAULT_MODE);
+            Integer slot = this.slotParser.parse(context, node.property("slot")).orDefaultNull();
 
             return Result.fine(node, name, value, new Config() {
                 public Ref<ItemStack> result() { return Ref.ofProvided(itemStack); }

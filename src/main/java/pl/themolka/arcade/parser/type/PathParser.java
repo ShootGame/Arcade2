@@ -17,6 +17,7 @@
 package pl.themolka.arcade.parser.type;
 
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.Produces;
@@ -36,7 +37,7 @@ public class PathParser extends ElementParser<Path> {
     }
 
     @Override
-    protected Result<Path> parseElement(Element element, String name, String value) throws ParserException {
+    protected Result<Path> parseElement(Context context, Element element, String name, String value) throws ParserException {
         try {
             return Result.fine(element, name, value, Paths.get(value));
         } catch (InvalidPathException ex) {

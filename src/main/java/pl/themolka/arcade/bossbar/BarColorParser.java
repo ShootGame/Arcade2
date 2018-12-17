@@ -19,10 +19,11 @@ package pl.themolka.arcade.bossbar;
 import org.bukkit.DyeColor;
 import org.bukkit.boss.BarColor;
 import pl.themolka.arcade.dom.Element;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -38,9 +39,9 @@ public class BarColorParser extends ElementParser<BarColor>
     private Parser<DyeColor> dyeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.colorParser = context.enumType(BarColor.class);
-        this.dyeParser = context.type(DyeColor.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.colorParser = library.enumType(BarColor.class);
+        this.dyeParser = library.type(DyeColor.class);
     }
 
     @Override
@@ -49,8 +50,8 @@ public class BarColorParser extends ElementParser<BarColor>
     }
 
     @Override
-    protected Result<BarColor> parseElement(Element element, String name, String value) throws ParserException {
-        DyeColor dye = this.dyeParser.parseWithDefinition(element, name, value).orNull();
+    protected Result<BarColor> parseElement(Context context, Element element, String name, String value) throws ParserException {
+        DyeColor dye = this.dyeParser.parseWithDefinition(context, element, name, value).orNull();
         if (dye != null) {
             BarColor result = BossBarUtils.color(dye);
 
@@ -59,6 +60,6 @@ public class BarColorParser extends ElementParser<BarColor>
             }
         }
 
-        return Result.fine(element, name, value, this.colorParser.parseWithDefinition(element, name, value).orFail());
+        return Result.fine(element, name, value, this.colorParser.parseWithDefinition(context, element, name, value).orFail());
     }
 }

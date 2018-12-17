@@ -56,9 +56,10 @@ import pl.themolka.arcade.module.ModuleContainer;
 import pl.themolka.arcade.module.ModuleInfo;
 import pl.themolka.arcade.module.ModulesFile;
 import pl.themolka.arcade.module.ModulesLoadEvent;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserContainer;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserManager;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParsersFile;
@@ -546,7 +547,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
             throw new RuntimeException("No " + Environment.class.getSimpleName() + " parser installed");
         }
 
-        this.environment = parser.parse(node).orFail();
+        this.environment = parser.parse(new Context(this), node).orFail();
         this.environment.initialize(this);
     }
 
@@ -647,7 +648,7 @@ public final class ArcadePlugin extends JavaPlugin implements Runnable {
         this.domPreprocessor.install(new Import(this.domEngines, this.domPreprocessor));
 
         this.parsers = new ParserManager(this);
-        this.parsers.setContextFactory(new ParserContext.Factory());
+        this.parsers.setLibraryFactory(new ParserLibrary.Factory());
 
         try (InputStream input = this.getClass().getClassLoader().getResourceAsStream(ParsersFile.DEFAULT_FILENAME)) {
             ParsersFile file = new ParsersFile(this, input);

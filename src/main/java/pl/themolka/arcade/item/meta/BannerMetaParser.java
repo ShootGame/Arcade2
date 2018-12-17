@@ -22,8 +22,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -34,22 +35,22 @@ class BannerMetaParser extends ItemMetaParser.Nested<BannerMeta> {
     private Parser<Pattern> patternParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.baseColorParser = context.type(DyeColor.class);
-        this.patternParser = context.type(Pattern.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.baseColorParser = library.type(DyeColor.class);
+        this.patternParser = library.type(Pattern.class);
     }
 
     @Override
-    public BannerMeta parse(Node root, ItemStack itemStack, BannerMeta itemMeta) throws ParserException {
+    public BannerMeta parse(Context context, Node root, ItemStack itemStack, BannerMeta itemMeta) throws ParserException {
         Node node = root.child("banner", "flag");
         if (node != null) {
             Property baseColor = node.property("base-color", "basecolor", "color");
             if (baseColor != null) {
-                itemMeta.setBaseColor(this.baseColorParser.parse(baseColor).orFail());
+                itemMeta.setBaseColor(this.baseColorParser.parse(context, baseColor).orFail());
             }
 
             for (Node pattern : node.children("pattern")) {
-                itemMeta.addPattern(this.patternParser.parse(pattern).orFail());
+                itemMeta.addPattern(this.patternParser.parse(context, pattern).orFail());
             }
         }
 

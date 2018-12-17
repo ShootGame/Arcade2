@@ -16,6 +16,14 @@
 
 package pl.themolka.arcade.parser;
 
-public interface InstallableParser {
-    void install(ParserLibrary library) throws ParserNotSupportedException;
+import pl.themolka.arcade.ArcadePlugin;
+
+import java.util.Objects;
+
+public class Context {
+    private final ArcadePlugin plugin;
+
+    public Context(ArcadePlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
+    }
 }

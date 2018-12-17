@@ -20,10 +20,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,10 +42,10 @@ public class LocationParser extends NodeParser<Location>
     private Parser<Float> pitchParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.vectorParser = context.type(Vector.class);
-        this.yawParser = context.type(Float.class);
-        this.pitchParser = context.type(Float.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.vectorParser = library.type(Vector.class);
+        this.yawParser = library.type(Float.class);
+        this.pitchParser = library.type(Float.class);
     }
 
     @Override
@@ -53,10 +54,10 @@ public class LocationParser extends NodeParser<Location>
     }
 
     @Override
-    protected Result<Location> parseNode(Node node, String name, String value) throws ParserException {
-        Vector vector = this.vectorParser.parseWithDefinition(node, name, value).orFail();
-        float yaw = this.yawParser.parse(node.property("yaw", "horizontal")).orDefault(Directional.Config.DEFAULT_YAW);
-        float pitch = this.pitchParser.parse(node.property("pitch", "vertical")).orDefault(Directional.Config.DEFAULT_PITCH);
+    protected Result<Location> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        Vector vector = this.vectorParser.parseWithDefinition(context, node, name, value).orFail();
+        float yaw = this.yawParser.parse(context, node.property("yaw", "horizontal")).orDefault(Directional.Config.DEFAULT_YAW);
+        float pitch = this.pitchParser.parse(context, node.property("pitch", "vertical")).orDefault(Directional.Config.DEFAULT_PITCH);
         return Result.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
     }
 }

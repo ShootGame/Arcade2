@@ -16,6 +16,8 @@
 
 package pl.themolka.arcade.command;
 
+import pl.themolka.arcade.ArcadePlugin;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,7 @@ public class CommandContextParser implements CommandContext.IContextParser {
     private List<String> params = new ArrayList<>();
 
     @Override
-    public CommandContext parse(Command command, String label, String[] args) {
+    public CommandContext parse(ArcadePlugin plugin, Command command, String label, String[] args) {
         if (args == null) {
             args = new String[0];
         }
@@ -87,7 +89,7 @@ public class CommandContextParser implements CommandContext.IContextParser {
             this.params.add(arg);
         }
 
-        return new CommandContext(args, command, this.flags, label, this.params);
+        return new CommandContext(plugin, args, command, this.flags, label, this.params);
     }
 
     public Map<String, String> getFlags() {

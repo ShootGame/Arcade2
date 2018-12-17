@@ -18,10 +18,11 @@ package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,10 +42,10 @@ public class MapTimeParser extends NodeParser<MapTime>
     private Parser<Long> longParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.booleanParser = context.type(Boolean.class);
-        this.contantParser = context.type(MapTimeConstants.class);
-        this.longParser = context.type(Long.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.booleanParser = library.type(Boolean.class);
+        this.contantParser = library.type(MapTimeConstants.class);
+        this.longParser = library.type(Long.class);
     }
 
     @Override
@@ -53,18 +54,18 @@ public class MapTimeParser extends NodeParser<MapTime>
     }
 
     @Override
-    protected Result<MapTime> parseNode(Node node, String name, String value) throws ParserException {
-        MapTime result = MapTime.ofTicks(this.parseTicks(node, name, value));
-        result.setLocked(this.booleanParser.parse(node.property("locked", "lock")).orDefault(DEFAULT_IS_LOCKED));
+    protected Result<MapTime> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        MapTime result = MapTime.ofTicks(this.parseTicks(context, node, name, value));
+        result.setLocked(this.booleanParser.parse(context, node.property("locked", "lock", "static")).orDefault(DEFAULT_IS_LOCKED));
         return Result.fine(node, name, value, result);
     }
 
-    private long parseTicks(Element element, String name, String value) throws ParserException {
-        MapTimeConstants constant = this.contantParser.parseWithDefinition(element, name, value).orNull();
+    private long parseTicks(Context context, Element element, String name, String value) throws ParserException {
+        MapTimeConstants constant = this.contantParser.parseWithDefinition(context, element, name, value).orNull();
         if (constant != null) {
             return constant.ticks();
         }
 
-        return this.longParser.parseWithDefinition(element, name, value).orDefault(DEFAULT_TIME_TICKS);
+        return this.longParser.parseWithDefinition(context, element, name, value).orDefault(DEFAULT_TIME_TICKS);
     }
 }

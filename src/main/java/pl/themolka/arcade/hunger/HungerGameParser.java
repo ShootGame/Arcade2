@@ -20,9 +20,10 @@ import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.filter.Filter;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -43,14 +44,14 @@ public class HungerGameParser extends GameModuleParser<HungerGame, HungerGame.Co
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.filterParser = context.type(Ref.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.filterParser = library.type(Ref.class);
     }
 
     @Override
-    protected Result<HungerGame.Config> parseNode(Node node, String name, String value) throws ParserException {
-        Ref<Filter.Config<?>> filter = this.filterParser.parse(node.property("filter")).orFail();
+    protected Result<HungerGame.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
+        Ref<Filter.Config<?>> filter = this.filterParser.parse(context, node.property("filter")).orFail();
 
         return Result.fine(node, name, value, new HungerGame.Config() {
             public Ref<Filter.Config<?>> filter() { return filter; }

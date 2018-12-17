@@ -18,10 +18,11 @@ package pl.themolka.arcade.map;
 
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -47,13 +48,13 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
     private Parser<Changelog> changelogParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.fileVersionParser = context.type(MapFileVersion.class);
-        this.nameParser = context.text();
-        this.versionParser = context.type(SemanticVersion.class);
-        this.descriptionParser = context.type(String.class); // can be colored!
-        this.authorParser = context.type(Author.class);
-        this.changelogParser = context.type(Changelog.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.fileVersionParser = library.type(MapFileVersion.class);
+        this.nameParser = library.text();
+        this.versionParser = library.type(SemanticVersion.class);
+        this.descriptionParser = library.type(String.class); // can be colored!
+        this.authorParser = library.type(Author.class);
+        this.changelogParser = library.type(Changelog.class);
     }
 
     @Override
@@ -62,9 +63,9 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
     }
 
     @Override
-    protected Result<OfflineMap> parseTree(Node node, String name) throws ParserException {
+    protected Result<OfflineMap> parseTree(Context context, Node node, String name) throws ParserException {
         Property fileVersionProperty = node.property("fileversion", "file-version", "ver", "version", "proto", "manifest");
-        MapFileVersion fileVersion = this.fileVersionParser.parse(fileVersionProperty).orDefault(MapFileVersions.NEWEST);
+        MapFileVersion fileVersion = this.fileVersionParser.parse(context, fileVersionProperty).orDefault(MapFileVersions.NEWEST);
 
         Node nameNode = node.firstChild("name");
         Node versionNode = node.firstChild("version", "ver");
@@ -72,9 +73,9 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
             throw new ParserException(node, MISSING_NAME_VERSION);
         }
 
-        String mapName = this.nameParser.parse(nameNode).orFail();
-        SemanticVersion version = this.versionParser.parse(versionNode).orFail();
-        String description = this.descriptionParser.parse(node.firstChild("description", "objective", "goal", "about")).orNull();
+        String mapName = this.nameParser.parse(context, nameNode).orFail();
+        SemanticVersion version = this.versionParser.parse(context, versionNode).orFail();
+        String description = this.descriptionParser.parse(context, node.firstChild("description", "objective", "goal", "about")).orNull();
 
         int mapNameLength = mapName.length();
         if (mapNameLength < OfflineMap.NAME_MIN_LENGTH) {
@@ -85,16 +86,16 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
                     "Map name is longer than " + OfflineMap.NAME_MAX_LENGTH + " characters");
         }
 
-        List<Author> authors = this.parseAuthors(node);
+        List<Author> authors = this.parseAuthors(context, node);
         Node authorsNode = node.firstChild("authors", "contributors", "teams");
         if (authorsNode != null) {
-            authors.addAll(this.parseAuthors(authorsNode));
+            authors.addAll(this.parseAuthors(context, authorsNode));
         }
 
         List<Changelog<SemanticVersion>> changelogs = new ArrayList<>();
         Node changelogsNode = node.firstChild("changelog", "change-log", "changes");
         if (changelogsNode != null) {
-            changelogs.addAll(this.parseChangelogs(changelogsNode));
+            changelogs.addAll(this.parseChangelogs(context, changelogsNode));
         }
 
         return Result.fine(node, name, new OfflineMap(fileVersion,
@@ -105,19 +106,19 @@ public class OfflineMapParser extends NodeParser<OfflineMap>
                                                       changelogs));
     }
 
-    private List<Author> parseAuthors(Node node) throws ParserException {
+    private List<Author> parseAuthors(Context context, Node node) throws ParserException {
         List<Author> authors = new ArrayList<>();
         for (Node author : node.children("author", "contributor", "team")) {
-            authors.add(this.authorParser.parse(author).orFail());
+            authors.add(this.authorParser.parse(context, author).orFail());
         }
 
         return authors;
     }
 
-    private List<Changelog<SemanticVersion>> parseChangelogs(Node node) throws ParserException {
+    private List<Changelog<SemanticVersion>> parseChangelogs(Context context, Node node) throws ParserException {
         List<Changelog<SemanticVersion>> changelogs = new ArrayList<>();
         for (Node changelog : node.children()) {
-            changelogs.add(this.changelogParser.parse(changelog).orFail());
+            changelogs.add(this.changelogParser.parse(context, changelog).orFail());
         }
 
         return changelogs;

@@ -18,9 +18,10 @@ package pl.themolka.arcade.objective;
 
 import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserMap;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -35,12 +36,12 @@ public class ObjectiveParser extends ConfigParser<Objective.Config<?>>
     private NestedParserMap<ObjectiveManifest.ObjectiveParser<?>> parsers;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
 
-        this.parsers = new NestedParserMap<>(context);
+        this.parsers = new NestedParserMap<>(library);
         for (ObjectiveManifest manifest : ObjectiveManifest.manifests) {
-            ObjectiveManifest.ObjectiveParser<?> parser = manifest.defineParser(context);
+            ObjectiveManifest.ObjectiveParser<?> parser = manifest.defineParser(library);
             if (parser != null) {
                 this.parsers.scanDedicatedClass(parser.getClass());
             }
@@ -53,12 +54,12 @@ public class ObjectiveParser extends ConfigParser<Objective.Config<?>>
     }
 
     @Override
-    protected Result<Objective.Config<?>> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<Objective.Config<?>> parseNode(Context context, Node node, String name, String value) throws ParserException {
         ObjectiveManifest.ObjectiveParser<?> parser = this.parsers.parse(name);
         if (parser == null) {
             throw this.fail(node, name, value, "Unknown objective type");
         }
 
-        return Result.fine(node, name, value, parser.parseWithDefinition(node, name, value).orFail());
+        return Result.fine(node, name, value, parser.parseWithDefinition(context, node, name, value).orFail());
     }
 }

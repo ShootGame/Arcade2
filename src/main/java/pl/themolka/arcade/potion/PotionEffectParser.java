@@ -20,10 +20,11 @@ import org.bukkit.Color;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -45,13 +46,13 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     private Parser<PotionEffectType> typeParser;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.ambientParser = context.type(Boolean.class);
-        this.amplifierParser = context.type(Integer.class);
-        this.colorParser = context.type(Color.class);
-        this.durationParser = context.type(Time.class);
-        this.particlesParser = context.type(Boolean.class);
-        this.typeParser = context.type(PotionEffectType.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.ambientParser = library.type(Boolean.class);
+        this.amplifierParser = library.type(Integer.class);
+        this.colorParser = library.type(Color.class);
+        this.durationParser = library.type(Time.class);
+        this.particlesParser = library.type(Boolean.class);
+        this.typeParser = library.type(PotionEffectType.class);
     }
 
     @Override
@@ -60,13 +61,13 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     }
 
     @Override
-    protected Result<PotionEffect> parsePrimitive(Node node, String name, String value) throws ParserException {
-        boolean ambient = this.ambientParser.parse(node.property("ambient")).orDefault(true);
-        int amplifier = this.amplifierParser.parse(node.property("amplifier")).orDefault(0);
-        Color color = this.colorParser.parse(node.property("color")).orDefaultNull();
-        Time duration = this.durationParser.parse(node.property("duration", "time")).orFail();
-        boolean particles = this.particlesParser.parse(node.property("particles")).orDefault(true);
-        PotionEffectType type = this.typeParser.parseWithDefinition(node, name, value).orFail();
+    protected Result<PotionEffect> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
+        boolean ambient = this.ambientParser.parse(context, node.property("ambient")).orDefault(true);
+        int amplifier = this.amplifierParser.parse(context, node.property("amplifier")).orDefault(0);
+        Color color = this.colorParser.parse(context, node.property("color")).orDefaultNull();
+        Time duration = this.durationParser.parse(context, node.property("duration", "time")).orFail();
+        boolean particles = this.particlesParser.parse(context, node.property("particles")).orDefault(true);
+        PotionEffectType type = this.typeParser.parseWithDefinition(context, node, name, value).orFail();
 
         if (amplifier < 0) {
             throw this.fail(node, name, value, "Amplifier must be positive or zero (greater than, or equal to 0)");

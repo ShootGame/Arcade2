@@ -19,9 +19,10 @@ package pl.themolka.arcade.filter;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.ParserUtils;
@@ -46,16 +47,16 @@ public class FiltersGameParser extends GameModuleParser<FiltersGame, FiltersGame
     }
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        super.install(context);
-        this.filterSetParser = context.type(FilterSet.Config.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        super.install(library);
+        this.filterSetParser = library.type(FilterSet.Config.class);
     }
 
     @Override
-    protected Result<FiltersGame.Config> parseTree(Node node, String name) throws ParserException {
+    protected Result<FiltersGame.Config> parseTree(Context context, Node node, String name) throws ParserException {
         Set<FilterSet.Config> filterSets = new LinkedHashSet<>();
         for (Node filterSetNode : node.children("filter")) {
-            filterSets.add(this.filterSetParser.parse(filterSetNode).orFail());
+            filterSets.add(this.filterSetParser.parse(context, filterSetNode).orFail());
         }
 
         if (ParserUtils.ensureNotEmpty(filterSets)) {

@@ -19,10 +19,11 @@ package pl.themolka.arcade.map;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.GameModuleParser;
 import pl.themolka.arcade.game.IGameModuleConfig;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -41,11 +42,11 @@ public class MapManifestParser extends NodeParser<MapManifest>
     private Set<GameModuleParser<?, ?>> moduleParsers;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.worldInfoParser = context.type(WorldInfo.class);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.worldInfoParser = library.type(WorldInfo.class);
 
         this.moduleParsers = new LinkedHashSet<>();
-        for (Parser<?> parser : context.getContainer().getParsers()) {
+        for (Parser<?> parser : library.getContainer().getParsers()) {
             if (parser instanceof GameModuleParser) {
                 this.moduleParsers.add((GameModuleParser<?, ?>) parser);
             }
@@ -58,8 +59,8 @@ public class MapManifestParser extends NodeParser<MapManifest>
     }
 
     @Override
-    protected Result<MapManifest> parseTree(Node node, String name) throws ParserException {
-        WorldInfo world = this.worldInfoParser.parse(node.child("world")).orDefaultNull();
+    protected Result<MapManifest> parseTree(Context context, Node node, String name) throws ParserException {
+        WorldInfo world = this.worldInfoParser.parse(context, node.child("world")).orDefaultNull();
 
         Set<IGameModuleConfig<?>> modules = new LinkedHashSet<>();
         Node modulesNode = this.getModulesNode(node);
@@ -67,7 +68,7 @@ public class MapManifestParser extends NodeParser<MapManifest>
             Node definedNode = parser.define(modulesNode);
 
             if (definedNode != null) {
-                modules.add(parser.parse(definedNode).orFail());
+                modules.add(parser.parse(context, definedNode).orFail());
             }
         }
 

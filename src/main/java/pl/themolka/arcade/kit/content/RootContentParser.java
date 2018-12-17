@@ -19,9 +19,10 @@ package pl.themolka.arcade.kit.content;
 import com.google.common.collect.ImmutableSet;
 import pl.themolka.arcade.config.ConfigParser;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NestedParserMap;
-import pl.themolka.arcade.parser.ParserContext;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
@@ -89,8 +90,8 @@ public class RootContentParser extends ConfigParser<KitContent.Config<?, ?>>
     private NestedParserMap<BaseContentParser<?>> nested;
 
     @Override
-    public void install(ParserContext context) throws ParserNotSupportedException {
-        this.nested = new NestedParserMap<>(context);
+    public void install(ParserLibrary library) throws ParserNotSupportedException {
+        this.nested = new NestedParserMap<>(library);
         for (Class<?> clazz : types) {
             this.nested.scan(clazz);
         }
@@ -102,12 +103,12 @@ public class RootContentParser extends ConfigParser<KitContent.Config<?, ?>>
     }
 
     @Override
-    protected Result<KitContent.Config<?, ?>> parseNode(Node node, String name, String value) throws ParserException {
+    protected Result<KitContent.Config<?, ?>> parseNode(Context context, Node node, String name, String value) throws ParserException {
         BaseContentParser<?> parser = this.nested.parse(name);
         if (parser == null) {
             throw this.fail(node, null, name, "Unknown kit content type");
         }
 
-        return Result.fine(node, name, value, parser.parseWithDefinition(node, name, value).orFail());
+        return Result.fine(node, name, value, parser.parseWithDefinition(context, node, name, value).orFail());
     }
 }
