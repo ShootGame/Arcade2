@@ -30,16 +30,16 @@ public interface IPoint extends Progressive {
 
     class Tick {
         private final long tick;
-        private final Multimap<Participator, GamePlayer> participators;
+        private final Multimap<Participator, GamePlayer> participants;
         private final Multimap<Participator, GamePlayer> dominators;
         private final Participator owner;
 
         public Tick(long tick,
-                    Multimap<Participator, GamePlayer> participators,
+                    Multimap<Participator, GamePlayer> participants,
                     Multimap<Participator, GamePlayer> dominators,
                     Participator owner) {
             this.tick = tick;
-            this.participators = ImmutableMultimap.copyOf(participators);
+            this.participants = ImmutableMultimap.copyOf(participants);
             this.dominators = ImmutableMultimap.copyOf(dominators);
             this.owner = owner;
         }
@@ -48,8 +48,8 @@ public interface IPoint extends Progressive {
             return this.tick;
         }
 
-        public Multimap<Participator, GamePlayer> getParticipators() {
-            return this.participators;
+        public Multimap<Participator, GamePlayer> getParticipants() {
+            return this.participants;
         }
 
         public Multimap<Participator, GamePlayer> getDominators() {

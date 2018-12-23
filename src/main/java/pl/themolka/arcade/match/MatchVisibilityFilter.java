@@ -39,7 +39,7 @@ public class MatchVisibilityFilter implements PlayerVisibilityFilter {
     public boolean canSee(GamePlayer viewer, GamePlayer target) {
         // Viewers not in game (observers, or when the match is not
         // in the running state) always see other players. Otherwise
-        // participators can only see other participators.
+        // participants can only see other participants.
 
         return !this.isInGame(viewer) || target.isParticipating();
     }

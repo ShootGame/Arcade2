@@ -31,13 +31,13 @@ public class Lead<T> extends AbstractDominator<T> {
 
             int previousPower = 0;
             for (Map.Entry<T, Integer> previous : results.entrySet()) {
-                // All participators in this map have same player counts - break the loop.
+                // All participants in this map have same player counts - break the loop.
                 previousPower = previous.getValue();
                 break;
             }
 
             if (power < previousPower) {
-                // Not enough participators, continue
+                // Not enough participants, continue
                 continue;
             } else if (power > previousPower) {
                 // Clear the map so we have just this record in it.

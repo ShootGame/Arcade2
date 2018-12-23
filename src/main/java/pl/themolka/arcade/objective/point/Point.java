@@ -139,11 +139,11 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
             return;
         }
 
-        Multimap<Participator, GamePlayer> participators = this.resolveParticipators(match);
-        Multimap<Participator, GamePlayer> dominators = this.resolveDominators(participators);
+        Multimap<Participator, GamePlayer> participants = this.resolveParticipants(match);
+        Multimap<Participator, GamePlayer> dominators = this.resolveDominators(participants);
 
         Participator oldOwner = this.getOwner();
-        this.tick(new Tick(tick, participators, dominators, oldOwner));
+        this.tick(new Tick(tick, participants, dominators, oldOwner));
 
         Participator newOwner = this.getOwner();
         if (oldOwner != null && Objects.equals(oldOwner, newOwner) && this.pointReward != Score.ZERO) {
@@ -152,7 +152,7 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         }
     }
 
-    private Multimap<Participator, GamePlayer> resolveParticipators(ParticipatorResolver resolver) {
+    private Multimap<Participator, GamePlayer> resolveParticipants(ParticipatorResolver resolver) {
         Map<Participator, Boolean> canCaptureCache = new HashMap<>();
 
         Multimap<Participator, GamePlayer> results = ArrayListMultimap.create();
@@ -181,9 +181,9 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         return results;
     }
 
-    private Multimap<Participator, GamePlayer> resolveDominators(Multimap<Participator, GamePlayer> participators) {
+    private Multimap<Participator, GamePlayer> resolveDominators(Multimap<Participator, GamePlayer> participants) {
         Map<Participator, Integer> input = new HashMap<>();
-        for (Map.Entry<Participator, GamePlayer> entry : participators.entries()) {
+        for (Map.Entry<Participator, GamePlayer> entry : participants.entries()) {
             Participator participator = entry.getKey();
             input.put(participator, input.getOrDefault(participator, 1));
         }
@@ -196,7 +196,7 @@ public class Point extends StatableObjective<PointState> implements IPoint, Tick
         Multimap<Participator, GamePlayer> results = ArrayListMultimap.create();
         for (Map.Entry<Participator, Integer> dominator : dominators.entrySet()) {
             Participator participator = dominator.getKey();
-            results.putAll(participator, participators.get(participator));
+            results.putAll(participator, participants.get(participator));
         }
 
         return ImmutableMultimap.copyOf(results);
