@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pl.themolka.arcade.objective.flag;
+package pl.themolka.arcade.util.material;
 
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
@@ -41,11 +41,8 @@ public final class BannerUtils {
     }
 
     public static boolean isBanner(Material material) {
-//        FIXME
-//        return  material.equals(Material.BANNER) ||
-//                material.equals(Material.STANDING_BANNER) ||
-//                material.equals(Material.WALL_BANNER);
-        return false;
+        return material != null && (ColoredMaterials.isBanner(material) ||
+                                    ColoredMaterials.isWallBanner(material));
     }
 
     public static boolean isBanner(MaterialData data) {

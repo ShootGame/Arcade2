@@ -37,6 +37,7 @@ import pl.themolka.arcade.event.BlockTransformEvent;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
+import pl.themolka.arcade.util.material.WoolUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -152,7 +153,7 @@ public class WoolChestTracker implements Listener {
         if (image.woolChest) {
             for (int slot = 0; slot < inventory.getSize(); slot++) {
                 ItemStack item = inventory.getItem(slot);
-                if (item != null && WoolUtils.isWool(item)) {
+                if (WoolUtils.isWool(item)) {
                     image.snapshot.put(slot, item.clone());
                 }
             }

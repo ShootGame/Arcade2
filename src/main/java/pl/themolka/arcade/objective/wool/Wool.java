@@ -33,6 +33,7 @@ import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.game.Participator;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.region.AbstractRegion;
+import pl.themolka.arcade.util.material.WoolUtils;
 
 import java.util.Collections;
 import java.util.List;

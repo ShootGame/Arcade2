@@ -35,6 +35,7 @@ import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.life.PlayerDeathEvent;
 import pl.themolka.arcade.team.PlayerLeaveTeamEvent;
 import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.material.WoolUtils;
 
 public class WoolPickupTracker implements Listener {
     private final Wool wool;

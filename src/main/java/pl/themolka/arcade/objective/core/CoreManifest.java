@@ -37,6 +37,7 @@ import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Result;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.region.UnionRegion;
+import pl.themolka.arcade.util.material.Fluid;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,7 +75,7 @@ public class CoreManifest extends ObjectiveManifest {
     public static class CoreParser extends ObjectiveParser<Core.Config>
                                    implements InstallableParser {
         private Parser<Integer> detectorLevelParser;
-        private Parser<Liquid> liquidParser;
+        private Parser<Fluid> fluidParser;
         private Parser<Material> materialParser;
         private Parser<String> materialTextParser;
         private Parser<UnionRegion.Config> regionParser;
@@ -83,7 +84,7 @@ public class CoreManifest extends ObjectiveManifest {
         public void install(ParserLibrary library) throws ParserNotSupportedException {
             super.install(library);
             this.detectorLevelParser = library.type(Integer.class);
-            this.liquidParser = library.type(Liquid.class);
+            this.fluidParser = library.type(Fluid.class);
             this.materialParser = library.type(Material.class);
             this.materialTextParser = library.text();
             this.regionParser = library.type(UnionRegion.Config.class);
@@ -98,7 +99,7 @@ public class CoreManifest extends ObjectiveManifest {
         protected Result<Core.Config> parseNode(Context context, Node node, String name, String value) throws ParserException {
             String id = this.parseRequiredId(context, node);
             int detectorLevel = this.detectorLevelParser.parse(context, node.property("detector-level", "detectorlevel", "detector")).orDefault(Core.Config.DEFAULT_DETECTOR_LEVEL);
-            Liquid liquid = this.liquidParser.parse(context, node.property("liquid", "type", "or")).orDefault(Core.Config.DEFAULT_LIQUID);
+            Fluid fluid = this.fluidParser.parse(context, node.property("fluid", "liquid", "type", "or")).orDefault(Core.Config.DEFAULT_FLUID);
 
             Set<Material> material = new HashSet<>();
             Property materialProperty = node.property("material", "type", "of");
@@ -119,7 +120,7 @@ public class CoreManifest extends ObjectiveManifest {
             return Result.fine(node, name, value, new Core.Config() {
                 public String id() { return id; }
                 public Ref<Integer> detectorLevel() { return Ref.ofProvided(detectorLevel); }
-                public Ref<Liquid> liquid() { return Ref.ofProvided(liquid); }
+                public Ref<Fluid> fluid() { return Ref.ofProvided(fluid); }
                 public Ref<Set<Material>> material() { return Ref.ofProvided(finalMaterial); }
                 public Ref<String> name() { return Ref.ofProvided(coreName); }
                 public Ref<Boolean> objective() { return Ref.ofProvided(objective); }

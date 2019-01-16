@@ -36,6 +36,7 @@ import pl.themolka.arcade.goal.GoalProgressEvent;
 import pl.themolka.arcade.objective.Objective;
 import pl.themolka.arcade.region.AbstractRegion;
 import pl.themolka.arcade.util.FinitePercentage;
+import pl.themolka.arcade.util.material.Fluid;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class Core extends Objective {
     private final Set<Block> blocks = new HashSet<>();
     private Detector detector;
     private final int detectorLevel;
-    private final Liquid liquid;
+    private final Fluid fluid;
     private final Set<Block> liquidSnapshot = new HashSet<>();
     private final Set<Material> material;
     private final AbstractRegion region;
@@ -53,7 +54,7 @@ public class Core extends Objective {
         super(game, library, config);
 
         this.detectorLevel = config.detectorLevel().get();
-        this.liquid = config.liquid().get();
+        this.fluid = config.fluid().get();
         this.material = config.material().get();
         this.region = library.getOrDefine(game, config.region().get());
     }
@@ -116,7 +117,7 @@ public class Core extends Objective {
     public Set<Block> createLiquidSnapshot(Iterable<Block> from) {
         Set<Block> results = new HashSet<>();
         for (Block block : from) {
-            if (this.liquid.accepts(block)) {
+            if (this.fluid.test(block.getType())) {
                 results.add(block);
             }
         }
@@ -124,8 +125,8 @@ public class Core extends Objective {
         return results;
     }
 
-    public Liquid getLiquid() {
-        return this.liquid;
+    public Fluid getFluid() {
+        return this.fluid;
     }
 
     public Set<Material> getMaterial() {
@@ -165,7 +166,7 @@ public class Core extends Objective {
         Material newMaterial = event.getNewState().getType();
 
         if (!newMaterial.equals(Material.AIR) || this.isCompleted() ||
-                !this.contains(block) || this.liquid.accepts(newMaterial)) {
+                !this.contains(block) || this.fluid.test(newMaterial)) {
             return;
         }
 
@@ -200,7 +201,7 @@ public class Core extends Objective {
         }
 
         Block block = event.getBlock();
-        if (this.liquid.accepts(block.getType())) {
+        if (this.fluid.test(block.getType())) {
             CoreLeakEvent leakEvent = new CoreLeakEvent(this, block);
             this.getPlugin().getEventBus().publish(leakEvent);
 
@@ -215,7 +216,7 @@ public class Core extends Objective {
 
     @Handler(priority = Priority.HIGHER)
     public void detectLiquidTransform(BlockTransformEvent event) {
-        if (event.isCanceled() || this.liquid.accepts(event.getNewState().getType())) {
+        if (event.isCanceled() || this.fluid.test(event.getNewState().getType())) {
             return;
         }
 
@@ -231,12 +232,12 @@ public class Core extends Objective {
 
     public interface Config extends Objective.Config<Core> {
         int DEFAULT_DETECTOR_LEVEL = 5;
-        Liquid DEFAULT_LIQUID = Liquid.LAVA;
+        Fluid DEFAULT_FLUID = Fluid.LAVA;
         Set<Material> DEFAULT_MATERIAL = ImmutableSet.of(Material.OBSIDIAN);
         String DEFAULT_NAME = "Core";
 
         default Ref<Integer> detectorLevel() { return Ref.ofProvided(DEFAULT_DETECTOR_LEVEL); }
-        default Ref<Liquid> liquid() { return Ref.ofProvided(DEFAULT_LIQUID); }
+        default Ref<Fluid> fluid() { return Ref.ofProvided(DEFAULT_FLUID); }
         default Ref<Set<Material>> material() { return Ref.ofProvided(DEFAULT_MATERIAL); }
         Ref<AbstractRegion.Config<?>> region();
 
