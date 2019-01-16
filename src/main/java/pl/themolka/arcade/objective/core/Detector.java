@@ -36,8 +36,8 @@ public class Detector extends CuboidRegion {
 
     public static Pair<Vector, Vector> createMinMaxVectors(Vector min, Vector max, int level) {
         int distance = level * 4;
-        return Pair.of(min.clone().subtract(distance, 0, distance).setY(Region.MIN_HEIGHT),
-                       max.clone().add(distance, 0, distance).setY(min.getBlockY() - level));
+        return Pair.of(min.clone().subtract(new Vector(distance, 0, distance)).setY(Region.MIN_HEIGHT),
+                       max.clone().add(new Vector(distance, 0, distance)).setY(min.getBlockY() - level));
     }
 
     //

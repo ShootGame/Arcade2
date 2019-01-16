@@ -19,6 +19,7 @@ package pl.themolka.arcade.event;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -31,7 +32,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFallEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -43,7 +43,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ExplosionPrimeByEntityEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -81,8 +80,7 @@ public class BlockTransformEventService extends Service {
             return;
         }
 
-        Block target = event.getVelocity().toLocation(
-                event.getWorld()).getBlock();
+        Block target = event.getVelocity().toLocation(event.getBlock().getWorld()).getBlock();
         Material content = this.getBucketContent(event.getItem().getType());
 
         if (!content.equals(Material.AIR)) {
@@ -99,12 +97,13 @@ public class BlockTransformEventService extends Service {
                   event.getNewState());
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockFall(BlockFallEvent event) {
-        this.post(event,
-                  event.getBlock().getState(),
-                  this.applyAir(event.getBlock()));
-    }
+// FIXME
+//    @EventHandler(ignoreCancelled = true)
+//    public void onBlockFall(BlockFallEvent event) {
+//        this.post(event,
+//                  event.getBlock().getState(),
+//                  this.applyAir(event.getBlock()));
+//    }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event) {
@@ -133,8 +132,7 @@ public class BlockTransformEventService extends Service {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        BlockIgniteEvent.IgniteCause cause =
-                BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL;
+        BlockIgniteEvent.IgniteCause cause = BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL;
         if (event.getCause().equals(cause)) {
             return;
         }
@@ -178,14 +176,13 @@ public class BlockTransformEventService extends Service {
         Block block = event.getBlock();
 
         boolean arrow = event.getEntity() instanceof Arrow;
-        if (arrow && event.getTo().equals(Material.AIR) &&
-                block.getType().equals(Material.TNT)) {
+        if (arrow && event.getTo().equals(Material.AIR) && block.getType().equals(Material.TNT)) {
             return;
         }
 
         this.post(event,
                   block.getState(),
-                  this.applyState(block, event.getTo(), event.getData()));
+                  this.applyState(block, event.getTo(), event.getBlockData()));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -216,20 +213,9 @@ public class BlockTransformEventService extends Service {
                 return;
             }
 
-            Player player = null;
-            if (event instanceof ExplosionPrimeByEntityEvent) {
-                ExplosionPrimeByEntityEvent primeByEntity =
-                        (ExplosionPrimeByEntityEvent) event;
-                Entity entity = primeByEntity.getPrimer();
-
-                if (entity instanceof Player) {
-                    player = (Player) entity;
-                }
-            }
-
             this.post(event,
                       block.getState(),
-                      this.applyAir(block), player);
+                      this.applyAir(block));
         }
     }
 
@@ -272,7 +258,7 @@ public class BlockTransformEventService extends Service {
         }
 
         Block block = event.getClickedBlock();
-        if (block != null && block.getType().equals(Material.SOIL)) {
+        if (block != null && block.getType().equals(Material.FARMLAND)) {
             this.post(event,
                       block.getState(),
                       this.applyState(block, Material.DIRT),
@@ -289,13 +275,13 @@ public class BlockTransformEventService extends Service {
     }
 
     private BlockState applyState(Block from, Material type) {
-        return this.applyState(from, type, (byte) 0);
+        return this.applyState(from, type, from.getBlockData());
     }
 
-    private BlockState applyState(Block from, Material type, byte data) {
+    private BlockState applyState(Block from, Material type, BlockData data) {
         BlockState state = from.getState();
-        state.setMaterial(type);
-        state.setRawData(data);
+        state.setType(type);
+        state.setBlockData(data);
 
         return state;
     }

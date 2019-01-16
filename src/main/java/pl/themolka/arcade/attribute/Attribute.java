@@ -16,9 +16,9 @@
 
 package pl.themolka.arcade.attribute;
 
-import net.minecraft.server.AttributeInstance;
+import net.minecraft.server.v1_13_R2.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.attribute.CraftAttributeInstance;
+import org.bukkit.craftbukkit.v1_13_R2.attribute.CraftAttributeInstance;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,7 +63,7 @@ public class Attribute {
 
     public List<AttributeModifier> getModifiers() {
         List<AttributeModifier> modifiers = new ArrayList<>();
-        for (net.minecraft.server.AttributeModifier modifier : this.mojang.c()) {
+        for (net.minecraft.server.v1_13_R2.AttributeModifier modifier : this.mojang.c()) {
             modifiers.add(CraftAttributeInstance.convert(modifier));
         }
 
@@ -81,7 +81,7 @@ public class Attribute {
 
     public int removeAllModifers() {
         int done = 0;
-        for (net.minecraft.server.AttributeModifier modifier : new HashSet<>(this.mojang.c())) {
+        for (net.minecraft.server.v1_13_R2.AttributeModifier modifier : new HashSet<>(this.mojang.c())) {
             this.mojang.c(modifier);
             done++;
         }

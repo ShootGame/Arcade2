@@ -51,7 +51,8 @@ public class PointManifest extends ObjectiveManifest {
         for (Objective objective : objectives) {
             if (objective instanceof Point) {
                 listeners.add(new PointBossBarRender());
-                listeners.add(new PointRegionRender(objectives));
+//                listeners.add(new PointRegionRender(objectives));
+// FIXME register a map with block colors, so we can render points in 1.13
 
                 game.addSyncTask(new TickTask(game.getPlugin().getTasks(), objectives));
                 break;

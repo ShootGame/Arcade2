@@ -16,14 +16,15 @@
 
 package pl.themolka.arcade.game;
 
-import net.minecraft.server.PlayerList;
+import net.minecraft.server.v1_13_R2.DimensionManager;
+import net.minecraft.server.v1_13_R2.PlayerList;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.ConfigContext;
@@ -345,7 +346,7 @@ public class SimpleGameManager implements GameManager {
     @Override
     public void resetPlayers(Game newGame) {
         PlayerList playerList = ((CraftServer) newGame.getServer()).getHandle();
-        int worldId = ((CraftWorld) newGame.getWorld()).getHandle().dimension;
+        DimensionManager dimension = ((CraftWorld) newGame.getWorld()).getHandle().dimension;
         Location spawn = newGame.getMap().getManifest().getWorld().getSpawn();
 
         for (GamePlayer player : newGame.getPlayers().getOnlinePlayers()) {
@@ -357,7 +358,7 @@ public class SimpleGameManager implements GameManager {
             // teleport the player between worlds. Bukkit's Entity.teleport()
             // will not teleport the player it is in the dead state. We must use
             // NMS to teleport the player (and skip firing PlayerTeleportEvent).
-            playerList.moveToWorld(player.getMojang(), worldId, false, spawn, false);
+            playerList.moveToWorld(player.getMojang(), dimension, false, spawn, false);
             player.reset(); // setHealth may break something in the moveToWorld
         }
     }

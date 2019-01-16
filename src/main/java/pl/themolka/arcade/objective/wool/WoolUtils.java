@@ -16,6 +16,7 @@
 
 package pl.themolka.arcade.objective.wool;
 
+import com.google.common.collect.ImmutableSet;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -26,8 +27,27 @@ import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.util.Color;
 
+import java.util.Set;
+
 public final class WoolUtils {
-    public static final Material WOOL_MATERIAL = Material.WOOL;
+    public static final Set<Material> WOOL_MATERIALS = ImmutableSet.<Material>builder()
+            .add(Material.LEGACY_WOOL) // legacy
+            .add(Material.WHITE_WOOL)
+            .add(Material.BLACK_WOOL)
+            .add(Material.BLUE_WOOL)
+            .add(Material.BROWN_WOOL)
+            .add(Material.CYAN_WOOL)
+            .add(Material.GRAY_WOOL)
+            .add(Material.GREEN_WOOL)
+            .add(Material.LIGHT_BLUE_WOOL)
+            .add(Material.LIGHT_GRAY_WOOL)
+            .add(Material.LIME_WOOL)
+            .add(Material.MAGENTA_WOOL)
+            .add(Material.ORANGE_WOOL)
+            .add(Material.PURPLE_WOOL)
+            .add(Material.RED_WOOL)
+            .add(Material.YELLOW_WOOL)
+            .build();
 
     private WoolUtils() {
     }
@@ -126,7 +146,7 @@ public final class WoolUtils {
     }
 
     public static boolean isWool(Material material) {
-        return material != null && material.equals(WOOL_MATERIAL);
+        return material != null && WOOL_MATERIALS.contains(material);
     }
 
     public static boolean isWool(MaterialData data) {

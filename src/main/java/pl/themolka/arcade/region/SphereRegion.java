@@ -93,9 +93,10 @@ public class SphereRegion extends AbstractRegion {
 
     private RegionBounds createBounds() {
         double radius = this.getRadius();
+        Vector center = this.getCenter();
         return new RegionBounds(this,
-                this.getCenter().clone().subtract(radius, radius, radius),
-                this.getCenter().clone().add(radius, radius, radius));
+                center.clone().subtract(new Vector(radius, radius, radius)),
+                center.clone().add(new Vector(radius, radius, radius)));
     }
 
     public interface Config extends AbstractRegion.Config<SphereRegion> {

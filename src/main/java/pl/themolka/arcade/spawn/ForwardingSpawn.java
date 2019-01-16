@@ -20,7 +20,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.geometry.Direction;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.util.Forwarding;
 

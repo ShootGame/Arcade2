@@ -76,7 +76,7 @@ public class BlockRegion extends AbstractRegion {
 
     @Override
     public boolean contains(Vector vector) {
-        return this.contains(this.getWorld().getBlockAt(vector));
+        return this.contains(this.getWorld().getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ()));
     }
 
     @Override

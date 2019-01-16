@@ -21,7 +21,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.craftbukkit.boss.CraftBossBar;
+import org.bukkit.craftbukkit.v1_13_R2.boss.CraftBossBar;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.util.FinitePercentage;
 import pl.themolka.arcade.util.Percentage;
@@ -49,7 +49,7 @@ public class BossBar implements Progressive.Mutable {
     }
 
     public BossBar(BaseComponent title, BarColor color, BarStyle style, BarFlag... flags) {
-        this.bukkit = new CraftBossBar(title, color, style, flags);
+        this.bukkit = new CraftBossBar(title.toLegacyText(), color, style, flags);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class BossBar implements Progressive.Mutable {
     }
 
     public BaseComponent[] getText() {
-        return new BaseComponent[] { this.bukkit.getTitle() };
+        return TextComponent.fromLegacyText(this.bukkit.getTitle());
     }
 
     public boolean hasFlag(BarFlag flag) {
@@ -128,7 +128,7 @@ public class BossBar implements Progressive.Mutable {
     }
 
     public void setText(BaseComponent... text) {
-        this.bukkit.setTitle(new TextComponent(text));
+        this.bukkit.setTitle(new TextComponent(text).toLegacyText());
     }
 
     public boolean unsetPriority(GamePlayer player) {

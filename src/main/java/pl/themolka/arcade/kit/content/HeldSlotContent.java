@@ -33,7 +33,7 @@ import pl.themolka.arcade.parser.Result;
 
 public class HeldSlotContent extends BaseInventoryContent<Integer> {
     public static final int MIN_VALUE = 0;
-    public static final int MAX_VALUE = net.minecraft.server.PlayerInventory.getHotbarSize() - 1;
+    public static final int MAX_VALUE = net.minecraft.server.v1_13_R2.PlayerInventory.getHotbarSize() - 1;
 
     public static boolean testValue(int value) {
         return value >= MIN_VALUE && value <= MAX_VALUE;

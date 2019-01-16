@@ -17,8 +17,11 @@
 package pl.themolka.arcade.attribute;
 
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import pl.themolka.arcade.parser.EnumParser;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class BukkitAttributeKey extends AttributeKey {
     private final Attribute bukkit;
@@ -29,10 +32,43 @@ public class BukkitAttributeKey extends AttributeKey {
 
     @Override
     public String key() {
-        return this.bukkit.getName();
+        return this.bukkit.name().toLowerCase();
     }
 
     public Attribute getBukkit() {
         return this.bukkit;
+    }
+
+    //
+    // Converting back to the Bukkit object
+    //
+
+    public static Attribute convert(BoundedModifier modifier) {
+        return convert(Objects.requireNonNull(modifier, "modifier").getKey());
+    }
+
+    public static Attribute convert(AttributeKey key) {
+        return convert(Objects.requireNonNull(key, "key cannot be null").key());
+    }
+
+    public static Attribute convert(String key) {
+        return EnumParser.parse(Attribute.class, Objects.requireNonNull(key, "key cannot be null"));
+    }
+
+    public static Attribute convertOrFail(BoundedModifier modifier) {
+        return convertOrFail(Objects.requireNonNull(modifier, "modifier cannot be null").getKey());
+    }
+
+    public static Attribute convertOrFail(AttributeKey key) {
+        return convertOrFail(Objects.requireNonNull(key, "key cannot be null").key());
+    }
+
+    public static Attribute convertOrFail(String key) {
+        Attribute bukkit = convert(key);
+        if (bukkit != null) {
+            return bukkit;
+        }
+
+        throw new IllegalArgumentException("Unknown attribute type");
     }
 }

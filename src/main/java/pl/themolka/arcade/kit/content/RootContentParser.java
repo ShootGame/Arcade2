@@ -35,7 +35,6 @@ import java.util.Set;
 public class RootContentParser extends ConfigParser<KitContent.Config<?, ?>>
                                implements InstallableParser {
     private static final Set<Class<?>> types = ImmutableSet.<Class<?>>builder()
-            .add(AbsorptionContent.class)
             .add(BootsContent.class)
             .add(BurnContent.class)
             .add(CanFlyContent.class)
@@ -64,7 +63,6 @@ public class RootContentParser extends ConfigParser<KitContent.Config<?, ?>>
             .add(HungerContent.class)
             .add(ItemStackContent.class)
             .add(KillContent.class)
-            .add(KnockbackContent.class)
             .add(LeaveVehicleContent.class)
             .add(LeggingsContent.class)
             .add(LevelContent.class)

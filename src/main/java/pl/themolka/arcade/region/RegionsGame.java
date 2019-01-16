@@ -85,7 +85,7 @@ public class RegionsGame extends GameModule {
     //
 
     public Region fetch(Block block) {
-        return this.fetch(block.getLocation().toBlockVector());
+        return this.fetch(block.getLocation().toVector());
     }
 
     public Region fetch(BlockVector vector) {

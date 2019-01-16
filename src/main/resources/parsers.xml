@@ -8,9 +8,7 @@ them are registered in the ParserContainer class
 <parsers>
     <parser class="pl.themolka.arcade.attribute.AttributeKeyParser" />
     <parser class="pl.themolka.arcade.attribute.AttributeModifierParser" />
-    <parser class="pl.themolka.arcade.attribute.BoundedItemModifierParser" />
     <parser class="pl.themolka.arcade.attribute.BoundedModifierParser" />
-    <parser class="pl.themolka.arcade.attribute.ItemAttributeModifierParser" />
     <parser class="pl.themolka.arcade.attribute.OperationParser" />
     <parser class="pl.themolka.arcade.bossbar.BarColorParser" />
     <parser class="pl.themolka.arcade.channel.ChannelsGameParser" />
@@ -69,7 +67,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.item.ItemStackParser" />
     <parser class="pl.themolka.arcade.kit.KitParser" />
     <parser class="pl.themolka.arcade.kit.KitsGameParser" />
-    <parser class="pl.themolka.arcade.kit.content.AbsorptionContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.BaseModeContent$ModeParser" />
     <parser class="pl.themolka.arcade.kit.content.BootsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.BurnContent$ContentParser" />
@@ -99,7 +96,6 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.kit.content.HungerContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.ItemStackContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.KillContent$ContentParser" />
-    <parser class="pl.themolka.arcade.kit.content.KnockbackContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.LeaveVehicleContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.LeggingsContent$ContentParser" />
     <parser class="pl.themolka.arcade.kit.content.LevelContent$ContentParser" />
@@ -187,7 +183,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.score.ScoreBoxParser" />
     <parser class="pl.themolka.arcade.score.ScoreGameParser" />
     <parser class="pl.themolka.arcade.score.ScoreParser" />
-    <parser class="pl.themolka.arcade.spawn.DirectionParser" />
+    <parser class="pl.themolka.arcade.spawn.DirectionTranslatorParser" />
     <parser class="pl.themolka.arcade.spawn.SpawnParser$Auto" />
     <parser class="pl.themolka.arcade.spawn.SpawnParser$Multi" />
     <parser class="pl.themolka.arcade.spawn.SpawnParser$Region" />

@@ -42,7 +42,7 @@ public enum Color {
     DARK_RED("dark_red", ChatColor.DARK_RED, DyeColor.RED), // B duplicate (dye)
     DARK_PURPLE("dark_purple", ChatColor.DARK_PURPLE, DyeColor.PURPLE),
     GOLD("gold", ChatColor.GOLD, DyeColor.ORANGE),
-    GRAY("gray", ChatColor.GRAY, DyeColor.SILVER),
+    GRAY("gray", ChatColor.GRAY, DyeColor.LIGHT_GRAY),
     DARK_GRAY("dark_gray", ChatColor.DARK_GRAY, DyeColor.GRAY), // C duplicate (chat)
     BLUE("blue", ChatColor.BLUE, DyeColor.BLUE), // A duplicate
     GREEN("green", ChatColor.GREEN, DyeColor.LIME),
@@ -299,7 +299,7 @@ public enum Color {
     }
 
     /**
-     * Generate a random component {@link net.minecraft.server.ChatClickable} value
+     * Generate a random component {@link net.md_5.bungee.api.ChatColor} value
      */
     public static net.md_5.bungee.api.ChatColor randomComponent() {
         net.md_5.bungee.api.ChatColor[] values = componentValues();

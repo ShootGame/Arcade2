@@ -117,11 +117,11 @@ public class Wool extends Objective {
         }
 
         ItemStack result = event.getInventory().getResult();
-        if (result == null || !WoolUtils.isWool(result, this.color)) {
+        if (!WoolUtils.isWool(result, this.color)) {
             return;
         }
 
-        GamePlayer player = this.getGame().resolve(event.getActor());
+        GamePlayer player = this.getGame().resolve(event.getViewers().get(0));
         if (player != null) {
             player.sendError("You may not craft " + ChatColor.GOLD + this.getColoredName() + Messageable.ERROR_COLOR + ".");
         }

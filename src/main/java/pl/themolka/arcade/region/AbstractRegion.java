@@ -49,7 +49,7 @@ public abstract class AbstractRegion implements Region {
 
     @Override
     public boolean contains(Block block) {
-        return this.getWorld().equals(block.getWorld()) && this.contains(block.getLocation().toBlockVector());
+        return this.getWorld().equals(block.getWorld()) && this.contains(block.getLocation().toVector());
     }
 
     @Override

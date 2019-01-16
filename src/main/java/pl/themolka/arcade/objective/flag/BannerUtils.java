@@ -41,9 +41,11 @@ public final class BannerUtils {
     }
 
     public static boolean isBanner(Material material) {
-        return  material.equals(Material.BANNER) ||
-                material.equals(Material.STANDING_BANNER) ||
-                material.equals(Material.WALL_BANNER);
+//        FIXME
+//        return  material.equals(Material.BANNER) ||
+//                material.equals(Material.STANDING_BANNER) ||
+//                material.equals(Material.WALL_BANNER);
+        return false;
     }
 
     public static boolean isBanner(MaterialData data) {

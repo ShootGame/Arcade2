@@ -16,6 +16,7 @@
 
 package pl.themolka.arcade.match;
 
+import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -46,7 +47,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
-import org.bukkit.event.player.PlayerPickupExperienceEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;

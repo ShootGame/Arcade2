@@ -233,7 +233,7 @@ public class LivesGame extends GameModule {
     }
 
     public interface Config extends IGameModuleConfig<LivesGame> {
-        Sound DEFAULT_SOUND = Sound.ENTITY_IRONGOLEM_DEATH;
+        Sound DEFAULT_SOUND = Sound.ENTITY_IRON_GOLEM_DEATH;
 
         Ref<Integer> lives();
         default Ref<Team.Config> fallbackTeam() { return Ref.empty(); }

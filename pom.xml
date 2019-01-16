@@ -57,6 +57,7 @@
                                     <include>commons-io:commons-io</include>
                                     <include>org.jdom:jdom2</include>
                                     <include>net.engio:mbassador</include>
+                                    <include>org.apache.commons:commons-lang3</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
@@ -75,13 +76,23 @@
             <id>overcast-releases</id>
             <url>https://repo.extension.ws/content/repositories/releases</url>
         </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
     </repositories>
     
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>tc.oc</groupId>-->
+            <!--<artifactId>sportbukkit</artifactId>-->
+            <!--<version>1.11.1-R0.1-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
         <dependency>
-            <groupId>tc.oc</groupId>
-            <artifactId>sportbukkit</artifactId>
-            <version>1.11.1-R0.1-SNAPSHOT</version>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -100,6 +111,12 @@
             <groupId>net.engio</groupId>
             <artifactId>mbassador</artifactId>
             <version>1.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
         </dependency>
     </dependencies>
 </project>

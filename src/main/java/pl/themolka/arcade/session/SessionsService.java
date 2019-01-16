@@ -16,13 +16,13 @@
 
 package pl.themolka.arcade.session;
 
+import com.destroystokyo.paper.event.player.PlayerInitialSpawnEvent;
 import net.engio.mbassy.listener.Handler;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInitialSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;

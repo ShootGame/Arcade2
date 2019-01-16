@@ -20,8 +20,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 public enum Liquid {
-    LAVA(Material.LAVA, Material.STATIONARY_LAVA),
-    WATER(Material.WATER, Material.STATIONARY_WATER),
+    LAVA(Material.LAVA, Material.LAVA),
+    WATER(Material.WATER, Material.WATER),
     ;
 
     private final Material[] materials;

@@ -16,7 +16,6 @@
 
 package pl.themolka.arcade.spawn;
 
-import org.bukkit.EntityLocation;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -27,8 +26,8 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     private final Spawn spawn;
     private final Entity entity;
 
-    protected Direction yawDirection;
-    protected Direction pitchDirection;
+    protected DirectionTranslator yawDirection;
+    protected DirectionTranslator pitchDirection;
 
     public SpawnAgent(Spawn spawn, Entity entity) {
         this.spawn = spawn;
@@ -74,15 +73,15 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
         return this.entity;
     }
 
-    public EntityLocation getEntityLocation() {
-        return this.entity.getEntityLocation();
+    public Location getEntityLocation() {
+        return this.entity.getLocation();
     }
 
-    public Direction getYawDirection() {
+    public DirectionTranslator getYawDirection() {
         return this.yawDirection;
     }
 
-    public Direction getPitchDirection() {
+    public DirectionTranslator getPitchDirection() {
         return this.pitchDirection;
     }
 
@@ -132,7 +131,7 @@ public class SpawnAgent extends ForwardingSpawn implements Directional {
     // Instancing
     //
 
-    public static SpawnAgent create(Spawn spawn, Entity entity, Direction yaw, Direction pitch) {
+    public static SpawnAgent create(Spawn spawn, Entity entity, DirectionTranslator yaw, DirectionTranslator pitch) {
         SpawnAgent agent = new SpawnAgent(spawn, entity);
         agent.yawDirection = yaw;
         agent.pitchDirection = pitch;

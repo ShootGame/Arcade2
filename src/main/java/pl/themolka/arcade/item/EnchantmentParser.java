@@ -40,14 +40,6 @@ public class EnchantmentParser extends ElementParser<Enchantment> {
         Enchantment enchantment = Enchantment.getByName(this.normalizeEnchantmentName(value));
 
         if (enchantment == null) {
-            // Try NMS then
-            net.minecraft.server.Enchantment nms = net.minecraft.server.Enchantment.b(this.normalizeEnchantmentName(value));
-            if (nms != null) {
-                Enchantment.getById(net.minecraft.server.Enchantment.getId(nms));
-            }
-        }
-
-        if (enchantment == null) {
             throw this.fail(element, name, value, "Unknown enchantment type");
         }
 

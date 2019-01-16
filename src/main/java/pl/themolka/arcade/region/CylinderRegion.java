@@ -110,9 +110,10 @@ public class CylinderRegion extends AbstractRegion {
 
     private RegionBounds createBounds() {
         double radius = this.getRadius();
+        Vector center = this.getCenter();
         return new RegionBounds(this,
-                this.getCenter().clone().subtract(radius, 0, radius),
-                this.getCenter().clone().add(radius, this.getHeight(), radius));
+                center.clone().subtract(new Vector(radius, 0, radius)),
+                center.clone().add(new Vector(radius, this.getHeight(), radius)));
     }
 
     public interface Config extends AbstractRegion.Config<CylinderRegion> {

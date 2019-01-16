@@ -40,8 +40,8 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
                                 implements InstallableParser {
     private Parser<Boolean> ambientParser;
     private Parser<Integer> amplifierParser;
-    private Parser<Color> colorParser;
     private Parser<Time> durationParser;
+    private Parser<Boolean> iconParser;
     private Parser<Boolean> particlesParser;
     private Parser<PotionEffectType> typeParser;
 
@@ -49,8 +49,8 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     public void install(ParserLibrary library) throws ParserNotSupportedException {
         this.ambientParser = library.type(Boolean.class);
         this.amplifierParser = library.type(Integer.class);
-        this.colorParser = library.type(Color.class);
         this.durationParser = library.type(Time.class);
+        this.iconParser = library.type(Boolean.class);
         this.particlesParser = library.type(Boolean.class);
         this.typeParser = library.type(PotionEffectType.class);
     }
@@ -64,8 +64,8 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
     protected Result<PotionEffect> parsePrimitive(Context context, Node node, String name, String value) throws ParserException {
         boolean ambient = this.ambientParser.parse(context, node.property("ambient")).orDefault(true);
         int amplifier = this.amplifierParser.parse(context, node.property("amplifier")).orDefault(0);
-        Color color = this.colorParser.parse(context, node.property("color")).orDefaultNull();
         Time duration = this.durationParser.parse(context, node.property("duration", "time")).orFail();
+        boolean icon = this.iconParser.parse(context, node.property("icon", "has-icon", "hasicon")).orDefault(true);
         boolean particles = this.particlesParser.parse(context, node.property("particles")).orDefault(true);
         PotionEffectType type = this.typeParser.parseWithDefinition(context, node, name, value).orFail();
 
@@ -74,6 +74,6 @@ public class PotionEffectParser extends NodeParser<PotionEffect>
         }
 
         return Result.fine(node, name, value, new PotionEffect(
-                type, TimeUtils.toTicksInt(duration), amplifier, ambient, particles, color));
+                type, TimeUtils.toTicksInt(duration), amplifier, ambient, particles, icon));
     }
 }

@@ -55,25 +55,9 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
 
     @Override
     protected Result<T> parseElement(Context context, Element element, String name, String value) throws ParserException {
-        String input = toEnumValue(value);
-
-        try {
-            // try the fastest way first
-            return Result.fine(element, name, value, Enum.valueOf(this.type, input));
-        } catch (IllegalArgumentException ex) {
-            // try case-insensitive
-            for (T constant : this.type.getEnumConstants()) {
-                if (constant.name().equalsIgnoreCase(input)) {
-                    return Result.fine(element, name, value, constant);
-                }
-            }
-
-            // try contains
-            for (T constant : this.type.getEnumConstants()) {
-                if (constant.name().toUpperCase().contains(input)) {
-                    return Result.fine(element, name, value, constant);
-                }
-            }
+        T result = parse(this.type, value);
+        if (result != null) {
+            return Result.fine(element, name, value, result);
         }
 
         throw this.fail(element, name, value, "Unknown " + this.type.getSimpleName() + " property");
@@ -108,5 +92,30 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
         }
 
         return valueNames;
+    }
+
+    public static <E extends Enum<E>> E parse(Class<E> type, String input) {
+        input = toEnumValue(input);
+
+        try {
+            // try the fastest way first
+            return Enum.valueOf(type, input);
+        } catch (IllegalArgumentException ex) {
+            // try case-insensitive
+            for (E constant : type.getEnumConstants()) {
+                if (constant.name().equalsIgnoreCase(input)) {
+                    return constant;
+                }
+            }
+
+            // try contains
+            for (E constant : type.getEnumConstants()) {
+                if (constant.name().toUpperCase().contains(input)) {
+                    return constant;
+                }
+            }
+        }
+
+        return null;
     }
 }

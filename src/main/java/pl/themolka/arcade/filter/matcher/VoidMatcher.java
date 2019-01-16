@@ -16,7 +16,6 @@
 
 package pl.themolka.arcade.filter.matcher;
 
-import org.bukkit.Locatable;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -40,8 +39,6 @@ public class VoidMatcher extends Matcher<Block> {
             return this.matches((Block) object);
         } else if (object instanceof Location) {
             return this.matches((Location) object);
-        } else if (object instanceof Locatable) {
-            return this.matches((Locatable) object);
         }
 
         return false;
@@ -54,10 +51,6 @@ public class VoidMatcher extends Matcher<Block> {
 
     public boolean matches(Location location) {
         return location != null && this.matches(location.getBlock());
-    }
-
-    public boolean matches(Locatable locatable) {
-        return locatable != null && this.matches(locatable.getLocation());
     }
 
     public boolean matches(World world, double x, double z) {

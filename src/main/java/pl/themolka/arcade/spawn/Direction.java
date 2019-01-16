@@ -16,43 +16,43 @@
 
 package pl.themolka.arcade.spawn;
 
-public interface Direction {
-    Direction CONSTANT = new ConstantDirection();
-    Direction ENTITY = new EntityDirection();
-    Direction RELATIVE = new RelativeDirection();
-    Direction TRANSLATE = new TranslateDirection();
+import java.util.Objects;
 
-    default float getValue(float constant, float entity) {
-        return entity;
+public class Direction {
+    public static final float DEFAULT_YAW = 180F; // north
+    public static final float DEFAULT_PITCH = 0F; // forward
+
+    private final float yaw;
+    private final float pitch;
+
+    public Direction(float yaw, float pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
     }
-}
-
-class ConstantDirection implements Direction {
-    @Override
-    public float getValue(float constant, float entity) {
-        return constant;
-    }
-}
-
-class EntityDirection implements Direction {
-    @Override
-    public float getValue(float constant, float entity) {
-        return entity;
-    }
-}
-
-class RelativeDirection implements Direction {
-    static final float ZERO = 0F;
 
     @Override
-    public float getValue(float constant, float entity) {
-        return entity != ZERO ? -entity : ZERO;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Direction direction = (Direction) o;
+        return Float.compare(direction.yaw, yaw) == 0 &&
+                Float.compare(direction.pitch, pitch) == 0;
     }
-}
 
-class TranslateDirection implements Direction {
     @Override
-    public float getValue(float constant, float entity) {
-        return entity + constant;
+    public int hashCode() {
+        return Objects.hash(yaw, pitch);
+    }
+
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    public static Direction of(float yaw, float pitch) {
+        return new Direction(yaw, pitch);
     }
 }

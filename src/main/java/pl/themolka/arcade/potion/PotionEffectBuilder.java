@@ -26,8 +26,8 @@ public class PotionEffectBuilder implements Builder<PotionEffect> {
 
     private boolean ambient = true;
     private int amplifier = 0; // effect power of I
-    private Color color;
     private int duration = DURATION_INFINITY;
+    private boolean icon;
     private boolean particles = true;
     private PotionEffectType type;
 
@@ -38,7 +38,7 @@ public class PotionEffectBuilder implements Builder<PotionEffect> {
                                 this.amplifier(),
                                 this.ambient(),
                                 this.particles(),
-                                this.color());
+                                this.icon());
     }
 
     public boolean ambient() {
@@ -59,21 +59,21 @@ public class PotionEffectBuilder implements Builder<PotionEffect> {
         return this;
     }
 
-    public Color color() {
-        return this.color;
-    }
-
-    public PotionEffectBuilder color(Color color) {
-        this.color = color;
-        return this;
-    }
-
     public int duration() {
         return this.duration;
     }
 
     public PotionEffectBuilder duration(int duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public boolean icon() {
+        return this.icon;
+    }
+
+    public PotionEffectBuilder icon(boolean icon) {
+        this.icon = icon;
         return this;
     }
 
@@ -101,6 +101,6 @@ public class PotionEffectBuilder implements Builder<PotionEffect> {
                                 original.getAmplifier(),
                                 original.isAmbient(),
                                 original.hasParticles(),
-                                original.getColor());
+                                original.hasIcon());
     }
 }

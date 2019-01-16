@@ -162,8 +162,10 @@ public class Core extends Objective {
         }
 
         Block block = event.getBlock();
-        if (!event.getNewState().getMaterial().equals(Material.AIR) || this.isCompleted() ||
-                !this.contains(block) || this.liquid.accepts(event.getNewState().getMaterial())) {
+        Material newMaterial = event.getNewState().getType();
+
+        if (!newMaterial.equals(Material.AIR) || this.isCompleted() ||
+                !this.contains(block) || this.liquid.accepts(newMaterial)) {
             return;
         }
 
@@ -213,7 +215,7 @@ public class Core extends Objective {
 
     @Handler(priority = Priority.HIGHER)
     public void detectLiquidTransform(BlockTransformEvent event) {
-        if (event.isCanceled() || this.liquid.accepts(event.getNewState().getMaterial())) {
+        if (event.isCanceled() || this.liquid.accepts(event.getNewState().getType())) {
             return;
         }
 

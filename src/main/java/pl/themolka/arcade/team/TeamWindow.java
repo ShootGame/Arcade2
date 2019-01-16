@@ -137,7 +137,7 @@ public class TeamWindow extends PlayMatchWindow {
 
     private ItemStack buildTeamItem(Team team) {
         return new ItemStackBuilder()
-                .type(Material.WOOL)
+                .type(Material.WHITE_WOOL) // FIXME
                 .durability(team.getColor().getWoolData())
                 .displayName(ChatColor.YELLOW + "Join " + ChatColor.BOLD + team.getPrettyName())
                 .build();

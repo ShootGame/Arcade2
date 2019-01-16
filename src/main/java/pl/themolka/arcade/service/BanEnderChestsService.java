@@ -43,7 +43,7 @@ public class BanEnderChestsService extends Service {
         ItemStack result = event.getInventory().getResult();
         if (result != null && result.getType().equals(Material.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "craft"));
+            event.getWhoClicked().sendMessage(String.format(ENDER_CHEST_MESSAGE, "craft"));
         }
     }
 
@@ -51,7 +51,7 @@ public class BanEnderChestsService extends Service {
     public void onEnderChestOpen(InventoryOpenEvent event) {
         if (event.getInventory().getType().equals(InventoryType.ENDER_CHEST)) {
             event.setCancelled(true);
-            event.getActor().sendMessage(String.format(ENDER_CHEST_MESSAGE, "open"));
+            event.getPlayer().sendMessage(String.format(ENDER_CHEST_MESSAGE, "open"));
         }
     }
 

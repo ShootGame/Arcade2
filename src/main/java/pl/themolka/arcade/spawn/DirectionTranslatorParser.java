@@ -32,9 +32,9 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Set;
 
-@Produces(Direction.class)
-public class DirectionParser extends ElementParser<Direction>
-                             implements InstallableParser {
+@Produces(DirectionTranslator.class)
+public class DirectionTranslatorParser extends ElementParser<DirectionTranslator>
+                                       implements InstallableParser {
     private Parser<String> textParser;
 
     @Override
@@ -48,15 +48,15 @@ public class DirectionParser extends ElementParser<Direction>
     }
 
     @Override
-    protected Result<Direction> parseElement(Context context, Element element, String name, String value) throws ParserException {
+    protected Result<DirectionTranslator> parseElement(Context context, Element element, String name, String value) throws ParserException {
         String text = this.textParser.parseWithDefinition(context, element, name, value).orFail();
 
         try {
-            Field field = Direction.class.getField(this.normalizeFieldName(text));
+            Field field = DirectionTranslator.class.getField(this.normalizeFieldName(text));
             field.setAccessible(true);
 
-            if (Direction.class.isAssignableFrom(field.getType())) {
-                return Result.fine(element, name, value, (Direction) field.get(null));
+            if (DirectionTranslator.class.isAssignableFrom(field.getType())) {
+                return Result.fine(element, name, value, (DirectionTranslator) field.get(null));
             }
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }

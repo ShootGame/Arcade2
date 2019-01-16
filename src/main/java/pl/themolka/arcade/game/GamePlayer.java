@@ -16,9 +16,9 @@
 
 package pl.themolka.arcade.game;
 
-import net.minecraft.server.AttributeMapBase;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.v1_13_R2.AttributeMapBase;
+import net.minecraft.server.v1_13_R2.EntityLiving;
+import net.minecraft.server.v1_13_R2.EntityPlayer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +32,6 @@ import pl.themolka.arcade.channel.ChatChannel;
 import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.goal.Goal;
 import pl.themolka.arcade.goal.GoalCreateEvent;
-import pl.themolka.arcade.kit.content.AbsorptionContent;
 import pl.themolka.arcade.kit.content.BurnContent;
 import pl.themolka.arcade.kit.content.CanFlyContent;
 import pl.themolka.arcade.kit.content.ExhaustionContent;
@@ -46,7 +45,6 @@ import pl.themolka.arcade.kit.content.GravityContent;
 import pl.themolka.arcade.kit.content.HealthContent;
 import pl.themolka.arcade.kit.content.HealthScaleContent;
 import pl.themolka.arcade.kit.content.HungerContent;
-import pl.themolka.arcade.kit.content.KnockbackContent;
 import pl.themolka.arcade.kit.content.MaxHealthContent;
 import pl.themolka.arcade.kit.content.RemoveArrowsContent;
 import pl.themolka.arcade.kit.content.SaturationContent;
@@ -343,7 +341,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         }
 
         bukkit.setAffectsSpawning(participating);
-        bukkit.setCollidesWithEntities(participating);
+        bukkit.spigot().setCollidesWithEntities(participating);
     }
 
     public void refreshVisibilityArcadePlayer(Iterable<ArcadePlayer> viewers) {
@@ -400,7 +398,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         this.resetHealth();
         this.setLevel(PlayerLevel.getDefaultLevel());
 
-        bukkit.setAbsorption(AbsorptionContent.Config.DEFAULT_ABSORPTION);
         bukkit.setAllowFlight(CanFlyContent.Config.DEFAULT_CAN_FLY);
         bukkit.setArrowsStuck(RemoveArrowsContent.FINAL_COUNT);
         bukkit.setCompassTarget(this.game.getWorld().getSpawnLocation());
@@ -414,7 +411,6 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.setGameMode(GameModeContent.Config.DEFAULT_GAME_MODE);
         bukkit.setGlowing(GlowContent.Config.DEFAULT_GLOW);
         bukkit.setGravity(GravityContent.Config.DEFAULT_GRAVITY);
-        bukkit.setKnockbackReduction(KnockbackContent.Config.DEFAULT_KNOCKBACK);
         bukkit.setSaturation(SaturationContent.Config.DEFAULT_SATURATION);
         bukkit.setSilent(SilentContent.Config.DEFAULT_SILENT);
         bukkit.setSneaking(false);

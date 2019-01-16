@@ -19,8 +19,8 @@ package pl.themolka.arcade.spawn;
 import pl.themolka.arcade.config.IConfig;
 
 public interface Directional {
-    default org.bukkit.geometry.Direction createDirection() {
-        return org.bukkit.geometry.Direction.of(this.getYaw(), this.getPitch());
+    default Direction createDirection() {
+        return Direction.of(this.getYaw(), this.getPitch());
     }
 
     default float getYaw() {
@@ -32,10 +32,10 @@ public interface Directional {
     }
 
     interface Config extends IConfig {
-        float DEFAULT_YAW = 180F; // north
-        float DEFAULT_PITCH = 0F; // forward
+        float DEFAULT_YAW = Direction.DEFAULT_YAW;
+        float DEFAULT_PITCH = Direction.DEFAULT_PITCH;
 
-        default float yaw() { return DEFAULT_YAW; };
-        default float pitch() { return DEFAULT_PITCH; };
+        default float yaw() { return DEFAULT_YAW; }
+        default float pitch() { return DEFAULT_PITCH; }
     }
 }

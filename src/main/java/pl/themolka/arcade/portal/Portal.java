@@ -37,7 +37,7 @@ import pl.themolka.arcade.util.StringId;
 
 public class Portal extends ForwardingRegion implements PlayerApplicable, StringId {
     public static final IRegionFieldStrategy FIELD_STRATEGY = RegionFieldStrategy.NET;
-    public static final Sound TELEPORT_SOUND = Sound.ENTITY_ENDERMEN_TELEPORT;
+    public static final Sound TELEPORT_SOUND = Sound.ENTITY_SHULKER_TELEPORT;
 
     private final SpawnApply destination;
     private final Filter filter;

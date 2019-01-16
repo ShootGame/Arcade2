@@ -28,7 +28,7 @@ import org.bukkit.material.MaterialData;
 import java.util.Map;
 
 public class FlagItem extends ItemStack {
-    public static final Material MATERIAL = Material.BANNER;
+    public static final Material MATERIAL = Material.WHITE_BANNER;
     public static final int AMOUNT = 1;
 
     public FlagItem(Banner block) {
@@ -64,22 +64,12 @@ public class FlagItem extends ItemStack {
     }
 
     @Override
-    public void setTypeId(int type) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setAmount(int amount) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void setData(MaterialData data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setMaterial(MaterialData data) {
         throw new UnsupportedOperationException();
     }
 

@@ -60,10 +60,6 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
         }
 
         if (operation == null) {
-            operation = this.parseOperationVanillaId(context, element, name, value);
-        }
-
-        if (operation == null) {
             throw this.fail(element, name, value, "Unknown attribute modifier operation type");
         }
 
@@ -81,16 +77,5 @@ public class OperationParser extends ElementParser<AttributeModifier.Operation>
 
     protected AttributeModifier.Operation parseOperationEnum(Context context, Element element, String name, String value) throws ParserException {
         return this.enumParser.parseWithDefinition(context, element, name, value).orNull();
-    }
-
-    protected AttributeModifier.Operation parseOperationVanillaId(Context context, Element element, String name, String value) throws ParserException {
-        Integer vanillaId = this.vanillaIdParser.parseWithDefinition(context, element, name, value).orNull();
-        return vanillaId != null && isValidOperationVanillaId(vanillaId)
-                ? AttributeModifier.Operation.fromOpcode(vanillaId)
-                : null;
-    }
-
-    private static boolean isValidOperationVanillaId(int vanillaId) {
-        return vanillaId >= 0 && vanillaId < AttributeModifier.Operation.values().length;
     }
 }

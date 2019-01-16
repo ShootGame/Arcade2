@@ -58,6 +58,6 @@ public class LocationParser extends NodeParser<Location>
         Vector vector = this.vectorParser.parseWithDefinition(context, node, name, value).orFail();
         float yaw = this.yawParser.parse(context, node.property("yaw", "horizontal")).orDefault(Directional.Config.DEFAULT_YAW);
         float pitch = this.pitchParser.parse(context, node.property("pitch", "vertical")).orDefault(Directional.Config.DEFAULT_PITCH);
-        return Result.fine(node, name, value, new Location((World) null, vector, yaw, pitch));
+        return Result.fine(node, name, value, new Location(null, vector.getX(), vector.getY(), vector.getZ(), yaw, pitch));
     }
 }

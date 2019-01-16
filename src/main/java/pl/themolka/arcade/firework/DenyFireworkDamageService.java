@@ -31,6 +31,7 @@ import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.service.Service;
 import pl.themolka.arcade.service.ServiceId;
 
+import java.util.List;
 import java.util.Objects;
 
 @ServiceId("DenyFireworkDamageService")
@@ -43,11 +44,12 @@ public class DenyFireworkDamageService extends Service {
         Entity damager = event.getDamager();
 
         if (damager instanceof Firework) {
-            MetadataValue metadata = damager.getMetadata(METADATA_KEY, plugin);
-
-            if (metadata instanceof DamageMetadata && ((DamageMetadata) metadata).value()) {
-                damager.removeMetadata(METADATA_KEY, plugin);
-                event.setCancelled(true);
+            for (MetadataValue metadata : damager.getMetadata(METADATA_KEY)) {
+                if (metadata instanceof DamageMetadata && ((DamageMetadata) metadata).value()) {
+                    damager.removeMetadata(METADATA_KEY, plugin);
+                    event.setCancelled(true);
+                    break;
+                }
             }
         }
     }

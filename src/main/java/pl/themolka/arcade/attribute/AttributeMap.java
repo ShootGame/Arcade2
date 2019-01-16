@@ -16,8 +16,8 @@
 
 package pl.themolka.arcade.attribute;
 
-import net.minecraft.server.AttributeInstance;
-import net.minecraft.server.AttributeMapBase;
+import net.minecraft.server.v1_13_R2.AttributeInstance;
+import net.minecraft.server.v1_13_R2.AttributeMapBase;
 
 import java.util.Objects;
 

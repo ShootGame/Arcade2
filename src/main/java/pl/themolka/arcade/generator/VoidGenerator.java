@@ -17,8 +17,10 @@
 package pl.themolka.arcade.generator;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldType;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.generator.ChunkGenerator;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.map.WorldInfo;
@@ -33,9 +35,14 @@ import java.util.Random;
 import java.util.Set;
 
 public class VoidGenerator extends ChunkGenerator implements Generator {
+    private static final BlockData VOID = Material.AIR.createBlockData();
+
     @Override
-    public byte[] generate(World world, Random random, int x, int z) {
-        return new byte[16 * 256 * 16]; // generate an empty world without any blocks
+    public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+        ChunkData batch = this.createChunkData(world);
+        batch.setRegion(0, 0, 0, 16, batch.getMaxHeight(), 16, VOID);
+        return batch;
+        // FIXME test if we have to define this to air
     }
 
     @Override

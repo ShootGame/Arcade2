@@ -16,7 +16,6 @@
 
 package pl.themolka.arcade.filter.matcher;
 
-import org.bukkit.Locatable;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -53,8 +52,6 @@ public class MaterialMatcher extends ConfigurableMatcher<MaterialData> {
             return this.matches((ItemStack) object);
         } else if (object instanceof Location) {
             return this.matches((Location) object);
-        } else if (object instanceof Locatable) {
-            return this.matches((Locatable) object);
         } else if (object instanceof Material) {
             return this.matches((Material) object);
         }
@@ -76,10 +73,6 @@ public class MaterialMatcher extends ConfigurableMatcher<MaterialData> {
 
     public boolean matches(Location location) {
         return location != null && this.matches(location.getBlock());
-    }
-
-    public boolean matches(Locatable locatable) {
-        return locatable != null && this.matches(locatable.getLocation());
     }
 
     public boolean matches(Material material) {

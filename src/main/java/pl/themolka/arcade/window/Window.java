@@ -29,7 +29,7 @@ import java.util.logging.Level;
 
 public class Window extends SimpleWindowListener {
     public static final ItemStack CLOSE_ITEM = new ItemStackBuilder()
-            .type(Material.EYE_OF_ENDER)
+            .type(Material.ENDER_EYE)
             .displayName(ChatColor.GREEN + ChatColor.UNDERLINE.toString() + "Close")
             .build();
 

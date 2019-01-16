@@ -18,16 +18,17 @@ package pl.themolka.arcade.session;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Packet;
+import net.minecraft.server.v1_13_R2.DimensionManager;
+import net.minecraft.server.v1_13_R2.EntityHuman;
+import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_13_R2.Packet;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import pl.themolka.arcade.ArcadePlugin;
@@ -76,12 +77,7 @@ public class ArcadePlayer implements Sender {
 
     @Override
     public Locale getLocale() {
-        Locale locale = this.getBukkit().getCurrentLocale();
-        if (locale != null) {
-            return locale;
-        }
-
-        return DEFAULT_LOCALE;
+        return Locale.forLanguageTag(this.getBukkit().getLocale());
     }
 
     @Override
@@ -240,9 +236,9 @@ public class ArcadePlayer implements Sender {
      */
     @Deprecated
     public void respawn(Location at) {
-        int worldId = -1; // 'worldId' is not used if 'at' is null
+        DimensionManager dimension = null; // 'dimension' is not used if 'at' is null
         if (at != null) {
-            worldId = ((CraftWorld) at.getWorld()).getHandle().dimension;
+            dimension = ((CraftWorld) at.getWorld()).getHandle().dimension;
         }
 
         GamePlayer gamePlayer = this.getGamePlayer();
@@ -252,7 +248,7 @@ public class ArcadePlayer implements Sender {
 
         EntityPlayer mojang = this.getMojang();
         if (mojang != null) {
-            mojang.server.getPlayerList().moveToWorld(mojang, worldId, false, at, false);
+            mojang.server.getPlayerList().moveToWorld(mojang, dimension, false, at, false);
         }
     }
 

@@ -41,7 +41,7 @@ public class PlayerSpawnAgent extends SpawnAgent {
     // Instancing
     //
 
-    public static PlayerSpawnAgent create(Spawn spawn, Player player, Direction yaw, Direction pitch) {
+    public static PlayerSpawnAgent create(Spawn spawn, Player player, DirectionTranslator yaw, DirectionTranslator pitch) {
         PlayerSpawnAgent agent = new PlayerSpawnAgent(spawn, player);
         agent.yawDirection = yaw;
         agent.pitchDirection = pitch;

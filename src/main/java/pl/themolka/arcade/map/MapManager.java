@@ -106,7 +106,7 @@ public class MapManager implements FilenameFilter {
                 .environment(info.getEnvironment())
                 .generateStructures(false)
                 .generator(generator.getChunkGenerator())
-                .hardcore(info.isHardcore())
+//                .hardcore(info.isHardcore()) WTF? TODO
                 .seed(info.getRandomSeed().getSeed())
                 .type(generator.getWorldType());
 

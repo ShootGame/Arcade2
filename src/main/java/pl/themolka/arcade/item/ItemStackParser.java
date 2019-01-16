@@ -21,7 +21,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
-import pl.themolka.arcade.attribute.BoundedItemModifier;
+import pl.themolka.arcade.attribute.BoundedModifier;
+import pl.themolka.arcade.attribute.BukkitAttributeKey;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
 import pl.themolka.arcade.item.meta.ItemMetaParser;
@@ -38,6 +39,7 @@ import pl.themolka.arcade.parser.type.MaterialParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,7 +56,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
     private Parser<ItemEnchantment> enchantmentParser;
     private Parser<Material> canDestroyParser;
     private Parser<Material> canPlaceOnParser;
-    private Parser<BoundedItemModifier> modifierParser;
+    private Parser<BoundedModifier> modifierParser;
     private Parser<Boolean> unbreakableParser;
     private Parser<ItemFlag> flagParser;
 
@@ -71,7 +73,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         this.enchantmentParser = library.type(ItemEnchantment.class);
         this.canDestroyParser = library.type(Material.class);
         this.canPlaceOnParser = library.type(Material.class);
-        this.modifierParser = library.type(BoundedItemModifier.class);
+        this.modifierParser = library.type(BoundedModifier.class);
         this.unbreakableParser = library.type(Boolean.class);
         this.flagParser = library.type(ItemFlag.class);
     }
@@ -92,8 +94,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
         List<String> description = this.parseDescription(context, node);
         short durability = this.durabilityParser.parse(context, durabilityProperty).orDefault((short) 0);
         List<ItemEnchantment> enchantments = this.parseEnchantments(context, node);
-        List<Material> canDestroy = this.parseDestroy(context, node);
-        List<Material> canPlaceOn = this.parseCanPlaceOn(context, node);
+        Set<Material> canDestroy = this.parseDestroy(context, node);
+        Set<Material> canPlaceOn = this.parseCanPlaceOn(context, node);
         boolean unbreakable = this.unbreakableParser.parse(context, node.property("unbreakable", "permanent")).orDefault(false);
         List<ItemFlag> flags = this.parseFlags(context, node);
 
@@ -129,8 +131,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
         }
 
         for (Node modifierNode : node.children("modifier", "attribute-modifier", "attributemodifier", "attribute")) {
-            BoundedItemModifier modifier = this.modifierParser.parse(context, modifierNode).orFail();
-            itemMeta.addAttributeModifier(modifier.getKey().key(), modifier.getItemModifier());
+            BoundedModifier modifier = this.modifierParser.parse(context, modifierNode).orFail();
+            itemMeta.addAttributeModifier(BukkitAttributeKey.convertOrFail(modifier), modifier.getModifier());
         }
 
         itemMeta.setUnbreakable(unbreakable);
@@ -201,14 +203,14 @@ public class ItemStackParser extends NodeParser<ItemStack>
     // Can Destroy
     //
 
-    private List<Material> parseDestroy(Context context, Node root) throws ParserException {
+    private Set<Material> parseDestroy(Context context, Node root) throws ParserException {
         Node group = root.firstChild("can-destroy");
         return group != null ? this.parseDestroy0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
                              : this.parseDestroy0(context, root, "destroy", "can-destroy");
     }
 
-    private List<Material> parseDestroy0(Context context, Node node, String... names) throws ParserException {
-        List<Material> materials = new ArrayList<>();
+    private Set<Material> parseDestroy0(Context context, Node node, String... names) throws ParserException {
+        Set<Material> materials = new HashSet<>();
         for (Node material : node.children(names)) {
             materials.add(this.canDestroyParser.parse(context, material).orFail());
         }
@@ -220,14 +222,14 @@ public class ItemStackParser extends NodeParser<ItemStack>
     // Can Place On
     //
 
-    private List<Material> parseCanPlaceOn(Context context, Node root) throws ParserException {
+    private Set<Material> parseCanPlaceOn(Context context, Node root) throws ParserException {
         Node group = root.firstChild("can-place-on");
         return group != null ? this.parseCanPlaceOn0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
                              : this.parseCanPlaceOn0(context, root, "place-on", "on", "can-place");
     }
 
-    private List<Material> parseCanPlaceOn0(Context context, Node node, String... names) throws ParserException {
-        List<Material> materials = new ArrayList<>();
+    private Set<Material> parseCanPlaceOn0(Context context, Node node, String... names) throws ParserException {
+        Set<Material> materials = new HashSet<>();
         for (Node material : node.children(names)) {
             materials.add(this.canPlaceOnParser.parse(context, material).orFail());
         }
