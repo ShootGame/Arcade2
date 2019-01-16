@@ -86,6 +86,11 @@ public class ArcadePlayer implements Sender {
     }
 
     @Override
+    public ArcadePlugin getPlugin() {
+        return this.plugin;
+    }
+
+    @Override
     public String getUsername() {
         return this.getBukkit().getName();
     }

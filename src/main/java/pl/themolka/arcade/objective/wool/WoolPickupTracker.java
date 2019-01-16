@@ -25,8 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GamePlayer;
@@ -106,13 +106,13 @@ public class WoolPickupTracker implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void pickupFromGround(PlayerPickupItemEvent event) {
+    public void pickupFromGround(EntityPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
         if (this.isNotWool(item)) {
             return;
         }
 
-        GamePlayer picker = this.wool.getGame().resolve(event.getPlayer());
+        GamePlayer picker = this.wool.getGame().resolve(event.getEntity());
         if (picker != null && picker.isParticipating()) {
             this.pickup(item, picker);
         }

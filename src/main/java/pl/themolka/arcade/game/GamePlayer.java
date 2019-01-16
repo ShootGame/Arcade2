@@ -22,7 +22,8 @@ import net.minecraft.server.v1_13_R2.EntityPlayer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffect;
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.attribute.Attributable;
 import pl.themolka.arcade.attribute.Attribute;
 import pl.themolka.arcade.attribute.AttributeKey;
@@ -181,6 +182,11 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
     @Override
     public Set<GamePlayer> getPlayers() {
         return Collections.singleton(this);
+    }
+
+    @Override
+    public ArcadePlugin getPlugin() {
+        return this.game.getPlugin();
     }
 
     @Override
@@ -422,8 +428,8 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         bukkit.resetPlayerWeather();
         bukkit.resetTitle();
 
-        for (PotionEffectType effect : PotionEffectType.values()) {
-            bukkit.removePotionEffect(effect);
+        for (PotionEffect effect : bukkit.getActivePotionEffects()) {
+            bukkit.removePotionEffect(effect.getType());
         }
 
         if (this.attributeMap != null) {

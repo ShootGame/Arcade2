@@ -16,6 +16,7 @@
 
 package pl.themolka.arcade.command;
 
+import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.channel.Messageable;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.session.ArcadePlayer;
@@ -39,6 +40,8 @@ public interface Sender extends Messageable {
     }
 
     ArcadePlayer getPlayer();
+
+    ArcadePlugin getPlugin();
 
     String getUsername();
 

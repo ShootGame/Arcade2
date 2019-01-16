@@ -16,12 +16,12 @@
 
 package pl.themolka.arcade.attribute;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import pl.themolka.arcade.parser.EnumParser;
 
+import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 
 public class BukkitAttributeKey extends AttributeKey {
     private final Attribute bukkit;
@@ -32,7 +32,24 @@ public class BukkitAttributeKey extends AttributeKey {
 
     @Override
     public String key() {
-        return this.bukkit.name().toLowerCase();
+        String[] namespaceAndKey = this.bukkit.name().toLowerCase(Locale.US).split("_", 2);
+        if (namespaceAndKey.length != 2) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder result = new StringBuilder(namespaceAndKey[0]).append(".");
+
+        String[] parts = namespaceAndKey[1].split("_");
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (i != 0) {
+                part = StringUtils.capitalize(part);
+            }
+
+            result.append(part);
+        }
+
+        return result.toString();
     }
 
     public Attribute getBukkit() {

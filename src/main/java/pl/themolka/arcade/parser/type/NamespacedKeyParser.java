@@ -37,8 +37,8 @@ public class NamespacedKeyParser extends ElementParser<NamespacedKey> {
 
         if (!namespace.equals(MINECRAFT_NS)) {
             throw this.fail(element, name, value, namespace.equalsIgnoreCase(MINECRAFT_NS)
-                    ? "Did you mean 'minecraft." + key + "'?"
-                    : "Sorry, only 'minecraft' namespace is currently supported");
+                    ? "Did you mean '" + this.format(key) + "'?"
+                    : "Sorry, only '" + MINECRAFT_NS + "' namespace is currently supported");
         }
 
         try {
@@ -46,5 +46,9 @@ public class NamespacedKeyParser extends ElementParser<NamespacedKey> {
         } catch (IllegalArgumentException e) {
             throw this.fail(element, name, value, e.getMessage(), e);
         }
+    }
+
+    protected String format(String key) {
+        return MINECRAFT_NS + ":" + key;
     }
 }

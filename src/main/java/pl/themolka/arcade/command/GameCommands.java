@@ -26,6 +26,7 @@ import pl.themolka.arcade.util.pagination.DynamicPagination;
 import pl.themolka.arcade.util.pagination.Paginationable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GameCommands {
@@ -90,7 +91,7 @@ public class GameCommands {
 
     public List<String> joinCompleter(Sender sender, CommandContext context) {
         if (this.plugin.getGames().getCurrentGame() == null) {
-            throw new CommandException("Could not join the game right now. Please try again later.");
+            return Collections.emptyList();
         }
 
         JoinCompleterEvent event = new JoinCompleterEvent(this.plugin, sender, context);

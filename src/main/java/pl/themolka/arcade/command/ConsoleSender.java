@@ -41,6 +41,11 @@ public class ConsoleSender implements Sender {
     }
 
     @Override
+    public ArcadePlugin getPlugin() {
+        return this.plugin;
+    }
+
+    @Override
     public String getUsername() {
         return getConsoleName();
     }

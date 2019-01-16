@@ -25,6 +25,7 @@ import pl.themolka.arcade.command.Sender;
 import pl.themolka.arcade.module.Module;
 import pl.themolka.arcade.module.ModuleInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 @ModuleInfo(id = "Match")
@@ -73,7 +74,7 @@ public class MatchModule extends Module<MatchGame> {
 
     public List<String> endCompleter(Sender sender, CommandContext context) {
         if (!this.isGameModuleEnabled()) {
-            throw new CommandException("Match module is not enabled in this game.");
+            return Collections.emptyList();
         }
 
         MatchGame game = this.getGameModule();

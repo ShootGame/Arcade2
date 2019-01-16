@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.Set;
 
 @Produces(NumericVersion.class)
-public class NumericVersionVersionParser extends ElementParser<NumericVersion>
-                                         implements InstallableParser {
+public class NumericVersionParser extends ElementParser<NumericVersion>
+                                  implements InstallableParser {
     private Parser<Integer> valueParser;
 
     @Override

@@ -104,7 +104,7 @@ public class MapCommands {
         array.addAll(Arrays.asList("-current", "-next"));
         Collections.sort(array);
 
-        List<String> results = this.mapCompleter();
+        List<String> results = new ArrayList<>();
         for (String item : array) {
             if (item.toLowerCase().startsWith(request.toLowerCase())) {
                 results.add(item);
@@ -243,7 +243,7 @@ public class MapCommands {
         array.addAll(Arrays.asList("-add", "-current", "-restart"));
         Collections.sort(array);
 
-        List<String> results = this.mapCompleter();
+        List<String> results = new ArrayList<>();
         for (String item : array) {
             if (item.toLowerCase().startsWith(request.toLowerCase())) {
                 results.add(item);

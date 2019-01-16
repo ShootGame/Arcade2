@@ -22,6 +22,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Cancellable;
@@ -43,6 +44,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -97,13 +99,19 @@ public class BlockTransformEventService extends Service {
                   event.getNewState());
     }
 
-// FIXME
-//    @EventHandler(ignoreCancelled = true)
-//    public void onBlockFall(BlockFallEvent event) {
-//        this.post(event,
-//                  event.getBlock().getState(),
-//                  this.applyAir(event.getBlock()));
-//    }
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockFall(EntitySpawnEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof FallingBlock)) {
+            return;
+        }
+
+        Block block = event.getLocation().getBlock();
+
+        this.post(event,
+                  block.getState(),
+                  this.applyAir(block));
+    }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockForm(BlockFormEvent event) {
@@ -282,7 +290,6 @@ public class BlockTransformEventService extends Service {
         BlockState state = from.getState();
         state.setType(type);
         state.setBlockData(data);
-
         return state;
     }
 

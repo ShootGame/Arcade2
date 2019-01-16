@@ -135,7 +135,7 @@ public class Commands {
     }
 
     public void handleCommand(Sender sender, Command command, String label, String[] args, CommandContext.IContextParser parser) {
-        this.handleCommand(sender, parser.parse(sender.getGamePlayer().getPlugin(), command, label, args));
+        this.handleCommand(sender, parser.parse(sender.getPlugin(), command, label, args));
     }
 
     public List<String> handleCompleter(Sender sender, CommandContext context) {
