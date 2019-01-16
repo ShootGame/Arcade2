@@ -158,6 +158,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.parser.type.MaterialDataParser" />
     <parser class="pl.themolka.arcade.parser.type.MaterialParser" />
     <parser class="pl.themolka.arcade.parser.type.MessageParser" />
+    <parser class="pl.themolka.arcade.parser.type.NamespacedKeyParser" />
     <parser class="pl.themolka.arcade.parser.type.PathParser" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Finite" />
     <parser class="pl.themolka.arcade.parser.type.PercentageParser$Infinite" />

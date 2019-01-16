@@ -40,11 +40,13 @@ public class ItemMetaParser implements InstallableParser {
             .add(EnchantmentStorageMetaParser.class)
             .add(FireworkMetaParser.class)
             .add(FireworkEffectMetaParser.class)
+            .add(KnowledgeBookMetaParser.class)
             .add(LeatherArmorMetaParser.class)
             .add(MapMetaParser.class)
             .add(PotionMetaParser.class)
             .add(SkullMetaParser.class)
             .add(SpawnEggMetaParser.class)
+            .add(TropicalFishBucketMetaParser.class)
             .build();
 
     private Map<Class<? extends ItemMeta>, Nested<?>> parsers;
@@ -59,7 +61,7 @@ public class ItemMetaParser implements InstallableParser {
             }
 
             Class<?> metaType = produces.value();
-            if (metaType == null || !ItemMeta.class.isAssignableFrom(metaType)) {
+            if (!ItemMeta.class.isAssignableFrom(metaType)) {
                 continue;
             }
 

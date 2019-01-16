@@ -50,7 +50,13 @@ public class MaterialParser extends ElementParser<Material>
 
     @Override
     protected Result<Material> parseElement(Context context, Element element, String name, String value) throws ParserException {
-        Material material = Material.matchMaterial(value.split(":")[0]);
+        String input = value.split(":")[0];
+
+        Material material = Material.matchMaterial(input, false);
+        if (material == null) {
+            material = Material.matchMaterial(input, true);
+        }
+
         if (material != null) {
             return Result.fine(element, name, value, material);
         }

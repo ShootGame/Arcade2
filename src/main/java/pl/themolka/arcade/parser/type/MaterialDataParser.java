@@ -32,6 +32,7 @@ import pl.themolka.arcade.parser.Result;
 import java.util.Collections;
 import java.util.Set;
 
+@Deprecated
 @Produces(MaterialData.class)
 public class MaterialDataParser extends ElementParser<MaterialData>
                                 implements InstallableParser {

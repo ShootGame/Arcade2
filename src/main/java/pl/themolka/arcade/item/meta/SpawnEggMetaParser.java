@@ -40,9 +40,10 @@ class SpawnEggMetaParser extends ItemMetaParser.Nested<SpawnEggMeta>
     }
 
     public SpawnEggMeta parse(Context context, Node root, ItemStack itemStack, SpawnEggMeta itemMeta) throws ParserException {
-        Node node = root.firstChild("spawner-egg");
+        Node node = root.firstChild("spawner-egg", "spawneregg");
         if (node != null) {
-            Property spawnedType = node.property("spawned-type", "entity-type", "mob-type");
+            Property spawnedType = node.property("spawned-type", "entity-type", "mob-type",
+                                                 "spawnedtype", "entitytype", "mobtype", "mob");
             if (spawnedType != null) {
                 itemMeta.setSpawnedType(this.spawnedTypeParser.parse(context, spawnedType).orFail());
             }

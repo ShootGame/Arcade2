@@ -40,7 +40,7 @@ class EnchantmentStorageMetaParser extends ItemMetaParser.Nested<EnchantmentStor
 
     @Override
     public EnchantmentStorageMeta parse(Context context, Node root, ItemStack itemStack, EnchantmentStorageMeta itemMeta) throws ParserException {
-        Node node = root.firstChild("enchanted-book");
+        Node node = root.firstChild("enchanted-book", "enchantedbook");
         if (node != null) {
             for (Node enchantment : node.children("enchantment")) {
                 this.enchantmentParser.parse(context, enchantment).orFail().apply(itemMeta);

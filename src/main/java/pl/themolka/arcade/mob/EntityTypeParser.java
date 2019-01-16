@@ -16,11 +16,11 @@
 
 package pl.themolka.arcade.mob;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import pl.themolka.arcade.dom.Element;
 import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.ElementParser;
-import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.Parser;
 import pl.themolka.arcade.parser.ParserLibrary;
@@ -35,12 +35,12 @@ import java.util.Set;
 public class EntityTypeParser extends ElementParser<EntityType>
                               implements InstallableParser {
     private Parser<EntityType> entityTypeParser;
-    private Parser<String> textParser;
+    private Parser<NamespacedKey> namespacedParser;
 
     @Override
     public void install(ParserLibrary library) throws ParserNotSupportedException {
         this.entityTypeParser = library.enumType(EntityType.class);
-        this.textParser = library.text();
+        this.namespacedParser = library.type(NamespacedKey.class);
     }
 
     @Override
@@ -50,15 +50,14 @@ public class EntityTypeParser extends ElementParser<EntityType>
 
     @Override
     protected Result<EntityType> parseElement(Context context, Element element, String name, String value) throws ParserException {
-        EntityType entityType = EntityType.fromName(this.parseEntityName(context, element, name, value));
+        NamespacedKey namespacedKey = this.namespacedParser.parseWithDefinition(context, element, name, value).orDefaultNull();
+        String input = namespacedKey != null ? namespacedKey.getKey() : value;
+
+        EntityType entityType = EntityType.fromName(input);
         if (entityType != null) {
-            return Result.fine(element, name, value, entityType);
+            return Result.fine(element, name, input, entityType);
         }
 
         return this.entityTypeParser.parseWithDefinition(context, element, name, value);
-    }
-
-    private String parseEntityName(Context context, Element element, String name, String value) {
-        return this.textParser.parseWithDefinition(context, element, name, EnumParser.toEnumValue(value)).orNull();
     }
 }
