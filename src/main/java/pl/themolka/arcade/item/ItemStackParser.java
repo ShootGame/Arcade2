@@ -20,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.attribute.BoundedModifier;
 import pl.themolka.arcade.attribute.BukkitAttributeKey;
 import pl.themolka.arcade.dom.Node;
@@ -30,8 +29,8 @@ import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.InstallableParser;
 import pl.themolka.arcade.parser.NodeParser;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.parser.Produces;
 import pl.themolka.arcade.parser.Result;
@@ -48,7 +47,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
                              implements InstallableParser {
     private ItemMetaParser itemMetaParser;
 
-    private Parser<MaterialData> typeParser;
+    private Parser<Material> typeParser;
     private Parser<Integer> amountParser;
     private Parser<String> displayNameParser;
     private Parser<String> descriptionParser;
@@ -65,7 +64,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         this.itemMetaParser = new ItemMetaParser();
         this.itemMetaParser.install(library);
 
-        this.typeParser = library.type(MaterialData.class);
+        this.typeParser = library.type(Material.class);
         this.amountParser = library.type(Integer.class);
         this.displayNameParser = library.type(String.class);
         this.descriptionParser = library.type(String.class);
@@ -88,7 +87,7 @@ public class ItemStackParser extends NodeParser<ItemStack>
         Property amountProperty = node.property("amount", "total");
         Property durabilityProperty = node.property("durability");
 
-        MaterialData type = this.typeParser.parse(context, node.property(MaterialParser.MATERIAL_ELEMENT_NAMES)).orFail();
+        Material type = this.typeParser.parse(context, node.property(MaterialParser.MATERIAL_ELEMENT_NAMES)).orFail();
         int amount = this.amountParser.parse(context, amountProperty).orDefault(1);
         String displayName = this.displayNameParser.parse(context, node.firstChild("name", "display-name")).orDefaultNull();
         List<String> description = this.parseDescription(context, node);
@@ -101,13 +100,9 @@ public class ItemStackParser extends NodeParser<ItemStack>
 
         if (amount <= 0) {
             throw this.fail(amountProperty, "Amount must be positive (greater than 0)");
-        } else if (type.getData() != 0 && durability != 0) {
-            // Notch made a huge mistake here... :(
-            throw this.fail(durabilityProperty, "Sorry! Durability cannot be combined with material data!");
         }
 
-        ItemStack itemStack = new ItemStack(type.getItemType());
-        itemStack.setData(type);
+        ItemStack itemStack = new ItemStack(type);
         itemStack.setAmount(amount);
         itemStack.setDurability(durability);
 

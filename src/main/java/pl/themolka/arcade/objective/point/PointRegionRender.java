@@ -23,7 +23,6 @@ import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.Listener;
-import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.event.Priority;
 import pl.themolka.arcade.game.GameStartEvent;
 import pl.themolka.arcade.game.Participator;
@@ -49,10 +48,6 @@ public class PointRegionRender implements Listener {
 
     public boolean isRenderable(Material material) {
         return material != null && ColoredMaterials.isColored(material);
-    }
-
-    public boolean isRenderable(MaterialData data) {
-        return data != null && this.isRenderable(data.getItemType());
     }
 
     public void renderAllPoints() {
@@ -87,8 +82,7 @@ public class PointRegionRender implements Listener {
                 return true;
             }
         } else if (BannerUtils.isBanner(material)) {
-            this.renderBanner(block.getState(), color);
-            return true;
+            return this.renderBanner(block.getState(), color);
         }
 
         return false;

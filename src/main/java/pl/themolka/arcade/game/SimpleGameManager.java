@@ -158,7 +158,7 @@ public class SimpleGameManager implements GameManager {
 
         List<Ref<?>> refs;
         try {
-            refs = config.getRefFinder().find((Iterable) manifest.getModules());
+            refs = config.getRefFinder().find(manifest.getModules());
             System.out.println(StringUtils.join(refs, ", "));
         } catch (InvocationTargetException e) {
             throw new DOMException(null, e);

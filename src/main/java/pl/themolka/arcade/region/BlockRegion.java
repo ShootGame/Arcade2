@@ -18,7 +18,6 @@ package pl.themolka.arcade.region;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.material.MaterialData;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import pl.themolka.arcade.game.Game;
@@ -44,12 +43,6 @@ public class BlockRegion extends AbstractRegion {
     }
 
     public BlockRegion(Game game, String id, Region parent, Material... materials) {
-        this(game, id, parent);
-
-        this.addBlocks(materials);
-    }
-
-    public BlockRegion(Game game, String id, Region parent, MaterialData... materials) {
         this(game, id, parent);
 
         this.addBlocks(materials);
@@ -115,19 +108,10 @@ public class BlockRegion extends AbstractRegion {
     }
 
     public boolean addBlocks(Material... materials) {
-        List<MaterialData> data = new ArrayList<>();
-        for (Material material : materials) {
-            data.add(new MaterialData(material));
-        }
-
-        return this.addBlocks(data.toArray(new MaterialData[data.size()]));
-    }
-
-    public boolean addBlocks(MaterialData... materials) {
         int index = 0;
         for (Block block : this) {
-            for (MaterialData data : materials) {
-                if (data.getItemType().equals(block.getType()) && data.getData() == block.getData() && this.addBlock(block)) {
+            for (Material material : materials) {
+                if (material.equals(block.getType()) && this.addBlock(block)) {
                     index++;
                 }
             }

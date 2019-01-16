@@ -22,7 +22,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import pl.themolka.arcade.objective.wool.Wool;
 import pl.themolka.arcade.parser.EnumParser;
 import pl.themolka.arcade.util.Color;
@@ -106,7 +105,8 @@ public final class WoolUtils {
             return false;
         }
 
-        return isWool(new MaterialData(block.getType(), block.getData()), color);
+        return isWool(block) && (color == null ||
+                                 ColoredMaterials.WOOLS.containsKey(ColoredMaterials.WOOLS.inverse().get(color)));
     }
 
     public static boolean isWool(ItemStack item) {
@@ -126,15 +126,6 @@ public final class WoolUtils {
 
     public static boolean isWool(Material material) {
         return material != null && ColoredMaterials.isWool(material);
-    }
-
-    public static boolean isWool(MaterialData data) {
-        return data != null && isWool(data.getItemType());
-    }
-
-    public static boolean isWool(MaterialData data, DyeColor color) {
-        return color != null && isWool(data) &&
-                DyeColor.getByWoolData(data.getData()).equals(color);
     }
 
     public static String name(DyeColor color) {

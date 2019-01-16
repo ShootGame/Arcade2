@@ -22,7 +22,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.material.MaterialData;
 
 public final class BannerUtils {
     private BannerUtils() {
@@ -43,10 +42,6 @@ public final class BannerUtils {
     public static boolean isBanner(Material material) {
         return material != null && (ColoredMaterials.isBanner(material) ||
                                     ColoredMaterials.isWallBanner(material));
-    }
-
-    public static boolean isBanner(MaterialData data) {
-        return isBanner(data.getItemType());
     }
 
     public static BannerMeta meta(ItemStack item) {
