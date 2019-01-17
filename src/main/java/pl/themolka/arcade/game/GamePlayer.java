@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -123,8 +124,7 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
 
     @Override
     public boolean contains(Player bukkit) {
-        Player source = this.getBukkit();
-        return bukkit != null && source != null && source.equals(bukkit);
+        return Objects.equals(this.getBukkit(), bukkit);
     }
 
     @Override
@@ -369,22 +369,24 @@ public class GamePlayer implements Attributable, GameHolder, MatchWinner, Sender
         }
 
         Player bukkit = this.getBukkit();
+        ArcadePlugin plugin = this.game.getPlugin();
+
         for (GamePlayer viewer : viewers) {
             if (viewer.isOnline()) {
                 Player viewerBukkit = viewer.getBukkit();
 
                 // can this player see looped player?
                 if (this.canSee(viewer)) {
-                    bukkit.showPlayer(viewerBukkit);
+                    bukkit.showPlayer(plugin, viewerBukkit);
                 } else {
-                    bukkit.hidePlayer(viewerBukkit);
+                    bukkit.hidePlayer(plugin, viewerBukkit);
                 }
 
                 // can looped player see this player?
                 if (viewer.canSee(this)) {
-                    viewerBukkit.showPlayer(bukkit);
+                    viewerBukkit.showPlayer(plugin, bukkit);
                 } else {
-                    viewerBukkit.hidePlayer(bukkit);
+                    viewerBukkit.hidePlayer(plugin, bukkit);
                 }
             }
         }

@@ -35,12 +35,12 @@ import java.util.Set;
 public class EntityTypeParser extends ElementParser<EntityType>
                               implements InstallableParser {
     private Parser<EntityType> entityTypeParser;
-    private Parser<NamespacedKey> namespacedParser;
+    private Parser<NamespacedKey> namespacedKeyParser;
 
     @Override
     public void install(ParserLibrary library) throws ParserNotSupportedException {
         this.entityTypeParser = library.enumType(EntityType.class);
-        this.namespacedParser = library.type(NamespacedKey.class);
+        this.namespacedKeyParser = library.type(NamespacedKey.class);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class EntityTypeParser extends ElementParser<EntityType>
 
     @Override
     protected Result<EntityType> parseElement(Context context, Element element, String name, String value) throws ParserException {
-        NamespacedKey namespacedKey = this.namespacedParser.parseWithDefinition(context, element, name, value).orDefaultNull();
+        NamespacedKey namespacedKey = this.namespacedKeyParser.parseWithDefinition(context, element, name, value).orDefaultNull();
         String input = namespacedKey != null ? namespacedKey.getKey() : value;
 
         EntityType entityType = EntityType.fromName(input);

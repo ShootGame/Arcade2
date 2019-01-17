@@ -16,7 +16,9 @@
 
 package pl.themolka.arcade.item;
 
+import com.destroystokyo.paper.Namespaced;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,8 +55,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
     private Parser<String> descriptionParser;
     private Parser<Short> durabilityParser;
     private Parser<ItemEnchantment> enchantmentParser;
-    private Parser<Material> canDestroyParser;
-    private Parser<Material> canPlaceOnParser;
+    private Parser<NamespacedKey> destroyableKeysParser;
+    private Parser<NamespacedKey> placeableKeysParser;
     private Parser<BoundedModifier> modifierParser;
     private Parser<Boolean> unbreakableParser;
     private Parser<ItemFlag> flagParser;
@@ -70,8 +72,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
         this.descriptionParser = library.type(String.class);
         this.durabilityParser = library.type(Short.class);
         this.enchantmentParser = library.type(ItemEnchantment.class);
-        this.canDestroyParser = library.type(Material.class);
-        this.canPlaceOnParser = library.type(Material.class);
+        this.destroyableKeysParser = library.type(NamespacedKey.class);
+        this.placeableKeysParser = library.type(NamespacedKey.class);
         this.modifierParser = library.type(BoundedModifier.class);
         this.unbreakableParser = library.type(Boolean.class);
         this.flagParser = library.type(ItemFlag.class);
@@ -93,8 +95,8 @@ public class ItemStackParser extends NodeParser<ItemStack>
         List<String> description = this.parseDescription(context, node);
         short durability = this.durabilityParser.parse(context, durabilityProperty).orDefault((short) 0);
         List<ItemEnchantment> enchantments = this.parseEnchantments(context, node);
-        Set<Material> canDestroy = this.parseDestroy(context, node);
-        Set<Material> canPlaceOn = this.parseCanPlaceOn(context, node);
+        Set<Namespaced> destroyableKeys = this.parseDestroyableKeys(context, node);
+        Set<Namespaced> placeableKeys = this.parsePlaceableKeys(context, node);
         boolean unbreakable = this.unbreakableParser.parse(context, node.property("unbreakable", "permanent")).orDefault(false);
         List<ItemFlag> flags = this.parseFlags(context, node);
 
@@ -118,11 +120,11 @@ public class ItemStackParser extends NodeParser<ItemStack>
             itemMeta.setLore(description);
         }
 
-        if (!canDestroy.isEmpty()) {
-            itemMeta.setCanDestroy(canDestroy);
+        if (!destroyableKeys.isEmpty()) {
+            itemMeta.setDestroyableKeys(destroyableKeys);
         }
-        if (!canPlaceOn.isEmpty()) {
-            itemMeta.setCanPlaceOn(canPlaceOn);
+        if (!placeableKeys.isEmpty()) {
+            itemMeta.setPlaceableKeys(placeableKeys);
         }
 
         for (Node modifierNode : node.children("modifier", "attribute-modifier", "attributemodifier", "attribute")) {
@@ -198,37 +200,37 @@ public class ItemStackParser extends NodeParser<ItemStack>
     // Can Destroy
     //
 
-    private Set<Material> parseDestroy(Context context, Node root) throws ParserException {
-        Node group = root.firstChild("can-destroy");
-        return group != null ? this.parseDestroy0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
-                             : this.parseDestroy0(context, root, "destroy", "can-destroy");
+    private Set<Namespaced> parseDestroyableKeys(Context context, Node root) throws ParserException {
+        Node group = root.firstChild("destroyable", "destroyable-keys", "destroyablekeys", "can-destroy", "candestroy");
+        return group != null ? this.parseDestroyableKeys0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
+                             : this.parseDestroyableKeys0(context, root, "destroy", "can-destroy", "candestroy");
     }
 
-    private Set<Material> parseDestroy0(Context context, Node node, String... names) throws ParserException {
-        Set<Material> materials = new HashSet<>();
-        for (Node material : node.children(names)) {
-            materials.add(this.canDestroyParser.parse(context, material).orFail());
+    private Set<Namespaced> parseDestroyableKeys0(Context context, Node node, String... names) throws ParserException {
+        Set<Namespaced> keys = new HashSet<>();
+        for (Node key : node.children(names)) {
+            keys.add(this.destroyableKeysParser.parse(context, key).orFail());
         }
 
-        return materials;
+        return keys;
     }
 
     //
     // Can Place On
     //
 
-    private Set<Material> parseCanPlaceOn(Context context, Node root) throws ParserException {
-        Node group = root.firstChild("can-place-on");
-        return group != null ? this.parseCanPlaceOn0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
-                             : this.parseCanPlaceOn0(context, root, "place-on", "on", "can-place");
+    private Set<Namespaced> parsePlaceableKeys(Context context, Node root) throws ParserException {
+        Node group = root.firstChild("placable", "placable-keys", "placablekeys", "can-place-on", "canplaceon");
+        return group != null ? this.parsePlaceableKeys0(context, group, MaterialParser.MATERIAL_ELEMENT_NAMES)
+                             : this.parsePlaceableKeys0(context, root, "place-on", "placeon", "can-place", "canplace");
     }
 
-    private Set<Material> parseCanPlaceOn0(Context context, Node node, String... names) throws ParserException {
-        Set<Material> materials = new HashSet<>();
-        for (Node material : node.children(names)) {
-            materials.add(this.canPlaceOnParser.parse(context, material).orFail());
+    private Set<Namespaced> parsePlaceableKeys0(Context context, Node node, String... names) throws ParserException {
+        Set<Namespaced> keys = new HashSet<>();
+        for (Node key : node.children(names)) {
+            keys.add(this.placeableKeysParser.parse(context, key).orFail());
         }
 
-        return materials;
+        return keys;
     }
 }

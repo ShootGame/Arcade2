@@ -64,6 +64,7 @@ them are registered in the ParserContainer class
     <parser class="pl.themolka.arcade.item.EnchantmentOfferParser" />
     <parser class="pl.themolka.arcade.item.EnchantmentParser" />
     <parser class="pl.themolka.arcade.item.ItemEnchantmentParser" />
+    <parser class="pl.themolka.arcade.item.ItemFlagParser" />
     <parser class="pl.themolka.arcade.item.ItemStackParser" />
     <parser class="pl.themolka.arcade.kit.KitParser" />
     <parser class="pl.themolka.arcade.kit.KitsGameParser" />
