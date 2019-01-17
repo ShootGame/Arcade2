@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-@Produces(ItemFlagParser.class)
+@Produces(ItemFlag.class)
 public class ItemFlagParser extends ElementParser<ItemFlag>
                             implements InstallableParser {
     private static final Map<String, ItemFlag> BINDINGS = ImmutableMap.<String, ItemFlag>builder()
