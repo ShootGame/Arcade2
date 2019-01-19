@@ -47,7 +47,7 @@ public abstract class SimpleGoal implements Goal, ParticipatorResolver.Injector 
     protected SimpleGoal(Game game, IGameConfig.Library library, Config<?> config) {
         this.game = game;
         this.name = config.name().get();
-        this.owner = library.getOrDefine(game, config.owner().get());
+        this.owner = library.getOrDefine(game, config.owner().getIfPresent());
     }
 
     @Override

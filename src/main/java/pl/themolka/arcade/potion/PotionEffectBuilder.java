@@ -17,7 +17,6 @@
 package pl.themolka.arcade.potion;
 
 import org.apache.commons.lang3.builder.Builder;
-import org.bukkit.Color;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 

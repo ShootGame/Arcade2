@@ -72,7 +72,7 @@ public class MapManifestParser extends NodeParser<MapManifest>
             }
         }
 
-        return Result.fine(node, name, new MapManifest(modules, node, world));
+        return Result.fine(node, name, new MapManifest(modules, world));
     }
 
     protected Node getModulesNode(Node root) throws ParserException {

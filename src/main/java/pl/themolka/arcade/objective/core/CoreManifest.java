@@ -103,8 +103,10 @@ public class CoreManifest extends ObjectiveManifest {
 
             Set<Material> material = new HashSet<>();
             Property materialProperty = node.property("material", "type", "of");
-            for (String maybeMaterial : ParserUtils.array(this.materialTextParser.parse(context, materialProperty).orFail())) {
-                material.add(this.materialParser.parseWithValue(context, materialProperty, maybeMaterial).orFail());
+            if (materialProperty != null) {
+                for (String maybeMaterial : ParserUtils.array(this.materialTextParser.parse(context, materialProperty).orFail())) {
+                    material.add(this.materialParser.parseWithValue(context, materialProperty, maybeMaterial).orFail());
+                }
             }
 
             if (ParserUtils.ensureNotEmpty(material)) {

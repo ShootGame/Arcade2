@@ -22,8 +22,8 @@ import pl.themolka.arcade.game.Game;
 import pl.themolka.arcade.game.GamePlayer;
 import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.region.tracker.PlayerTracker;
+import pl.themolka.arcade.region.tracker.PlayerTrackerFilter;
 import pl.themolka.arcade.region.tracker.PlayerTrackerListener;
-import pl.themolka.arcade.region.tracker.RegionTrackerFilter;
 
 public class Capture extends pl.themolka.arcade.objective.Capture implements PlayerTrackerListener {
     private Point point;
@@ -58,7 +58,12 @@ public class Capture extends pl.themolka.arcade.objective.Capture implements Pla
         }
 
         this.point = point;
-        this.tracker = new PlayerTracker(point.getGame(), new RegionTrackerFilter(this.getRegion()), this);
+        this.tracker = new PlayerTracker(point.getGame(), new PlayerTrackerFilter() {
+            @Override
+            public boolean canTrack(GamePlayer player, Location at) {
+                return getFieldStrategy().regionContains(getRegion(), at);
+            }
+        }, this);
     }
 
     private IMessagePublication publish(CaptureEvent event) {

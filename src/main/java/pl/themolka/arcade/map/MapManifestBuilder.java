@@ -17,7 +17,6 @@
 package pl.themolka.arcade.map;
 
 import org.apache.commons.lang3.builder.Builder;
-import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.game.IGameModuleConfig;
 
 import java.util.LinkedHashSet;
@@ -25,14 +24,12 @@ import java.util.Set;
 
 public class MapManifestBuilder implements Builder<MapManifest> {
     private Set<IGameModuleConfig<?>> modules;
-    private Node source;
-    private WorldInfo world;
+    private WorldInfo worldInfo;
 
     @Override
     public MapManifest build() {
         return new MapManifest(this.modules(),
-                               this.source(),
-                               this.world());
+                               this.worldInfo());
     }
 
     public Set<IGameModuleConfig<?>> modules() {
@@ -44,21 +41,12 @@ public class MapManifestBuilder implements Builder<MapManifest> {
         return this;
     }
 
-    public Node source() {
-        return this.source;
+    public WorldInfo worldInfo() {
+        return this.worldInfo;
     }
 
-    public MapManifestBuilder source(Node source) {
-        this.source = source;
-        return this;
-    }
-
-    public WorldInfo world() {
-        return this.world;
-    }
-
-    public MapManifestBuilder world(WorldInfo world) {
-        this.world = world;
+    public MapManifestBuilder worldInfo(WorldInfo worldInfo) {
+        this.worldInfo = worldInfo;
         return this;
     }
 }

@@ -42,7 +42,7 @@ public class NumericVersionParser extends ElementParser<NumericVersion>
 
     @Override
     public Set<Object> expect() {
-        return Collections.singleton("progressive version (integer)");
+        return Collections.singleton("numeric version (integer)");
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import pl.themolka.arcade.dom.Content;
 import pl.themolka.arcade.dom.Cursor;
 import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
@@ -68,7 +69,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         try {
             return this.read(file.toPath(), this.sax.build(file));
         } catch (JDOMException jdom) {
-            throw new DOMException(null, jdom.getMessage(), jdom);
+            throw new DOMException((Content) null, jdom.getMessage(), jdom);
         }
     }
 
@@ -77,7 +78,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         try {
             return this.read(null, this.sax.build(source));
         } catch (JDOMException jdom) {
-            throw new DOMException(null, jdom.getMessage(), jdom);
+            throw new DOMException((Content) null, jdom.getMessage(), jdom);
         }
     }
 
@@ -86,7 +87,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         try {
             return this.read(null, this.sax.build(stream));
         } catch (JDOMException jdom) {
-            throw new DOMException(null, jdom.getMessage(), jdom);
+            throw new DOMException((Content) null, jdom.getMessage(), jdom);
         }
     }
 
@@ -95,7 +96,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         try {
             return this.read(null, this.sax.build(reader));
         } catch (JDOMException jdom) {
-            throw new DOMException(null, jdom.getMessage(), jdom);
+            throw new DOMException((Content) null, jdom.getMessage(), jdom);
         }
     }
 
@@ -104,7 +105,7 @@ public class JDOMEngine extends LocatedJDOMFactory
         try {
             return this.read(Paths.get(uri), this.sax.build(uri.toURL()));
         } catch (JDOMException jdom) {
-            throw new DOMException(null, jdom.getMessage(), jdom);
+            throw new DOMException((Content) null, jdom.getMessage(), jdom);
         }
     }
 
@@ -114,7 +115,7 @@ public class JDOMEngine extends LocatedJDOMFactory
 
     private Document read(Path path, org.jdom2.Document jdom) throws DOMException {
         if (!jdom.hasRootElement()) {
-            throw new DOMException(null, "The root node is not defined.");
+            throw new DOMException((Content) null, "The root node is not defined.");
         }
 
         return Document.create(path, JDOMEngine.convert(jdom.getRootElement()));

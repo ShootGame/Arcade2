@@ -17,12 +17,12 @@
 package pl.themolka.arcade.config;
 
 import org.apache.commons.lang3.StringUtils;
+import pl.themolka.arcade.game.IGameConfig;
 import pl.themolka.arcade.map.WorldNameGenerator;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class ConfigContext {
@@ -30,10 +30,11 @@ public class ConfigContext {
 
     // TODO: We shouldn't use the world name generator.
     private final WorldNameGenerator idGenerator = new WorldNameGenerator();
-    private final RefFinder refFinder;
 
-    public ConfigContext(RefFinder refFinder) {
-        this.refFinder = Objects.requireNonNull(refFinder, "refFinder cannot be null");
+    private final TypeFinder<Ref> refFinder = new TypeFinder<>(Ref.class);
+    private final TypeFinder<IGameConfig> configFinder = new TypeFinder<>(IGameConfig.class);
+
+    public ConfigContext() {
     }
 
     public boolean contains(IConfig config) {
@@ -72,8 +73,12 @@ public class ConfigContext {
         return this.configMap.keySet();
     }
 
-    public RefFinder getRefFinder() {
+    public TypeFinder<Ref> getRefFinder() {
         return this.refFinder;
+    }
+
+    public TypeFinder<IGameConfig> getConfigFinder() {
+        return this.configFinder;
     }
 
     public boolean isEmpty() {

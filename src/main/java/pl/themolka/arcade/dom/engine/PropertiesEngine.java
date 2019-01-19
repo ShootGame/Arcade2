@@ -20,6 +20,7 @@ import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Namespace;
 import pl.themolka.arcade.dom.Node;
+import pl.themolka.arcade.dom.Property;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,11 +57,11 @@ public class PropertiesEngine implements DOMEngine {
     }
 
     private Node convert(Properties properties) {
-        List<Node> children = new ArrayList<>();
+        List<Property> values = new ArrayList<>();
         for (String name : properties.stringPropertyNames()) {
-            children.add(Node.ofPrimitive(NAMESPACE, name, properties.getProperty(name)));
+            values.add(Property.of(NAMESPACE, name, properties.getProperty(name)));
         }
 
-        return Node.ofChildren(NAMESPACE, Properties.class.getSimpleName(), children);
+        return Node.of(NAMESPACE, Properties.class.getSimpleName(), values);
     }
 }

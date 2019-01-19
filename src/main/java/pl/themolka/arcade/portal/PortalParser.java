@@ -91,16 +91,16 @@ public class PortalParser extends ConfigParser<Portal.Config>
         DirectionTranslator yaw = this.yawDirectionParser.parse(context, node.property("yaw")).orDefault(DirectionTranslator.ENTITY);
         DirectionTranslator pitch = this.pitchDirectionParser.parse(context, node.property("pitch")).orDefault(DirectionTranslator.ENTITY);
 
+        SpawnApply.AgentFactory agentFactory = new SpawnApply.AgentFactory() {
+            @Override
+            public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
+                return SpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
+            }
+        };
+
         return new SpawnApply.Config() {
             public Ref<Spawn.Config<?>> spawn() { return destination; }
-            public Ref<SpawnApply.AgentFactory> agentFactory() {
-                return Ref.ofProvided(new SpawnApply.AgentFactory() {
-                    @Override
-                    public SpawnAgent createAgent(Spawn spawn, GamePlayer player, Player bukkit) {
-                        return SpawnAgent.create(spawn, player.getBukkit(), yaw, pitch);
-                    }
-                });
-            }
+            public Ref<SpawnApply.AgentFactory> agentFactory() { return Ref.ofProvided(agentFactory); }
         };
     }
 }

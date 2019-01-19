@@ -53,7 +53,7 @@ public class FireworksGame extends GameModule {
 
                 Object result = enabled.invoke(config);
                 if (result instanceof Ref<?>) {
-                    this.handlers.add(constructor.newInstance(((Ref) result).get()));
+                    this.handlers.add(constructor.newInstance(((Ref) result)));
                 } else {
                     throw new ReflectiveOperationException("Illegal return value");
                 }

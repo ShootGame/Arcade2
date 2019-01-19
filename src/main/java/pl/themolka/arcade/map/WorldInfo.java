@@ -20,6 +20,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import pl.themolka.arcade.generator.Generator;
+import pl.themolka.arcade.spawn.Direction;
 
 public class WorldInfo implements Cloneable {
     public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.EASY;
@@ -28,7 +29,8 @@ public class WorldInfo implements Cloneable {
     public static final boolean DEFAULT_IS_HARDCORE = false;
     public static final boolean DEFAULT_IS_PVP = true;
     public static final RandomSeed DEFAULT_RANDOM_SEED = new RandomSeed(RandomSeed.DEFAULT_SEED);
-    public static final Location DEFAULT_SPAWN = new Location((World) null, 0.5D, 16D, 0.5D);
+    public static final Location DEFAULT_SPAWN = new Location(null, .5D, 16D, .5D,
+            Direction.DEFAULT_YAW, Direction.DEFAULT_PITCH);
     public static final MapTime DEFAULT_TIME = MapTime.defaultTime();
 
     private Difficulty difficulty;

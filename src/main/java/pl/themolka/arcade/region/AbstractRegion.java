@@ -40,7 +40,7 @@ public abstract class AbstractRegion implements Region {
 
     public AbstractRegion(Game game, String id) {
         this.game = Objects.requireNonNull(game, "game cannot be null");
-        this.id = Objects.requireNonNull(id, "id cannot be null");
+        this.id = id;
     }
 
     public AbstractRegion(AbstractRegion original) {

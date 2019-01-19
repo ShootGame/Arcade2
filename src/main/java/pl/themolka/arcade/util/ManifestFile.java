@@ -42,30 +42,30 @@ public class ManifestFile {
     }
 
     public String getFieldName() {
-        return this.getContent().firstChildValue(FIELD_NAME);
+        return this.getContent().propertyValue(FIELD_NAME);
     }
 
     public String getFieldGroupId() {
-        return this.getContent().firstChildValue(FIELD_GROUP_ID);
+        return this.getContent().propertyValue(FIELD_GROUP_ID);
     }
 
     public String getFieldArtifactId() {
-        return this.getContent().firstChildValue(FIELD_ARTIFACT_ID);
+        return this.getContent().propertyValue(FIELD_ARTIFACT_ID);
     }
 
     public String getFieldVersion() {
-        return this.getContent().firstChildValue(FIELD_VERSION);
+        return this.getContent().propertyValue(FIELD_VERSION);
     }
 
     public String getFieldMcVersion() {
-        return this.getContent().firstChildValue(FIELD_MC_VERSION);
+        return this.getContent().propertyValue(FIELD_MC_VERSION);
     }
 
     public String getFieldMainClass() {
-        return this.getContent().firstChildValue(FIELD_MAIN_CLASS);
+        return this.getContent().propertyValue(FIELD_MAIN_CLASS);
     }
 
     public String getFieldGitCommit() {
-        return this.getContent().firstChildValue(FIELD_GIT_COMMIT);
+        return this.getContent().propertyValue(FIELD_GIT_COMMIT);
     }
 }

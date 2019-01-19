@@ -18,28 +18,67 @@ package pl.themolka.arcade.dom;
 
 public class DOMException extends Exception {
     private final Content content;
+    private final Selection selection;
+
+    //
+    // Content
+    //
 
     public DOMException(Content content) {
-        this.content = content;
+        this(content, (String) null);
     }
 
     public DOMException(Content content, String message) {
-        super(message);
-        this.content = content;
+        this(content, message, null);
     }
 
     public DOMException(Content content, String message, Throwable cause) {
         super(message, cause);
         this.content = content;
+        this.selection = null;
     }
 
     public DOMException(Content content, Throwable cause) {
-        super(cause);
-        this.content = content;
+        this(content, null, cause);
+    }
+
+    //
+    // Selection
+    //
+
+    public DOMException(Selection selection) {
+        this(selection, (String) null);
+    }
+
+    public DOMException(Selection selection, String message) {
+        this(selection, message, null);
+    }
+
+    public DOMException(Selection selection, String message, Throwable cause) {
+        super(message, cause);
+        this.content = null;
+        this.selection = selection;
+    }
+
+    public DOMException(Selection selection, Throwable cause) {
+        this(selection, null, cause);
     }
 
     public Content getContent() {
         return this.content;
+    }
+
+    public Selection getSelection() {
+        if (this.selection != null) {
+            return this.selection;
+        } else if (this.content != null) {
+            Content content = this.content;
+            if (content.isSelectable()) {
+                return content.select();
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -53,14 +92,12 @@ public class DOMException extends Exception {
             builder.append("Unknown error");
         }
 
-        if (this.content != null) {
-            if (this.content.isSelectable()) {
-                Selection selection = this.content.select();
-                if (selection != null) {
-                    builder.append(" at line ").append(selection);
-                }
-            }
+        Selection selection = this.getSelection();
+        if (selection != null) {
+            builder.append(" at line " ).append(selection);
+        }
 
+        if (this.content != null) {
             String near = this.content.toShortString();
             if (near != null) {
                 builder.append(" in '").append(near).append("'");

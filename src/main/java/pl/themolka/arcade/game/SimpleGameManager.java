@@ -19,7 +19,6 @@ package pl.themolka.arcade.game;
 import net.minecraft.server.v1_13_R2.DimensionManager;
 import net.minecraft.server.v1_13_R2.PlayerList;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -30,7 +29,6 @@ import pl.themolka.arcade.ArcadePlugin;
 import pl.themolka.arcade.config.ConfigContext;
 import pl.themolka.arcade.config.Ref;
 import pl.themolka.arcade.config.RefContainer;
-import pl.themolka.arcade.config.RefFinder;
 import pl.themolka.arcade.cycle.CycleCountdown;
 import pl.themolka.arcade.cycle.CycleRestartEvent;
 import pl.themolka.arcade.cycle.ServerCycleEvent;
@@ -38,8 +36,10 @@ import pl.themolka.arcade.dom.DOMException;
 import pl.themolka.arcade.dom.Document;
 import pl.themolka.arcade.dom.Node;
 import pl.themolka.arcade.dom.Property;
+import pl.themolka.arcade.dom.Selection;
 import pl.themolka.arcade.dom.engine.DOMEngine;
 import pl.themolka.arcade.event.Event;
+import pl.themolka.arcade.filter.StaticFilter;
 import pl.themolka.arcade.map.ArcadeMap;
 import pl.themolka.arcade.map.MapManager;
 import pl.themolka.arcade.map.MapManifest;
@@ -49,8 +49,8 @@ import pl.themolka.arcade.map.queue.MapQueue;
 import pl.themolka.arcade.map.queue.MapQueueFillEvent;
 import pl.themolka.arcade.parser.Context;
 import pl.themolka.arcade.parser.Parser;
-import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserException;
+import pl.themolka.arcade.parser.ParserLibrary;
 import pl.themolka.arcade.parser.ParserNotSupportedException;
 import pl.themolka.arcade.session.ArcadePlayer;
 import pl.themolka.arcade.settings.Settings;
@@ -59,11 +59,11 @@ import pl.themolka.arcade.util.Tickable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class SimpleGameManager implements GameManager {
@@ -76,7 +76,6 @@ public class SimpleGameManager implements GameManager {
     private int gameId = 0;
     private int maxGameId = DEFAULT_MAX_GAME_ID;
     private boolean nextRestart;
-    private final RefFinder refFinder = new RefFinder();
     private MapQueue queue = new MapQueue();
     private final RestartCountdown restartCountdown;
     private final WorldNameGenerator worldNameGenerator = new WorldNameGenerator();
@@ -120,8 +119,15 @@ public class SimpleGameManager implements GameManager {
         Game game = new Game(this.plugin, this.gameId++, map, world);
         map.setGame(game);
 
+        MapManifest manifest = map.getManifest();
+
         // Don't forget to setup the world object!
-        map.getManifest().getWorld().getSpawn().setWorld(world);
+        manifest.getWorld().getSpawn().setWorld(world);
+
+        IGameConfig.Library library = new IGameConfig.Library();
+        for (IGameModuleConfig<?> moduleConfig : manifest.getModules()) {
+            moduleConfig.create(game, library);
+        }
 
         GamePlayerManager playerManager = game.getPlayers();
         for (ArcadePlayer player : this.plugin.getPlayers()) {
@@ -153,21 +159,32 @@ public class SimpleGameManager implements GameManager {
 
         Context context = new Context(this.plugin);
         MapManifest manifest = parser.parse(context, document).orFail();
+        Set<IGameModuleConfig<?>> modules = manifest.getModules();
 
-        ConfigContext config = new ConfigContext(this.refFinder);
+        ConfigContext config = new ConfigContext();
 
-        List<Ref<?>> refs;
-        try {
-            refs = config.getRefFinder().find(manifest.getModules());
-            System.out.println(StringUtils.join(refs, ", "));
-        } catch (InvocationTargetException e) {
-            throw new DOMException(null, e);
+        List<Ref> localRefs = config.getRefFinder().find(modules);
+        List<Ref<?>> refs = new ArrayList<>(localRefs.size());
+        for (Ref localRef : localRefs) {
+            refs.add(localRef);
         }
 
         RefContainer container = new RefContainer();
-        container.registerMany(refs);
+        container.registerMany(Ref.ofProvided("allow", StaticFilter.ALLOW.config()),
+                               Ref.ofProvided("deny", StaticFilter.DENY.config()),
+                               Ref.ofProvided("abstain", StaticFilter.ABSTAIN.config()));
 
-        for (Ref<?> ref : container) {
+        for (Ref<?> failed : container.registerMany(refs)) {
+            Selection selection = null;
+            if (failed.isSelectable()) {
+                selection = failed.select();
+            }
+
+            throw new DOMException(selection, "Element with ID '" + failed.getId() +
+                    "' is already defined and cannot be duplicated");
+        }
+
+        for (Ref ref : refs) {
             if (ref.isProvided()) {
                 continue;
             }
@@ -175,7 +192,23 @@ public class SimpleGameManager implements GameManager {
             String id = ref.getId();
             Ref<?> value = container.query(id);
 
-            // ?
+            if (value == null) {
+                Selection selection = null;
+                if (ref.isSelectable()) {
+                    selection = ref.select();
+                }
+
+                throw new DOMException(selection, "Element references to '" + id + "' which is undefined.");
+            } else if (!value.isProvided()) {
+                Selection selection = null;
+                if (ref.isSelectable()) {
+                    selection = ref.select();
+                }
+
+                throw new DOMException(selection, "Element references to '" + id + "' which is not provided");
+            } else {
+                ref.provide(value.get());
+            }
         }
 
         ArcadeMap realMap = new ArcadeMap(map, manifest, config);

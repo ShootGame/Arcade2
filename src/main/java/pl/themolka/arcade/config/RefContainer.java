@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,13 +47,27 @@ public class RefContainer implements Iterable<Ref<?>> {
     }
 
     public boolean register(Ref<?> ref) {
+        if (ref.isEmpty()) {
+            return false;
+        }
+
         return this.byId.putIfAbsent(this.validateRef(ref).getId(), ref) == null;
     }
 
-    public void registerMany(Iterable<Ref<?>> refs) {
+
+    public List<Ref<?>> registerMany(Iterable<Ref<?>> refs) {
+        List<Ref<?>> failed = new ArrayList<>();
         for (Ref<?> ref : refs) {
-            this.register(ref);
+            if (!ref.isEmpty() && ref.isProvided()) {
+                if (this.contains(ref.getId())) {
+                    failed.add(ref);
+                } else {
+                    this.register(ref);
+                }
+            }
         }
+
+        return failed;
     }
 
     public void registerMany(Ref<?>... refs) {

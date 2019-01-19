@@ -26,7 +26,7 @@ import pl.themolka.arcade.util.OptionalProvider;
 import pl.themolka.arcade.util.StringId;
 
 import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -122,7 +122,7 @@ public class Ref<T> implements OptionalProvider<T>, Locatable {
 
     public boolean provide(T provider) {
         if (provider != null) {
-            this.provider = new WeakReference<>(provider);
+            this.provider = new SoftReference<>(provider);
             return true;
         } else {
             this.clear();

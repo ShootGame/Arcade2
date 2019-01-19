@@ -16,14 +16,15 @@
 
 package pl.themolka.arcade.dom.engine;
 
+import pl.themolka.arcade.dom.Content;
 import pl.themolka.arcade.dom.DOMException;
 
 public class EngineNotInstalledException extends DOMException {
     public EngineNotInstalledException() {
-        super(null);
+        super((Content) null);
     }
 
     public EngineNotInstalledException(String message) {
-        super(null, message);
+        super((Content) null, message);
     }
 }
