@@ -27,8 +27,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 @ServiceId("SafeWorkbenches")
 public class SafeWorkbenchesService extends Service {
     /**
-     * People destroying a {@link Material#CRAFTING_TABLE} closes all viewers of this
-     * craft window and drops their items on the ground. This is the major
+     * People destroying a {@link Material#CRAFTING_TABLE} closes all viewers of
+     * this craft window and drops their items on the ground. This is the major
      * reason why we need to disable this and open a fake workbench window
      * instead of the real one.
      */
