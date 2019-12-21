@@ -30,7 +30,7 @@ import java.util.Objects;
 import java.util.Stack;
 
 public class ImportStage implements TreePreprocessHandler {
-    private static final Stack<Path> stack = new Stack<>();
+    private static final Stack<Path> STACK = new Stack<>();
 
     private final EngineManager engines;
     private final Preprocessor preprocessor;
@@ -40,8 +40,6 @@ public class ImportStage implements TreePreprocessHandler {
         this.engines = Objects.requireNonNull(engines, "engines cannot be null");
         this.preprocessor = Objects.requireNonNull(preprocessor, "preprocessor cannot be null");
         this.document = Objects.requireNonNull(document, "document cannot be null");
-
-        stack.push(document.getPath());
     }
 
     @Override
@@ -61,9 +59,11 @@ public class ImportStage implements TreePreprocessHandler {
             throw new PreprocessException(node, "Target document path not specified");
         }
 
+        Path path;
         Document target;
         try {
-            Path directory = this.document.getPath().getParent();
+            path = this.document.getPath();
+            Path directory = path.getParent();
             target = readDocument(this.engines, node, directory.resolve(targetPath).toUri());
         } catch (InvalidPathException ex) {
             throw new PreprocessException(node, "Invalid document path: " + ex.getReason(), ex);
@@ -75,15 +75,17 @@ public class ImportStage implements TreePreprocessHandler {
             throw new PreprocessException(target, "Target document is empty");
         }
 
-        Path path = target.getPath();
-        if (stack.search(path) != -1) {
+        STACK.push(path);
+
+        Path targetPath0 = target.getPath();
+        if (STACK.search(targetPath0) != -1) {
             throw new PreprocessException(target, "Import loop detected");
         }
 
-        stack.push(path);
+        STACK.push(targetPath0);
 
         // Preprocess the target document.
-        this.preprocessor.preprocess(target);
+        this.preprocessor.process(target);
 
         Node.detach(node); // Remove the old <import> node.
         parent.add(target.getRoot().children()); // We don't support root node properties.

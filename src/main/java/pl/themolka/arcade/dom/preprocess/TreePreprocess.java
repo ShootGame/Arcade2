@@ -53,7 +53,7 @@ public class TreePreprocess extends NodePreprocess
         }
 
         for (Node child : this.define(node)) {
-            this.preprocess(child);
+            this.process(child);
         }
     }
 

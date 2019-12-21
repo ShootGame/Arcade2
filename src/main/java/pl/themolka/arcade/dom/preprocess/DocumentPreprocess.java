@@ -30,17 +30,17 @@ public abstract class DocumentPreprocess implements DefinedPreprocess<Document, 
     }
 
     @Override
-    public void preprocess(Document document) throws PreprocessException {
+    public void process(Document document) throws PreprocessException {
         this.invoke(document);
     }
 
     @Override
-    public final void preprocess(Node node) throws PreprocessException {
+    public final void process(Node node) throws PreprocessException {
         throw new PreprocessNotSupportedException(node);
     }
 
     @Override
-    public final void preprocess(Property property) throws PreprocessException {
+    public final void process(Property property) throws PreprocessException {
         throw new PreprocessNotSupportedException(property);
     }
 }

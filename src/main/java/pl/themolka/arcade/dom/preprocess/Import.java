@@ -39,6 +39,6 @@ public class Import extends DocumentPreprocess {
 
         ImportStage stage = new ImportStage(this.engines, this.preprocessor, document);
         Preprocess preprocess = new TreePreprocess(stage);
-        preprocess.preprocess(document);
+        preprocess.process(document);
     }
 }

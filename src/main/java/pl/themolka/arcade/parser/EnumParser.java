@@ -21,10 +21,11 @@ import pl.themolka.arcade.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Simple and easy {@link Enum} parsing.
@@ -38,14 +39,9 @@ public class EnumParser<T extends Enum<T>> extends ElementParser<T> {
 
     @Override
     public Set<Object> expect() {
-        Set<Object> expect = new HashSet<>();
-
-        T[] constants = this.type.getEnumConstants();
-        for (T constant : constants) {
-            expect.add(toEnumValue(constant.name()));
-        }
-
-        return expect;
+        return Stream.of(this.type.getEnumConstants())
+                .map(constant -> toEnumValue(constant.name()))
+                .collect(Collectors.toSet());
     }
 
     @Override

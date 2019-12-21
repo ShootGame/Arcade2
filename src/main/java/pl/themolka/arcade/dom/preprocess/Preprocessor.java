@@ -27,30 +27,30 @@ public class Preprocessor implements Preprocess {
     private final List<Preprocess> executors = new ArrayList<>();
 
     @Override
-    public void preprocess(Document document) throws PreprocessException {
+    public void process(Document document) throws PreprocessException {
         for (Preprocess executor : this.executors) {
             try {
-                executor.preprocess(document);
+                executor.process(document);
             } catch (PreprocessNotSupportedException ignored) {
             }
         }
     }
 
     @Override
-    public void preprocess(Node node) throws PreprocessException {
+    public void process(Node node) throws PreprocessException {
         for (Preprocess executor : this.executors) {
             try {
-                executor.preprocess(node);
+                executor.process(node);
             } catch (PreprocessNotSupportedException ignored) {
             }
         }
     }
 
     @Override
-    public void preprocess(Property property) throws PreprocessException {
+    public void process(Property property) throws PreprocessException {
         for (Preprocess executor : this.executors) {
             try {
-                executor.preprocess(property);
+                executor.process(property);
             } catch (PreprocessNotSupportedException ignored) {
             }
         }

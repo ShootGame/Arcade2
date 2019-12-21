@@ -44,7 +44,7 @@ public class Include extends NodePreprocess
 
     @Override
     public void invoke(Node node) throws PreprocessException {
-        this.tree.preprocess(node);
+        this.tree.process(node);
     }
 
     //

@@ -30,19 +30,19 @@ public abstract class NodePreprocess implements DefinedPreprocess<Node, Parent<N
     }
 
     @Override
-    public final void preprocess(Document document) throws PreprocessException {
+    public final void process(Document document) throws PreprocessException {
         if (document.hasRoot()) {
-            this.preprocess(document.getRoot());
+            this.process(document.getRoot());
         }
     }
 
     @Override
-    public final void preprocess(Node node) throws PreprocessException {
+    public final void process(Node node) throws PreprocessException {
         this.invoke(node);
     }
 
     @Override
-    public final void preprocess(Property property) throws PreprocessException {
+    public final void process(Property property) throws PreprocessException {
         throw new PreprocessNotSupportedException(property);
     }
 }

@@ -44,16 +44,13 @@ public class NestedParserMap<T extends Parser<?>> extends LinkedHashMap<String, 
             return;
         }
 
-        String[] names = nameProvider.value();
-        if (names != null) {
-            T parser = this.library.of((Class<T>) clazz);
-            if (parser instanceof InstallableParser) {
-                ((InstallableParser) parser).install(this.library);
-            }
+        T parser = this.library.of((Class<T>) clazz);
+        if (parser instanceof InstallableParser) {
+            ((InstallableParser) parser).install(this.library);
+        }
 
-            for (String name : names) {
-                this.put(name, parser);
-            }
+        for (String name : nameProvider.value()) {
+            this.put(name, parser);
         }
     }
 }

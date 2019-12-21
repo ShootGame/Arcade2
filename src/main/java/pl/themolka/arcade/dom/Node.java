@@ -26,15 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Node extends Element implements Locatable, Parent<Node>, Propertable {
-    enum Type {
-        /** Holds a primitive value. */
-        PRIMITIVE,
-        /** Holds children. */
-        TREE,
-        /** No primitive value given, no children attached. */
-        UNKNOWN
-    }
-
     protected Node(Namespace namespace, String name) {
         super(namespace, name);
     }
@@ -392,20 +383,6 @@ public class Node extends Element implements Locatable, Parent<Node>, Propertabl
     public String firstChildValue(String... names) {
         Node firstChild = this.firstChild(names);
         return firstChild != null ? firstChild.getValue() : null;
-    }
-
-    /**
-     * @deprecated Use {@link #isPrimitive()} or {@link #isTree()} instead.
-     */
-    @Deprecated
-    public Type getType() {
-        if (this.isPrimitive()) {
-            return Type.PRIMITIVE;
-        } else if (this.isTree()) {
-            return Type.TREE;
-        }
-
-        return Type.UNKNOWN;
     }
 
     public boolean isPrimitive() {

@@ -7,12 +7,12 @@
 
     <packaging>jar</packaging>
     <name>Arcade</name>
-    <description>Zarzadzanie mini-grami w jednym pluginie</description>
+    <description>Zarządzanie mini-grami w jednym pluginie</description>
 
     <properties>
         <plugin.mainClass>pl.themolka.arcade.ArcadePlugin</plugin.mainClass>
-        <plugin.minecraft>1.11</plugin.minecraft>
-        
+        <plugin.minecraft>1.13</plugin.minecraft>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -25,7 +25,7 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        
+
         <plugins>
             <!-- Apply the last Git commit into the version -->
             <plugin>
@@ -66,29 +66,15 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <repositories>
-        <repository>
-            <id>overcast-snapshots</id>
-            <url>https://repo.extension.ws/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>overcast-releases</id>
-            <url>https://repo.extension.ws/content/repositories/releases</url>
-        </repository>
         <repository>
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
     </repositories>
-    
-    <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>tc.oc</groupId>-->
-            <!--<artifactId>sportbukkit</artifactId>-->
-            <!--<version>1.11.1-R0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
 
+    <dependencies>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper</artifactId>

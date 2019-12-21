@@ -151,11 +151,11 @@ public class SimpleGameManager implements GameManager {
         try {
             parser = this.plugin.getParsers().forType(MapManifest.class);
         } catch (ParserNotSupportedException ex) {
-            throw new RuntimeException("No " + MapManifest.class.getSimpleName() + " parser installed");
+            throw new RuntimeException("No " + MapManifest.class.getSimpleName() + " parser installed.");
         }
 
         Document document = engine.read(file);
-        this.plugin.getDomPreprocessor().preprocess(document);
+        this.plugin.getDomPreprocessor().process(document);
 
         Context context = new Context(this.plugin);
         MapManifest manifest = parser.parse(context, document).orFail();
